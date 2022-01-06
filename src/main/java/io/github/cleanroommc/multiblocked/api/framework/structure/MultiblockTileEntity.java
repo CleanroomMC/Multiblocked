@@ -15,6 +15,12 @@ import javax.annotation.Nullable;
  */
 public class MultiblockTileEntity extends TileEntity implements ITickable {
 
+    private final MultiblockInstance instance;
+
+    public MultiblockTileEntity(MultiblockInstance instance) {
+        this.instance = instance;
+    }
+
     @Override
     public void update() {
 

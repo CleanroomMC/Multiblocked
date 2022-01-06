@@ -46,7 +46,7 @@ public class MultiblockInstance implements INBTSerializable<NBTTagCompound> {
         this.chunkPositions = getPositions().stream()
                 .map(ChunkPos::new)
                 .collect(ObjectArraySet::new, ObjectArraySet::add, ObjectArraySet::addAll);
-        this.internalTileEntity = new MultiblockTileEntity();
+        this.internalTileEntity = new MultiblockTileEntity(this);
     }
 
     @SideOnly(Side.CLIENT)
@@ -131,7 +131,7 @@ public class MultiblockInstance implements INBTSerializable<NBTTagCompound> {
             Multiblocked.LOGGER.fatal("{} Multiblock no longer exists in the instance!", multiblockKey);
         }
         this.facing = EnumFacing.byName(nbt.getString("Facing"));
-        this.internalTileEntity = new MultiblockTileEntity();
+        this.internalTileEntity = new MultiblockTileEntity(this);
         internalTileEntity.deserializeNBT(nbt.getCompoundTag("InternalTileEntity"));
         this.controllerPosition = new BlockPos(nbt.getInteger("x"), nbt.getInteger("y"), nbt.getInteger("z"));
         this.positions = new ObjectOpenHashSet<>();

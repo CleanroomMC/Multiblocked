@@ -23,7 +23,7 @@ public class ChunkMixin {
     @Shadow @Final private World world;
 
     // We want to be as quick as possible here
-    @Inject(method = "setBlockState", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/world/World;captureBlockSnapshots:Z"))
+    @Inject(method = "setBlockState", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/world/World;captureBlockSnapshots:Z", remap = false))
     private void onAddingBlock(BlockPos pos, IBlockState state, CallbackInfoReturnable<IBlockState> cir) {
         final World world = this.world;
         this.world.getMinecraftServer().addScheduledTask(() -> {
@@ -36,12 +36,11 @@ public class ChunkMixin {
         });
     }
 
-    @Inject(method = "getTileEntity", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
+    @Inject(method = "getTileEntity", at = @At("RETURN"), cancellable = true)
     private void intercept$getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType creationMode, CallbackInfoReturnable<TileEntity> cir) {
-        TileEntity returnValue = cir.getReturnValue();
-        if (returnValue == null) {
+        if (cir.getReturnValue() == null) {
             for (MultiblockInstance instance : MultiblockWorldSavedData.getOrCreate(this.world).getInstances()) {
-                if (instance.isInChunk(this.x, this.z) && instance.getPositions().contains(pos)) {
+                if (instance.getPositions().contains(pos)) {
                     cir.setReturnValue(instance.getInternalTileEntity());
                     return;
                 }

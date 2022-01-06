@@ -1,0 +1,12 @@
+{
+  "package": "zone.rong.multiblocked.core.mixins",
+  "refmap": "mixins.multiblocked.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "io.github.cleanroommc.multiblocked.core.mixins.ChunkMixin",
+    "io.github.cleanroommc.multiblocked.core.mixins.NetHandlerPlayClientMixin",
+    "io.github.cleanroommc.multiblocked.core.mixins.WorldMixin"
+  ]
+}

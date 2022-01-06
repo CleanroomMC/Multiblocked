@@ -1,0 +1,15 @@
+[
+{
+  "modid": "multiblocked",
+  "name": "Multiblock'd",
+  "description": "Very dynamic multiblock creation mod",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Rongmario"],
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

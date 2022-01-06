@@ -2,12 +2,13 @@
 {
   "modid": "multiblocked",
   "name": "Multiblock'd",
-  "description": "Very dynamic multiblock creation mod",
+  "description": "An extremely flexible, vanilla-esque multiblock mod that also incorporates aspects of MultiblockTweaker and Modular Machinery.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Rongmario"],
+  "authorList": ["CleanroomMC"],
+  "credits": "Rongmario and KilaBash",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

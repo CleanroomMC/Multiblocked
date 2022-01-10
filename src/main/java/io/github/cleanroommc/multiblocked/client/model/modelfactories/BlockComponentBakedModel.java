@@ -1,9 +1,8 @@
 package io.github.cleanroommc.multiblocked.client.model.modelfactories;
 
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
-import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.ModelFactory;
-import io.github.cleanroommc.multiblocked.client.renderer.BlockComponentRenderer;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -43,14 +42,15 @@ public class BlockComponentBakedModel implements IBakedModel {
     @Nonnull
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         List<BakedQuad> quads = new ArrayList<>();
-        ComponentTileEntity component;
+        IRenderer renderer;
         if (state instanceof IExtendedBlockState) {
-            component = ((IExtendedBlockState)state).getValue(BlockComponent.COMPONENT_PROPERTY);
+            renderer = ((IExtendedBlockState)state).getValue(BlockComponent.COMPONENT_PROPERTY).getRenderer();
         } else {
-            component = FrameModelItemOverride.INSTANCE.component.get();
+            renderer = FrameModelItemOverride.INSTANCE.renderer.get();
         }
-        if (component != null) {
-            return BlockComponentRenderer.renderComponent(component, side, MinecraftForgeClient.getRenderLayer());
+        if (renderer != null) {
+            particle.set(renderer.getParticleTexture());
+            return renderer.renderSide(side, MinecraftForgeClient.getRenderLayer());
         }
         return quads;
     }
@@ -92,7 +92,7 @@ public class BlockComponentBakedModel implements IBakedModel {
 
         private static final FrameModelItemOverride INSTANCE = new FrameModelItemOverride();
 
-        private final ThreadLocal<ComponentTileEntity> component = ThreadLocal.withInitial(() -> null);
+        private final ThreadLocal<IRenderer> renderer = ThreadLocal.withInitial(() -> null);
 
         public FrameModelItemOverride() {
             super(Collections.emptyList());
@@ -103,9 +103,9 @@ public class BlockComponentBakedModel implements IBakedModel {
         public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
             if (!stack.isEmpty()) {
                 BlockComponent blockComponent = (BlockComponent) ((ItemBlock) stack.getItem()).getBlock();
-                this.component.set(blockComponent.component);
+                this.renderer.set(blockComponent.component.getRenderer());
             } else {
-                this.component.set(null);
+                this.renderer.set(null);
             }
             return originalModel;
         }

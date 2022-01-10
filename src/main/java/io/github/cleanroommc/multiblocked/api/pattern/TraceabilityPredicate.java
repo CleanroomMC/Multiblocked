@@ -1,5 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -23,7 +26,6 @@ public class TraceabilityPredicate {
     public static TraceabilityPredicate ANY =new TraceabilityPredicate((state)->true);
     // Allow the air block.
     public static TraceabilityPredicate AIR = new TraceabilityPredicate(blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()));
-
 
     public final List<SimplePredicate> common = new ArrayList<>();
     public final List<SimplePredicate> limited = new ArrayList<>();
@@ -324,4 +326,62 @@ public class TraceabilityPredicate {
         }
     }
 
+
+    private static Supplier<BlockInfo[]> getCandidates(Set<IBlockState> allowedStates){
+        return ()-> allowedStates.stream().map(state-> new BlockInfo(state, null)).toArray(BlockInfo[]::new);
+    }
+//
+//    /**
+//     * Match any of the given {@link IBlockState}s.
+//     * <p>
+//     * When called with a single parameter, it is equivalent to {@code IBlockState as IBlockMatcher}.
+//     *
+//     * @param allowedStates The list of {@link IBlockState}s to match.
+//     * @return An {@link TraceabilityPredicate} that returns true for any of the given blockstates.
+//     */
+//    @ZenMethod
+    public static TraceabilityPredicate states(IBlockState... allowedStates) {
+        Set<IBlockState> states = new ObjectOpenHashSet<>(Arrays.asList(allowedStates));
+        return new TraceabilityPredicate(blockWorldState -> states.contains(blockWorldState.getBlockState()), getCandidates(states));
+    }
+//
+//    /**
+//     * Match any blockstate with one of the given {@link IBlock}s.
+//     * <p>
+//     * When called with a single parameter, it is equivalent to {@code IBlock as IBlockMatcher}`
+//     *
+//     * @param blocks The list of {@link IBlock}s to match.
+//     * @return An {@link TraceabilityPredicate} that returns true for any of the given blocks.
+//     */
+//    @ZenMethod
+    public static TraceabilityPredicate blocks(Block... blocks) {
+        Set<Block> bloxx = new ObjectOpenHashSet<>(Arrays.asList(blocks));
+        return new TraceabilityPredicate(blockWorldState -> bloxx.contains(blockWorldState.getBlockState().getBlock()), getCandidates(bloxx.stream().map(Block::getDefaultState).collect(Collectors.toSet())));
+    }
+//
+//    /**
+//     * Match any blockstate with one of the given {@link IItemStack}s.
+//     * <p>
+//     * When called with a single parameter, it is equivalent to {@code IItemStack as IBlock as IBlockMatcher}`
+//     *
+//     * @param itemStacks The list of {@link IItemStack}s to match.
+//     * @return An {@link TraceabilityPredicate} that returns true for any of the given blocks.
+//     */
+//    @ZenMethod
+//    public static TraceabilityPredicate items(ItemStack... itemStacks) {
+//        return blocks(Arrays.stream(itemStacks).map(ItemStack::asBlock).toArray(IBlock[]::new));
+//    }
+//
+//    /**
+//     * Match any blockstate with one of the given {@link ILiquidStack}s.
+//     * <p>
+//     * When called with a single parameter, it is equivalent to {@code ILiquidStack as IBlock as IBlockMatcher}`
+//     *
+//     * @param liquidStacks The list of {@link IItemStack}s to match.
+//     * @return An {@link TraceabilityPredicate} that returns true for any of the given blocks.
+//     */
+//    @ZenMethod
+//    public static TraceabilityPredicate liquids(ILiquidStack... liquidStacks) {
+//        return blocks(Arrays.stream(liquidStacks).map(ILiquidStack::getDefinition).map(ILiquidDefinition::getBlock).toArray(IBlock[]::new));
+//    }
 }

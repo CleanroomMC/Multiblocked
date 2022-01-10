@@ -1,9 +1,11 @@
 package io.github.cleanroommc.multiblocked.api.tile;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,13 +18,10 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,6 +31,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -40,23 +40,20 @@ import java.util.function.Consumer;
  *
  * This isn't going to be in-world. But the parent MultiblockInstance would.
  */
-public class ComponentTileEntity extends TileEntity {
+public abstract class ComponentTileEntity extends TileEntity {
 
-    private final ResourceLocation location;
-    private EnumFacing frontFacing; // 0
+    protected ResourceLocation location;
+    protected EnumFacing frontFacing = EnumFacing.NORTH; // 0
+
+    public ComponentTileEntity() {
+        location = new ResourceLocation(Multiblocked.MODID, "error");
+    }
 
     public ComponentTileEntity(ResourceLocation location) {
         this.location = location;
     }
 
-    public ComponentTileEntity createNewTileEntity() {
-        try {
-            return getClass().getConstructor(ResourceLocation.class).newInstance(location);
-        } catch (Exception e) {
-            Multiblocked.LOGGER.error(e);
-        }
-        return new ComponentTileEntity(location);
-    }
+    public abstract ComponentTileEntity createNewTileEntity();
 
     public ResourceLocation getLocation() {
         return location;
@@ -72,11 +69,11 @@ public class ComponentTileEntity extends TileEntity {
     }
 
     public ItemStack getStackForm() {
-        return ItemStack.EMPTY;
+        return new ItemStack(MultiblockComponents.COMPONENT_BLOCKS.get(MultiblockComponents.REGISTRY.get(getLocation())), 1);
     }
 
     public List<AxisAlignedBB> getCollisionBoundingBox() {
-        return BlockComponent.EMPTY_COLLISION_BOX;
+        return Collections.singletonList(Block.FULL_BLOCK_AABB);
     }
 
     public EnumFacing getFrontFacing() {
@@ -91,6 +88,10 @@ public class ComponentTileEntity extends TileEntity {
             return true;
         }
         return false;
+    }
+
+    public IRenderer getRenderer() {
+        return null;
     }
 
     public boolean isValidFrontFacing(EnumFacing facing) {
@@ -132,10 +133,12 @@ public class ComponentTileEntity extends TileEntity {
     }
 
     public void writeInitialSyncData(PacketBuffer buf) {
+        buf.writeString(location.toString());
         buf.writeByte(this.frontFacing.getIndex());
     }
 
     public void receiveInitialSyncData(PacketBuffer buf) {
+        this.location = new ResourceLocation(buf.readString(Short.MAX_VALUE));
         this.frontFacing = EnumFacing.VALUES[buf.readByte()];
     }
 
@@ -147,14 +150,19 @@ public class ComponentTileEntity extends TileEntity {
     }
 
     @Override
-    public void deserializeNBT(@Nonnull NBTTagCompound nbt) {
-
+    public void readFromNBT(@Nonnull NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        this.location = compound.hasKey("loc") ? new ResourceLocation(compound.getString("loc")) : this.location;
+        this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
     }
 
     @Nonnull
     @Override
-    public NBTTagCompound serializeNBT() {
-        return new NBTTagCompound();
+    public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
+        super.writeToNBT(compound);
+        compound.setString("loc", location.toString());
+        compound.setByte("frontFacing", (byte) frontFacing.getIndex());
+        return compound;
     }
 
     @Override

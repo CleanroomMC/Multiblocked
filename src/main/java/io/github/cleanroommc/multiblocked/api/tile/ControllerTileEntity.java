@@ -10,19 +10,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import javax.annotation.Nonnull;
 
 public class ControllerTileEntity extends ComponentTileEntity{
-    public final MultiblockDefinition definition;
+    public MultiblockDefinition definition;
     public MultiblockState state;
     public BlockPattern pattern;
 
-    public ControllerTileEntity(ResourceLocation location, MultiblockDefinition definition) {
-        super(location);
+    public ControllerTileEntity() {
+
+    }
+
+    public ControllerTileEntity(MultiblockDefinition definition) {
+        super(definition.location);
         this.definition = definition;
     }
 
@@ -85,7 +88,7 @@ public class ControllerTileEntity extends ComponentTileEntity{
 
     @Override
     public ComponentTileEntity createNewTileEntity() {
-        return new ControllerTileEntity(getLocation(), definition);
+        return new ControllerTileEntity(definition);
     }
 
     @Override
@@ -93,7 +96,7 @@ public class ControllerTileEntity extends ComponentTileEntity{
         if (!world.isRemote) {
             if (state == null) state = new MultiblockState(world, pos);
             ItemStack held = player.getHeldItem(hand);
-            if (held.isItemEqual(definition.getCatalyst())) {
+            if (definition.catalyst == null || held.isItemEqual(definition.catalyst)) {
                 if (checkPattern()) { // formed
                     player.swingArm(hand);
                     ITextComponent formedMsg = new TextComponentTranslation("multiblocked.multiblock.formed", getLocalizedName());

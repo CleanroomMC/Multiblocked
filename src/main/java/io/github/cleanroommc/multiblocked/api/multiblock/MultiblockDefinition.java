@@ -5,6 +5,7 @@ import io.github.cleanroommc.multiblocked.api.multiblock.functions.IStructureFor
 import io.github.cleanroommc.multiblocked.api.multiblock.functions.IStructureInvalid;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * Definition of a multiblock, which define its structure, logic, recipe chain and so on.
  */
 public class MultiblockDefinition {
-    public final String unlocalizedName;
+    public final ResourceLocation location;
     public final IPatternSupplier patternSupplier;
     public IStructureFormed structureFormed;
     public IStructureInvalid structureInvalid;
@@ -21,13 +22,9 @@ public class MultiblockDefinition {
     public boolean consumeCatalyst;
     public List<MultiblockShapeInfo> designs;
 
-    public MultiblockDefinition(String unlocalizedName, IPatternSupplier patternSupplier) {
-        this.unlocalizedName = unlocalizedName;
+    public MultiblockDefinition(ResourceLocation location, IPatternSupplier patternSupplier) {
+        this.location = location;
         this.patternSupplier = patternSupplier;
-    }
-
-    public ItemStack getCatalyst() {
-        return catalyst == null ? ItemStack.EMPTY : catalyst;
     }
 
     public List<MultiblockShapeInfo> getDesigns() {

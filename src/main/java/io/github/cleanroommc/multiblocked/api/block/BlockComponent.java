@@ -7,6 +7,7 @@ import io.github.cleanroommc.multiblocked.client.model.SimpleStateMapper;
 import io.github.cleanroommc.multiblocked.util.Utils;
 import io.github.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -43,13 +44,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class BlockComponent extends Block implements IModelSupplier {
-    public static final ModelResourceLocation MODEL_LOCATION = new ModelResourceLocation(new ResourceLocation(Multiblocked.MODID, "ore_block"), "normal");
-    public static final List<AxisAlignedBB> EMPTY_COLLISION_BOX = Collections.emptyList();
+public class BlockComponent extends Block implements IModelSupplier, ITileEntityProvider {
+    public static final ModelResourceLocation MODEL_LOCATION = new ModelResourceLocation(new ResourceLocation(Multiblocked.MODID, "component_block"), "opaque");
     public static final PropertyBool OPAQUE = PropertyBool.create("opaque");
     public static final ComponentProperty COMPONENT_PROPERTY = new ComponentProperty();
     public final ComponentTileEntity component;
@@ -60,7 +59,7 @@ public class BlockComponent extends Block implements IModelSupplier {
         setSoundType(SoundType.METAL);
         setHardness(1.5F);
         setResistance(10.0F);
-        setTranslationKey("unnamed");
+        setTranslationKey("component_block");
         setDefaultState(getDefaultState().withProperty(OPAQUE, true));
         this.component = component;
     }
@@ -73,7 +72,7 @@ public class BlockComponent extends Block implements IModelSupplier {
     @Nonnull
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, OPAQUE);
+        return new BlockStateContainer.Builder(this).add(OPAQUE).add(COMPONENT_PROPERTY).build();
     }
 
     @Nonnull
@@ -114,7 +113,8 @@ public class BlockComponent extends Block implements IModelSupplier {
         ComponentTileEntity instance = getComponent(worldIn, pos);
         if (instance != null) {
             for (AxisAlignedBB boundingBox : instance.getCollisionBoundingBox()) {
-                if (boundingBox.intersects(entityBox)) collidingBoxes.add(boundingBox);
+                AxisAlignedBB offset = boundingBox.offset(pos);
+                if (offset.intersects(entityBox)) collidingBoxes.add(offset);
             }
         }
     }
@@ -190,12 +190,6 @@ public class BlockComponent extends Block implements IModelSupplier {
         }
     }
 
-    @Nullable
-    @Override
-    public ComponentTileEntity createTileEntity(@Nullable World world, @Nullable IBlockState state) {
-        return component.createNewTileEntity();
-    }
-
     @Override
     public boolean canRenderInLayer(@Nonnull IBlockState state, @Nonnull BlockRenderLayer layer) {
         return true;
@@ -245,6 +239,11 @@ public class BlockComponent extends Block implements IModelSupplier {
         for (IBlockState state : this.getBlockState().getValidStates()) {
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), this.getMetaFromState(state), MODEL_LOCATION);
         }
+    }
+
+    @Override
+    public TileEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
+        return component.createNewTileEntity();
     }
 
     private static class ComponentProperty implements IUnlistedProperty<ComponentTileEntity> {

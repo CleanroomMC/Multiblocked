@@ -2,12 +2,17 @@ package io.github.cleanroommc.multiblocked;
 
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
+import io.github.cleanroommc.multiblocked.api.multiblock.MultiblockDefinition;
+import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
+import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,6 +21,9 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.function.Function;
 
+import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.blocks;
+import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.states;
+
 @Mod.EventBusSubscriber(modid = Multiblocked.MODID)
 public class CommonProxy {
 
@@ -23,6 +31,16 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.initializeC2S();
         MultiblockedNetworking.initializeS2C();
+        MultiblockComponents.registerComponent(new ControllerTileEntity(new MultiblockDefinition(new ResourceLocation("multiblocked:test_block"), component -> {
+            return FactoryBlockPattern.start()
+                    .aisle("XXX", "XXX", "XXX")
+                    .aisle("XXX", "X#X", "XXX")
+                    .aisle("XXX", "XYX", "XXX")
+                    .where('X', states())
+                    .where('#', TraceabilityPredicate.AIR)
+                    .where('Y', blocks(MultiblockComponents.COMPONENT_BLOCKS.get(component)))
+                    .build();
+        })));
     }
 
     public void init() {

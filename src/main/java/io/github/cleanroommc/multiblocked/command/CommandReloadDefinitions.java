@@ -1,12 +1,11 @@
 package io.github.cleanroommc.multiblocked.command;
 
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import io.github.cleanroommc.multiblocked.api.framework.structure.Multiblock;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -14,46 +13,50 @@ import java.util.List;
 public class CommandReloadDefinitions implements ICommand {
 
     @Override
+    @Nonnull
     public String getName() {
         return "multiblocked";
     }
 
     @Override
-    public String getUsage(ICommandSender sender) {
+    @Nonnull
+    public String getUsage(@Nonnull ICommandSender sender) {
         return "multiblocked <reload>";
     }
 
     @Override
+    @Nonnull
     public List<String> getAliases() {
         return Collections.singletonList("reload");
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
         if (checkPermission(server, sender)) {
             if (args[0].equals("reload")) {
-                Multiblock.loadMultiblocks();
+                //TODO
             }
         }
     }
 
     @Override
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+    public boolean checkPermission(@Nonnull MinecraftServer server, ICommandSender sender) {
         return sender.canUseCommand(4, "multiblocked");
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+    @Nonnull
+    public List<String> getTabCompletions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args, @Nullable BlockPos targetPos) {
         return Collections.emptyList();
     }
 
     @Override
-    public boolean isUsernameIndex(String[] args, int index) {
+    public boolean isUsernameIndex(@Nonnull String[] args, int index) {
         return false;
     }
 
     @Override
-    public int compareTo(ICommand o) {
+    public int compareTo(@Nonnull ICommand o) {
         return 0;
     }
 

@@ -24,7 +24,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import java.util.function.Function;
 
 import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.blocks;
-import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.states;
 
 @Mod.EventBusSubscriber(modid = Multiblocked.MODID)
 public class CommonProxy {
@@ -43,6 +42,7 @@ public class CommonProxy {
                 .build());
         definition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
         definition.formedRenderer = new BlockStateRenderer(Blocks.GLASS.getDefaultState());
+        definition.isOpaqueCube = false;
         MultiblockComponents.registerComponent(definition);
     }
 

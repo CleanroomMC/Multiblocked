@@ -73,9 +73,12 @@ public class IModelRenderer implements IRenderer {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        if (blockModel != null) {
-            return blockModel.getParticleTexture();
+        if (blockModel == null) {
+            blockModel = ModelFactory.getModel(modelLocation).bake(
+                    TRSRTransformation.identity(),
+                    DefaultVertexFormats.BLOCK,
+                    location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
         }
-        return IRenderer.super.getParticleTexture();
+        return blockModel.getParticleTexture();
     }
 }

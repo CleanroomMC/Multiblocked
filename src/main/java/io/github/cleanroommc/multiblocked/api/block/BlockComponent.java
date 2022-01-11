@@ -15,10 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -44,11 +41,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,8 +52,6 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class BlockComponent extends Block implements IModelSupplier, ITileEntityProvider {
     public static final ModelResourceLocation MODEL_LOCATION = new ModelResourceLocation(new ResourceLocation(Multiblocked.MODID, "component_block"), "normal");
-    public static final PropertyBool OPAQUE = PropertyBool.create("opaque");
-    public static final ComponentProperty COMPONENT_PROPERTY = new ComponentProperty();
     public final ComponentDefinition definition;
 
     public BlockComponent(ComponentDefinition definition) {
@@ -69,30 +61,17 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         setHardness(1.5F);
         setResistance(10.0F);
         setTranslationKey("component_block");
-        setDefaultState(getDefaultState().withProperty(OPAQUE, true));
         this.definition = definition;
     }
 
     @Override
-    public boolean causesSuffocation(IBlockState state) {
-        return state.getValue(OPAQUE);
-    }
-
-    @Nonnull
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer.Builder(this).add(OPAQUE).add(COMPONENT_PROPERTY).build();
-    }
-
-    @Nonnull
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(OPAQUE, meta % 2 == 0);
+    public boolean causesSuffocation(@Nonnull IBlockState state) {
+        return definition.isOpaqueCube;
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(OPAQUE) ? 0 : 1;
+    public int getMetaFromState(@Nonnull IBlockState state) {
+        return definition.isOpaqueCube ? 0 : 1;
     }
 
     @Override
@@ -205,18 +184,18 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
-        return state.getValue(OPAQUE);
+    public boolean isOpaqueCube(@Nonnull IBlockState state) {
+        return definition == null || definition.isOpaqueCube;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
-        return state.getValue(OPAQUE);
+    public boolean isFullCube(@Nonnull IBlockState state) {
+        return definition.isOpaqueCube;
     }
 
     @Override
     public int getLightOpacity(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
-        return state.getValue(OPAQUE) ? 255 : 1;
+        return definition.isOpaqueCube ? 255 : 1;
     }
 
     @Override
@@ -227,12 +206,6 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Override
     public boolean canEntityDestroy(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull Entity entity) {
         return !(entity instanceof EntityWither || entity instanceof EntityWitherSkull);
-    }
-
-    @Override
-    @Nonnull
-    public IBlockState getExtendedState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
-        return ((IExtendedBlockState) state).withProperty(COMPONENT_PROPERTY, getComponent(world, pos));
     }
 
     @Override
@@ -296,25 +269,4 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         return definition.createNewTileEntity();
     }
 
-    private static class ComponentProperty implements IUnlistedProperty<ComponentTileEntity> {
-        @Override
-        public String getName() {
-            return "component";
-        }
-
-        @Override
-        public boolean isValid(ComponentTileEntity controller) {
-            return true;
-        }
-
-        @Override
-        public Class<ComponentTileEntity> getType() {
-            return ComponentTileEntity.class;
-        }
-
-        @Override
-        public String valueToString(ComponentTileEntity controller) {
-            return controller == null ? "null" : controller.toString();
-        }
-    }
 }

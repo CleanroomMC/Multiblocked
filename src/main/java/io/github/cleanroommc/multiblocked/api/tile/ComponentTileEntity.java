@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -92,6 +93,11 @@ public abstract class ComponentTileEntity extends TileEntity {
 
     public IRenderer getRenderer() {
         return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void registerRenderers(TextureMap textureMap) {
+        getRenderer().register(textureMap);
     }
 
     public boolean isValidFrontFacing(EnumFacing facing) {

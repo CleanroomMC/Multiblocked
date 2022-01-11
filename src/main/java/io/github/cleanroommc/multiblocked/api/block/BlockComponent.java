@@ -48,7 +48,7 @@ import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class BlockComponent extends Block implements IModelSupplier, ITileEntityProvider {
-    public static final ModelResourceLocation MODEL_LOCATION = new ModelResourceLocation(new ResourceLocation(Multiblocked.MODID, "component_block"), "opaque");
+    public static final ModelResourceLocation MODEL_LOCATION = new ModelResourceLocation(new ResourceLocation(Multiblocked.MODID, "component_block"), "normal");
     public static final PropertyBool OPAQUE = PropertyBool.create("opaque");
     public static final ComponentProperty COMPONENT_PROPERTY = new ComponentProperty();
     public final ComponentTileEntity component;
@@ -229,7 +229,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @SideOnly(Side.CLIENT)
     @Override
     public void onTextureStitch(TextureStitchEvent.Pre event) {
-
+        component.registerRenderers(event.getMap());
     }
 
     @SideOnly(Side.CLIENT)

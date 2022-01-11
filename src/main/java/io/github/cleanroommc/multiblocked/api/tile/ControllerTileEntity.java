@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked.api.tile;
 import io.github.cleanroommc.multiblocked.api.multiblock.MultiblockDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -41,6 +42,11 @@ public class ControllerTileEntity extends ComponentTileEntity{
 
     public boolean isFormed() {
         return state != null && state.isFormed();
+    }
+
+    @Override
+    public IRenderer getRenderer() {
+        return definition.controllerRenderer;
     }
 
     public void updateFormed() {

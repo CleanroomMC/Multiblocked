@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.client.model.modelfactories;
 
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
+import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.ModelFactory;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.block.state.IBlockState;
@@ -16,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -43,14 +45,16 @@ public class BlockComponentBakedModel implements IBakedModel {
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         List<BakedQuad> quads = new ArrayList<>();
         IRenderer renderer;
+        ComponentTileEntity component = null;
         if (state instanceof IExtendedBlockState) {
-            renderer = ((IExtendedBlockState)state).getValue(BlockComponent.COMPONENT_PROPERTY).getRenderer();
+            component = ((IExtendedBlockState)state).getValue(BlockComponent.COMPONENT_PROPERTY);
+            renderer = component.getRenderer();
         } else {
             renderer = FrameModelItemOverride.INSTANCE.renderer.get();
         }
         if (renderer != null) {
             particle.set(renderer.getParticleTexture());
-            return renderer.renderSide(side, MinecraftForgeClient.getRenderLayer());
+            return renderer.renderSide(component, side, MinecraftForgeClient.getRenderLayer(), rand);
         }
         return quads;
     }
@@ -79,7 +83,8 @@ public class BlockComponentBakedModel implements IBakedModel {
     @Override
     @Nonnull
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull ItemCameraTransforms.TransformType cameraTransformType) {
-        return Pair.of(this, ModelFactory.getBlockTransform(cameraTransformType).getMatrix());
+        TRSRTransformation transformation = ModelFactory.getBlockTransform(cameraTransformType);
+        return transformation == null ? IBakedModel.super.handlePerspective(cameraTransformType) : Pair.of(this, transformation.getMatrix());
     }
 
     @Override

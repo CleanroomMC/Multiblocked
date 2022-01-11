@@ -4,6 +4,7 @@ import io.github.cleanroommc.multiblocked.api.multiblock.functions.IPatternSuppl
 import io.github.cleanroommc.multiblocked.api.multiblock.functions.IStructureFormed;
 import io.github.cleanroommc.multiblocked.api.multiblock.functions.IStructureInvalid;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -18,6 +19,7 @@ public class MultiblockDefinition {
     public final IPatternSupplier patternSupplier;
     public IStructureFormed structureFormed;
     public IStructureInvalid structureInvalid;
+    public IRenderer controllerRenderer;
     public ItemStack catalyst;
     public boolean consumeCatalyst;
     public List<MultiblockShapeInfo> designs;

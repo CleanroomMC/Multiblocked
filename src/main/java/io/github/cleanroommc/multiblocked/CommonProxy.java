@@ -7,9 +7,11 @@ import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import io.github.cleanroommc.multiblocked.client.renderer.BlockStateRenderer;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
@@ -31,16 +33,16 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.initializeC2S();
         MultiblockedNetworking.initializeS2C();
-        MultiblockComponents.registerComponent(new ControllerTileEntity(new MultiblockDefinition(new ResourceLocation("multiblocked:test_block"), component -> {
-            return FactoryBlockPattern.start()
-                    .aisle("XXX", "XXX", "XXX")
-                    .aisle("XXX", "X#X", "XXX")
-                    .aisle("XXX", "XYX", "XXX")
-                    .where('X', states())
-                    .where('#', TraceabilityPredicate.AIR)
-                    .where('Y', blocks(MultiblockComponents.COMPONENT_BLOCKS.get(component)))
-                    .build();
-        })));
+        MultiblockDefinition definition = new MultiblockDefinition(new ResourceLocation("multiblocked:test_block"), component -> FactoryBlockPattern.start()
+                .aisle("XXX", "XXX", "XXX")
+                .aisle("XXX", "X#X", "XXX")
+                .aisle("XXX", "XYX", "XXX")
+                .where('X', states())
+                .where('#', TraceabilityPredicate.AIR)
+                .where('Y', blocks(MultiblockComponents.COMPONENT_BLOCKS.get(component)))
+                .build());
+        definition.controllerRenderer = new BlockStateRenderer(Blocks.GRASS.getDefaultState());
+        MultiblockComponents.registerComponent(new ControllerTileEntity(definition));
     }
 
     public void init() {

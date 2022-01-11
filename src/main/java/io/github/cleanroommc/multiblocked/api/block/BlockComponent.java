@@ -4,6 +4,7 @@ import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.IModelSupplier;
 import io.github.cleanroommc.multiblocked.client.model.SimpleStateMapper;
+import io.github.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import io.github.cleanroommc.multiblocked.util.Utils;
 import io.github.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.block.Block;
@@ -24,6 +25,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -224,6 +226,12 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Nonnull
     public IBlockState getExtendedState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
         return ((IExtendedBlockState) state).withProperty(COMPONENT_PROPERTY, getComponent(world, pos));
+    }
+
+    @Override
+    @Nonnull
+    public EnumBlockRenderType getRenderType(@Nonnull IBlockState state) {
+        return ComponentRenderer.COMPONENT_RENDER_TYPE;
     }
 
     @SideOnly(Side.CLIENT)

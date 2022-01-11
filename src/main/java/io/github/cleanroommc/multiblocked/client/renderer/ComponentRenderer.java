@@ -26,21 +26,27 @@ public class ComponentRenderer implements ICustomItemRenderer {
     public void renderItem(ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem() instanceof ItemComponent) {
             ComponentTileEntity blockComponent = ((ItemComponent) stack.getItem()).getComponent();
-            blockComponent.getRenderer().renderItem(stack);
+            IRenderer renderer = blockComponent.getRenderer();
+            if (renderer == null) return;
+            renderer.renderItem(stack);
         }
     }
 
     public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
         TileEntity tileEntity = blockAccess.getTileEntity(pos);
         if (tileEntity instanceof ComponentTileEntity) {
-            ((ComponentTileEntity) tileEntity).getRenderer().renderBlockDamage(state, pos, texture, blockAccess);
+            IRenderer renderer = ((ComponentTileEntity) tileEntity).getRenderer();
+            if (renderer == null) return;
+            renderer.renderBlockDamage(state, pos, texture, blockAccess);
         }
     }
 
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         TileEntity tileEntity = blockAccess.getTileEntity(pos);
         if (tileEntity instanceof ComponentTileEntity) {
-            return ((ComponentTileEntity) tileEntity).getRenderer().renderBlock(state, pos, blockAccess, buffer);
+            IRenderer renderer = ((ComponentTileEntity) tileEntity).getRenderer();
+            if (renderer == null) return false;
+            return renderer.renderBlock(state, pos, blockAccess, buffer);
         }
         return false;
     }

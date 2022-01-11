@@ -21,13 +21,17 @@ public class ControllerTileEntity extends ComponentTileEntity{
     public MultiblockState state;
     public BlockPattern pattern;
 
-    public ControllerTileEntity() {
-
-    }
+    public ControllerTileEntity() {}
 
     public ControllerTileEntity(MultiblockDefinition definition) {
         super(definition.location);
         this.definition = definition;
+    }
+
+    @Override
+    public void loadFromFather(ComponentTileEntity father) {
+        super.loadFromFather(father);
+        definition = ((ControllerTileEntity)father).definition;
     }
 
     public boolean checkPattern() {
@@ -46,7 +50,7 @@ public class ControllerTileEntity extends ComponentTileEntity{
 
     @Override
     public IRenderer getRenderer() {
-        return definition.controllerRenderer;
+        return definition == null ? null : definition.controllerRenderer;
     }
 
     public void updateFormed() {
@@ -90,11 +94,6 @@ public class ControllerTileEntity extends ComponentTileEntity{
     @Override
     public NBTTagCompound serializeNBT() {
         return super.serializeNBT();
-    }
-
-    @Override
-    public ComponentTileEntity createNewTileEntity() {
-        return new ControllerTileEntity(definition);
     }
 
     @Override

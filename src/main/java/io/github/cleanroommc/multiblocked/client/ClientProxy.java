@@ -39,7 +39,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onModelsBake(ModelBakeEvent event) {
+    public static void onModelsBake(ModelBakeEvent event) {
         event.getModelRegistry().putObject(BlockComponent.MODEL_LOCATION, ComponentRenderer.INSTANCE);
     }
 }

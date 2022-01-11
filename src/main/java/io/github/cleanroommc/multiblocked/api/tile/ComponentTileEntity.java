@@ -43,8 +43,8 @@ import java.util.function.Consumer;
  */
 public abstract class ComponentTileEntity extends TileEntity {
 
-    protected ResourceLocation location;
-    protected EnumFacing frontFacing = EnumFacing.NORTH; // 0
+    private ResourceLocation location;
+    private EnumFacing frontFacing = EnumFacing.NORTH; // 0
 
     public ComponentTileEntity() {
         location = new ResourceLocation(Multiblocked.MODID, "error");
@@ -54,7 +54,21 @@ public abstract class ComponentTileEntity extends TileEntity {
         this.location = location;
     }
 
-    public abstract ComponentTileEntity createNewTileEntity();
+    public void loadFromFather(ComponentTileEntity father) {
+        location = father.location;
+    }
+
+    public TileEntity createNewTileEntity() {
+        try {
+            ComponentTileEntity component = getClass().newInstance();
+            component.loadFromFather(this);
+            return component;
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public ResourceLocation getLocation() {
         return location;
@@ -158,6 +172,7 @@ public abstract class ComponentTileEntity extends TileEntity {
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
         this.location = compound.hasKey("loc") ? new ResourceLocation(compound.getString("loc")) : this.location;
+        loadFromFather(MultiblockComponents.REGISTRY.get(this.location));
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
     }
 
@@ -180,7 +195,6 @@ public abstract class ComponentTileEntity extends TileEntity {
     public <T> T getCapability(@Nullable Capability<T> capability, @Nullable EnumFacing facing) {
         return super.getCapability(capability, facing);
     }
-
 
     //************* data sync *************//
 

@@ -40,8 +40,8 @@ public class CommonProxy {
                 .where('#', TraceabilityPredicate.AIR)
                 .where('Y', component.selfPredicate())
                 .build());
-        definition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
-        definition.formedRenderer = new BlockStateRenderer(Blocks.GLASS.getDefaultState());
+        definition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
+        definition.baseRenderer = new BlockStateRenderer(Blocks.GLASS.getDefaultState());
         definition.isOpaqueCube = false;
         MultiblockComponents.registerComponent(definition);
     }

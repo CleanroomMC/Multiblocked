@@ -70,11 +70,6 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     }
 
     @Override
-    public int getMetaFromState(@Nonnull IBlockState state) {
-        return definition.isOpaqueCube ? 0 : 1;
-    }
-
-    @Override
     public boolean canCreatureSpawn(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull EntityLiving.SpawnPlacementType type) {
         return false;
     }
@@ -249,7 +244,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     public boolean addRunningEffects(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull Entity entity) {
         if (world.isRemote) {
             TextureAtlasSprite atlasSprite = getParticleTexture(world, pos);
-            if (atlasSprite == null) return false;
+            if (atlasSprite == null) return true;
             ParticleHandler.addBlockRunningEffects(state, world, pos, entity, atlasSprite);
         }
         return true;

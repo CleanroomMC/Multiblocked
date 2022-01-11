@@ -83,7 +83,8 @@ public class ParticleHandler {
         double posZ = entity.posZ + (Multiblocked.RNG.nextFloat() - 0.5) * entity.width;
         ParticleManager manager = Minecraft.getMinecraft().effectRenderer;
 
-        Particle particle = new CustomParticleDigging(world, posX, posY, posZ, -entity.motionX * 4.0, 1.5, -entity.motionZ * 4.0, state);
+        Particle particle = new CustomParticleDigging(world, posX, posY, posZ, -entity.motionX * 4.0, 1.5, -entity.motionZ * 4.0, state)
+                .setBlockPos(pos);
         particle.setParticleTexture(atlasSprite);
         manager.addEffect(particle);
     }

@@ -4,6 +4,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -22,6 +23,11 @@ public interface IRenderer {
 
     @SideOnly(Side.CLIENT)
     boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer);
+
+    @SideOnly(Side.CLIENT)
+    default void register(TextureMap map) {
+
+    }
 
     @SideOnly(Side.CLIENT)
     default TextureAtlasSprite getParticleTexture() {

@@ -1,0 +1,52 @@
+package io.github.cleanroommc.multiblocked.client.renderer;
+
+import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
+import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
+public class ComponentRenderer implements ICustomItemRenderer {
+    public static ComponentRenderer INSTANCE = new ComponentRenderer();
+    public static final EnumBlockRenderType COMPONENT_RENDER_TYPE;
+    static {
+        COMPONENT_RENDER_TYPE = EnumHelper.addEnum(EnumBlockRenderType.class, "component_renderer", new Class[0]);
+    }
+
+    @Override
+    public void renderItem(ItemStack stack) {
+        if (!stack.isEmpty() && stack.getItem() instanceof ItemComponent) {
+            ComponentTileEntity blockComponent = ((ItemComponent) stack.getItem()).getComponent();
+            blockComponent.getRenderer().renderItem(stack);
+        }
+    }
+
+    public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
+        TileEntity tileEntity = blockAccess.getTileEntity(pos);
+        if (tileEntity instanceof ComponentTileEntity) {
+            ((ComponentTileEntity) tileEntity).getRenderer().renderBlockDamage(state, pos, texture, blockAccess);
+        }
+    }
+
+    public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
+        TileEntity tileEntity = blockAccess.getTileEntity(pos);
+        if (tileEntity instanceof ComponentTileEntity) {
+            return ((ComponentTileEntity) tileEntity).getRenderer().renderBlock(state, pos, blockAccess, buffer);
+        }
+        return false;
+    }
+
+    @Override
+    public TextureAtlasSprite getParticleTexture() {
+        return null;
+    }
+}

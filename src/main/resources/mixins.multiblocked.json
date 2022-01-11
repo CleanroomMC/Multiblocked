@@ -9,5 +9,9 @@
     "NBTTagCompoundMapExposer",
     "NetHandlerPlayClientMixin",
     "WorldMixin"
+  ],
+  "client": [
+    "BlockRendererDispatcherMixin",
+    "RenderItemMixin"
   ]
 }

@@ -1,6 +1,5 @@
-package io.github.cleanroommc.multiblocked.client.custom;
+package io.github.cleanroommc.multiblocked.client.renderer;
 
-import com.sun.javafx.scene.transform.TransformUtils;
 import io.github.cleanroommc.multiblocked.client.model.ModelFactory;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -9,8 +8,6 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformT
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.model.PerspectiveMapWrapper;
-import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -31,8 +28,6 @@ public interface ICustomItemRenderer extends IBakedModel {
         return transformation == null ? IBakedModel.super.handlePerspective(cameraTransformType) : Pair.of(this, transformation.getMatrix());
     }
 
-    IModelState getTransforms();
-
     @Override
     @Nonnull
     default List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
@@ -48,5 +43,15 @@ public interface ICustomItemRenderer extends IBakedModel {
     @Nonnull
     default ItemOverrideList getOverrides() {
         return ItemOverrideList.NONE;
+    }
+
+    @Override
+    default boolean isAmbientOcclusion() {
+        return true;
+    }
+
+    @Override
+    default boolean isGui3d() {
+        return true;
     }
 }

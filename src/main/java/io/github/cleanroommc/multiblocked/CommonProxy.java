@@ -7,7 +7,7 @@ import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
-import io.github.cleanroommc.multiblocked.client.renderer.BlockStateRenderer;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;

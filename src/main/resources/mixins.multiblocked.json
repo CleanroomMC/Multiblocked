@@ -12,6 +12,7 @@
   ],
   "client": [
     "BlockRendererDispatcherMixin",
+    "MinecraftMixin",
     "RenderItemMixin"
   ]
 }

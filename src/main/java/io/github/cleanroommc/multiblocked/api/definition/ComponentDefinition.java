@@ -11,6 +11,7 @@ public abstract class ComponentDefinition {
     public final ResourceLocation location;
     public final Class<? extends ComponentTileEntity<?>> clazz;
     public IRenderer baseRenderer;
+    public IRenderer formedRenderer;
     public boolean isOpaqueCube;
 
     protected ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {

@@ -160,6 +160,7 @@ public class MultiblockState {
 
     public void deserialize(PacketBuffer buffer) {
         int size = buffer.readVarInt();
+        cache = new LongOpenHashSet();
         for (int i = 0; i < size; i++) {
             cache.add(buffer.readVarLong());
         }

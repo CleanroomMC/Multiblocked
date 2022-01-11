@@ -6,10 +6,12 @@ import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
@@ -32,14 +34,15 @@ public class CommonProxy {
         MultiblockedNetworking.initializeC2S();
         MultiblockedNetworking.initializeS2C();
         ControllerDefinition definition = new ControllerDefinition(new ResourceLocation("multiblocked:test_block"), component -> FactoryBlockPattern.start()
-                .aisle("XXX", "XXX", "XXX")
-                .aisle("XXX", "X#X", "XXX")
-                .aisle("XXX", "XYX", "XXX")
-                .where('X', states())
+                .aisle("XXX")
+                .aisle("X#X")
+                .aisle("XYX")
+                .where('X', blocks(Blocks.STONE))
                 .where('#', TraceabilityPredicate.AIR)
                 .where('Y', component.selfPredicate())
                 .build());
         definition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
+        definition.formedRenderer = new BlockStateRenderer(Blocks.GLASS.getDefaultState());
         MultiblockComponents.registerComponent(definition);
     }
 

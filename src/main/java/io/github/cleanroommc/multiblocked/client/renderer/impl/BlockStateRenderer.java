@@ -61,9 +61,10 @@ public class BlockStateRenderer implements IRenderer {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        if (itemModel != null) {
-            return itemModel.getParticleTexture();
+        if (itemModel == null) {
+            ItemStack renderItem = new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, state.getBlock().damageDropped(state));
+            itemModel = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(renderItem, null, null);
         }
-        return IRenderer.super.getParticleTexture();
+        return itemModel.getParticleTexture();
     }
 }

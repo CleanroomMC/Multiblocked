@@ -24,6 +24,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
@@ -151,6 +152,21 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             this.frontFacing = EnumFacing.VALUES[buf.readByte()];
             scheduleChunkForRenderUpdate();
         }
+    }
+
+    @Override
+    public final void deserializeNBT(@Nonnull NBTTagCompound nbt) {
+        super.deserializeNBT(nbt);
+    }
+
+    @Override
+    public final NBTTagCompound serializeNBT() {
+        return super.serializeNBT();
+    }
+
+    @Override
+    protected final void setWorldCreate(@Nonnull World worldIn) {
+        setWorld(worldIn);
     }
 
     @Override

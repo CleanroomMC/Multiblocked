@@ -98,6 +98,9 @@ public class MultiblockWorldSavedData extends WorldSavedData {
             MultiblockState state = new MultiblockState(worldRef.get(), pos);
             state.deserialize(new PacketBuffer(Unpooled.copiedBuffer(nbt.getByteArray(key))));
             this.mapping.put(pos, state);
+            for (BlockPos blockPos : state.getCache()) {
+                chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c->new HashSet<>()).add(state);
+            }
         }
     }
 

@@ -40,14 +40,31 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     }
 
     public void onStructureFormed() {
+        writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
         if (definition.structureFormed != null) {
             definition.structureFormed.onStructureFormed(this);
         }
     }
 
     public void onStructureInvalid() {
+        writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
         if (definition.structureInvalid != null) {
             definition.structureInvalid.onStructureInvalid(this);
+        }
+    }
+
+    @Override
+    public void receiveCustomData(int dataId, PacketBuffer buf) {
+        if (dataId == -1) {
+            if (buf.readBoolean()) {
+                state = new MultiblockState(world, pos);
+            } else {
+                state = null;
+            }
+            scheduleChunkForRenderUpdate();
+        } else {
+            super.receiveCustomData(dataId, buf);
+
         }
     }
 
@@ -65,23 +82,33 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         } else {
             state = null;
         }
+        scheduleChunkForRenderUpdate();
     }
 
     @Override
-    public void deserializeNBT(@Nonnull NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void readFromNBT(@Nonnull NBTTagCompound compound) {
+        super.readFromNBT(compound);
         state = MultiblockWorldSavedData.getOrCreate(world).mapping.get(pos);
     }
 
     @Nonnull
     @Override
-    public NBTTagCompound serializeNBT() {
-        return super.serializeNBT();
+    public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
+        return super.writeToNBT(compound);
+    }
+
+    @Override
+    public IRenderer getRenderer() {
+        if (isFormed()) {
+            return definition.formedRenderer == null ? definition.baseRenderer : definition.formedRenderer;
+        }
+        return definition.baseRenderer;
     }
 
     @Override
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
+            if (isFormed()) return false;
             if (state == null) state = new MultiblockState(world, pos);
             ItemStack held = player.getHeldItem(hand);
             if (definition.catalyst == null || held.isItemEqual(definition.catalyst)) {
@@ -94,6 +121,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                     }
                     onStructureFormed();
                     MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
+                    return true;
                 }
             }
         }

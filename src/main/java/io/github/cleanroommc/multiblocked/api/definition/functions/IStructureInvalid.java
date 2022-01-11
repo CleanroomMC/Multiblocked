@@ -1,4 +1,4 @@
-package io.github.cleanroommc.multiblocked.api.multiblock.functions;
+package io.github.cleanroommc.multiblocked.api.definition.functions;
 
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 

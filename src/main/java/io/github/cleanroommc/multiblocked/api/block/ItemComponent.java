@@ -1,6 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.block;
 
-import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,26 +23,25 @@ public class ItemComponent extends ItemBlock {
         setHasSubtypes(true);
     }
 
-    public ComponentTileEntity getComponent() {
-        return ((BlockComponent)block).component;
+    public ComponentDefinition getDefinition() {
+        return ((BlockComponent)block).definition;
     }
 
     @Nonnull
     @Override
     public String getTranslationKey(@Nonnull ItemStack stack) {
-        return getComponent().getLocation().getPath();
+        return getDefinition().location.getPath();
     }
 
     @Override
     public boolean placeBlockAt(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side, float hitX, float hitY, float hitZ, IBlockState newState) {
-        return super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState.withProperty(BlockComponent.OPAQUE, getComponent().isOpaqueCube()));
+        return super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState.withProperty(BlockComponent.OPAQUE, getDefinition().isOpaqueCube));
     }
 
     @Nullable
     @Override
     public String getCreatorModId(@Nonnull ItemStack itemStack) {
-        ComponentTileEntity component = getComponent();
-        return component.getLocation().getNamespace();
+        return getDefinition().location.getNamespace();
     }
 
     @Override

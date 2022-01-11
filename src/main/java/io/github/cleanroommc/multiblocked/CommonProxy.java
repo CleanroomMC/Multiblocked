@@ -2,11 +2,10 @@ package io.github.cleanroommc.multiblocked;
 
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
-import io.github.cleanroommc.multiblocked.api.multiblock.MultiblockDefinition;
+import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
-import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
@@ -33,16 +32,16 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.initializeC2S();
         MultiblockedNetworking.initializeS2C();
-        MultiblockDefinition definition = new MultiblockDefinition(new ResourceLocation("multiblocked:test_block"), component -> FactoryBlockPattern.start()
+        ControllerDefinition definition = new ControllerDefinition(new ResourceLocation("multiblocked:test_block"), component -> FactoryBlockPattern.start()
                 .aisle("XXX", "XXX", "XXX")
                 .aisle("XXX", "X#X", "XXX")
                 .aisle("XXX", "XYX", "XXX")
                 .where('X', states())
                 .where('#', TraceabilityPredicate.AIR)
-                .where('Y', blocks(MultiblockComponents.COMPONENT_BLOCKS.get(component)))
+                .where('Y', blocks(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(component.getLocation())))
                 .build());
-        definition.controllerRenderer = new BlockStateRenderer(Blocks.GRASS.getDefaultState());
-        MultiblockComponents.registerComponent(new ControllerTileEntity(definition));
+        definition.baseRenderer = new BlockStateRenderer(Blocks.GRASS.getDefaultState());
+        MultiblockComponents.registerComponent(definition);
     }
 
     public void init() {
@@ -56,14 +55,15 @@ public class CommonProxy {
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         IForgeRegistry<Block> registry = event.getRegistry();
-        MultiblockComponents.COMPONENT_BLOCKS.values().forEach(registry::register);
+        MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.values().forEach(registry::register);
         MultiblockComponents.registerTileEntity();
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
-        for (BlockComponent block : MultiblockComponents.COMPONENT_BLOCKS.values()) {
+        for (BlockComponent block : MultiblockComponents.COMPONENT_BLOCKS_REGISTRY
+                .values()) {
             registry.register(createItemBlock(block, ItemComponent::new));
         }
     }

@@ -1,6 +1,8 @@
 package io.github.cleanroommc.multiblocked.api.block;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
+import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.IModelSupplier;
 import io.github.cleanroommc.multiblocked.client.model.SimpleStateMapper;
@@ -36,7 +38,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
@@ -53,9 +54,9 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     public static final ModelResourceLocation MODEL_LOCATION = new ModelResourceLocation(new ResourceLocation(Multiblocked.MODID, "component_block"), "normal");
     public static final PropertyBool OPAQUE = PropertyBool.create("opaque");
     public static final ComponentProperty COMPONENT_PROPERTY = new ComponentProperty();
-    public final ComponentTileEntity component;
+    public final ComponentDefinition definition;
 
-    public BlockComponent(ComponentTileEntity component) {
+    public BlockComponent(ComponentDefinition definition) {
         super(Material.IRON);
         setCreativeTab(Multiblocked.CREATIVE_TAB);
         setSoundType(SoundType.METAL);
@@ -63,7 +64,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         setResistance(10.0F);
         setTranslationKey("component_block");
         setDefaultState(getDefaultState().withProperty(OPAQUE, true));
-        this.component = component;
+        this.definition = definition;
     }
 
     @Override
@@ -93,9 +94,9 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         return false;
     }
 
-    public static ComponentTileEntity getComponent(IBlockAccess blockAccess, BlockPos pos) {
+    public ComponentTileEntity<?> getComponent(IBlockAccess blockAccess, BlockPos pos) {
         TileEntity instance = blockAccess.getTileEntity(pos);
-        return instance instanceof ComponentTileEntity ? ((ComponentTileEntity) instance) : null;
+        return instance instanceof ComponentTileEntity<?> ? ((ComponentTileEntity<?>) instance) : null;
     }
 
     @Override
@@ -106,13 +107,13 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Nonnull
     @Override
     public ItemStack getPickBlock(@Nonnull IBlockState state, @Nonnull RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
-        ComponentTileEntity instance = getComponent(world, pos);
+        ComponentTileEntity<?> instance = getComponent(world, pos);
         return instance == null ? ItemStack.EMPTY : instance.getStackForm();
     }
 
     @Override
     public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
-        ComponentTileEntity instance = getComponent(worldIn, pos);
+        ComponentTileEntity<?> instance = getComponent(worldIn, pos);
         if (instance != null) {
             for (AxisAlignedBB boundingBox : instance.getCollisionBoundingBox()) {
                 AxisAlignedBB offset = boundingBox.offset(pos);
@@ -124,7 +125,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Nullable
     @Override
     public RayTraceResult collisionRayTrace(@Nonnull IBlockState blockState, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
-        ComponentTileEntity instance = getComponent(worldIn, pos);
+        ComponentTileEntity<?> instance = getComponent(worldIn, pos);
         if (instance != null) {
             return Utils.rayTraceClosest(pos, new Vector3(start), new Vector3(end), instance.getCollisionBoundingBox());
         }
@@ -133,14 +134,14 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public boolean rotateBlock(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing axis) {
-        ComponentTileEntity instance = getComponent(world, pos);
+        ComponentTileEntity<?> instance = getComponent(world, pos);
         return instance != null && instance.setFrontFacing(axis);
     }
 
     @Nullable
     @Override
     public EnumFacing[] getValidRotations(@Nonnull World world, @Nonnull BlockPos pos) {
-        ComponentTileEntity instance = getComponent(world, pos);
+        ComponentTileEntity<?> instance = getComponent(world, pos);
         return instance == null ? null : Arrays.stream(EnumFacing.VALUES)
                 .filter(instance::isValidFrontFacing)
                 .toArray(EnumFacing[]::new);
@@ -148,20 +149,20 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public void getDrops(@Nonnull NonNullList<ItemStack> drops, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
-        ComponentTileEntity instance = getComponent(world, pos);
+        ComponentTileEntity<?> instance = getComponent(world, pos);
         if (instance == null) return;
         instance.getDrops(drops, harvesters.get());
     }
 
     @Override
     public boolean onBlockActivated(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityPlayer playerIn, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
-        ComponentTileEntity instance = getComponent(worldIn, pos);
+        ComponentTileEntity<?> instance = getComponent(worldIn, pos);
         return instance != null && instance.onRightClick(playerIn, hand, facing, hitX, hitY, hitZ);
     }
 
     @Override
     public void onBlockClicked(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull EntityPlayer playerIn) {
-        ComponentTileEntity instance = getComponent(worldIn, pos);
+        ComponentTileEntity<?> instance = getComponent(worldIn, pos);
         if (instance != null) {
             instance.onLeftClick(playerIn);
         }
@@ -169,7 +170,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public boolean canConnectRedstone(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nullable EnumFacing side) {
-        ComponentTileEntity instance = getComponent(world, pos);
+        ComponentTileEntity<?> instance = getComponent(world, pos);
         return instance != null && instance.canConnectRedstone(side == null ? null : side.getOpposite());
     }
 
@@ -180,13 +181,13 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public int getWeakPower(@Nonnull IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos pos, @Nonnull EnumFacing side) {
-        ComponentTileEntity instance = getComponent(blockAccess, pos);
+        ComponentTileEntity<?> instance = getComponent(blockAccess, pos);
         return instance == null ? 0 : instance.getOutputRedstoneSignal(side.getOpposite());
     }
 
     @Override
     public void neighborChanged(@Nonnull IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos) {
-        ComponentTileEntity instance = getComponent(worldIn, pos);
+        ComponentTileEntity<?> instance = getComponent(worldIn, pos);
         if (instance != null) {
             instance.onNeighborChanged();
         }
@@ -214,7 +215,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public void getSubBlocks(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-        items.add(component.getStackForm());
+        items.add(new ItemStack(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location), 1));
     }
 
     @Override
@@ -233,13 +234,6 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     public EnumBlockRenderType getRenderType(@Nonnull IBlockState state) {
         return ComponentRenderer.COMPONENT_RENDER_TYPE;
     }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void onTextureStitch(TextureStitchEvent.Pre event) {
-        component.registerRenderers(event.getMap());
-    }
-
     @SideOnly(Side.CLIENT)
     @Override
     public void onModelRegister() {
@@ -251,7 +245,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public TileEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
-        return component.createNewTileEntity();
+        return definition.createNewTileEntity();
     }
 
     private static class ComponentProperty implements IUnlistedProperty<ComponentTileEntity> {

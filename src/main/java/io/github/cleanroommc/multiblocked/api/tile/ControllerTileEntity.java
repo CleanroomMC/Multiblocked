@@ -1,6 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.tile;
 
-import io.github.cleanroommc.multiblocked.api.multiblock.MultiblockDefinition;
+import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
@@ -16,23 +16,11 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 import javax.annotation.Nonnull;
 
-public class ControllerTileEntity extends ComponentTileEntity{
-    public MultiblockDefinition definition;
+public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
     public MultiblockState state;
     public BlockPattern pattern;
 
     public ControllerTileEntity() {}
-
-    public ControllerTileEntity(MultiblockDefinition definition) {
-        super(definition.location);
-        this.definition = definition;
-    }
-
-    @Override
-    public void loadFromFather(ComponentTileEntity father) {
-        super.loadFromFather(father);
-        definition = ((ControllerTileEntity)father).definition;
-    }
 
     public boolean checkPattern() {
         if (pattern == null) initPattern();
@@ -46,11 +34,6 @@ public class ControllerTileEntity extends ComponentTileEntity{
 
     public boolean isFormed() {
         return state != null && state.isFormed();
-    }
-
-    @Override
-    public IRenderer getRenderer() {
-        return definition == null ? null : definition.controllerRenderer;
     }
 
     public void updateFormed() {

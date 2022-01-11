@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked.client.renderer;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
 public class ComponentRenderer implements ICustomItemRenderer {
@@ -25,8 +28,7 @@ public class ComponentRenderer implements ICustomItemRenderer {
     @Override
     public void renderItem(ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem() instanceof ItemComponent) {
-            ComponentTileEntity blockComponent = ((ItemComponent) stack.getItem()).getComponent();
-            IRenderer renderer = blockComponent.getRenderer();
+            IRenderer renderer = ((ItemComponent) stack.getItem()).getDefinition().getRenderer();
             if (renderer == null) return;
             renderer.renderItem(stack);
         }
@@ -35,7 +37,7 @@ public class ComponentRenderer implements ICustomItemRenderer {
     public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
         TileEntity tileEntity = blockAccess.getTileEntity(pos);
         if (tileEntity instanceof ComponentTileEntity) {
-            IRenderer renderer = ((ComponentTileEntity) tileEntity).getRenderer();
+            IRenderer renderer = ((ComponentTileEntity<?>) tileEntity).getRenderer();
             if (renderer == null) return;
             renderer.renderBlockDamage(state, pos, texture, blockAccess);
         }
@@ -44,7 +46,7 @@ public class ComponentRenderer implements ICustomItemRenderer {
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         TileEntity tileEntity = blockAccess.getTileEntity(pos);
         if (tileEntity instanceof ComponentTileEntity) {
-            IRenderer renderer = ((ComponentTileEntity) tileEntity).getRenderer();
+            IRenderer renderer = ((ComponentTileEntity<?>) tileEntity).getRenderer();
             if (renderer == null) return false;
             return renderer.renderBlock(state, pos, blockAccess, buffer);
         }
@@ -52,7 +54,8 @@ public class ComponentRenderer implements ICustomItemRenderer {
     }
 
     @Override
+    @Nonnull
     public TextureAtlasSprite getParticleTexture() {
-        return null;
+        return Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
     }
 }

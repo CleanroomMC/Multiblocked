@@ -2,33 +2,30 @@ package io.github.cleanroommc.multiblocked.api.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
-import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Map;
-
 public class MultiblockComponents {
-    public static final BiMap<ResourceLocation, ComponentTileEntity> REGISTRY = HashBiMap.create();
-    public static final Map<ComponentTileEntity, BlockComponent> COMPONENT_BLOCKS = Maps.newHashMap();
+    public static final BiMap<ResourceLocation, ComponentDefinition> DEFINITION_REGISTRY = HashBiMap.create();
+    public static final BiMap<ResourceLocation, BlockComponent> COMPONENT_BLOCKS_REGISTRY = HashBiMap.create();
 
-    public static void registerComponent(ComponentTileEntity component) {
-        REGISTRY.put(component.getLocation(), component);
-        COMPONENT_BLOCKS.computeIfAbsent(component, BlockComponent::new).setRegistryName(component.getUnlocalizedName());
+    public static void registerComponent(ComponentDefinition definition) {
+        DEFINITION_REGISTRY.put(definition.location, definition);
+        COMPONENT_BLOCKS_REGISTRY.computeIfAbsent(definition.location, loc -> new BlockComponent(definition)).setRegistryName(definition.location);
     }
 
     public static void registerTileEntity() {
-        for (ComponentTileEntity component : REGISTRY.values()) {
-            GameRegistry.registerTileEntity(component.getClass(), component.getLocation());
+        for (ComponentDefinition definition : DEFINITION_REGISTRY.values()) {
+            GameRegistry.registerTileEntity(definition.clazz, definition.location);
         }
     }
 
     @SideOnly(Side.CLIENT)
     public static void registerModels() {
-        COMPONENT_BLOCKS.values().forEach(BlockComponent::onModelRegister);
+        COMPONENT_BLOCKS_REGISTRY.values().forEach(BlockComponent::onModelRegister);
     }
 }

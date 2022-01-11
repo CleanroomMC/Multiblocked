@@ -1,6 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.tile;
 
-import io.github.cleanroommc.multiblocked.Multiblocked;
+import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.netty.buffer.ByteBuf;
@@ -41,41 +41,23 @@ import java.util.function.Consumer;
  *
  * This isn't going to be in-world. But the parent MultiblockInstance would.
  */
-public abstract class ComponentTileEntity extends TileEntity {
+@SuppressWarnings("unchecked")
+public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity {
 
-    private ResourceLocation location;
+    protected T definition;
+
     private EnumFacing frontFacing = EnumFacing.NORTH; // 0
 
-    public ComponentTileEntity() {
-        location = new ResourceLocation(Multiblocked.MODID, "error");
+    public final void setDefinition(ComponentDefinition definition) {
+        this.definition = (T) definition;
     }
-
-    public ComponentTileEntity(ResourceLocation location) {
-        this.location = location;
-    }
-
-    public void loadFromFather(ComponentTileEntity father) {
-        location = father.location;
-    }
-
-    public TileEntity createNewTileEntity() {
-        try {
-            ComponentTileEntity component = getClass().newInstance();
-            component.loadFromFather(this);
-            return component;
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 
     public ResourceLocation getLocation() {
-        return location;
+        return definition.location;
     }
 
     public String getUnlocalizedName() {
-        return location.getPath();
+        return getLocation().getPath();
     }
 
     @SideOnly(Side.CLIENT)
@@ -84,7 +66,7 @@ public abstract class ComponentTileEntity extends TileEntity {
     }
 
     public ItemStack getStackForm() {
-        return new ItemStack(MultiblockComponents.COMPONENT_BLOCKS.get(MultiblockComponents.REGISTRY.get(getLocation())), 1);
+        return new ItemStack(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(getLocation()), 1);
     }
 
     public List<AxisAlignedBB> getCollisionBoundingBox() {
@@ -106,7 +88,7 @@ public abstract class ComponentTileEntity extends TileEntity {
     }
 
     public IRenderer getRenderer() {
-        return null;
+        return definition.baseRenderer;
     }
 
     @SideOnly(Side.CLIENT)
@@ -152,12 +134,12 @@ public abstract class ComponentTileEntity extends TileEntity {
     }
 
     public void writeInitialSyncData(PacketBuffer buf) {
-        buf.writeString(location.toString());
+        buf.writeString(getLocation().toString());
         buf.writeByte(this.frontFacing.getIndex());
     }
 
     public void receiveInitialSyncData(PacketBuffer buf) {
-        this.location = new ResourceLocation(buf.readString(Short.MAX_VALUE));
+        setDefinition(MultiblockComponents.DEFINITION_REGISTRY.get(new ResourceLocation(buf.readString(Short.MAX_VALUE))));
         this.frontFacing = EnumFacing.VALUES[buf.readByte()];
     }
 
@@ -171,8 +153,7 @@ public abstract class ComponentTileEntity extends TileEntity {
     @Override
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
-        this.location = compound.hasKey("loc") ? new ResourceLocation(compound.getString("loc")) : this.location;
-        loadFromFather(MultiblockComponents.REGISTRY.get(this.location));
+        setDefinition(MultiblockComponents.DEFINITION_REGISTRY.get(new ResourceLocation(compound.getString("loc"))));
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
     }
 
@@ -180,7 +161,7 @@ public abstract class ComponentTileEntity extends TileEntity {
     @Override
     public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setString("loc", location.toString());
+        compound.setString("loc", definition.location.toString());
         compound.setByte("frontFacing", (byte) frontFacing.getIndex());
         return compound;
     }

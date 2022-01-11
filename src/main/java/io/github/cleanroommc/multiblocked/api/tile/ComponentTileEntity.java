@@ -97,7 +97,6 @@ public abstract class ComponentTileEntity extends TileEntity {
 
     @SideOnly(Side.CLIENT)
     public void registerRenderers(TextureMap textureMap) {
-        getRenderer().register(textureMap);
     }
 
     public boolean isValidFrontFacing(EnumFacing facing) {

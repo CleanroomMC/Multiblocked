@@ -23,6 +23,7 @@ public class BlockRendererDispatcherMixin {
     private void injectRenderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess, CallbackInfo ci) {
         if (state.getRenderType() == ComponentRenderer.COMPONENT_RENDER_TYPE) {
             ComponentRenderer.INSTANCE.renderBlockDamage(state, pos, texture, blockAccess);
+            ci.cancel();
         }
     }
 
@@ -40,5 +41,5 @@ public class BlockRendererDispatcherMixin {
             }
         }
     }
-    
+
 }

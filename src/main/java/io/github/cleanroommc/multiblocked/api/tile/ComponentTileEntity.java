@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.tile;
 
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
+import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.netty.buffer.ByteBuf;
@@ -35,6 +36,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+
+import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.blocks;
 
 /**
  * A TileEntity that defies everything a TileEntity represents.
@@ -175,6 +178,10 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @Override
     public <T> T getCapability(@Nullable Capability<T> capability, @Nullable EnumFacing facing) {
         return super.getCapability(capability, facing);
+    }
+
+    public TraceabilityPredicate selfPredicate() {
+        return blocks(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(getLocation())).setCenter();
     }
 
     //************* data sync *************//

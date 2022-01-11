@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
@@ -68,5 +69,13 @@ public class IModelRenderer implements IRenderer {
         for (ResourceLocation texture : model.getTextures()) {
             map.registerSprite(texture);
         }
+    }
+
+    @Override
+    public TextureAtlasSprite getParticleTexture() {
+        if (blockModel != null) {
+            return blockModel.getParticleTexture();
+        }
+        return IRenderer.super.getParticleTexture();
     }
 }

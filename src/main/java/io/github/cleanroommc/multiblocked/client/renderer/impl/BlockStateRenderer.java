@@ -59,4 +59,11 @@ public class BlockStateRenderer implements IRenderer {
         return false;
     }
 
+    @Override
+    public TextureAtlasSprite getParticleTexture() {
+        if (itemModel != null) {
+            return itemModel.getParticleTexture();
+        }
+        return IRenderer.super.getParticleTexture();
+    }
 }

@@ -15,6 +15,8 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Random;
+
 @Mod(modid = Multiblocked.MODID, name = Multiblocked.NAME, version = Multiblocked.VERSION)
 public class Multiblocked {
 
@@ -22,6 +24,7 @@ public class Multiblocked {
     public static final String NAME = "Multiblock'd";
     public static final String VERSION = "1.0";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
+    public static final Random RNG = new Random();
 
     @SidedProxy(modId = MODID, clientSide = "io.github.cleanroommc.multiblocked.client.ClientProxy", serverSide = "io.github.cleanroommc.multiblocked.CommonProxy")
     public static CommonProxy proxy;

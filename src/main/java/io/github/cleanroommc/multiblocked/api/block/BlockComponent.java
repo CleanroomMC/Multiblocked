@@ -6,7 +6,9 @@ import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.IModelSupplier;
 import io.github.cleanroommc.multiblocked.client.model.SimpleStateMapper;
+import io.github.cleanroommc.multiblocked.client.particle.ParticleHandler;
 import io.github.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.util.Utils;
 import io.github.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.block.Block;
@@ -16,7 +18,10 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -43,6 +48,7 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -234,6 +240,48 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     public EnumBlockRenderType getRenderType(@Nonnull IBlockState state) {
         return ComponentRenderer.COMPONENT_RENDER_TYPE;
     }
+
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getParticleTexture(World world, BlockPos blockPos) {
+        ComponentTileEntity<?> tileEntity = getComponent(world, blockPos);
+        if (tileEntity != null) {
+            IRenderer renderer = tileEntity.getRenderer();
+            if (renderer != null) {
+                return renderer.getParticleTexture();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean addHitEffects(@Nonnull IBlockState state, @Nonnull World worldObj, RayTraceResult target, @Nonnull ParticleManager manager) {
+        TextureAtlasSprite atlasSprite = getParticleTexture(worldObj, target.getBlockPos());
+        if (atlasSprite == null) return false;
+        ParticleHandler.addHitEffects(state, worldObj, target, manager, atlasSprite);
+        return true;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean addDestroyEffects(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull ParticleManager manager) {
+        TextureAtlasSprite atlasSprite = getParticleTexture(world, pos);
+        if (atlasSprite == null) return false;
+        ParticleHandler.addBlockDestroyEffects(world.getBlockState(pos), world, pos, manager, atlasSprite);
+        return true;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean addRunningEffects(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull Entity entity) {
+        if (world.isRemote) {
+            TextureAtlasSprite atlasSprite = getParticleTexture(world, pos);
+            if (atlasSprite == null) return false;
+            ParticleHandler.addBlockRunningEffects(state, world, pos, entity, atlasSprite);
+        }
+        return true;
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void onModelRegister() {

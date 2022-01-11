@@ -6,12 +6,10 @@ import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
-import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
@@ -39,7 +37,7 @@ public class CommonProxy {
                 .aisle("XXX", "XYX", "XXX")
                 .where('X', states())
                 .where('#', TraceabilityPredicate.AIR)
-                .where('Y', blocks(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(component.getLocation())))
+                .where('Y', component.selfPredicate())
                 .build());
         definition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
         MultiblockComponents.registerComponent(definition);

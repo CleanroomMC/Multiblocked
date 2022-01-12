@@ -57,7 +57,7 @@ import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredica
 /**
  * A TileEntity that defies everything a TileEntity represents.
  *
- * This isn't going to be in-world. But the parent MultiblockInstance would.
+ * This isn't going to be in-world.
  */
 @SuppressWarnings("unchecked")
 @ZenClass("mods.multiblocked.tile.Component")
@@ -145,6 +145,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @ZenMethod
     public IRenderer getRenderer() {
+        if (isFormed()) {
+            return definition.formedRenderer == null ? definition.baseRenderer : definition.formedRenderer;
+        }
         return definition.baseRenderer;
     }
 

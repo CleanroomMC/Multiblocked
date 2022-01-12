@@ -9,7 +9,7 @@ import io.github.cleanroommc.multiblocked.client.model.SimpleStateMapper;
 import io.github.cleanroommc.multiblocked.client.particle.ParticleHandler;
 import io.github.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
-import io.github.cleanroommc.multiblocked.util.Utils;
+import io.github.cleanroommc.multiblocked.util.RayTraceUtils;
 import io.github.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -107,7 +107,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     public RayTraceResult collisionRayTrace(@Nonnull IBlockState blockState, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
         ComponentTileEntity<?> instance = getComponent(worldIn, pos);
         if (instance != null) {
-            return Utils.rayTraceClosest(pos, new Vector3(start), new Vector3(end), instance.getCollisionBoundingBox());
+            return RayTraceUtils.rayTraceClosest(pos, new Vector3(start), new Vector3(end), instance.getCollisionBoundingBox());
         }
         return this.rayTrace(pos, start, end, blockState.getBoundingBox(worldIn, pos));
     }

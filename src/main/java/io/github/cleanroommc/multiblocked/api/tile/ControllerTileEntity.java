@@ -20,6 +20,11 @@ import stanhebben.zenscript.annotations.ZenMethod;
 
 import javax.annotation.Nonnull;
 
+/**
+ * A TileEntity that defies all controller machines.
+ *
+ * Head of the multiblock.
+ */
 @ZenClass("mods.multiblocked.tile.Controller")
 @ZenRegister
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
@@ -105,14 +110,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
         return super.writeToNBT(compound);
-    }
-
-    @Override
-    public IRenderer getRenderer() {
-        if (isFormed()) {
-            return definition.formedRenderer == null ? definition.baseRenderer : definition.formedRenderer;
-        }
-        return definition.baseRenderer;
     }
 
     @Override

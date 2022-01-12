@@ -26,7 +26,6 @@ public class BlockStateRenderer implements IRenderer {
 
     public BlockStateRenderer(IBlockState state) {
         this.state = state;
-
     }
 
     @Override

@@ -18,7 +18,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
  */
 @ZenClass("mods.multiblocked.definition.ComponentDefinition")
 @ZenRegister
-public abstract class ComponentDefinition {
+public class ComponentDefinition {
     public final ResourceLocation location;
     public final Class<? extends ComponentTileEntity<?>> clazz;
     @ZenProperty

@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.client.renderer.impl;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.client.model.ModelFactory;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.block.state.IBlockState;
@@ -25,8 +26,7 @@ import static io.github.cleanroommc.multiblocked.client.ClientProxy.registerNeed
 
 public class IModelRenderer implements IRenderer {
 
-    private final ResourceLocation modelLocation;
-
+    public final ResourceLocation modelLocation;
     @SideOnly(Side.CLIENT)
     private IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
@@ -34,7 +34,9 @@ public class IModelRenderer implements IRenderer {
 
     public IModelRenderer(ResourceLocation modelLocation) {
         this.modelLocation = modelLocation;
-        registerNeeds.add(this);
+        if (Multiblocked.isClient()) {
+            registerNeeds.add(this);
+        }
     }
 
     @Override

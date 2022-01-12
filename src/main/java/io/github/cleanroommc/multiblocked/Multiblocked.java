@@ -4,6 +4,7 @@ import io.github.cleanroommc.multiblocked.command.CommandReloadDefinitions;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -36,6 +37,13 @@ public class Multiblocked {
             return new ItemStack(Items.DIAMOND);
         }
     };
+
+    private static Boolean isClient;
+
+    public static boolean isClient() {
+        if (isClient == null) isClient = FMLCommonHandler.instance().getSide().isClient();
+        return isClient;
+    }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {

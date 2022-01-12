@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -29,9 +30,9 @@ public class IModelRenderer implements IRenderer {
 
     public final ResourceLocation modelLocation;
     @SideOnly(Side.CLIENT)
-    private IBakedModel itemModel;
+    protected IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
-    private IBakedModel blockModel;
+    protected IBakedModel blockModel;
 
     public IModelRenderer(ResourceLocation modelLocation) {
         this.modelLocation = modelLocation;
@@ -40,12 +41,16 @@ public class IModelRenderer implements IRenderer {
         }
     }
 
+    protected IModel getModel() {
+        return ModelFactory.getModel(modelLocation);
+    }
+
     @Override
     public void renderItem(ItemStack stack) {
         RenderItem ri = Minecraft.getMinecraft().getRenderItem();
         GlStateManager.translate(0.5F, 0.5F, 0.5F);
         if (itemModel == null) {
-            itemModel = ModelFactory.getModel(modelLocation).bake(
+            itemModel = getModel().bake(
                     TRSRTransformation.identity(),
                     DefaultVertexFormats.ITEM,
                     location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
@@ -57,18 +62,27 @@ public class IModelRenderer implements IRenderer {
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
         if (blockModel == null) {
-            blockModel = new EmissiveBakedModel(ModelFactory.getModel(modelLocation).bake(
+            blockModel = new EmissiveBakedModel(getModel().bake(
                     TRSRTransformation.identity(),
                     DefaultVertexFormats.BLOCK,
                     location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString())));
         }
         blockModelRenderer.renderModel(blockAccess, blockModel, state, pos, buffer, true);
-        return false;
+        return true;
+    }
+
+    @Override
+    public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
+        if (blockModel != null) {
+            BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
+            IBakedModel bakedModel = net.minecraftforge.client.ForgeHooksClient.getDamageModel(blockModel, texture, state, blockAccess, pos);
+            blockModelRenderer.renderModel(blockAccess, bakedModel, state, pos, Tessellator.getInstance().getBuffer(), true);
+        }
     }
 
     @Override
     public void register(TextureMap map) {
-        IModel model = ModelFactory.getModel(modelLocation);
+        IModel model = getModel();
         for (ResourceLocation texture : model.getTextures()) {
             map.registerSprite(texture);
         }

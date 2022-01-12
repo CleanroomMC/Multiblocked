@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -87,26 +88,37 @@ public class SidedOverlayRenderer implements IRenderer {
     @Override
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         if (MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.CUTOUT_MIPPED) {
-            ComponentTileEntity<?> component = (ComponentTileEntity<?>) blockAccess.getTileEntity(pos);
             BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
-            assert component != null;
-            EnumFacing frontFacing = component.getFrontFacing();
-            IBakedModel bakedModel = model.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK,
-                    location -> {
-                        String[] strings = location.getPath().split("_");
-                        if (strings.length < 2) return void_texture;
-                        boolean isBot = strings[0].equals("overlay/bot");
-                        EnumFacing facing = EnumFacing.byName(strings[1]);
-                        RelativeDirection dir = RelativeDirection.getRealFacing(frontFacing, facing);
-                        if (isBot) {
-                            return sprites.getOrDefault(dir, particles);
-                        } else {
-                            return spritesLayer2.getOrDefault(dir, void_texture);
-                        }
-                    });
+            IBakedModel bakedModel = getBlockBakedModel(pos, blockAccess);
             blockModelRenderer.renderModel(blockAccess, new EmissiveBakedModel(bakedModel), state, pos, buffer, true);
         }
-        return false;
+        return true;
+    }
+
+    private IBakedModel getBlockBakedModel(BlockPos pos, IBlockAccess blockAccess) {
+        ComponentTileEntity<?> component = (ComponentTileEntity<?>) blockAccess.getTileEntity(pos);
+        assert component != null;
+        EnumFacing frontFacing = component.getFrontFacing();
+        return model.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK,
+                location -> {
+                    String[] strings = location.getPath().split("_");
+                    if (strings.length < 2) return void_texture;
+                    boolean isBot = strings[0].equals("overlay/bot");
+                    EnumFacing facing = EnumFacing.byName(strings[1]);
+                    RelativeDirection dir = RelativeDirection.getRealFacing(frontFacing, facing);
+                    if (isBot) {
+                        return sprites.getOrDefault(dir, particles);
+                    } else {
+                        return spritesLayer2.getOrDefault(dir, void_texture);
+                    }
+                });
+    }
+
+    @Override
+    public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
+        BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
+        IBakedModel bakedModel = net.minecraftforge.client.ForgeHooksClient.getDamageModel(getBlockBakedModel(pos, blockAccess), texture, state, blockAccess, pos);
+        blockModelRenderer.renderModel(blockAccess, bakedModel, state, pos, Tessellator.getInstance().getBuffer(), true);
     }
 
     @Override

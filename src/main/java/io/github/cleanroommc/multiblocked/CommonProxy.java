@@ -7,6 +7,7 @@ import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.SidedOverlayRenderer;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
@@ -42,7 +43,8 @@ public class CommonProxy {
                 .where('#', TraceabilityPredicate.AIR)
                 .where('Y', component.selfPredicate())
                 .build());
-        definition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
+//        definition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
+        definition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));
         Map<SidedOverlayRenderer.RelativeDirection, String> map = new EnumMap<>(SidedOverlayRenderer.RelativeDirection.class);
         map.put(SidedOverlayRenderer.RelativeDirection.UP, Multiblocked.MODID + ":test/u");
         map.put(SidedOverlayRenderer.RelativeDirection.DOWN, Multiblocked.MODID + ":test/d");

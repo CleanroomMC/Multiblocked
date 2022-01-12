@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked;
 
 import io.github.cleanroommc.multiblocked.command.CommandReloadDefinitions;
+import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -10,6 +11,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
@@ -21,7 +23,10 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@Mod(modid = Multiblocked.MODID, name = Multiblocked.NAME, version = Multiblocked.VERSION)
+@Mod(modid = Multiblocked.MODID,
+        name = Multiblocked.NAME,
+        version = Multiblocked.VERSION,
+        dependencies = "after:jei@[4.15.0,);after:crafttweaker")
 public class Multiblocked {
 
     public static final String MODID = "multiblocked";
@@ -65,7 +70,7 @@ public class Multiblocked {
         proxy.init();
     }
 
-    @Mod.EventHandler
+    @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit();
     }
@@ -79,5 +84,12 @@ public class Multiblocked {
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandReloadDefinitions());
+    }
+
+    @EventHandler
+    public void loadComplete(FMLLoadCompleteEvent event) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_JEI)) {
+            JeiPlugin.setupInputHandler();
+        }
     }
 }

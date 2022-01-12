@@ -55,10 +55,4 @@ public class ClientProxy extends CommonProxy {
         event.getModelRegistry().putObject(BlockComponent.MODEL_LOCATION, ComponentRenderer.INSTANCE);
     }
 
-    @Mod.EventHandler
-    public static void loadComplete(FMLLoadCompleteEvent event) {
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_JEI)) {
-            JeiPlugin.setupInputHandler();
-        }
-    }
 }

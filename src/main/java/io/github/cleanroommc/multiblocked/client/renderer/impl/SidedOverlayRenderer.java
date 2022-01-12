@@ -5,6 +5,7 @@ import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.ModelFactory;
+import io.github.cleanroommc.multiblocked.client.model.emissivemodel.EmissiveBakedModel;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.util.ResourceUtils;
 import net.minecraft.block.state.IBlockState;
@@ -44,7 +45,7 @@ public class SidedOverlayRenderer implements IRenderer {
     public Map<RelativeDirection, String> paths;
     @SideOnly(Side.CLIENT)
     private Map<RelativeDirection, TextureAtlasSprite> sprites;
-    private Map<RelativeDirection, TextureAtlasSprite> spritesEmissive;
+    private Map<RelativeDirection, TextureAtlasSprite> spritesLayer2;
     @SideOnly(Side.CLIENT)
     private TextureAtlasSprite particles;
     @SideOnly(Side.CLIENT)
@@ -56,7 +57,7 @@ public class SidedOverlayRenderer implements IRenderer {
         this.paths = paths;
         if (FMLCommonHandler.instance().getSide().isClient()) {
             this.sprites = new EnumMap<>(RelativeDirection.class);
-            this.spritesEmissive = new EnumMap<>(RelativeDirection.class);
+            this.spritesLayer2 = new EnumMap<>(RelativeDirection.class);
             registerNeeds.add(this);
         }
     }
@@ -76,7 +77,7 @@ public class SidedOverlayRenderer implements IRenderer {
                         if (isBot) {
                             return sprites.getOrDefault(dir, particles);
                         } else {
-                            return spritesEmissive.getOrDefault(dir, void_texture);
+                            return spritesLayer2.getOrDefault(dir, void_texture);
                         }
                     });
         }
@@ -100,10 +101,10 @@ public class SidedOverlayRenderer implements IRenderer {
                         if (isBot) {
                             return sprites.getOrDefault(dir, particles);
                         } else {
-                            return spritesEmissive.getOrDefault(dir, void_texture);
+                            return spritesLayer2.getOrDefault(dir, void_texture);
                         }
                     });
-            blockModelRenderer.renderModel(blockAccess, bakedModel, state, pos, buffer, true);
+            blockModelRenderer.renderModel(blockAccess, new EmissiveBakedModel(bakedModel), state, pos, buffer, true);
         }
         return false;
     }
@@ -120,9 +121,9 @@ public class SidedOverlayRenderer implements IRenderer {
                 particles = sprite;
             }
             sprites.put(dir, sprite);
-            ResourceLocation emissiveLocation = new ResourceLocation(path + "_emissive");
+            ResourceLocation emissiveLocation = new ResourceLocation(path + "_layer2");
             if (ResourceUtils.isTextureExist(emissiveLocation)) {
-                spritesEmissive.put(dir, map.registerSprite(emissiveLocation));
+                spritesLayer2.put(dir, map.registerSprite(emissiveLocation));
             }
         });
     }

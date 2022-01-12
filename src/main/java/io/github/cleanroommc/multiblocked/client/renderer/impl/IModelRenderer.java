@@ -2,6 +2,7 @@ package io.github.cleanroommc.multiblocked.client.renderer.impl;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.client.model.ModelFactory;
+import io.github.cleanroommc.multiblocked.client.model.emissivemodel.EmissiveBakedModel;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -56,10 +57,10 @@ public class IModelRenderer implements IRenderer {
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
         if (blockModel == null) {
-            blockModel = ModelFactory.getModel(modelLocation).bake(
+            blockModel = new EmissiveBakedModel(ModelFactory.getModel(modelLocation).bake(
                     TRSRTransformation.identity(),
                     DefaultVertexFormats.BLOCK,
-                    location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
+                    location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString())));
         }
         blockModelRenderer.renderModel(blockAccess, blockModel, state, pos, buffer, true);
         return false;

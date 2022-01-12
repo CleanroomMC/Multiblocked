@@ -70,7 +70,7 @@ public class BlockPattern {
         Map<TraceabilityPredicate.SimplePredicate, Integer> globalCount = worldState.globalCount;
         Map<TraceabilityPredicate.SimplePredicate, Integer> layerCount = worldState.layerCount;
         BlockPos centerPos = worldState.getController().getPos();
-        EnumFacing facing = worldState.getController().getFrontFacing();
+        EnumFacing facing = worldState.getController().getFrontFacing().getOpposite();
         //Checking aisles
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             //Checking repeatable slices

@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.tile;
 
+import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
@@ -13,25 +14,34 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenGetter;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 import javax.annotation.Nonnull;
 
+@ZenClass("mods.multiblocked.tile.Controller")
+@ZenRegister
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
     public MultiblockState state;
     public BlockPattern pattern;
 
     public ControllerTileEntity() {}
 
+    @ZenMethod
     public boolean checkPattern() {
         if (pattern == null) initPattern();
         if (state == null) return false;
         return pattern.checkPatternAt(state);
     }
 
+    @ZenMethod
     public void initPattern() {
         pattern = definition.patternSupplier.getPattern(this);
     }
 
+    @ZenMethod
+    @ZenGetter
     public boolean isFormed() {
         return state != null && state.isFormed();
     }

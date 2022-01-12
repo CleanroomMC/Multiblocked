@@ -131,7 +131,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     public void getDrops(@Nonnull NonNullList<ItemStack> drops, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
         ComponentTileEntity<?> instance = getComponent(world, pos);
         if (instance == null) return;
-        instance.getDrops(drops, harvesters.get());
+        instance.onDrops(drops, harvesters.get());
     }
 
     @Override

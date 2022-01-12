@@ -1,5 +1,14 @@
 package io.github.cleanroommc.multiblocked.api.tile;
 
+import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.api.util.IAxisAlignedBB;
+import crafttweaker.api.world.IFacing;
+import crafttweaker.mc1120.item.MCItemStack;
+import crafttweaker.mc1120.util.MCAxisAlignedBB;
+import crafttweaker.mc1120.world.MCFacing;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
@@ -8,7 +17,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -27,8 +35,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.Optional.Method;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenGetter;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +49,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.blocks;
 
@@ -46,6 +59,8 @@ import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredica
  * This isn't going to be in-world. But the parent MultiblockInstance would.
  */
 @SuppressWarnings("unchecked")
+@ZenClass("mods.multiblocked.tile.Component")
+@ZenRegister
 public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity {
 
     protected T definition;
@@ -60,11 +75,13 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return definition.location;
     }
 
+    @ZenMethod
     public String getUnlocalizedName() {
         return getLocation().getPath();
     }
 
     @SideOnly(Side.CLIENT)
+    @ZenMethod
     public String getLocalizedName() {
         return I18n.format(getUnlocalizedName());
     }
@@ -73,12 +90,34 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return new ItemStack(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(getLocation()), 1);
     }
 
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod("getStackForm")
+    public IItemStack stackForm(){
+        return new MCItemStack(getStackForm());
+    }
+
+    @ZenMethod
+    @ZenGetter
+    public abstract boolean isFormed();
+
     public List<AxisAlignedBB> getCollisionBoundingBox() {
         return Collections.singletonList(Block.FULL_BLOCK_AABB);
     }
 
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod("getCollisionBoundingBox")
+    public List<IAxisAlignedBB> collisionBoundingBox() {
+        return getCollisionBoundingBox().stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
+    }
+
     public EnumFacing getFrontFacing() {
         return frontFacing;
+    }
+
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod("getFrontFacing")
+    public IFacing frontFacing() {
+        return new MCFacing(getFrontFacing());
     }
 
     public boolean setFrontFacing(EnumFacing facing) {
@@ -91,19 +130,72 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return false;
     }
 
-    public IRenderer getRenderer() {
-        return definition.baseRenderer;
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod()
+    public boolean setFrontFacing(IFacing facing) {
+        return setFrontFacing(CraftTweakerMC.getFacing(facing));
     }
 
-    @SideOnly(Side.CLIENT)
-    public void registerRenderers(TextureMap textureMap) {
+    @ZenMethod
+    public IRenderer getRenderer() {
+        return definition.baseRenderer;
     }
 
     public boolean isValidFrontFacing(EnumFacing facing) {
         return true;
     }
 
-    public void getDrops(NonNullList<ItemStack> drops, EntityPlayer player) {
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod()
+    public boolean isValidFrontFacing(IFacing facing) {
+        return isValidFrontFacing(CraftTweakerMC.getFacing(facing));
+    }
+
+    public boolean canConnectRedstone(EnumFacing facing) {
+        return false;
+    }
+
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod()
+    public boolean canConnectRedstone(IFacing facing) {
+        return canConnectRedstone(CraftTweakerMC.getFacing(facing));
+    }
+
+    public int getOutputRedstoneSignal(EnumFacing facing) {
+        return 0;
+    }
+
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod()
+    public int getOutputRedstoneSignal(IFacing facing) {
+        return getOutputRedstoneSignal(CraftTweakerMC.getFacing(facing));
+    }
+
+    @ZenMethod
+    public boolean isOpaqueCube() {
+        return true;
+    }
+
+    @ZenMethod
+    @ZenGetter
+    public TraceabilityPredicate selfPredicate() {
+        return blocks(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(getLocation())).setCenter();
+    }
+
+    @ZenMethod
+    public void scheduleChunkForRenderUpdate() {
+        BlockPos pos = getPos();
+        getWorld().markBlockRangeForRenderUpdate(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
+    }
+
+    @ZenMethod
+    public void notifyBlockUpdate() {
+        getWorld().notifyNeighborsOfStateChange(pos, getBlockType(), false);
+    }
+
+    //************* events *************//
+
+    public void onDrops(NonNullList<ItemStack> drops, EntityPlayer player) {
     }
 
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -113,29 +205,33 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public void onLeftClick(EntityPlayer player) {
     }
 
-    public boolean canConnectRedstone(EnumFacing facing) {
-        return false;
-    }
-
-    public int getOutputRedstoneSignal(EnumFacing facing) {
-        return 0;
-    }
-
     public void onNeighborChanged() {
     }
 
-    public boolean isOpaqueCube() {
-        return true;
+    @Override
+    public boolean hasCapability(@Nullable Capability<?> capability, @Nullable EnumFacing facing) {
+        return super.hasCapability(capability, facing);
     }
 
-    public void scheduleChunkForRenderUpdate() {
-        BlockPos pos = getPos();
-        getWorld().markBlockRangeForRenderUpdate(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
+    @Nullable
+    @Override
+    public <T> T getCapability(@Nullable Capability<T> capability, @Nullable EnumFacing facing) {
+        return super.getCapability(capability, facing);
     }
 
-    public void notifyBlockUpdate() {
-        getWorld().notifyNeighborsOfStateChange(pos, getBlockType(), false);
+    //************* data sync *************//
+
+    private static class UpdateEntry {
+        private final int discriminator;
+        private final byte[] updateData;
+
+        public UpdateEntry(int discriminator, byte[] updateData) {
+            this.discriminator = discriminator;
+            this.updateData = updateData;
+        }
     }
+
+    protected final List<UpdateEntry> updateEntries = new ArrayList<>();
 
     public void writeInitialSyncData(PacketBuffer buf) {
         buf.writeString(getLocation().toString());
@@ -184,35 +280,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         compound.setByte("frontFacing", (byte) frontFacing.getIndex());
         return compound;
     }
-
-    @Override
-    public boolean hasCapability(@Nullable Capability<?> capability, @Nullable EnumFacing facing) {
-        return super.hasCapability(capability, facing);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nullable Capability<T> capability, @Nullable EnumFacing facing) {
-        return super.getCapability(capability, facing);
-    }
-
-    public TraceabilityPredicate selfPredicate() {
-        return blocks(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(getLocation())).setCenter();
-    }
-
-    //************* data sync *************//
-
-    private static class UpdateEntry {
-        private final int discriminator;
-        private final byte[] updateData;
-
-        public UpdateEntry(int discriminator, byte[] updateData) {
-            this.discriminator = discriminator;
-            this.updateData = updateData;
-        }
-    }
-
-    protected final List<UpdateEntry> updateEntries = new ArrayList<>();
 
     public void writeCustomData(int discriminator, Consumer<PacketBuffer> dataWriter) {
         ByteBuf backedBuffer = Unpooled.buffer();

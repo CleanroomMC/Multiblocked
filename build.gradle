@@ -37,6 +37,9 @@ minecraft {
 }
 
 repositories {
+    maven { // CraftTweaker
+        url = "https://maven.blamejared.com/"
+    }
     maven {
         url "https://repo.spongepowered.org/maven"
     }
@@ -56,6 +59,7 @@ dependencies {
         exclude module: "gson"
         exclude module: "commons-io"
     }
+    compile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.673"
     compile "mezz.jei:jei_1.12.2:4.15.0.293"
 }
 

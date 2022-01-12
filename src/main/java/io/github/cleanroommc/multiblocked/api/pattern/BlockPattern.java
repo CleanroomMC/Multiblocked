@@ -1,10 +1,14 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import stanhebben.zenscript.annotations.ZenClass;
 
 import java.util.Map;
 
+@ZenClass("mods.multiblocked.pattern.BlockPattern")
+@ZenRegister
 public class BlockPattern {
 
     static EnumFacing[] FACINGS = {EnumFacing.SOUTH, EnumFacing.NORTH, EnumFacing.WEST, EnumFacing.EAST, EnumFacing.UP, EnumFacing.DOWN};

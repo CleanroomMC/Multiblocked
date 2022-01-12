@@ -8,5 +8,5 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenClass("mods.multiblocked.function.IStructureFormed")
 @ZenRegister
 public interface IStructureFormed {
-    void onStructureFormed(ControllerTileEntity controllerTileEntity);
+    void apply(ControllerTileEntity controllerTileEntity);
 }

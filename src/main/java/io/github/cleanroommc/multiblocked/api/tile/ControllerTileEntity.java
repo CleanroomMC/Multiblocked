@@ -37,7 +37,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @ZenMethod
     public void initPattern() {
-        pattern = definition.patternSupplier.getPattern(this);
+        pattern = definition.patternSupplier.apply(this);
     }
 
     @ZenMethod
@@ -52,14 +52,14 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public void onStructureFormed() {
         writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
         if (definition.structureFormed != null) {
-            definition.structureFormed.onStructureFormed(this);
+            definition.structureFormed.apply(this);
         }
     }
 
     public void onStructureInvalid() {
         writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
         if (definition.structureInvalid != null) {
-            definition.structureInvalid.onStructureInvalid(this);
+            definition.structureInvalid.apply(this);
         }
     }
 
@@ -117,6 +117,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (super.onRightClick(player, hand, facing, hitX, hitY, hitZ)) return true;
         if (!world.isRemote) {
             if (isFormed()) return false;
             if (state == null) state = new MultiblockState(world, pos);

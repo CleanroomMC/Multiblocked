@@ -9,5 +9,5 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenClass("mods.multiblocked.function.IPatternSupplier")
 @ZenRegister
 public interface IPatternSupplier {
-    BlockPattern getPattern(ControllerTileEntity controllerTileEntity);
+    BlockPattern apply(ControllerTileEntity controllerTileEntity);
 }

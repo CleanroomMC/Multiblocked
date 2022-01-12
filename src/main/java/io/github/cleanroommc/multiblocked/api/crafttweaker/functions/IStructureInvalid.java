@@ -8,5 +8,5 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenClass("mods.multiblocked.function.IStructureInvalid")
 @ZenRegister
 public interface IStructureInvalid {
-    void onStructureInvalid(ControllerTileEntity controllerTileEntity);
+    void apply(ControllerTileEntity controllerTileEntity);
 }

@@ -6,6 +6,7 @@ import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.util.IAxisAlignedBB;
 import crafttweaker.api.world.IFacing;
 import crafttweaker.mc1120.item.MCItemStack;
+import crafttweaker.mc1120.player.MCPlayer;
 import crafttweaker.mc1120.util.MCAxisAlignedBB;
 import crafttweaker.mc1120.world.MCFacing;
 import io.github.cleanroommc.multiblocked.Multiblocked;
@@ -69,6 +70,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public final void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
+    }
+
+    @ZenMethod
+    @ZenGetter("definition")
+    public ComponentDefinition getDefinition() {
+        return definition;
     }
 
     public ResourceLocation getLocation() {
@@ -196,16 +203,32 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     //************* events *************//
 
     public void onDrops(NonNullList<ItemStack> drops, EntityPlayer player) {
+        if (definition.onDrops != null) {
+            for (IItemStack drop : definition.onDrops.apply(this, new MCPlayer(player))) {
+                drops.add(CraftTweakerMC.getItemStack(drop));
+            }
+        } else {
+            drops.add(getStackForm());
+        }
     }
 
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (definition.onRightClick != null) {
+            return definition.onRightClick.apply(this, new MCPlayer(player), new MCFacing(facing), hitX, hitY, hitZ);
+        }
         return false;
     }
 
     public void onLeftClick(EntityPlayer player) {
+        if (definition.onLeftClick != null) {
+            definition.onLeftClick.apply(this, new MCPlayer(player));
+        }
     }
 
     public void onNeighborChanged() {
+        if (definition.onNeighborChanged != null) {
+            definition.onNeighborChanged.apply(this);
+        }
     }
 
     @Override

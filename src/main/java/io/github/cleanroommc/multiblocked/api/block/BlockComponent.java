@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityWitherSkull;
@@ -79,6 +80,19 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         return instance instanceof ComponentTileEntity<?> ? ((ComponentTileEntity<?>) instance) : null;
     }
 
+
+    @Override
+    public void onBlockPlacedBy(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityLivingBase placer, @Nonnull ItemStack stack) {
+        ComponentTileEntity<?> componentTileEntity = getComponent(worldIn, pos);
+        if (componentTileEntity != null) {
+            if (componentTileEntity.isValidFrontFacing(EnumFacing.UP)) {
+                componentTileEntity.setFrontFacing(EnumFacing.getDirectionFromEntityLiving(pos, placer));
+            } else {
+                componentTileEntity.setFrontFacing(placer.getHorizontalFacing().getOpposite());
+            }
+        }
+    }
+
     @Override
     public boolean doesSideBlockRendering(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull EnumFacing face) {
         return state.isOpaqueCube() && getComponent(world, pos) != null;
@@ -88,7 +102,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Override
     public ItemStack getPickBlock(@Nonnull IBlockState state, @Nonnull RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
         ComponentTileEntity<?> instance = getComponent(world, pos);
-        return instance == null ? ItemStack.EMPTY : instance.getStackForm();
+        return instance == null ? ItemStack.EMPTY : instance.getDefinition().getStackForm();
     }
 
     @Override
@@ -261,7 +275,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public TileEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
-        return definition.createNewTileEntity();
+        return definition.createNewTileEntity(worldIn);
     }
 
 }

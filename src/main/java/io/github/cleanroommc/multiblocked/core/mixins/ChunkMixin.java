@@ -25,7 +25,7 @@ public class ChunkMixin {
     // We want to be as quick as possible here
     @Inject(method = "setBlockState", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/world/World;captureBlockSnapshots:Z", remap = false))
     private void onAddingBlock(BlockPos pos, IBlockState state, CallbackInfoReturnable<IBlockState> cir) {
-        //noinspection ConstantConditions
+        if (this.world.getMinecraftServer() == null) return;
         this.world.getMinecraftServer().addScheduledTask(() -> {
            for (MultiblockState structure : MultiblockWorldSavedData.getOrCreate(this.world).getControllerInChunk(new ChunkPos(x, z))) {
                if (structure.isPosInCache(pos)) {

@@ -21,10 +21,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Used to baked the model with emissive effect.
@@ -33,14 +31,12 @@ import java.util.Map;
  */
 @SideOnly(Side.CLIENT)
 public class EmissiveBakedModel implements IBakedModel {
-    private final Map<TextureAtlasSprite, Boolean> spriteCache;
     private final IBakedModel parent;
     private final EnumMap<EnumFacing, List<BakedQuad>> sideCache;
     private List<BakedQuad> noSideCache;
 
     public EmissiveBakedModel(IBakedModel parent) {
         this.parent = parent;
-        this.spriteCache = new HashMap<>();
         this.sideCache = new EnumMap<>(EnumFacing.class);
     }
 
@@ -56,7 +52,7 @@ public class EmissiveBakedModel implements IBakedModel {
         List<BakedQuad> resultQuads = new LinkedList<>();
         for (BakedQuad quad : parentQuads) {
             TextureAtlasSprite sprite = quad.getSprite();
-            boolean isEmissive = spriteCache.computeIfAbsent(sprite, MetadataSectionEmissive::isEmissive);
+            boolean isEmissive = MetadataSectionEmissive.isEmissive(sprite);
             if (isEmissive) {
                 quad = reBakeEmissive(quad);
             }

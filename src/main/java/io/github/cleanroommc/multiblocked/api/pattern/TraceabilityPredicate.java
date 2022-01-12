@@ -289,13 +289,7 @@ public class TraceabilityPredicate {
         public List<ItemStack> getCandidates() {
             return candidates == null ? Collections.emptyList() : Arrays.stream(this.candidates.get()).filter(info -> info.getBlockState().getBlock() != Blocks.AIR).map(info->{
                 IBlockState blockState = info.getBlockState();
-                //TODO
-//                MetaTileEntity metaTileEntity = info.getTileEntity() instanceof MetaTileEntityHolder ? ((MetaTileEntityHolder) info.getTileEntity()).getMetaTileEntity() : null;
-//                if (metaTileEntity != null) {
-//                    return metaTileEntity.getStackForm();
-//                } else {
-                    return new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState));
-//                }
+                return new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState));
             }).collect(Collectors.toList());
         }
     }
@@ -326,62 +320,17 @@ public class TraceabilityPredicate {
         }
     }
 
-
     private static Supplier<BlockInfo[]> getCandidates(Set<IBlockState> allowedStates){
-        return ()-> allowedStates.stream().map(state-> new BlockInfo(state, null)).toArray(BlockInfo[]::new);
+        return ()-> allowedStates.stream().map(state -> new BlockInfo(state, null)).toArray(BlockInfo[]::new);
     }
-//
-//    /**
-//     * Match any of the given {@link IBlockState}s.
-//     * <p>
-//     * When called with a single parameter, it is equivalent to {@code IBlockState as IBlockMatcher}.
-//     *
-//     * @param allowedStates The list of {@link IBlockState}s to match.
-//     * @return An {@link TraceabilityPredicate} that returns true for any of the given blockstates.
-//     */
-//    @ZenMethod
+
     public static TraceabilityPredicate states(IBlockState... allowedStates) {
         Set<IBlockState> states = new ObjectOpenHashSet<>(Arrays.asList(allowedStates));
         return new TraceabilityPredicate(blockWorldState -> states.contains(blockWorldState.getBlockState()), getCandidates(states));
     }
-//
-//    /**
-//     * Match any blockstate with one of the given {@link IBlock}s.
-//     * <p>
-//     * When called with a single parameter, it is equivalent to {@code IBlock as IBlockMatcher}`
-//     *
-//     * @param blocks The list of {@link IBlock}s to match.
-//     * @return An {@link TraceabilityPredicate} that returns true for any of the given blocks.
-//     */
-//    @ZenMethod
+
     public static TraceabilityPredicate blocks(Block... blocks) {
         Set<Block> bloxx = new ObjectOpenHashSet<>(Arrays.asList(blocks));
         return new TraceabilityPredicate(blockWorldState -> bloxx.contains(blockWorldState.getBlockState().getBlock()), getCandidates(bloxx.stream().map(Block::getDefaultState).collect(Collectors.toSet())));
     }
-//
-//    /**
-//     * Match any blockstate with one of the given {@link IItemStack}s.
-//     * <p>
-//     * When called with a single parameter, it is equivalent to {@code IItemStack as IBlock as IBlockMatcher}`
-//     *
-//     * @param itemStacks The list of {@link IItemStack}s to match.
-//     * @return An {@link TraceabilityPredicate} that returns true for any of the given blocks.
-//     */
-//    @ZenMethod
-//    public static TraceabilityPredicate items(ItemStack... itemStacks) {
-//        return blocks(Arrays.stream(itemStacks).map(ItemStack::asBlock).toArray(IBlock[]::new));
-//    }
-//
-//    /**
-//     * Match any blockstate with one of the given {@link ILiquidStack}s.
-//     * <p>
-//     * When called with a single parameter, it is equivalent to {@code ILiquidStack as IBlock as IBlockMatcher}`
-//     *
-//     * @param liquidStacks The list of {@link IItemStack}s to match.
-//     * @return An {@link TraceabilityPredicate} that returns true for any of the given blocks.
-//     */
-//    @ZenMethod
-//    public static TraceabilityPredicate liquids(ILiquidStack... liquidStacks) {
-//        return blocks(Arrays.stream(liquidStacks).map(ILiquidStack::getDefinition).map(ILiquidDefinition::getBlock).toArray(IBlock[]::new));
-//    }
 }

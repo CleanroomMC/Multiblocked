@@ -4,11 +4,14 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.util.IAxisAlignedBB;
+import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IFacing;
-import crafttweaker.mc1120.item.MCItemStack;
+import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.player.MCPlayer;
 import crafttweaker.mc1120.util.MCAxisAlignedBB;
+import crafttweaker.mc1120.world.MCBlockPos;
 import crafttweaker.mc1120.world.MCFacing;
+import crafttweaker.mc1120.world.MCWorld;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
@@ -29,8 +32,10 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.Mirror;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -82,6 +87,20 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return definition.location;
     }
 
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod("getWorld")
+    @ZenGetter
+    public IWorld world(){
+        return world == null ? null : new MCWorld(world);
+    }
+
+    @Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod("getPos")
+    @ZenGetter
+    public IBlockPos pos(){
+        return pos == null ? null : new MCBlockPos(pos);
+    }
+
     @ZenMethod
     public String getUnlocalizedName() {
         return getLocation().getPath();
@@ -91,16 +110,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @ZenMethod
     public String getLocalizedName() {
         return I18n.format(getUnlocalizedName());
-    }
-
-    public ItemStack getStackForm() {
-        return new ItemStack(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(getLocation()), 1);
-    }
-
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod("getStackForm")
-    public IItemStack stackForm(){
-        return new MCItemStack(getStackForm());
     }
 
     @ZenMethod
@@ -128,19 +137,29 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public boolean setFrontFacing(EnumFacing facing) {
-        if (isValidFrontFacing(facing)) {
-            frontFacing = facing;
+        if (!isValidFrontFacing(facing)) return false;
+        frontFacing = facing;
+        if (world != null && !world.isRemote) {
             markDirty();
             writeCustomData(0, buffer -> buffer.writeByte(frontFacing.getIndex()));
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Method(modid = Multiblocked.MODID_CT)
     @ZenMethod()
     public boolean setFrontFacing(IFacing facing) {
         return setFrontFacing(CraftTweakerMC.getFacing(facing));
+    }
+
+    @Override
+    public void rotate(@Nonnull Rotation rotationIn) {
+        setFrontFacing(rotationIn.rotate(getFrontFacing()));
+    }
+
+    @Override
+    public void mirror(@Nonnull Mirror mirrorIn) {
+        rotate(mirrorIn.toRotation(getFrontFacing()));
     }
 
     @ZenMethod
@@ -162,23 +181,14 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public boolean canConnectRedstone(EnumFacing facing) {
-        return false;
-    }
-
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod()
-    public boolean canConnectRedstone(IFacing facing) {
-        return canConnectRedstone(CraftTweakerMC.getFacing(facing));
+        return definition.getOutputRedstoneSignal != null;
     }
 
     public int getOutputRedstoneSignal(EnumFacing facing) {
+        if (definition.getOutputRedstoneSignal != null) {
+            return definition.getOutputRedstoneSignal.apply(this, new MCFacing(facing));
+        }
         return 0;
-    }
-
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod()
-    public int getOutputRedstoneSignal(IFacing facing) {
-        return getOutputRedstoneSignal(CraftTweakerMC.getFacing(facing));
     }
 
     @ZenMethod
@@ -211,7 +221,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
                 drops.add(CraftTweakerMC.getItemStack(drop));
             }
         } else {
-            drops.add(getStackForm());
+            drops.add(definition.getStackForm());
         }
     }
 

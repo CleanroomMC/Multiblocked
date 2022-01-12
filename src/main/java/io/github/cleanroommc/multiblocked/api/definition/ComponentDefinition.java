@@ -1,13 +1,21 @@
 package io.github.cleanroommc.multiblocked.api.definition;
 
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.item.IItemStack;
+import crafttweaker.mc1120.item.MCItemStack;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDrops;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IGetOutputRedstoneSignal;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.ILeftClick;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.INeighborChanged;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IRightClick;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -35,6 +43,8 @@ public class ComponentDefinition {
     public IRightClick onRightClick;
     @ZenProperty
     public INeighborChanged onNeighborChanged;
+    @ZenProperty
+    public IGetOutputRedstoneSignal getOutputRedstoneSignal;
 
     protected ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
         this.location = location;
@@ -43,10 +53,11 @@ public class ComponentDefinition {
         this.isOpaqueCube = true;
     }
 
-    public ComponentTileEntity<?> createNewTileEntity(){
+    public ComponentTileEntity<?> createNewTileEntity(World world){
         try {
             ComponentTileEntity<?> component = clazz.newInstance();
             component.setDefinition(this);
+            component.setWorld(world);
             return component;
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
@@ -64,4 +75,15 @@ public class ComponentDefinition {
     public String toString() {
         return location.toString();
     }
+
+    public ItemStack getStackForm() {
+        return new ItemStack(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location), 1);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_CT)
+    @ZenMethod("getStackForm")
+    public IItemStack stackForm(){
+        return new MCItemStack(getStackForm());
+    }
+
 }

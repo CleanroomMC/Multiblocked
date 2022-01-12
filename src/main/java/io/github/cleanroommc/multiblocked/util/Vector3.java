@@ -226,4 +226,11 @@ public class Vector3 {
         return "Vector3(" + new BigDecimal(this.x, cont) + ", " + new BigDecimal(this.y, cont) + ", " + new BigDecimal(this.z, cont) + ")";
     }
 
+    public Vector3 normalize() {
+        double d = mag();
+        if (d != 0) {
+            multiply(1 / d);
+        }
+        return this;
+    }
 }

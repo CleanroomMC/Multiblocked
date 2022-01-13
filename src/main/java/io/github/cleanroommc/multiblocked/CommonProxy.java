@@ -4,7 +4,6 @@ import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
-import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
@@ -21,8 +20,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.blocks;
@@ -39,7 +36,7 @@ public class CommonProxy {
                 .aisle("X#X")
                 .aisle("XYX")
                 .where('X', blocks(Blocks.STONE))
-                .where('#', TraceabilityPredicate.AIR)
+                .where('#', blocks(Blocks.CHEST))
                 .where('Y', component.selfPredicate())
                 .build());
 //        definition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));

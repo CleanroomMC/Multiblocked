@@ -47,6 +47,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenSetter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -68,7 +69,7 @@ import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredica
 @ZenClass("mods.multiblocked.tile.Component")
 @ZenRegister
 public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity {
-
+    // is good to write down all CT code here? or move them to @ZenExpansion.
     protected T definition;
 
     private EnumFacing frontFacing = EnumFacing.NORTH; // 0
@@ -132,6 +133,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Method(modid = Multiblocked.MODID_CT)
     @ZenMethod("getFrontFacing")
+    @ZenGetter
     public IFacing frontFacing() {
         return new MCFacing(getFrontFacing());
     }
@@ -148,6 +150,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Method(modid = Multiblocked.MODID_CT)
     @ZenMethod()
+    @ZenSetter("frontFacing")
     public boolean setFrontFacing(IFacing facing) {
         return setFrontFacing(CraftTweakerMC.getFacing(facing));
     }

@@ -4,6 +4,7 @@ import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
@@ -31,6 +32,7 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.initializeC2S();
         MultiblockedNetworking.initializeS2C();
+        MultiblockCapabilities.registerCapabilities();
         ControllerDefinition definition = new ControllerDefinition(new ResourceLocation("multiblocked:test_block"), component -> FactoryBlockPattern.start()
                 .aisle("XXX")
                 .aisle("X#X")

@@ -1,5 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
@@ -13,6 +15,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 @ZenClass("mods.multiblocked.pattern.BlockPattern")
@@ -95,7 +98,17 @@ public class BlockPattern {
                         if (predicate != TraceabilityPredicate.ANY) {
                             worldState.addPosCache(pos);
                         }
-                        if (!predicate.test(worldState)) {
+                        boolean capability = true;
+                        if (predicate.io != null && predicate.capability != null) {
+                            if (worldState.getTileEntity() == null) capability = false;
+                            else {
+                                capability = predicate.capability.isBlockHasCapability(predicate.io, worldState.getTileEntity());
+                                if (capability) {
+                                    //TODO add capability into context
+                                }
+                            }
+                        }
+                        if (!capability || !predicate.test(worldState)) {
                             if (findFirstAisle) {
                                 if (r < aisleRepetitions[c][0]) {//retreat to see if the first aisle can start later
                                     r = c = 0;
@@ -108,6 +121,7 @@ public class BlockPattern {
                             }
                             continue loop;
                         }
+
                     }
                 }
                 findFirstAisle = true;

@@ -58,7 +58,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.blocks;
+import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.blocks;
 
 /**
  * A TileEntity that defies everything a TileEntity represents.

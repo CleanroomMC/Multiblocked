@@ -11,6 +11,10 @@ import javax.annotation.Nonnull;
 
 public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
 
+    public FluidMultiblockCapability(String name) {
+        super(name);
+    }
+
     @Override
     public FluidStack copyInner(FluidStack content) {
         return content.copy();

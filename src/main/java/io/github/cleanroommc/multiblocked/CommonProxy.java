@@ -23,7 +23,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.function.Function;
 
-import static io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate.blocks;
+import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.blocks;
 
 @Mod.EventBusSubscriber(modid = Multiblocked.MODID)
 public class CommonProxy {

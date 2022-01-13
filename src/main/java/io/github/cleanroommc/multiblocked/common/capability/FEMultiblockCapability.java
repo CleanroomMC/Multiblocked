@@ -11,6 +11,10 @@ import javax.annotation.Nonnull;
 
 public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
+    public FEMultiblockCapability(String name) {
+        super(name);
+    }
+
     @Override
     public Integer copyInner(Integer content) {
         return content;

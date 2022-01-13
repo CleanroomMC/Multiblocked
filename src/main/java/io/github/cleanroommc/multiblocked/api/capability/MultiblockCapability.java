@@ -1,6 +1,5 @@
 package io.github.cleanroommc.multiblocked.api.capability;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
@@ -11,6 +10,11 @@ import javax.annotation.Nonnull;
  * @param <K> recipe info stored.
  */
 public abstract class MultiblockCapability<K> {
+    public final String name;
+
+    public MultiblockCapability(String name) {
+        this.name = name;
+    }
 
     /**
      * deep copy of this content. recipe need it for searching and such things
@@ -31,12 +35,5 @@ public abstract class MultiblockCapability<K> {
      * create a proxy of this block.
      */
     public abstract CapabilityProxy<K> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity);
-
-    /**
-     * candidate of illustration in pattern.
-     */
-    public IBlockState getCandidate() {
-        return null;
-    }
 
 }

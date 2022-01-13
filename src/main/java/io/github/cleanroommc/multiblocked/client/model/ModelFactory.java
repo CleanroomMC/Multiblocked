@@ -130,7 +130,6 @@ public class ModelFactory {
 
     public static class ModelTemplate {
 
-        public static final ModelTemplate CUBE_2_LAYER= new ModelTemplate(Multiblocked.MODID, "cube_2_layer");
         public static final ModelTemplate BLOCK = new ModelTemplate("minecraft", "block/block");
         public static final ModelTemplate NORMAL_ITEM = new ModelTemplate("minecraft", "item/generated");
         public static final ModelTemplate HANDHELD_ITEM = new ModelTemplate("minecraft", "item/handheld");

@@ -8,7 +8,6 @@ import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
-import io.github.cleanroommc.multiblocked.client.renderer.impl.SidedOverlayRenderer;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;
@@ -45,14 +44,7 @@ public class CommonProxy {
                 .build());
 //        definition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
         definition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));
-        Map<SidedOverlayRenderer.RelativeDirection, String> map = new EnumMap<>(SidedOverlayRenderer.RelativeDirection.class);
-        map.put(SidedOverlayRenderer.RelativeDirection.UP, Multiblocked.MODID + ":test/u");
-        map.put(SidedOverlayRenderer.RelativeDirection.DOWN, Multiblocked.MODID + ":test/d");
-        map.put(SidedOverlayRenderer.RelativeDirection.LEFT, Multiblocked.MODID + ":test/w");
-        map.put(SidedOverlayRenderer.RelativeDirection.RIGHT, Multiblocked.MODID + ":test/e");
-        map.put(SidedOverlayRenderer.RelativeDirection.FRONT, Multiblocked.MODID + ":test/n");
-        map.put(SidedOverlayRenderer.RelativeDirection.BACK, Multiblocked.MODID + ":test/s");
-        definition.baseRenderer = new SidedOverlayRenderer(map);
+        definition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"));
         definition.isOpaqueCube = false;
         MultiblockComponents.registerComponent(definition);
     }

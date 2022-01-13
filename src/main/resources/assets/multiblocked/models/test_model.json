@@ -1,21 +1,21 @@
 {
   "parent": "block/block",
   "textures": {
-    "bot_down": "multiblocked:overlay/bot_down",
-    "bot_up": "multiblocked:overlay/bot_up",
-    "bot_north": "multiblocked:overlay/bot_north",
-    "bot_south": "multiblocked:overlay/bot_south",
-    "bot_west": "multiblocked:overlay/bot_west",
-    "bot_east": "multiblocked:overlay/bot_east",
+    "bot_down": "multiblocked:test/d",
+    "bot_up": "multiblocked:test/u",
+    "bot_north": "multiblocked:test/n",
+    "bot_south": "multiblocked:test/s",
+    "bot_west": "multiblocked:test/w",
+    "bot_east": "multiblocked:test/e",
 
-    "top_down": "multiblocked:overlay/top_down",
-    "top_up": "multiblocked:overlay/top_up",
-    "top_north": "multiblocked:overlay/top_north",
-    "top_south": "multiblocked:overlay/top_south",
-    "top_west": "multiblocked:overlay/top_west",
-    "top_east": "multiblocked:overlay/top_east",
+    "top_down": "multiblocked:void",
+    "top_up": "multiblocked:void",
+    "top_north": "multiblocked:test/n_layer2",
+    "top_south": "multiblocked:test/s_layer2",
+    "top_west": "multiblocked:void",
+    "top_east": "multiblocked:void",
 
-    "particle": "multiblocked:void"
+    "particle": "multiblocked:test/u"
   },
   "elements": [
     {

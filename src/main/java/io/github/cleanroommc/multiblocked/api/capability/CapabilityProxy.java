@@ -18,34 +18,49 @@ public abstract class CapabilityProxy<K> {
     }
 
     /**
-     * searching recipe.
+     * matching recipe.
      *
-     * @param io the IO type of this proxy.
+     * @param io the IO type of this recipe. must be one of the {@link IO#IN} or {@link IO#OUT}
      * @param recipe recipe.
      * @param left requirements of this recipe.
      * @return left requirements for continue searching of this proxy type.
      * <br>
-     *      null - nothing left.
+     *      null - nothing left. matching successful.
      */
-    public abstract K searchingRecipe(IO io, Recipe recipe, K left);
+    protected abstract K matchingRecipeInner(IO io, Recipe recipe, K left);
 
     /**
      * searching successful. consumption
-     * @param io the IO type of this proxy.
+     * @param io the IO type of this recipe. must be one of the {@link IO#IN} or {@link IO#OUT}
      * @param recipe recipe.
      * @return left to do.
      * <br>
-     *     null - nothing left.
+     *     null - nothing left. consumption finish.
      */
-    protected abstract K handleRecipeInput(IO io, Recipe recipe, K left);
+    protected abstract K handleRecipeInputInner(IO io, Recipe recipe, K left);
 
     /**
-     * recipe logic finish. earning
-     * @param io the IO type of this proxy.
+     * recipe logic finish. harvest
+     * @param io the IO type of this recipe. must be one of the {@link IO#IN} or {@link IO#OUT}
      * @param recipe recipe.
      * @return left to do.
      * <br>
-     *     null - nothing left.
+     *     null - nothing left. harvest finish.
      */
-    protected abstract K handleRecipeOutput(IO io, Recipe recipe, K left);
+    protected abstract K handleRecipeOutputInner(IO io, Recipe recipe, K left);
+
+    @SuppressWarnings("unchecked")
+    public final K searchingRecipe(IO io, Recipe recipe, Object left) {
+        return matchingRecipeInner(io, recipe, (K) left);
+    }
+
+    @SuppressWarnings("unchecked")
+    public final K handleRecipeInput(IO io, Recipe recipe, Object left) {
+        return handleRecipeInputInner(io, recipe, (K) left);
+    }
+
+    @SuppressWarnings("unchecked")
+    public final K handleRecipeOutput(IO io, Recipe recipe, Object left) {
+        return handleRecipeOutputInner(io, recipe, (K) left);
+    }
 }

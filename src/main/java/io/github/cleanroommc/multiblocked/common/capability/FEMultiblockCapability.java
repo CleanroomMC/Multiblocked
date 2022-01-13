@@ -11,17 +11,13 @@ import javax.annotation.Nonnull;
 
 public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
-    public FEMultiblockCapability(IO io) {
-        super(io);
-    }
-
     @Override
-    public Integer copyContent(Integer content) {
+    public Integer copyInner(Integer content) {
         return content;
     }
 
     @Override
-    public boolean isBlockHasCapability(@Nonnull TileEntity tileEntity) {
+    public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         IEnergyStorage capability = tileEntity.getCapability(CapabilityEnergy.ENERGY, null);
         return capability != null && (io == IO.IN && capability.canExtract() ||
                         io == IO.OUT && capability.canReceive() ||
@@ -29,7 +25,7 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
     }
 
     @Override
-    public FECapabilityProxy createProxy(@Nonnull TileEntity tileEntity) {
+    public FECapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new FECapabilityProxy(tileEntity);
     }
 }

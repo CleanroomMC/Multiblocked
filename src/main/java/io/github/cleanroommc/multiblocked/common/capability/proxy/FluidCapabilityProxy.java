@@ -19,7 +19,7 @@ public class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {
     }
 
     @Override
-    public FluidStack searchingRecipe(IO io, Recipe recipe, FluidStack left) {
+    protected FluidStack matchingRecipeInner(IO io, Recipe recipe, FluidStack left) {
         IFluidHandler capability = getCapability();
         if (capability == null) return left;
         if (io == IO.IN) {
@@ -38,7 +38,7 @@ public class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {
     }
 
     @Override
-    protected FluidStack handleRecipeInput(IO io, Recipe recipe, FluidStack left) {
+    protected FluidStack handleRecipeInputInner(IO io, Recipe recipe, FluidStack left) {
         IFluidHandler capability = getCapability();
         if (capability == null) return left;
         FluidStack drained = capability.drain(left, true);
@@ -49,7 +49,7 @@ public class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {
     }
 
     @Override
-    protected FluidStack handleRecipeOutput(IO io, Recipe recipe, FluidStack left) {
+    protected FluidStack handleRecipeOutputInner(IO io, Recipe recipe, FluidStack left) {
         IFluidHandler capability = getCapability();
         if (capability == null) return left;
         int filled = capability.fill(left, false);

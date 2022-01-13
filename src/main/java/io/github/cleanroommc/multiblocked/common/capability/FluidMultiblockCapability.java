@@ -11,22 +11,18 @@ import javax.annotation.Nonnull;
 
 public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
 
-    public FluidMultiblockCapability(IO io) {
-        super(io);
-    }
-
     @Override
-    public FluidStack copyContent(FluidStack content) {
+    public FluidStack copyInner(FluidStack content) {
         return content.copy();
     }
 
     @Override
-    public boolean isBlockHasCapability(@Nonnull TileEntity tileEntity) {
+    public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return tileEntity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
     }
 
     @Override
-    public FluidCapabilityProxy createProxy(@Nonnull TileEntity tileEntity) {
+    public FluidCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new FluidCapabilityProxy(tileEntity);
     }
 }

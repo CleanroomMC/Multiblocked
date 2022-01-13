@@ -20,7 +20,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
     }
 
     @Override
-    public ItemsIngredient searchingRecipe(IO io, Recipe recipe, ItemsIngredient left) {
+    protected ItemsIngredient matchingRecipeInner(IO io, Recipe recipe, ItemsIngredient left) {
         IItemHandler capability = getCapability();
         if (capability == null) return left;
         if (io == IO.IN) {
@@ -47,7 +47,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
     }
 
     @Override
-    protected ItemsIngredient handleRecipeInput(IO io, Recipe recipe, ItemsIngredient left) {
+    protected ItemsIngredient handleRecipeInputInner(IO io, Recipe recipe, ItemsIngredient left) {
         IItemHandler capability = getCapability();
         if (capability == null) return left;
         for (int i = 0; i < capability.getSlots(); i++) {
@@ -64,7 +64,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
     }
 
     @Override
-    protected ItemsIngredient handleRecipeOutput(IO io, Recipe recipe, ItemsIngredient left) {
+    protected ItemsIngredient handleRecipeOutputInner(IO io, Recipe recipe, ItemsIngredient left) {
         IItemHandler capability = getCapability();
         if (capability == null) return left;
         ItemStack output = left.getOutputStack();

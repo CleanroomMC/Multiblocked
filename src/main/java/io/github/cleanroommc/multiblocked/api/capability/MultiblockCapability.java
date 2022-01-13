@@ -11,26 +11,26 @@ import javax.annotation.Nonnull;
  * @param <K> recipe info stored.
  */
 public abstract class MultiblockCapability<K> {
-    public final IO io;
-
-    public MultiblockCapability(IO io) {
-        this.io = io;
-    }
 
     /**
      * deep copy of this content. recipe need it for searching and such things
      */
-    public abstract K copyContent(K content);
+    protected abstract K copyInner(K content);
+
+    @SuppressWarnings("unchecked")
+    public final K copyContent(Object content) {
+        return copyInner((K) content);
+    }
 
     /**
      * detect whether this block has capability
      */
-    public abstract boolean isBlockHasCapability(@Nonnull TileEntity tileEntity);
+    public abstract boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity);
 
     /**
      * create a proxy of this block.
      */
-    public abstract CapabilityProxy<K> createProxy(@Nonnull TileEntity tileEntity);
+    public abstract CapabilityProxy<K> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity);
 
     /**
      * candidate of illustration in pattern.

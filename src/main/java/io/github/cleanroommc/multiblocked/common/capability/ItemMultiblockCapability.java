@@ -12,22 +12,18 @@ import javax.annotation.Nonnull;
 
 public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredient> {
 
-    public ItemMultiblockCapability(IO io) {
-        super(io);
-    }
-
     @Override
-    public ItemsIngredient copyContent(ItemsIngredient content) {
+    public ItemsIngredient copyInner(ItemsIngredient content) {
         return content.copy();
     }
 
     @Override
-    public boolean isBlockHasCapability(@Nonnull TileEntity tileEntity) {
+    public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
     @Override
-    public ItemCapabilityProxy createProxy(@Nonnull TileEntity tileEntity) {
+    public ItemCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new ItemCapabilityProxy(tileEntity);
     }
 

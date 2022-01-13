@@ -4,10 +4,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 
 public class ItemsIngredient extends Ingredient {
-    private int amount = 0;
+    private int amount;
 
     public ItemsIngredient(ItemStack... matchingStacks) {
         super(matchingStacks);
+        amount = matchingStacks[0].getCount();
     }
 
     public ItemsIngredient(int amount, ItemStack... matchingStacks) {

@@ -18,7 +18,7 @@ public class FECapabilityProxy extends CapabilityProxy<Integer> {
     }
 
     @Override
-    public Integer searchingRecipe(IO io, Recipe recipe, Integer left) {
+    protected Integer matchingRecipeInner(IO io, Recipe recipe, Integer left) {
         if (io == IO.OUT) return null; // TODO should it always allow output even is full
         IEnergyStorage capability = getCapability();
         if (capability == null) return left;
@@ -27,7 +27,7 @@ public class FECapabilityProxy extends CapabilityProxy<Integer> {
     }
 
     @Override
-    protected Integer handleRecipeInput(IO io, Recipe recipe, Integer left) {
+    protected Integer handleRecipeInputInner(IO io, Recipe recipe, Integer left) {
         IEnergyStorage capability = getCapability();
         if (capability == null) return left;
         left = left - capability.extractEnergy(left, false);
@@ -35,7 +35,7 @@ public class FECapabilityProxy extends CapabilityProxy<Integer> {
     }
 
     @Override
-    protected Integer handleRecipeOutput(IO io, Recipe recipe, Integer left) {
+    protected Integer handleRecipeOutputInner(IO io, Recipe recipe, Integer left) {
         IEnergyStorage capability = getCapability();
         if (capability == null) return left;
         left = left - capability.receiveEnergy(left, false);

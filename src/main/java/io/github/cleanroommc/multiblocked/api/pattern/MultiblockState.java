@@ -30,8 +30,8 @@ public class MultiblockState {
     protected TraceabilityPredicate predicate;
     protected PatternError error;
     protected ControllerTileEntity controller;
-    protected final World world;
-    protected final BlockPos controllerPos;
+    public final World world;
+    public final BlockPos controllerPos;
 
     // persist
     protected LongOpenHashSet cache;
@@ -58,7 +58,7 @@ public class MultiblockState {
     }
 
     public ControllerTileEntity getController() {
-        if (controller != null) return controller;
+        if (controller != null && !controller.isInvalid()) return controller;
         TileEntity tileEntity = world.getTileEntity(controllerPos);
         if (tileEntity instanceof ControllerTileEntity) {
             controller = (ControllerTileEntity) tileEntity;
@@ -143,10 +143,11 @@ public class MultiblockState {
 
     public void onChunkLoad() {
         if (getController() != null) {
-            if (!controller.checkPattern()) {
-                error = UNLOAD_ERROR;
-            } else {
+            if (controller.checkPattern()) {
                 MultiblockWorldSavedData.getOrCreate(world).addLoading(controller);
+                controller.onStructureFormed();
+            } else {
+                error = UNLOAD_ERROR;
             }
         }
     }

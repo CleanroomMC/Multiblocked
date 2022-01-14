@@ -1,11 +1,11 @@
-package io.github.cleanroommc.multiblocked.api.tile;
+package io.github.cleanroommc.multiblocked.api.tile.part;
 
 /**
  * A TileEntity that defies all hatch machines.
  *
  * I/O part of the multiblock.
  */
-public class HatchTileEntity extends ComponentTileEntity{
+public class PartHatchTileEntity extends PartTileEntity {
 
     @Override
     public boolean isFormed() {

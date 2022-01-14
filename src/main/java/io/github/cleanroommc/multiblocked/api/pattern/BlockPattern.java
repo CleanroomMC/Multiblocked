@@ -1,12 +1,11 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
-import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
-import net.minecraft.block.state.IBlockState;
+import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -15,7 +14,6 @@ import stanhebben.zenscript.annotations.ZenClass;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 @ZenClass("mods.multiblocked.pattern.BlockPattern")
@@ -98,17 +96,33 @@ public class BlockPattern {
                         if (predicate != TraceabilityPredicate.ANY) {
                             worldState.addPosCache(pos);
                         }
-                        boolean capability = true;
-                        if (predicate.io != null && predicate.capability != null) {
-                            if (worldState.getTileEntity() == null) capability = false;
-                            else {
-                                capability = predicate.capability.isBlockHasCapability(predicate.io, worldState.getTileEntity());
-                                if (capability) {
-                                    //TODO add capability into context
+                        boolean hasCapability = predicate.io != null && predicate.capability != null;
+                        boolean isCapability = false;
+                        boolean canPartShared = true;
+                        if (hasCapability) {
+                            if (worldState.getTileEntity() != null) {
+                                isCapability = predicate.capability.isBlockHasCapability(predicate.io, worldState.getTileEntity());
+                            }
+                            if (isCapability) { // add detected capabilities
+                                worldState.getMatchContext()
+                                        .getOrCreate("capabilities", Long2ObjectOpenHashMap::new)
+                                        .put(worldState.getPos().toLong(), predicate);
+                            }
+                        }
+                        if (worldState.getTileEntity() instanceof PartTileEntity) { // add detected parts
+                            if (predicate != TraceabilityPredicate.ANY) {
+                                PartTileEntity<?> partTileEntity = (PartTileEntity<?>) worldState.getTileEntity();
+                                if (partTileEntity.isFormed() && !partTileEntity.canShared()) { // check part can be shared
+                                    canPartShared = false;
+                                    worldState.setError(new PatternStringError("this part cant be shared"));
+                                } else {
+                                    worldState.getMatchContext()
+                                            .getOrCreate("parts", LongOpenHashSet::new)
+                                            .add(worldState.getPos().toLong());
                                 }
                             }
                         }
-                        if (!capability || !predicate.test(worldState)) {
+                        if ((hasCapability && !isCapability) || !predicate.test(worldState) || !canPartShared) { // matching failed
                             if (findFirstAisle) {
                                 if (r < aisleRepetitions[c][0]) {//retreat to see if the first aisle can start later
                                     r = c = 0;
@@ -121,7 +135,6 @@ public class BlockPattern {
                             }
                             continue loop;
                         }
-
                     }
                 }
                 findFirstAisle = true;

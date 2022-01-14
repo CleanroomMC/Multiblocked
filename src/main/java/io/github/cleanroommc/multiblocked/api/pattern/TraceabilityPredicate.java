@@ -64,6 +64,14 @@ public class TraceabilityPredicate {
         return isSingle;
     }
 
+    public IO getIo() {
+        return io;
+    }
+
+    public MultiblockCapability<?> getCapability() {
+        return capability;
+    }
+
     /**
      * Mark it as the controller of this multi. Normally you won't call it yourself. Use plz.
      */

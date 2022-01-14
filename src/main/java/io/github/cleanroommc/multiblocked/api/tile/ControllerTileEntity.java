@@ -1,17 +1,28 @@
 package io.github.cleanroommc.multiblocked.api.tile;
 
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import crafttweaker.annotations.ZenRegister;
+import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import io.github.cleanroommc.multiblocked.api.capability.IO;
+import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
-import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
+import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
+import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -19,6 +30,10 @@ import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A TileEntity that defies all controller machines.
@@ -30,6 +45,8 @@ import javax.annotation.Nonnull;
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
     public MultiblockState state;
     public BlockPattern pattern;
+    public Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilities;
+    public LongOpenHashSet parts;
 
     public ControllerTileEntity() {}
 
@@ -54,7 +71,33 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public void updateFormed() {
     }
 
+    /**
+     * Called when its formed, server side only.
+     */
     public void onStructureFormed() {
+        // init capabilities
+        Long2ObjectOpenHashMap<TraceabilityPredicate> capabilityMap = state.getMatchContext().get("capabilities");
+        capabilities = Tables.newCustomTable(new EnumMap<>(IO.class), Object2ObjectOpenHashMap::new);
+        for (Map.Entry<Long, TraceabilityPredicate> entry : capabilityMap.entrySet()) {
+            TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(entry.getKey()));
+            if (tileEntity != null) {
+                IO io = entry.getValue().getIo();
+                MultiblockCapability<?> capability = entry.getValue().getCapability();
+                if (!capabilities.contains(io, capability)) {
+                    capabilities.put(io, capability, new ArrayList<>());
+                }
+                capabilities.get(io, capability).add(capability.createProxy(io, tileEntity));
+            }
+        }
+        // init parts
+        parts = state.getMatchContext().get("parts");
+        for (Long pos : parts) {
+            TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(pos));
+            if (tileEntity instanceof PartTileEntity) {
+                ((PartTileEntity<?>) tileEntity).addedToController(this);
+            }
+        }
+
         writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
         if (definition.structureFormed != null) {
             definition.structureFormed.apply(this);
@@ -62,6 +105,16 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     }
 
     public void onStructureInvalid() {
+        // invalid parts
+        for (Long pos : parts) {
+            TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(pos));
+            if (tileEntity instanceof PartTileEntity) {
+                ((PartTileEntity<?>) tileEntity).removedFromController(this);
+            }
+        }
+        parts = null;
+        capabilities = null;
+
         writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
         if (definition.structureInvalid != null) {
             definition.structureInvalid.apply(this);
@@ -127,8 +180,8 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                     if (!player.isCreative() && definition.consumeCatalyst) {
                         held.shrink(1);
                     }
-                    onStructureFormed();
                     MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
+                    onStructureFormed();
                     return true;
                 }
             }

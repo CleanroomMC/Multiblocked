@@ -57,7 +57,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
                 else ingredient.setAmount(output.getCount());
             }
         }
-        return left;
+        return left.isEmpty() ? null : left;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
             }
             if (ingredient.getAmount() <= 0) iterator.remove();
         }
-        return left;
+        return left.isEmpty() ? null : left;
     }
 
     @Override
@@ -94,8 +94,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
             if (output.isEmpty()) iterator.remove();
             else ingredient.setAmount(output.getCount());
         }
-        return left;
+        return left.isEmpty() ? null : left;
     }
-
 
 }

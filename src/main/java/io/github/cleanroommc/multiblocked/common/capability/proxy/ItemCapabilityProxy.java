@@ -9,7 +9,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
     }
 
     @Override
-    protected List<ItemsIngredient> matchingRecipeInner(IO io, Recipe recipe, List<ItemsIngredient> left) {
+    protected List<ItemsIngredient> handleRecipeInner(IO io, Recipe recipe, List<ItemsIngredient> left, boolean simulate) {
         IItemHandler capability = getCapability();
         if (capability == null) return left;
         Iterator<ItemsIngredient> iterator = left.iterator();
@@ -39,7 +38,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
                 for (int i = 0; i < capability.getSlots(); i++) {
                     ItemStack itemStack = capability.getStackInSlot(i);
                     if (ingredient.match(itemStack)) {
-                        ItemStack extracted = capability.extractItem(i, itemStack.getCount(), true);
+                        ItemStack extracted = capability.extractItem(i, itemStack.getCount(), simulate);
                         ingredient.setAmount(ingredient.getAmount() - extracted.getCount());
                     }
                 }
@@ -50,49 +49,12 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
                 ItemsIngredient ingredient = iterator.next();
                 ItemStack output = ingredient.getOutputStack();
                 for (int i = 0; i < capability.getSlots(); i++) {
-                    output = capability.insertItem(i, output, true);
+                    output = capability.insertItem(i, output, simulate);
                     if (output.isEmpty()) break;
                 }
                 if (output.isEmpty()) iterator.remove();
                 else ingredient.setAmount(output.getCount());
             }
-        }
-        return left.isEmpty() ? null : left;
-    }
-
-    @Override
-    protected List<ItemsIngredient> handleRecipeInputInner(IO io, Recipe recipe, List<ItemsIngredient> left) {
-        IItemHandler capability = getCapability();
-        if (capability == null) return left;
-        Iterator<ItemsIngredient> iterator = left.iterator();
-        while (iterator.hasNext()) {
-            ItemsIngredient ingredient = iterator.next();
-            for (int i = 0; i < capability.getSlots(); i++) {
-                ItemStack itemStack = capability.getStackInSlot(i);
-                if (ingredient.match(itemStack)) {
-                    ItemStack extracted = capability.extractItem(i, itemStack.getCount(), false);
-                    ingredient.setAmount(ingredient.getAmount() - extracted.getCount());
-                }
-            }
-            if (ingredient.getAmount() <= 0) iterator.remove();
-        }
-        return left.isEmpty() ? null : left;
-    }
-
-    @Override
-    protected List<ItemsIngredient> handleRecipeOutputInner(IO io, Recipe recipe, List<ItemsIngredient> left) {
-        IItemHandler capability = getCapability();
-        if (capability == null) return left;
-        Iterator<ItemsIngredient> iterator = left.iterator();
-        while (iterator.hasNext()) {
-            ItemsIngredient ingredient = iterator.next();
-            ItemStack output = ingredient.getOutputStack();
-            for (int i = 0; i < capability.getSlots(); i++) {
-                output = capability.insertItem(i, output, false);
-                if (output.isEmpty()) break;
-            }
-            if (output.isEmpty()) iterator.remove();
-            else ingredient.setAmount(output.getCount());
         }
         return left.isEmpty() ? null : left;
     }

@@ -21,36 +21,17 @@ public abstract class CapabilityProxy<K> {
     }
 
     /**
-     * matching recipe.
+     * matching or handling the given recipe.
      *
-     * @param io the IO type of this recipe. must be one of the {@link IO#IN} or {@link IO#OUT}
+     * @param io the IO type of this recipe. always be one of the {@link IO#IN} or {@link IO#OUT}
      * @param recipe recipe.
-     * @param left requirements of this recipe.
-     * @return left requirements for continue searching of this proxy type.
+     * @param left left contents for to be handled.
+     * @param simulate simulate.
+     * @return left contents for continue handling by other proxies.
      * <br>
-     *      null - nothing left. matching successful.
+     *      null - nothing left. handling successful/finish. you should always return null as a handling-done mark.
      */
-    protected abstract List<K> matchingRecipeInner(IO io, Recipe recipe, List<K> left);
-
-    /**
-     * searching successful. consumption
-     * @param io the IO type of this recipe. must be one of the {@link IO#IN} or {@link IO#OUT}
-     * @param recipe recipe.
-     * @return left to do.
-     * <br>
-     *     null - nothing left. consumption finish.
-     */
-    protected abstract List<K> handleRecipeInputInner(IO io, Recipe recipe, List<K> left);
-
-    /**
-     * recipe logic finish. harvest
-     * @param io the IO type of this recipe. must be one of the {@link IO#IN} or {@link IO#OUT}
-     * @param recipe recipe.
-     * @return left to do.
-     * <br>
-     *     null - nothing left. harvest finish.
-     */
-    protected abstract List<K> handleRecipeOutputInner(IO io, Recipe recipe, List<K> left);
+    protected abstract List<K> handleRecipeInner(IO io, Recipe recipe, List<K> left, boolean simulate);
 
 
     /**
@@ -64,14 +45,14 @@ public abstract class CapabilityProxy<K> {
     }
 
     public final List<K> searchingRecipe(IO io, Recipe recipe, List<?> left) {
-        return matchingRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()));
+        return handleRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), true);
     }
 
-    public final List<K> handleRecipeInput(IO io, Recipe recipe, List<?> left) {
-        return handleRecipeInputInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()));
+    public final List<K> handleRecipeInput(Recipe recipe, List<?> left) {
+        return handleRecipeInner(IO.IN, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), false);
     }
 
-    public final List<K> handleRecipeOutput(IO io, Recipe recipe, List<?> left) {
-        return handleRecipeOutputInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()));
+    public final List<K> handleRecipeOutput(Recipe recipe, List<?> left) {
+        return handleRecipeInner(IO.OUT, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), false);
     }
 }

@@ -8,7 +8,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,14 +27,14 @@ public class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {
     }
 
     @Override
-    protected List<FluidStack> matchingRecipeInner(IO io, Recipe recipe, List<FluidStack> left) {
+    protected List<FluidStack> handleRecipeInner(IO io, Recipe recipe, List<FluidStack> left, boolean simulate) {
         IFluidHandler capability = getCapability();
         if (capability == null) return left;
         Iterator<FluidStack> iterator = left.iterator();
         if (io == IO.IN) {
             while (iterator.hasNext()) {
                 FluidStack fluidStack = iterator.next();
-                FluidStack drained = capability.drain(fluidStack, false);
+                FluidStack drained = capability.drain(fluidStack, !simulate);
                 if (drained == null) continue;
                 fluidStack.amount = fluidStack.amount - drained.amount;
                 if (fluidStack.amount <= 0) {
@@ -45,44 +44,11 @@ public class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {
         } else if (io == IO.OUT){
             while (iterator.hasNext()) {
                 FluidStack fluidStack = iterator.next();
-                int filled = capability.fill(fluidStack, false);
+                int filled = capability.fill(fluidStack, !simulate);
                 fluidStack.amount = fluidStack.amount - filled;
                 if (fluidStack.amount <= 0) {
                     iterator.remove();
                 }
-            }
-        }
-        return left.isEmpty() ? null : left;
-    }
-
-    @Override
-    protected List<FluidStack> handleRecipeInputInner(IO io, Recipe recipe, List<FluidStack> left) {
-        IFluidHandler capability = getCapability();
-        if (capability == null) return left;
-        Iterator<FluidStack> iterator = left.iterator();
-        while (iterator.hasNext()) {
-            FluidStack fluidStack = iterator.next();
-            FluidStack drained = capability.drain(fluidStack, true);
-            if (drained == null) continue;
-            fluidStack.amount = fluidStack.amount - drained.amount;
-            if (fluidStack.amount <= 0) {
-                iterator.remove();
-            }
-        }
-        return left.isEmpty() ? null : left;
-    }
-
-    @Override
-    protected List<FluidStack> handleRecipeOutputInner(IO io, Recipe recipe, List<FluidStack> left) {
-        IFluidHandler capability = getCapability();
-        if (capability == null) return left;
-        Iterator<FluidStack> iterator = left.iterator();
-        while (iterator.hasNext()) {
-            FluidStack fluidStack = iterator.next();
-            int filled = capability.fill(fluidStack, true);
-            fluidStack.amount = fluidStack.amount - filled;
-            if (fluidStack.amount <= 0) {
-                iterator.remove();
             }
         }
         return left.isEmpty() ? null : left;

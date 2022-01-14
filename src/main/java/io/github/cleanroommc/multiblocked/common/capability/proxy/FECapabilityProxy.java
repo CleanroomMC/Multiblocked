@@ -26,30 +26,15 @@ public class FECapabilityProxy extends CapabilityProxy<Integer> {
     }
 
     @Override
-    protected List<Integer> matchingRecipeInner(IO io, Recipe recipe, List<Integer> left) {
-        if (io == IO.OUT) return null; // TODO should it always allow output even is full
+    protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, boolean simulate) {
         IEnergyStorage capability = getCapability();
         if (capability == null) return left;
         int sum = left.stream().reduce(0, Integer::sum);
-        int drained = capability.extractEnergy(capability.getEnergyStored(), true);
-        return sum <= drained ? null : Collections.singletonList(sum - drained);
-    }
-
-    @Override
-    protected List<Integer> handleRecipeInputInner(IO io, Recipe recipe, List<Integer> left) {
-        IEnergyStorage capability = getCapability();
-        if (capability == null) return left;
-        int sum = left.stream().reduce(0, Integer::sum);
-        sum = sum - capability.extractEnergy(sum, false);
-        return sum <= 0 ? null : Collections.singletonList(sum);
-    }
-
-    @Override
-    protected List<Integer> handleRecipeOutputInner(IO io, Recipe recipe, List<Integer> left) {
-        IEnergyStorage capability = getCapability();
-        if (capability == null) return left;
-        int sum = left.stream().reduce(0, Integer::sum);
-        sum = sum - capability.receiveEnergy(sum, false);
+        if (io == IO.IN) {
+            sum = sum - capability.extractEnergy(sum, simulate);
+        } else if (io == IO.OUT) {
+            sum = sum - capability.receiveEnergy(sum, simulate);
+        }
         return sum <= 0 ? null : Collections.singletonList(sum);
     }
 

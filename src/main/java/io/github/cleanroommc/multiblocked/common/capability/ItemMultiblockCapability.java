@@ -16,11 +16,6 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
     }
 
     @Override
-    public ItemsIngredient copyInner(ItemsIngredient content) {
-        return content.copy();
-    }
-
-    @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }

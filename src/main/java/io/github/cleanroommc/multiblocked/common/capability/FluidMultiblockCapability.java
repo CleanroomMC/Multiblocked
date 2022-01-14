@@ -16,11 +16,6 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
     }
 
     @Override
-    public FluidStack copyInner(FluidStack content) {
-        return content.copy();
-    }
-
-    @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return tileEntity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
     }

@@ -17,16 +17,6 @@ public abstract class MultiblockCapability<K> {
     }
 
     /**
-     * deep copy of this content. recipe need it for searching and such things
-     */
-    protected abstract K copyInner(K content);
-
-    @SuppressWarnings("unchecked")
-    public final K copyContent(Object content) {
-        return copyInner((K) content);
-    }
-
-    /**
      * detect whether this block has capability
      */
     public abstract boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity);

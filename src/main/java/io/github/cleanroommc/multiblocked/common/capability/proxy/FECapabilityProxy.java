@@ -7,6 +7,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
+import java.util.Collections;
+import java.util.List;
+
 public class FECapabilityProxy extends CapabilityProxy<Integer> {
 
     public FECapabilityProxy(TileEntity tileEntity) {
@@ -18,29 +21,36 @@ public class FECapabilityProxy extends CapabilityProxy<Integer> {
     }
 
     @Override
-    protected Integer matchingRecipeInner(IO io, Recipe recipe, Integer left) {
+    public Integer copyInner(Integer content) {
+        return content;
+    }
+
+    @Override
+    protected List<Integer> matchingRecipeInner(IO io, Recipe recipe, List<Integer> left) {
         if (io == IO.OUT) return null; // TODO should it always allow output even is full
         IEnergyStorage capability = getCapability();
         if (capability == null) return left;
+        int sum = left.stream().reduce(0, Integer::sum);
         int drained = capability.extractEnergy(capability.getEnergyStored(), true);
-        return left <= drained ? null : left - drained;
+        return sum <= drained ? null : Collections.singletonList(sum - drained);
     }
 
     @Override
-    protected Integer handleRecipeInputInner(IO io, Recipe recipe, Integer left) {
+    protected List<Integer> handleRecipeInputInner(IO io, Recipe recipe, List<Integer> left) {
         IEnergyStorage capability = getCapability();
         if (capability == null) return left;
-        left = left - capability.extractEnergy(left, false);
-        return left <= 0 ? null : left;
+        int sum = left.stream().reduce(0, Integer::sum);
+        sum = sum - capability.extractEnergy(sum, false);
+        return sum <= 0 ? null : Collections.singletonList(sum);
     }
 
     @Override
-    protected Integer handleRecipeOutputInner(IO io, Recipe recipe, Integer left) {
+    protected List<Integer> handleRecipeOutputInner(IO io, Recipe recipe, List<Integer> left) {
         IEnergyStorage capability = getCapability();
         if (capability == null) return left;
-        left = left - capability.receiveEnergy(left, false);
-        return left <= 0 ? null : left;
+        int sum = left.stream().reduce(0, Integer::sum);
+        sum = sum - capability.receiveEnergy(sum, false);
+        return sum <= 0 ? null : Collections.singletonList(sum);
     }
-
 
 }

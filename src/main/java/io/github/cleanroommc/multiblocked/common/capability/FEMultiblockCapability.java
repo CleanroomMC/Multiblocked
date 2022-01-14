@@ -16,11 +16,6 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
     }
 
     @Override
-    public Integer copyInner(Integer content) {
-        return content;
-    }
-
-    @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         IEnergyStorage capability = tileEntity.getCapability(CapabilityEnergy.ENERGY, null);
         return capability != null && (io == IO.IN && capability.canExtract() ||

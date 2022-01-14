@@ -32,19 +32,17 @@ public class Recipe {
 
     private boolean match(IO io, Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilityProxies) {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : io == IO.IN ? inputs.entrySet() : outputs.entrySet()) {
-            for (Object content : entry.getValue()) {
-                content = entry.getKey().copyContent(content);
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey())) { // search same io type
-                    content = proxy.searchingRecipe(io, this, content);
-                    if (content == null) break;
-                }
+            List<?> content = entry.getValue();
+            for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey())) { // search same io type
+                content = proxy.searchingRecipe(io, this, content);
                 if (content == null) break;
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey())) { // search both type
-                    content = proxy.searchingRecipe(io, this, content);
-                    if (content == null) break;
-                }
-                if (content != null) return false;
             }
+            if (content == null) break;
+            for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey())) { // search both type
+                content = proxy.searchingRecipe(io, this, content);
+                if (content == null) break;
+            }
+            if (content != null) return false;
         }
         return true;
     }

@@ -3,6 +3,9 @@ package io.github.cleanroommc.multiblocked.api.capability;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import net.minecraft.tileentity.TileEntity;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * The Proxy of a specific capability that has been detected {@link MultiblockCapability}. Providing I/O and such features to a controller.
  */
@@ -27,7 +30,7 @@ public abstract class CapabilityProxy<K> {
      * <br>
      *      null - nothing left. matching successful.
      */
-    protected abstract K matchingRecipeInner(IO io, Recipe recipe, K left);
+    protected abstract List<K> matchingRecipeInner(IO io, Recipe recipe, List<K> left);
 
     /**
      * searching successful. consumption
@@ -37,7 +40,7 @@ public abstract class CapabilityProxy<K> {
      * <br>
      *     null - nothing left. consumption finish.
      */
-    protected abstract K handleRecipeInputInner(IO io, Recipe recipe, K left);
+    protected abstract List<K> handleRecipeInputInner(IO io, Recipe recipe, List<K> left);
 
     /**
      * recipe logic finish. harvest
@@ -47,20 +50,28 @@ public abstract class CapabilityProxy<K> {
      * <br>
      *     null - nothing left. harvest finish.
      */
-    protected abstract K handleRecipeOutputInner(IO io, Recipe recipe, K left);
+    protected abstract List<K> handleRecipeOutputInner(IO io, Recipe recipe, List<K> left);
+
+
+    /**
+     * deep copy of this content. recipe need it for searching and such things
+     */
+    protected abstract K copyInner(K content);
 
     @SuppressWarnings("unchecked")
-    public final K searchingRecipe(IO io, Recipe recipe, Object left) {
-        return matchingRecipeInner(io, recipe, (K) left);
+    public final K copyContent(Object content) {
+        return copyInner((K) content);
     }
 
-    @SuppressWarnings("unchecked")
-    public final K handleRecipeInput(IO io, Recipe recipe, Object left) {
-        return handleRecipeInputInner(io, recipe, (K) left);
+    public final List<K> searchingRecipe(IO io, Recipe recipe, List<?> left) {
+        return matchingRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()));
     }
 
-    @SuppressWarnings("unchecked")
-    public final K handleRecipeOutput(IO io, Recipe recipe, Object left) {
-        return handleRecipeOutputInner(io, recipe, (K) left);
+    public final List<K> handleRecipeInput(IO io, Recipe recipe, List<?> left) {
+        return handleRecipeInputInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()));
+    }
+
+    public final List<K> handleRecipeOutput(IO io, Recipe recipe, List<?> left) {
+        return handleRecipeOutputInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()));
     }
 }

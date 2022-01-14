@@ -4,7 +4,6 @@ import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -96,22 +95,11 @@ public class BlockPattern {
                         if (predicate != TraceabilityPredicate.ANY) {
                             worldState.addPosCache(pos);
                         }
-                        boolean hasCapability = predicate.io != null && predicate.capability != null;
-                        boolean isCapability = false;
                         boolean canPartShared = true;
-                        if (hasCapability) {
-                            if (worldState.getTileEntity() != null) {
-                                isCapability = predicate.capability.isBlockHasCapability(predicate.io, worldState.getTileEntity());
-                            }
-                            if (isCapability) { // add detected capabilities
-                                worldState.getMatchContext()
-                                        .getOrCreate("capabilities", Long2ObjectOpenHashMap::new)
-                                        .put(worldState.getPos().toLong(), predicate);
-                            }
-                        }
-                        if (worldState.getTileEntity() instanceof PartTileEntity) { // add detected parts
+                        TileEntity tileEntity = worldState.getTileEntity();
+                        if (tileEntity instanceof PartTileEntity) { // add detected parts
                             if (predicate != TraceabilityPredicate.ANY) {
-                                PartTileEntity<?> partTileEntity = (PartTileEntity<?>) worldState.getTileEntity();
+                                PartTileEntity<?> partTileEntity = (PartTileEntity<?>) tileEntity;
                                 if (partTileEntity.isFormed() && !partTileEntity.canShared()) { // check part can be shared
                                     canPartShared = false;
                                     worldState.setError(new PatternStringError("this part cant be shared"));
@@ -122,7 +110,7 @@ public class BlockPattern {
                                 }
                             }
                         }
-                        if ((hasCapability && !isCapability) || !predicate.test(worldState) || !canPartShared) { // matching failed
+                        if (!predicate.test(worldState) || !canPartShared) { // matching failed
                             if (findFirstAisle) {
                                 if (r < aisleRepetitions[c][0]) {//retreat to see if the first aisle can start later
                                     r = c = 0;

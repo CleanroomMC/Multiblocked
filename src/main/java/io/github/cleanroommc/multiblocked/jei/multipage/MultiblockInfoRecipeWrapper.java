@@ -6,7 +6,9 @@ import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
+import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.scene.ImmediateWorldSceneRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRenderer;
 import io.github.cleanroommc.multiblocked.client.util.RenderUtils;
@@ -542,6 +544,13 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
             renderBlockOverLay(selected, 255, 0, 0);
         });
         world.setRenderFilter(pos->worldSceneRenderer.renderedBlocksMap.keySet().stream().anyMatch(c->c.contains(pos)));
+        world.setTEHook(te->{
+            if (te instanceof ComponentTileEntity && ((ComponentTileEntity<?>) te).getRenderer() instanceof CycleBlockStateRenderer) {
+                CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((ComponentTileEntity<?>) te).getRenderer();
+                return renderer.getTileEntity(te.getWorld(), te.getPos());
+            }
+            return te;
+        });
         List<ItemStack> parts = gatherBlockDrops(worldSceneRenderer.world, blockMap, blockDrops).values().stream().sorted((one, two) -> {
             if (one.isController) return -1;
             if (two.isController) return +1;

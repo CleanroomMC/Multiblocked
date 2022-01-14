@@ -15,6 +15,7 @@ import javax.vecmath.Vector3f;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -28,6 +29,7 @@ import java.util.function.Predicate;
 public class TrackedDummyWorld extends DummyWorld {
     public final Set<BlockPos> renderedBlocks = new HashSet<>();
     private Predicate<BlockPos> renderFilter;
+    private Function<TileEntity, TileEntity> teHook;
     private final World proxyWorld;
 
     private final Vector3f minPos = new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -35,6 +37,10 @@ public class TrackedDummyWorld extends DummyWorld {
 
     public void setRenderFilter(Predicate<BlockPos> renderFilter) {
         this.renderFilter = renderFilter;
+    }
+
+    public void setTEHook(Function<TileEntity, TileEntity> teHook) {
+        this.teHook = teHook;
     }
 
     public TrackedDummyWorld(){
@@ -60,6 +66,9 @@ public class TrackedDummyWorld extends DummyWorld {
     public TileEntity getTileEntity(@Nonnull BlockPos pos) {
         if (renderFilter != null && !renderFilter.test(pos))
             return null;
+        if (teHook != null) {
+            return teHook.apply(proxyWorld != null ? proxyWorld.getTileEntity(pos) : super.getTileEntity(pos));
+        }
         return proxyWorld != null ? proxyWorld.getTileEntity(pos) : super.getTileEntity(pos);
     }
 

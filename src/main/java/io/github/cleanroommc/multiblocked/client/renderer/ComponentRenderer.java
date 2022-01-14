@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.client.renderer;
 
+import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import net.minecraft.block.state.IBlockState;
@@ -49,6 +50,11 @@ public class ComponentRenderer implements ICustomItemRenderer {
             IRenderer renderer = ((ComponentTileEntity<?>) tileEntity).getRenderer();
             if (renderer == null) return false;
             return renderer.renderBlock(state, pos, blockAccess, buffer);
+        } else {
+            if (state.getBlock() instanceof BlockComponent && state.getBlock().getRegistryName() == null) { // random capability
+                ((BlockComponent) state.getBlock()).definition.baseRenderer.renderBlock(state, pos, blockAccess, buffer);
+                return true;
+            }
         }
         return false;
     }

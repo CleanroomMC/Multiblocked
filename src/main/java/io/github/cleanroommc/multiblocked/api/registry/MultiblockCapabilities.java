@@ -1,7 +1,5 @@
 package io.github.cleanroommc.multiblocked.api.registry;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.common.capability.FEMultiblockCapability;

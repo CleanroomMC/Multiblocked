@@ -7,12 +7,9 @@ import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
-import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,6 +31,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A TileEntity that defies all controller machines.
@@ -44,7 +42,6 @@ import java.util.Map;
 @ZenRegister
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
     public MultiblockState state;
-    public BlockPattern pattern;
     public Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilities;
     public LongOpenHashSet parts;
 
@@ -52,14 +49,8 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @ZenMethod
     public boolean checkPattern() {
-        if (pattern == null) initPattern();
         if (state == null) return false;
-        return pattern.checkPatternAt(state);
-    }
-
-    @ZenMethod
-    public void initPattern() {
-        pattern = definition.patternSupplier.apply(this);
+        return definition.basePattern.checkPatternAt(state);
     }
 
     @ZenMethod
@@ -76,25 +67,34 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
      */
     public void onStructureFormed() {
         // init capabilities
-        Long2ObjectOpenHashMap<TraceabilityPredicate> capabilityMap = state.getMatchContext().get("capabilities");
-        capabilities = Tables.newCustomTable(new EnumMap<>(IO.class), Object2ObjectOpenHashMap::new);
-        for (Map.Entry<Long, TraceabilityPredicate> entry : capabilityMap.entrySet()) {
-            TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(entry.getKey()));
-            if (tileEntity != null) {
-                IO io = entry.getValue().getIo();
-                MultiblockCapability<?> capability = entry.getValue().getCapability();
-                if (!capabilities.contains(io, capability)) {
-                    capabilities.put(io, capability, new ArrayList<>());
+        Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap = state.getMatchContext().get("capabilities");
+        if (capabilityMap != null) {
+            capabilities = Tables.newCustomTable(new EnumMap<>(IO.class), Object2ObjectOpenHashMap::new);
+            for (Map.Entry<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> entry : capabilityMap.entrySet()) {
+                TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(entry.getKey()));
+                if (tileEntity != null) {
+                    entry.getValue().forEach((io,set)->{
+                        for (MultiblockCapability<?> capability : set) {
+                            if (capability.isBlockHasCapability(io, tileEntity)) {
+                                if (!capabilities.contains(io, capability)) {
+                                    capabilities.put(io, capability, new ArrayList<>());
+                                }
+                                capabilities.get(io, capability).add(capability.createProxy(io, tileEntity));
+                            }
+                        }
+                    });
                 }
-                capabilities.get(io, capability).add(capability.createProxy(io, tileEntity));
             }
         }
+
         // init parts
         parts = state.getMatchContext().get("parts");
-        for (Long pos : parts) {
-            TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(pos));
-            if (tileEntity instanceof PartTileEntity) {
-                ((PartTileEntity<?>) tileEntity).addedToController(this);
+        if (parts != null) {
+            for (Long pos : parts) {
+                TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(pos));
+                if (tileEntity instanceof PartTileEntity) {
+                    ((PartTileEntity<?>) tileEntity).addedToController(this);
+                }
             }
         }
 
@@ -106,13 +106,15 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     public void onStructureInvalid() {
         // invalid parts
-        for (Long pos : parts) {
-            TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(pos));
-            if (tileEntity instanceof PartTileEntity) {
-                ((PartTileEntity<?>) tileEntity).removedFromController(this);
+        if (parts != null) {
+            for (Long pos : parts) {
+                TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(pos));
+                if (tileEntity instanceof PartTileEntity) {
+                    ((PartTileEntity<?>) tileEntity).removedFromController(this);
+                }
             }
+            parts = null;
         }
-        parts = null;
         capabilities = null;
 
         writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));

@@ -4,14 +4,18 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.mc1120.item.MCItemStack;
 import io.github.cleanroommc.multiblocked.Multiblocked;
+import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDrops;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IGetOutputRedstoneSignal;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.ILeftClick;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.INeighborChanged;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IRightClick;
+import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
+import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -60,7 +64,7 @@ public class ComponentDefinition {
             component.setWorld(world);
             return component;
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            Multiblocked.LOGGER.error(e);
         }
         return null;
     }
@@ -86,4 +90,12 @@ public class ComponentDefinition {
         return new MCItemStack(getStackForm());
     }
 
+    @ZenMethod
+    @ZenGetter
+    public TraceabilityPredicate selfPredicate() {
+        return new TraceabilityPredicate(state -> {
+            Block block = state.getBlockState().getBlock();
+            return block instanceof BlockComponent && ((BlockComponent) block).definition == this;
+        }, ()-> new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location))}).setCenter();
+    }
 }

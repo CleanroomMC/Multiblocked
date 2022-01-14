@@ -10,6 +10,5 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenClass("mods.multiblocked.function.INeighborChanged")
 @ZenRegister
 public interface INeighborChanged {
-    @Optional.Method(modid = Multiblocked.MODID_CT)
     void apply(ComponentTileEntity<?> controllerTileEntity);
 }

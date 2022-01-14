@@ -28,42 +28,52 @@ public class BlockStateRenderer implements IRenderer {
         this.state = state;
     }
 
-    @Override
-    public void renderItem(ItemStack stack) {
-        RenderItem ri = Minecraft.getMinecraft().getRenderItem();
-        GlStateManager.translate(0.5F, 0.5F, 0.5F);
-        ItemStack renderItem = new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, state.getBlock().damageDropped(state));
+    protected IBlockState getState() {
+        return state;
+    }
+
+    @SideOnly(Side.CLIENT)
+    protected IBakedModel getItemModel(ItemStack renderItem) {
         if (itemModel == null) {
             itemModel = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(renderItem, null, null);
         }
-        ri.renderItem(renderItem, itemModel);
+        return itemModel;
+    }
+
+    @Override
+    public void renderItem(ItemStack stack) {
+        IBlockState state = getState();
+        RenderItem ri = Minecraft.getMinecraft().getRenderItem();
+        GlStateManager.translate(0.5F, 0.5F, 0.5F);
+        ItemStack renderItem = new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, state.getBlock().damageDropped(state));
+        ri.renderItem(renderItem, getItemModel(renderItem));
     }
 
     @Override
     public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
-        if (this.state.getBlock().canRenderInLayer(this.state, MinecraftForgeClient.getRenderLayer())) {
+        state = getState();
+        if (state.getBlock().canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
             BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
-            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, this.state);
-            brd.renderBlockDamage(this.state, pos, texture, access);
+            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, state);
+            brd.renderBlockDamage(state, pos, texture, access);
         }
     }
 
     @Override
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
-        if (this.state.getBlock().canRenderInLayer(this.state, MinecraftForgeClient.getRenderLayer())) {
+        state = getState();
+        if (state.getBlock().canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
             BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
-            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, this.state);
-            return brd.renderBlock(this.state, pos, access, buffer);
+            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, state);
+            return brd.renderBlock(state, pos, access, buffer);
         }
         return false;
     }
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        if (itemModel == null) {
-            ItemStack renderItem = new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, state.getBlock().damageDropped(state));
-            itemModel = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(renderItem, null, null);
-        }
-        return itemModel.getParticleTexture();
+        IBlockState state = getState();
+        ItemStack renderItem = new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, state.getBlock().damageDropped(state));
+        return getItemModel(renderItem).getParticleTexture();
     }
 }

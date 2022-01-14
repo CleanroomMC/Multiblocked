@@ -14,7 +14,6 @@ import crafttweaker.mc1120.world.MCFacing;
 import crafttweaker.mc1120.world.MCWorld;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
-import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.netty.buffer.ByteBuf;
@@ -57,8 +56,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.blocks;
 
 /**
  * A TileEntity that defies everything a TileEntity represents.
@@ -151,8 +148,8 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @Method(modid = Multiblocked.MODID_CT)
     @ZenMethod()
     @ZenSetter("frontFacing")
-    public boolean setFrontFacing(IFacing facing) {
-        return setFrontFacing(CraftTweakerMC.getFacing(facing));
+    public void setFrontFacing(IFacing facing) {
+        setFrontFacing(CraftTweakerMC.getFacing(facing));
     }
 
     @Override
@@ -197,12 +194,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @ZenMethod
     public boolean isOpaqueCube() {
         return true;
-    }
-
-    @ZenMethod
-    @ZenGetter
-    public TraceabilityPredicate selfPredicate() {
-        return blocks(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(getLocation())).setCenter();
     }
 
     @ZenMethod

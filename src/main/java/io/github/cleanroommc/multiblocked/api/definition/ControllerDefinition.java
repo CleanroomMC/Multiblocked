@@ -5,7 +5,6 @@ import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.item.MCItemStack;
 import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IPatternSupplier;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IStructureFormed;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IStructureInvalid;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
@@ -19,9 +18,7 @@ import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenProperty;
 import stanhebben.zenscript.annotations.ZenSetter;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -32,8 +29,6 @@ import java.util.Stack;
 @ZenRegister
 public class ControllerDefinition extends ComponentDefinition {
     @ZenProperty
-    public IPatternSupplier patternSupplier;
-    @ZenProperty
     public IStructureFormed structureFormed;
     @ZenProperty
     public IStructureInvalid structureInvalid;
@@ -42,17 +37,17 @@ public class ControllerDefinition extends ComponentDefinition {
     public boolean consumeCatalyst;
     @ZenProperty
     public List<MultiblockShapeInfo> designs;
+    @ZenProperty
+    public BlockPattern basePattern;
 
-    public ControllerDefinition(ResourceLocation location, IPatternSupplier patternSupplier) {
+    public ControllerDefinition(ResourceLocation location) {
         super(location, ControllerTileEntity.class);
-        this.patternSupplier = patternSupplier;
     }
 
     public List<MultiblockShapeInfo> getDesigns() {
         if (designs != null) return designs;
         // auto gen
-        BlockPattern structurePattern = patternSupplier.apply((ControllerTileEntity) createNewTileEntity(null));
-        return autoGenDFS(structurePattern, new ArrayList<>(), new Stack<>());
+        return autoGenDFS(basePattern, new ArrayList<>(), new Stack<>());
     }
 
     private List<MultiblockShapeInfo> autoGenDFS(BlockPattern structurePattern, List<MultiblockShapeInfo> pages, Stack<Integer> repetitionStack) {

@@ -29,7 +29,7 @@ import java.util.Set;
  */
 @ZenClass("mods.multiblocked.tile.Part")
 @ZenRegister
-public class PartTileEntity<T extends PartDefinition> extends ComponentTileEntity<T> {
+public abstract class PartTileEntity<T extends PartDefinition> extends ComponentTileEntity<T> {
 
     public Set<BlockPos> controllerPos = new HashSet<>();
 
@@ -124,4 +124,9 @@ public class PartTileEntity<T extends PartDefinition> extends ComponentTileEntit
             controllerPos.add(buffer.readBlockPos());
         }
     }
+
+    public static class PartSimpleTileEntity extends PartTileEntity<PartDefinition> {
+
+    }
+
 }

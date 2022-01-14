@@ -1,9 +1,5 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
-import io.github.cleanroommc.multiblocked.api.capability.IO;
-import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
@@ -33,8 +29,6 @@ public class TraceabilityPredicate {
     protected boolean isCenter;
     protected boolean hasAir = false;
     protected boolean isSingle = true;
-    protected IO io;
-    protected MultiblockCapability<?> capability;
 
     public TraceabilityPredicate() {}
 
@@ -44,8 +38,6 @@ public class TraceabilityPredicate {
         isCenter = predicate.isCenter;
         hasAir = predicate.hasAir;
         isSingle = predicate.isSingle;
-        io = predicate.io;
-        capability = predicate.capability;
     }
 
     public TraceabilityPredicate(Predicate<MultiblockState> predicate, Supplier<BlockInfo[]> candidates) {
@@ -64,28 +56,11 @@ public class TraceabilityPredicate {
         return isSingle;
     }
 
-    public IO getIo() {
-        return io;
-    }
-
-    public MultiblockCapability<?> getCapability() {
-        return capability;
-    }
-
     /**
      * Mark it as the controller of this multi. Normally you won't call it yourself. Use plz.
      */
     public TraceabilityPredicate setCenter() {
         isCenter = true;
-        return this;
-    }
-
-    /**
-     * Mark this block has a specific capability.
-     */
-    public TraceabilityPredicate setCapability(IO io, MultiblockCapability<?> capability) {
-        this.io = io;
-        this.capability = capability;
         return this;
     }
 
@@ -274,9 +249,6 @@ public class TraceabilityPredicate {
             }
             if (predicates.hasAir) {
                 result.add(I18n.format("gregtech.multiblock.pattern.replaceable_air"));
-            }
-            if (predicates.io != null && predicates.capability != null) {
-                result.add(I18n.format("has capability: " + predicates.capability.name));
             }
             return result;
         }

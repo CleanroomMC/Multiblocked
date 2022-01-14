@@ -2,6 +2,7 @@ package io.github.cleanroommc.multiblocked;
 
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
+import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
@@ -23,7 +24,9 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.function.Function;
 
+import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.air;
 import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.blocks;
+import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.blocksWithCapability;
 
 @Mod.EventBusSubscriber(modid = Multiblocked.MODID)
 public class CommonProxy {
@@ -33,14 +36,17 @@ public class CommonProxy {
         MultiblockedNetworking.initializeC2S();
         MultiblockedNetworking.initializeS2C();
         MultiblockCapabilities.registerCapabilities();
-        ControllerDefinition definition = new ControllerDefinition(new ResourceLocation("multiblocked:test_block"), component -> FactoryBlockPattern.start()
+        ControllerDefinition definition = new ControllerDefinition(new ResourceLocation("multiblocked:test_block"));
+        definition.basePattern = FactoryBlockPattern.start()
                 .aisle("XXX")
-                .aisle("X#X")
+                .aisle("I#O")
                 .aisle("XYX")
                 .where('X', blocks(Blocks.STONE))
-                .where('#', blocks(Blocks.CHEST))
-                .where('Y', component.selfPredicate())
-                .build());
+                .where('#', air())
+                .where('I', blocksWithCapability(IO.IN, MultiblockCapabilities.ITEM, Blocks.CHEST))
+                .where('O', blocksWithCapability(IO.OUT, MultiblockCapabilities.ITEM))
+                .where('Y', definition.selfPredicate())
+                .build();
 //        definition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
         definition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));
         definition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"));

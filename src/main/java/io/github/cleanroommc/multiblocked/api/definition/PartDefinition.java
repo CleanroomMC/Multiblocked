@@ -25,4 +25,8 @@ public class PartDefinition extends ComponentDefinition {
         super(location, clazz);
     }
 
+    public PartDefinition(ResourceLocation location) {
+        super(location, PartTileEntity.PartSimpleTileEntity.class);
+    }
+
 }

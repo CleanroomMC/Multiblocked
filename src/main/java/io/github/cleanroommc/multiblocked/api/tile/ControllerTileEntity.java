@@ -6,8 +6,10 @@ import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
+import io.github.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -25,6 +27,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenProperty;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -42,10 +45,14 @@ import java.util.Set;
 @ZenRegister
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
     public MultiblockState state;
-    public Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilities;
-    public LongOpenHashSet parts;
+    protected Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilities;
+    protected LongOpenHashSet parts;
+    @ZenProperty
+    protected final RecipeLogic recipeLogic;
 
-    public ControllerTileEntity() {}
+    public ControllerTileEntity() {
+        recipeLogic = new RecipeLogic(this);
+    }
 
     @ZenMethod
     public boolean checkPattern() {
@@ -53,13 +60,17 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return definition.basePattern.checkPatternAt(state);
     }
 
-    @ZenMethod
     @ZenGetter
     public boolean isFormed() {
         return state != null && state.isFormed();
     }
 
     public void updateFormed() {
+        recipeLogic.update();
+    }
+
+    public Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> getCapabilities() {
+        return capabilities;
     }
 
     /**
@@ -97,6 +108,8 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 }
             }
         }
+
+        state.getMatchContext().reset();
 
         writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
         if (definition.structureFormed != null) {
@@ -158,13 +171,16 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
+        recipeLogic.readFromNBT(compound.getCompoundTag("recipeLogic"));
         state = MultiblockWorldSavedData.getOrCreate(world).mapping.get(pos);
     }
 
     @Nonnull
     @Override
     public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
-        return super.writeToNBT(compound);
+        super.writeToNBT(compound);
+        compound.setTag("recipeLogic", recipeLogic.writeToNBT(new NBTTagCompound()));
+        return compound;
     }
 
     @Override

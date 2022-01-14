@@ -2,19 +2,26 @@ package io.github.cleanroommc.multiblocked.api.recipe;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
+import stanhebben.zenscript.annotations.ZenClass;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+@ZenClass("mods.multiblocked.recipe.RecipeBuilder")
+@ZenRegister
 public class RecipeBuilder {
 
     private final Map<MultiblockCapability<?>, ImmutableList.Builder<Object>> inputBuilder = new HashMap<>();
     private final Map<MultiblockCapability<?>, ImmutableList.Builder<Object>> outputBuilder = new HashMap<>();
+    int duration;
+    int hash; // to make each recipe has a unique identifier and no need to set name himself.
 
     public static RecipeBuilder start() {
         return new RecipeBuilder();
@@ -31,27 +38,49 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder inputFE(int forgeEnergy) {
+        hash += MultiblockCapabilities.FE.hashCode() + forgeEnergy;
         return input(MultiblockCapabilities.FE, forgeEnergy);
     }
 
     public RecipeBuilder outputFE(int forgeEnergy) {
+        hash += MultiblockCapabilities.FE.hashCode() + forgeEnergy;
         return output(MultiblockCapabilities.FE, forgeEnergy);
     }
 
     public RecipeBuilder inputItems(ItemsIngredient... inputs) {
-        return input(MultiblockCapabilities.FE, (Object[]) inputs);
+        hash += MultiblockCapabilities.ITEM.hashCode();
+        for (ItemsIngredient input : inputs) {
+            hash += input.hashCode();
+        }
+        return input(MultiblockCapabilities.ITEM, (Object[]) inputs);
     }
 
     public RecipeBuilder outputItems(ItemStack... outputs) {
-        return output(MultiblockCapabilities.FE, Arrays.stream(outputs).map(ItemsIngredient::new).toArray());
+        hash += MultiblockCapabilities.ITEM.hashCode();
+        for (ItemStack output : outputs) {
+            hash += output.getCount();
+            ResourceLocation name = output.getItem().getRegistryName();
+            hash += name == null ? 0 : name.hashCode();
+        }
+        return output(MultiblockCapabilities.ITEM, Arrays.stream(outputs).map(ItemsIngredient::new).toArray());
     }
 
     public RecipeBuilder inputFluids(FluidStack... inputs) {
-        return input(MultiblockCapabilities.FE, (Object[]) inputs);
+        hash += MultiblockCapabilities.FLUID.hashCode();
+        for (FluidStack input : inputs) {
+            hash += input.amount;
+            hash += input.getUnlocalizedName().hashCode();
+        }
+        return input(MultiblockCapabilities.FLUID, (Object[]) inputs);
     }
 
     public RecipeBuilder outputFluids(FluidStack... outputs) {
-        return output(MultiblockCapabilities.FE, (Object[]) outputs);
+        hash += MultiblockCapabilities.FLUID.hashCode();
+        for (FluidStack output : outputs) {
+            hash += output.amount;
+            hash += output.getUnlocalizedName().hashCode();
+        }
+        return output(MultiblockCapabilities.FLUID, (Object[]) outputs);
     }
 
     public Recipe build() {
@@ -63,7 +92,8 @@ public class RecipeBuilder {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Object>> entry : this.outputBuilder.entrySet()) {
             outputBuilder.put(entry.getKey(), entry.getValue().build());
         }
-        return new Recipe(inputBuilder.build(), outputBuilder.build());
+
+        return new Recipe(hash, inputBuilder.build(), outputBuilder.build(), duration);
     }
 
 }

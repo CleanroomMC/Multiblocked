@@ -2,6 +2,7 @@ package io.github.cleanroommc.multiblocked.api.recipe;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 
 public class ItemsIngredient extends Ingredient {
     private int amount;
@@ -41,4 +42,13 @@ public class ItemsIngredient extends Ingredient {
         return new ItemsIngredient(amount, getMatchingStacks());
     }
 
+    @Override
+    public int hashCode() {
+        int hash = amount;
+        for (ItemStack stack : getMatchingStacks()) {
+            ResourceLocation name = stack.getItem().getRegistryName();
+            amount += name == null ? 0 : name.hashCode();
+        }
+        return hash;
+    }
 }

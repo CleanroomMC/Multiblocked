@@ -1,7 +1,6 @@
 package io.github.cleanroommc.multiblocked.client.renderer.impl;
 
 import io.github.cleanroommc.multiblocked.api.capability.IO;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;

@@ -77,7 +77,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @ZenMethod
     @ZenGetter("definition")
-    public ComponentDefinition getDefinition() {
+    public T getDefinition() {
         return definition;
     }
 
@@ -205,6 +205,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @ZenMethod
     public void notifyBlockUpdate() {
         getWorld().notifyNeighborsOfStateChange(pos, getBlockType(), false);
+    }
+
+    @Override
+    @ZenMethod
+    public void markDirty() {
+        super.markDirty();
     }
 
     //************* events *************//

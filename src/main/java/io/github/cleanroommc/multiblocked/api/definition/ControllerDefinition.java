@@ -9,6 +9,7 @@ import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IStructureF
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IStructureInvalid;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
+import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -39,6 +40,8 @@ public class ControllerDefinition extends ComponentDefinition {
     public List<MultiblockShapeInfo> designs;
     @ZenProperty
     public BlockPattern basePattern;
+    @ZenProperty
+    public RecipeMap recipeMap;
 
     public ControllerDefinition(ResourceLocation location) {
         super(location, ControllerTileEntity.class);

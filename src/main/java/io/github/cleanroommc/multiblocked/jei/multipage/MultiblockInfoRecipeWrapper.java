@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.jei.multipage;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
+import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
@@ -483,6 +484,7 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
         for (Entry<BlockPos, BlockInfo> entry : blocks.entrySet()) {
             BlockPos pos = entry.getKey();
             IBlockState blockState = world.getBlockState(pos);
+            if (blockState.getBlock() instanceof BlockComponent && blockState.getBlock().getRegistryName() == null) continue;
             NonNullList<ItemStack> blockDrops = NonNullList.create();
             blockState.getBlock().getDrops(blockDrops, world, pos, blockState, 0);
             dropsList.addAll(blockDrops);

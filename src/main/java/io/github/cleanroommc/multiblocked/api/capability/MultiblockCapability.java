@@ -1,6 +1,5 @@
 package io.github.cleanroommc.multiblocked.api.capability;
 
-import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -34,5 +33,10 @@ public abstract class MultiblockCapability<K> {
      */
     public IBlockState[] getCandidates(IO io) {
         return new IBlockState[]{Blocks.GLASS.getDefaultState(), Blocks.GOLD_ORE.getDefaultState(), Blocks.TNT.getDefaultState()};
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

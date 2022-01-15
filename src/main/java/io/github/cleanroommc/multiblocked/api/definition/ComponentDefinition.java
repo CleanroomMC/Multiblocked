@@ -91,7 +91,6 @@ public class ComponentDefinition {
     }
 
     @ZenMethod
-    @ZenGetter
     public TraceabilityPredicate selfPredicate() {
         return new TraceabilityPredicate(state -> {
             Block block = state.getBlockState().getBlock();

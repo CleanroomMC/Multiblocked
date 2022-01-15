@@ -38,11 +38,14 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
                 for (int i = 0; i < capability.getSlots(); i++) {
                     ItemStack itemStack = capability.getStackInSlot(i);
                     if (ingredient.match(itemStack)) {
-                        ItemStack extracted = capability.extractItem(i, itemStack.getCount(), simulate);
+                        ItemStack extracted = capability.extractItem(i, ingredient.getAmount(), simulate);
                         ingredient.setAmount(ingredient.getAmount() - extracted.getCount());
+                        if (ingredient.getAmount() <= 0) {
+                            iterator.remove();
+                            break;
+                        }
                     }
                 }
-                if (ingredient.getAmount() <= 0) iterator.remove();
             }
         } else if (io == IO.OUT){
             while (iterator.hasNext()) {

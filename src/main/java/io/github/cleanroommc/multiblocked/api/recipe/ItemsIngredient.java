@@ -33,7 +33,7 @@ public class ItemsIngredient extends Ingredient {
 
     public boolean match(ItemStack itemStack) {
         for (ItemStack matchingStack : getMatchingStacks()) {
-            if (matchingStack.isItemEqual(matchingStack)) return true;
+            if (matchingStack.isItemEqual(itemStack)) return true;
         }
         return false;
     }
@@ -47,7 +47,7 @@ public class ItemsIngredient extends Ingredient {
         int hash = amount;
         for (ItemStack stack : getMatchingStacks()) {
             ResourceLocation name = stack.getItem().getRegistryName();
-            amount += name == null ? 0 : name.hashCode();
+            hash += name == null ? 0 : name.hashCode();
         }
         return hash;
     }

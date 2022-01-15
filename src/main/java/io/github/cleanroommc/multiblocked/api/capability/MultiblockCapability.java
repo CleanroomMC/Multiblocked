@@ -1,8 +1,11 @@
 package io.github.cleanroommc.multiblocked.api.capability;
 
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenProperty;
 
 import javax.annotation.Nonnull;
 
@@ -11,7 +14,10 @@ import javax.annotation.Nonnull;
  *
  * @param <K> recipe info stored.
  */
+@ZenClass("mods.multiblocked.capability.capability")
+@ZenRegister
 public abstract class MultiblockCapability<K> {
+    @ZenProperty
     public final String name;
 
     public MultiblockCapability(String name) {

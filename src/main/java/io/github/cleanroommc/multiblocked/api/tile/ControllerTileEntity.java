@@ -48,10 +48,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     protected Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilities;
     protected LongOpenHashSet parts;
     @ZenProperty
-    protected final RecipeLogic recipeLogic;
+    protected RecipeLogic recipeLogic;
 
     public ControllerTileEntity() {
-        recipeLogic = new RecipeLogic(this);
     }
 
     @ZenMethod
@@ -66,7 +65,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     }
 
     public void updateFormed() {
-        recipeLogic.update();
+        if (recipeLogic != null) recipeLogic.update();
     }
 
     public Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> getCapabilities() {
@@ -77,6 +76,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
      * Called when its formed, server side only.
      */
     public void onStructureFormed() {
+        recipeLogic = new RecipeLogic(this);
         // init capabilities
         Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap = state.getMatchContext().get("capabilities");
         if (capabilityMap != null) {
@@ -118,6 +118,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     }
 
     public void onStructureInvalid() {
+        recipeLogic = null;
         // invalid parts
         if (parts != null) {
             for (Long pos : parts) {
@@ -171,7 +172,10 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
-        recipeLogic.readFromNBT(compound.getCompoundTag("recipeLogic"));
+        if (compound.hasKey("recipeLogic")) {
+            recipeLogic = new RecipeLogic(this);
+            recipeLogic.readFromNBT(compound.getCompoundTag("recipeLogic"));
+        }
         state = MultiblockWorldSavedData.getOrCreate(world).mapping.get(pos);
     }
 
@@ -179,7 +183,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setTag("recipeLogic", recipeLogic.writeToNBT(new NBTTagCompound()));
+        if (recipeLogic != null) compound.setTag("recipeLogic", recipeLogic.writeToNBT(new NBTTagCompound()));
         return compound;
     }
 

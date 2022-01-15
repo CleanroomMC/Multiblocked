@@ -47,14 +47,18 @@ public class Recipe {
     private boolean match(IO io, Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilityProxies) {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : io == IO.IN ? inputs.entrySet() : outputs.entrySet()) {
             List<?> content = entry.getValue();
-            for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey())) { // search same io type
-                content = proxy.searchingRecipe(io, this, content);
-                if (content == null) break;
+            if (capabilityProxies.contains(io, entry.getKey())) {
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey())) { // search same io type
+                    content = proxy.searchingRecipe(io, this, content);
+                    if (content == null) break;
+                }
             }
             if (content == null) break;
-            for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey())) { // search both type
-                content = proxy.searchingRecipe(io, this, content);
-                if (content == null) break;
+            if (capabilityProxies.contains(IO.BOTH, entry.getKey())) {
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey())) { // search both type
+                    content = proxy.searchingRecipe(io, this, content);
+                    if (content == null) break;
+                }
             }
             if (content != null) return false;
         }
@@ -64,29 +68,38 @@ public class Recipe {
     public void handleInput(Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilityProxies) {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : inputs.entrySet()) {
             List<?> content = entry.getValue();
-            for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.IN, entry.getKey())) { // search same io type
-                content = proxy.handleRecipeInput(this, content);
-                if (content == null) break;
+            if (capabilityProxies.contains(IO.IN, entry.getKey())) {
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.IN, entry.getKey())) { // search same io type
+                    content = proxy.handleRecipeInput(this, content);
+                    if (content == null) break;
+                }
             }
             if (content == null) break;
-            for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey())) { // search both type
-                content = proxy.handleRecipeInput(this, content);
-                if (content == null) break;
+            if (capabilityProxies.contains(IO.BOTH, entry.getKey())){
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey())) { // search both type
+                    content = proxy.handleRecipeInput(this, content);
+                    if (content == null) break;
+                }
             }
         }
     }
 
     public void handleOutput(Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilityProxies) {
-        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : inputs.entrySet()) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : outputs.entrySet()) {
             List<?> content = entry.getValue();
-            for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.OUT, entry.getKey())) { // search same io type
-                content = proxy.handleRecipeOutput(this, content);
-                if (content == null) break;
+            if (capabilityProxies.contains(IO.OUT, entry.getKey())) {
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.OUT, entry.getKey())) { // search same io type
+                    content = proxy.handleRecipeOutput(this, content);
+                    if (content == null) break;
+                }
             }
             if (content == null) break;
-            for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey())) { // search both type
-                content = proxy.handleRecipeOutput(this, content);
-                if (content == null) break;
+            if (capabilityProxies.contains(IO.BOTH, entry.getKey())) {
+                for (CapabilityProxy<?> proxy : capabilityProxies
+                        .get(IO.BOTH, entry.getKey())) { // search both type
+                    content = proxy.handleRecipeOutput(this, content);
+                    if (content == null) break;
+                }
             }
         }
     }

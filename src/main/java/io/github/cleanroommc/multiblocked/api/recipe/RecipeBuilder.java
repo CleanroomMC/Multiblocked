@@ -18,13 +18,23 @@ import java.util.Map;
 @ZenRegister
 public class RecipeBuilder {
 
+    private final RecipeMap recipeMap;
     private final Map<MultiblockCapability<?>, ImmutableList.Builder<Object>> inputBuilder = new HashMap<>();
     private final Map<MultiblockCapability<?>, ImmutableList.Builder<Object>> outputBuilder = new HashMap<>();
     int duration;
     int hash; // to make each recipe has a unique identifier and no need to set name himself.
 
-    public static RecipeBuilder start() {
-        return new RecipeBuilder();
+    public RecipeBuilder(RecipeMap recipeMap) {
+        this.recipeMap = recipeMap;
+    }
+
+    public RecipeBuilder copy() {
+        RecipeBuilder copy = new RecipeBuilder(recipeMap);
+        copy.inputBuilder.putAll(this.inputBuilder);
+        copy.outputBuilder.putAll(this.outputBuilder);
+        copy.duration = this.duration;
+        copy.hash = this.hash;
+        return copy;
     }
 
     public RecipeBuilder input(MultiblockCapability<?> capability, Object... obj) {
@@ -83,6 +93,11 @@ public class RecipeBuilder {
         return output(MultiblockCapabilities.FLUID, (Object[]) outputs);
     }
 
+    public RecipeBuilder duration(int duration) {
+        this.duration = duration;
+        return this;
+    }
+
     public Recipe build() {
         ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Object>> inputBuilder = new ImmutableMap.Builder<>();
         for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Object>> entry : this.inputBuilder.entrySet()) {
@@ -96,4 +111,7 @@ public class RecipeBuilder {
         return new Recipe(hash, inputBuilder.build(), outputBuilder.build(), duration);
     }
 
+    public void buildAndRegister(){
+        recipeMap.addRecipe(build());
+    }
 }

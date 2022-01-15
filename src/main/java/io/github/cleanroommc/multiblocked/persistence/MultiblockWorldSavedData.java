@@ -72,6 +72,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         for (BlockPos blockPos : state.getCache()) {
             chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c->new HashSet<>()).add(state);
         }
+        addLoading(state.getController());
         setDirty(true);
     }
 

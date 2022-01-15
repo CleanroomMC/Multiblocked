@@ -4,7 +4,10 @@ import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
+import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
+import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
@@ -13,8 +16,10 @@ import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -26,7 +31,6 @@ import java.util.function.Function;
 
 import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.air;
 import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.blocks;
-import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.blocksWithCapability;
 
 @Mod.EventBusSubscriber(modid = Multiblocked.MODID)
 public class CommonProxy {
@@ -36,17 +40,22 @@ public class CommonProxy {
         MultiblockedNetworking.initializeC2S();
         MultiblockedNetworking.initializeS2C();
         MultiblockCapabilities.registerCapabilities();
-        ControllerDefinition definition = new ControllerDefinition(new ResourceLocation("multiblocked:test_block"));
+        ControllerDefinition definition = new ControllerDefinition(new ResourceLocation("multiblocked:test_block"), new RecipeMap("test_recipe_map"));
+        definition.recipeMap.start()
+                .inputItems(new ItemsIngredient(2, new ItemStack(Items.GOLD_INGOT), new ItemStack(Items.IRON_INGOT)))
+                .outputItems(new ItemStack(Items.APPLE, 10))
+                .duration(60)
+                .buildAndRegister();
         definition.basePattern = FactoryBlockPattern.start()
                 .aisle("XXX")
-                .aisle("I#O")
+                .aisle("A#A")
                 .aisle("XYX")
                 .where('X', blocks(Blocks.STONE))
                 .where('#', air())
-                .where('I', blocksWithCapability(IO.IN, MultiblockCapabilities.ITEM, Blocks.CHEST))
-                .where('O', blocksWithCapability(IO.OUT, MultiblockCapabilities.ITEM))
+                .where('A', definition.autoCapability())
                 .where('Y', definition.selfPredicate())
                 .build();
+
 //        definition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
         definition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));
         definition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"));

@@ -38,6 +38,9 @@ public class Predicates {
                 Collectors.toSet())));
     }
 
+    /**
+     * Use it when you require that a position must have a specific capability.
+     */
     public static TraceabilityPredicate anyCapability(IO io, MultiblockCapability<?> capability) {
         IBlockState[] candidates = capability.getCandidates(io);
         BlockComponent randomBlock = new BlockComponent(new PartDefinition(new ResourceLocation(Multiblocked.MODID, capability.name)));
@@ -49,6 +52,11 @@ public class Predicates {
         }, ()-> new BlockInfo[]{new BlockInfo(randomBlock.getDefaultState())});
     }
 
+    /**
+     * Use it when you specify that certain blocks provide only certain capabilities.
+     * <br>
+     * Otherwise all capacities of it which meet the recipeMap needs will be captured.
+     */
     public static TraceabilityPredicate blocksWithCapability(IO io, MultiblockCapability<?> capability, Block... blocks) {
         if (blocks.length == 0) return anyCapability(io, capability);
         Set<Block> bloxx = new ObjectOpenHashSet<>(Arrays.asList(blocks));
@@ -58,6 +66,11 @@ public class Predicates {
         }, getCandidates(bloxx.stream().map(Block::getDefaultState).collect(Collectors.toSet())));
     }
 
+    /**
+     * Use it when you specify that certain blocks provide only certain capabilities.
+     * <br>
+     * Otherwise all capacities of it which meet the recipeMap needs will be captured.
+     */
     public static TraceabilityPredicate statesWithCapability(IO io, MultiblockCapability<?> capability, IBlockState... allowedStates) {
         if (allowedStates.length == 0) return anyCapability(io, capability);
         Set<IBlockState> states = new ObjectOpenHashSet<>(Arrays.asList(allowedStates));

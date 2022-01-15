@@ -2,8 +2,11 @@ package io.github.cleanroommc.multiblocked.api.pattern;
 
 import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
+import io.github.cleanroommc.multiblocked.api.capability.IO;
+import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -12,8 +15,11 @@ import net.minecraft.util.math.BlockPos;
 import stanhebben.zenscript.annotations.ZenClass;
 
 import java.lang.reflect.Array;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @ZenClass("mods.multiblocked.pattern.BlockPattern")
 @ZenRegister
@@ -79,6 +85,8 @@ public class BlockPattern {
         Map<TraceabilityPredicate.SimplePredicate, Integer> layerCount = worldState.layerCount;
         BlockPos centerPos = worldState.getController().getPos();
         EnumFacing facing = worldState.getController().getFrontFacing().getOpposite();
+        Set<MultiblockCapability<?>> inputCapabilities = worldState.getController().getDefinition().recipeMap.inputCapabilities;
+        Set<MultiblockCapability<?>> outputCapabilities = worldState.getController().getDefinition().recipeMap.outputCapabilities;
         //Checking aisles
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             //Checking repeatable slices
@@ -122,6 +130,32 @@ public class BlockPattern {
                                 z++;//continue searching for the first aisle
                             }
                             continue loop;
+                        }
+                        if (tileEntity != null) {
+                            Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilities = worldState.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
+                            if (!capabilities.containsKey(worldState.getPos().toLong())) {
+                                // if predicate has no specific capability requirements. we will check abilities of every blocks
+                                Set<MultiblockCapability<?>> bothFound = new HashSet<>();
+                                for (MultiblockCapability<?> capability : inputCapabilities) { // IN
+                                    if (outputCapabilities.contains(capability) && capability.isBlockHasCapability(IO.BOTH, tileEntity)) {
+                                        bothFound.add(capability);
+                                        capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
+                                                .computeIfAbsent(IO.BOTH, xx->new HashSet<>())
+                                                .add(capability);
+                                    } else if (capability.isBlockHasCapability(IO.IN, tileEntity)) {
+                                        capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
+                                                .computeIfAbsent(IO.IN, xx->new HashSet<>())
+                                                .add(capability);
+                                    }
+                                }
+                                for (MultiblockCapability<?> capability : outputCapabilities) { // OUT
+                                    if (!bothFound.contains(capability) && capability.isBlockHasCapability(IO.OUT, tileEntity)) {
+                                        capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
+                                                .computeIfAbsent(IO.OUT, xx->new HashSet<>())
+                                                .add(capability);
+                                    }
+                                }
+                            }
                         }
                     }
                 }

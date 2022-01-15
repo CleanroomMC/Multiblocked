@@ -5,14 +5,10 @@ import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.item.MCItemStack;
 import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.api.capability.IO;
-import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IStructureFormed;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IStructureInvalid;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
-import io.github.cleanroommc.multiblocked.api.pattern.Predicates;
-import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import net.minecraft.item.ItemStack;
@@ -20,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 import stanhebben.zenscript.annotations.ZenSetter;
 
@@ -88,17 +83,5 @@ public class ControllerDefinition extends ComponentDefinition {
     @ZenSetter("catalyst")
     public void setCatalyst(IItemStack catalyst) {
         this.catalyst = catalyst == null ? null : CraftTweakerMC.getItemStack(catalyst);
-    }
-
-    @ZenMethod
-    public TraceabilityPredicate autoCapability() {
-        TraceabilityPredicate predicate = new TraceabilityPredicate();
-        for (MultiblockCapability<?> capability : recipeMap.inputCapabilities) {
-            predicate = predicate.or(Predicates.anyCapability(IO.IN, capability).setMinGlobalLimited(1).setPreviewCount(1));
-        }
-        for (MultiblockCapability<?> capability : recipeMap.outputCapabilities) {
-            predicate = predicate.or(Predicates.anyCapability(IO.OUT, capability).setMinGlobalLimited(1).setPreviewCount(1));
-        }
-        return predicate;
     }
 }

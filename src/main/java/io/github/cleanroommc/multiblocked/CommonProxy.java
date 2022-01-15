@@ -52,7 +52,7 @@ public class CommonProxy {
                 .aisle("XYX")
                 .where('X', blocks(Blocks.STONE))
                 .where('#', air())
-                .where('A', definition.autoCapability())
+                .where('A', blocks(Blocks.CHEST))
                 .where('Y', definition.selfPredicate())
                 .build();
 

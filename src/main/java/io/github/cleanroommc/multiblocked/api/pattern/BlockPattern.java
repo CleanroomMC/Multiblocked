@@ -131,7 +131,7 @@ public class BlockPattern {
                             }
                             continue loop;
                         }
-                        if (tileEntity != null) {
+                        if (tileEntity != null && predicate != TraceabilityPredicate.ANY) {
                             Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilities = worldState.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
                             if (!capabilities.containsKey(worldState.getPos().toLong())) {
                                 // if predicate has no specific capability requirements. we will check abilities of every blocks

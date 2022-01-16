@@ -16,12 +16,16 @@ import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
+import io.github.cleanroommc.multiblocked.gui.factory.TileEntityUIFactory;
+import io.github.cleanroommc.multiblocked.gui.modular.IUIHolder;
+import io.github.cleanroommc.multiblocked.gui.modular.ModularUI;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -65,7 +69,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 @ZenClass("mods.multiblocked.tile.Component")
 @ZenRegister
-public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity {
+public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity implements IUIHolder {
     // is good to write down all CT code here? or move them to @ZenExpansion.
     protected T definition;
 
@@ -171,7 +175,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public boolean isValidFrontFacing(EnumFacing facing) {
-        return true;
+        return definition.allowRotate;
     }
 
     @Method(modid = Multiblocked.MODID_CT)
@@ -227,7 +231,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (definition.onRightClick != null) {
-            return definition.onRightClick.apply(this, new MCPlayer(player), new MCFacing(facing), hitX, hitY, hitZ);
+            if (definition.onRightClick.apply(this, new MCPlayer(player), new MCFacing(facing), hitX, hitY, hitZ)) return true;
+        }
+        if (!player.isSneaking()) {
+            if (!world.isRemote && player instanceof EntityPlayerMP) {
+                return TileEntityUIFactory.INSTANCE.openUI(this, (EntityPlayerMP) player);
+            }
         }
         return false;
     }
@@ -254,6 +263,19 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public <T> T getCapability(@Nullable Capability<T> capability, @Nullable EnumFacing facing) {
         return super.getCapability(capability, facing);
     }
+
+    //************* gui *************//
+
+    @Override
+    public final boolean isRemote() {
+        return world.isRemote;
+    }
+
+    @Override
+    public ModularUI createUI(EntityPlayer entityPlayer) {
+        return null;
+    }
+
 
     //************* data sync *************//
 

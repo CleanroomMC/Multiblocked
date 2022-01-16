@@ -6,11 +6,13 @@ import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
+import io.github.cleanroommc.multiblocked.gui.modular.ModularUI;
+import io.github.cleanroommc.multiblocked.gui.texture.IGuiTexture;
+import io.github.cleanroommc.multiblocked.gui.util.ModularUIBuilder;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -57,6 +59,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public boolean checkPattern() {
         if (state == null) return false;
         return definition.basePattern.checkPatternAt(state);
+    }
+
+    @Override
+    public boolean isValidFrontFacing(EnumFacing facing) {
+        return definition.allowRotate && facing.getAxis() != EnumFacing.Axis.Y;
     }
 
     @ZenGetter
@@ -211,4 +218,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return false;
     }
 
+    @Override
+    public ModularUI createUI(EntityPlayer entityPlayer) {
+        return new ModularUIBuilder(IGuiTexture.EMPTY, 500, 500)
+                .label(10, 10, "Hello World", 0xffff00ff)
+                .bindPlayerInventory(entityPlayer.inventory, IGuiTexture.EMPTY, 10, 30)
+                .build(this, entityPlayer);
+    }
 }

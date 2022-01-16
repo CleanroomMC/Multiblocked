@@ -1,13 +1,16 @@
 package io.github.cleanroommc.multiblocked.jei;
 
+import io.github.cleanroommc.multiblocked.gui.modular.ModularUIGuiHandler;
 import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
 import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoRecipeFocusShower;
 import mezz.jei.Internal;
+import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.config.Constants;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -32,6 +35,12 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public void register(@Nonnull IModRegistry registry) {
+        IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+        ModularUIGuiHandler modularUIGuiHandler = new ModularUIGuiHandler(jeiHelpers.recipeTransferHandlerHelper());
+        registry.addAdvancedGuiHandlers(modularUIGuiHandler);
+        registry.addGhostIngredientHandler(modularUIGuiHandler.getGuiContainerClass(), modularUIGuiHandler);
+        registry.getRecipeTransferRegistry().addRecipeTransferHandler(modularUIGuiHandler, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
+        
         MultiblockInfoCategory.registerRecipes(registry);
     }
 

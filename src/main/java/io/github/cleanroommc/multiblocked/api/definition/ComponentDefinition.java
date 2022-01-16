@@ -34,6 +34,8 @@ public class ComponentDefinition {
     public final ResourceLocation location;
     public final Class<? extends ComponentTileEntity<?>> clazz;
     @ZenProperty
+    public boolean allowRotate;
+    @ZenProperty
     public IRenderer baseRenderer;
     @ZenProperty
     public IRenderer formedRenderer;

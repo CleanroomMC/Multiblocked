@@ -5,7 +5,6 @@ import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
-import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
@@ -41,8 +40,7 @@ public class CommonProxy {
 
     public void preInit() {
         MinecraftForge.EVENT_BUS.register(Listeners.class);
-        MultiblockedNetworking.initializeC2S();
-        MultiblockedNetworking.initializeS2C();
+        MultiblockedNetworking.init();
         MultiblockCapabilities.registerCapabilities();
 
         // create a part component.

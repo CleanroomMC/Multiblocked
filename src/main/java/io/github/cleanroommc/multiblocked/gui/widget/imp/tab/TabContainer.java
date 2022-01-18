@@ -22,6 +22,7 @@ public class TabContainer extends WidgetGroup {
             focus.setVisible(false);
             focus.setActive(false);
         }
+        focus= tabWidget;
         Optional.ofNullable(tabs.inverse().get(tabWidget)).ifPresent(tab -> {
             tab.setPressed(true);
             tabWidget.setActive(true);

@@ -26,8 +26,9 @@ public class SwitchWidget extends Widget {
         this.onPressCallback = onPressCallback;
     }
 
-    public SwitchWidget setBaseTexture(IGuiTexture baseTexture) {
+    public SwitchWidget setTexture(IGuiTexture baseTexture, IGuiTexture pressedTexture) {
         this.baseTexture = baseTexture;
+        this.pressedTexture = pressedTexture;
         return this;
     }
 
@@ -35,6 +36,9 @@ public class SwitchWidget extends Widget {
     public void updateScreen() {
         if (baseTexture != null) {
             baseTexture.updateTick();
+        }
+        if (pressedTexture != null) {
+            pressedTexture.updateTick();
         }
     }
 
@@ -45,6 +49,7 @@ public class SwitchWidget extends Widget {
     public void setPressed(boolean isPressed) {
         if (this.isPressed == isPressed) return;
         this.isPressed = isPressed;
+        if (gui == null) return;
         if (isRemote()) {
             writeClientAction(2, buffer -> buffer.writeBoolean(isPressed));
         } else {

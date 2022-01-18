@@ -1,6 +1,8 @@
 package io.github.cleanroommc.multiblocked.network;
 
+import io.github.cleanroommc.multiblocked.network.c2s.CPacketUIClientAction;
 import io.github.cleanroommc.multiblocked.network.s2c.SPacketUIOpen;
+import io.github.cleanroommc.multiblocked.network.s2c.SPacketUIWidgetUpdate;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -16,6 +18,8 @@ public class MultiblockedNetworking {
 
     public static void init() {
         registerS2C(SPacketUIOpen.class);
+        registerS2C(SPacketUIWidgetUpdate.class);
+        registerC2S(CPacketUIClientAction.class);
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {

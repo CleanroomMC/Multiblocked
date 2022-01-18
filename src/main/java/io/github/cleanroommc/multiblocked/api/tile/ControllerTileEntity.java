@@ -14,8 +14,13 @@ import io.github.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import io.github.cleanroommc.multiblocked.gui.factory.TileEntityUIFactory;
 import io.github.cleanroommc.multiblocked.gui.modular.ModularUI;
+import io.github.cleanroommc.multiblocked.gui.texture.ColorRectTexture;
 import io.github.cleanroommc.multiblocked.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.gui.util.ModularUIBuilder;
+import io.github.cleanroommc.multiblocked.gui.widget.WidgetGroup;
+import io.github.cleanroommc.multiblocked.gui.widget.imp.LabelWidget;
+import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabButton;
+import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -232,8 +237,19 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
-        return new ModularUIBuilder(IGuiTexture.EMPTY, 200, 150)
-                .label(10, 10, "Hello World", 0xffff00ff)
+        TabContainer tabContainer = new TabContainer(0, 15, 200, 135);
+        tabContainer.addTab(new TabButton(-15, 0, 15, 15)
+                .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
+                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 10, ()->"tab1").setTextColor(-1));
+        tabContainer.addTab(new TabButton(-15, 15, 15, 15)
+                .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
+                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 10, ()->"tab2").setTextColor(-1));
+        tabContainer.addTab(new TabButton(-15, 30, 15, 15)
+                .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
+                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 10, ()->"tab3").setTextColor(-1));
+        return new ModularUIBuilder(new ColorRectTexture(0x66000000), 200, 150)
+                .label(5, 5, "Hello World", 0xffff00ff)
+                .widget(tabContainer)
                 .bindPlayerInventory(entityPlayer.inventory, IGuiTexture.EMPTY, 10, 30)
                 .build(this, entityPlayer);
     }

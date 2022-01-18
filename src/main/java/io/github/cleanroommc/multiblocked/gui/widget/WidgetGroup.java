@@ -97,7 +97,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         super.setVisible(visible);
     }
 
-    protected void addWidget(Widget widget) {
+    public void addWidget(Widget widget) {
         if (widget == this) {
             throw new IllegalArgumentException("Cannot add self");
         }

@@ -57,6 +57,7 @@ public class ComponentDefinition {
         this.clazz = clazz;
         this.baseRenderer = null;
         this.isOpaqueCube = true;
+        this.allowRotate = true;
     }
 
     public ComponentTileEntity<?> createNewTileEntity(World world){

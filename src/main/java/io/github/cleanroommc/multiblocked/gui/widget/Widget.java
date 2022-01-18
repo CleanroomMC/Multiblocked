@@ -37,6 +37,7 @@ public class Widget {
     private transient Size size;
     private transient boolean isVisible;
     private transient boolean isActive;
+    private transient boolean isFocus;
 
     public Widget(Position selfPosition, Size size) {
         Preconditions.checkNotNull(selfPosition, "selfPosition");
@@ -183,40 +184,45 @@ public class Widget {
      * For some -redacted- reason mouseX position is relative against GUI not game window as in other mouse events
      */
     @SideOnly(Side.CLIENT)
-    public boolean mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
-        return false;
+    public Widget mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
+        return null;
     }
 
     /**
      * Called when mouse is clicked in GUI
      */
     @SideOnly(Side.CLIENT)
-    public boolean mouseClicked(int mouseX, int mouseY, int button) {
-        return false;
+    public Widget mouseClicked(int mouseX, int mouseY, int button) {
+        return null;
     }
 
     /**
      * Called when mouse is pressed and hold down in GUI
      */
     @SideOnly(Side.CLIENT)
-    public boolean mouseDragged(int mouseX, int mouseY, int button, long timeDragged) {
-        return false;
+    public Widget mouseDragged(int mouseX, int mouseY, int button, long timeDragged) {
+        return null;
     }
 
     /**
      * Called when mouse is released in GUI
      */
     @SideOnly(Side.CLIENT)
-    public boolean mouseReleased(int mouseX, int mouseY, int button) {
-        return false;
+    public Widget mouseReleased(int mouseX, int mouseY, int button) {
+        return null;
     }
 
     /**
      * Called when key is typed in GUI
      */
     @SideOnly(Side.CLIENT)
-    public boolean keyTyped(char charTyped, int keyCode) {
-        return false;
+    public Widget keyTyped(char charTyped, int keyCode) {
+        return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void setFocus(boolean focus) {
+        isFocus = false;
     }
 
     /**

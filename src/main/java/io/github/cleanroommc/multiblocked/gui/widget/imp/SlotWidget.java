@@ -124,7 +124,7 @@ public class SlotWidget extends Widget {
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button) {
+    public Widget mouseClicked(int mouseX, int mouseY, int button) {
         if (isMouseOverElement(mouseX, mouseY) && gui != null) {
             ModularUIGuiContainer modularUIGui = gui.getModularUIGui();
             boolean last = modularUIGui.getDragSplitting();
@@ -141,27 +141,27 @@ public class SlotWidget extends Widget {
                     modularUIGui.dragSplittingLimit = 2;
                 }
             }
-            return true;
+            return this;
         }
-        return false;
+        return null;
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button) {
+    public Widget mouseReleased(int mouseX, int mouseY, int button) {
         if (isMouseOverElement(mouseX, mouseY) && gui != null) {
             gui.getModularUIGui().superMouseReleased(mouseX, mouseY, button);
-            return true;
+            return this;
         }
-        return false;
+        return null;
     }
 
     @Override
-    public boolean mouseDragged(int mouseX, int mouseY, int button, long timeDragged) {
+    public Widget mouseDragged(int mouseX, int mouseY, int button, long timeDragged) {
         if (isMouseOverElement(mouseX, mouseY) && gui != null) {
             gui.getModularUIGui().superMouseClickMove(mouseX, mouseY, button, timeDragged);
-            return true;
+            return this;
         }
-        return false;
+        return null;
     }
 
     @Override

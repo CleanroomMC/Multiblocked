@@ -24,6 +24,10 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
     private transient boolean initialized = false;
     protected transient List<Widget> waitToRemoved;
 
+    public WidgetGroup(int x, int y, int width, int height) {
+        super(x, y, width, height);
+        this.isDynamicSized = false;
+    }
 
     public WidgetGroup(Position position) {
         super(position, Size.ZERO);
@@ -265,58 +269,58 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
     }
 
     @Override
-    public boolean mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
+    public Widget mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
-            if(widget.isVisible() && widget.isActive() && widget.mouseWheelMove(mouseX, mouseY, wheelDelta)) {
-                return true;
+            if(widget.isVisible() && widget.isActive() && (widget = widget.mouseWheelMove(mouseX, mouseY, wheelDelta)) != null) {
+                return widget;
             }
         }
-        return false;
+        return null;
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button) {
+    public Widget mouseClicked(int mouseX, int mouseY, int button) {
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
-            if(widget.isVisible() && widget.isActive() && widget.mouseClicked(mouseX, mouseY, button)) {
-                return true;
+            if(widget.isVisible() && widget.isActive() && (widget = widget.mouseClicked(mouseX, mouseY, button)) != null) {
+                return widget;
             }
         }
-        return false;
+        return null;
     }
 
     @Override
-    public boolean mouseDragged(int mouseX, int mouseY, int button, long timeDragged) {
+    public Widget mouseDragged(int mouseX, int mouseY, int button, long timeDragged) {
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
-            if(widget.isVisible() && widget.isActive() && widget.mouseDragged(mouseX, mouseY, button, timeDragged)) {
-                return true;
+            if(widget.isVisible() && widget.isActive() && (widget = widget.mouseDragged(mouseX, mouseY, button, timeDragged)) != null) {
+                return widget;
             }
         }
-        return false;
+        return null;
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button) {
+    public Widget mouseReleased(int mouseX, int mouseY, int button) {
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
-            if(widget.isVisible() && widget.isActive() && widget.mouseReleased(mouseX, mouseY, button)) {
-                return true;
+            if(widget.isVisible() && widget.isActive() && (widget = widget.mouseReleased(mouseX, mouseY, button)) != null) {
+                return widget;
             }
         }
-        return false;
+        return null;
     }
 
     @Override
-    public boolean keyTyped(char charTyped, int keyCode) {
+    public Widget keyTyped(char charTyped, int keyCode) {
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
-            if(widget.isVisible() && widget.isActive() && widget.keyTyped(charTyped, keyCode)) {
-                return true;
+            if(widget.isVisible() && widget.isActive() && (widget = widget.keyTyped(charTyped, keyCode)) != null) {
+                return widget;
             }
         }
-        return false;
+        return null;
     }
 
     @Override

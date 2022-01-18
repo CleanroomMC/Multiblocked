@@ -17,23 +17,15 @@ import java.util.function.Consumer;
 public class ButtonWidget extends Widget {
 
     protected IGuiTexture buttonTexture;
-    protected final String displayText;
-    protected int textColor = 0xFFFFFF;
     protected final Consumer<ClickData> onPressCallback;
 
-    public ButtonWidget(int xPosition, int yPosition, int width, int height, String displayText, Consumer<ClickData> onPressed) {
+    public ButtonWidget(int xPosition, int yPosition, int width, int height, IGuiTexture buttonTexture,Consumer<ClickData> onPressed) {
         super(xPosition, yPosition, width, height);
-        this.displayText = displayText;
         this.onPressCallback = onPressed;
     }
 
     public ButtonWidget setButtonTexture(IGuiTexture buttonTexture) {
         this.buttonTexture = buttonTexture;
-        return this;
-    }
-
-    public ButtonWidget setTextColor(int textColor) {
-        this.textColor = textColor;
         return this;
     }
 
@@ -51,23 +43,18 @@ public class ButtonWidget extends Widget {
         if (buttonTexture != null) {
             buttonTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
         }
-        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-        String text = I18n.format(displayText);
-        fontRenderer.drawString(text,
-                position.x + size.width / 2 - fontRenderer.getStringWidth(text) / 2,
-                position.y + size.height / 2 - fontRenderer.FONT_HEIGHT / 2, textColor);
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button) {
+    public Widget mouseClicked(int mouseX, int mouseY, int button) {
         if (isMouseOverElement(mouseX, mouseY)) {
             ClickData clickData = new ClickData();
             writeClientAction(1, clickData::writeToBuf);
             onPressCallback.accept(clickData);
             playButtonClickSound();
-            return true;
+            return this;
         }
-        return false;
+        return null;
     }
 
     @Override

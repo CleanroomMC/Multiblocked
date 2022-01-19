@@ -34,7 +34,7 @@ public class MultiblockState {
     public final BlockPos controllerPos;
 
     // persist
-    protected LongOpenHashSet cache;
+    public LongOpenHashSet cache;
 
     public MultiblockState(World world, BlockPos controllerPos) {
         this.world = world;

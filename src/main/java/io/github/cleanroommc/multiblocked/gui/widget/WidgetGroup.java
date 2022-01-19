@@ -97,7 +97,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         super.setVisible(visible);
     }
 
-    public void addWidget(Widget widget) {
+    public WidgetGroup addWidget(Widget widget) {
         if (widget == this) {
             throw new IllegalArgumentException("Cannot add self");
         }
@@ -115,9 +115,10 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         if (uiAccess != null) {
             uiAccess.notifyWidgetChange();
         }
+        return this;
     }
 
-    protected void addWidget(int index, Widget widget) {
+    protected WidgetGroup addWidget(int index, Widget widget) {
         if (widget == this) {
             throw new IllegalArgumentException("Cannot add self");
         }
@@ -135,6 +136,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         if (uiAccess != null) {
             uiAccess.notifyWidgetChange();
         }
+        return this;
     }
 
     protected void waitToRemoved(Widget widget) {
@@ -253,9 +255,9 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         for (Widget widget : widgets) {
             if (widget.isVisible()) {
                 widget.drawInForeground(mouseX, mouseY, partialTicks);
+                GlStateManager.color(1, 1, 1, 1);
             }
         }
-        GlStateManager.color(1, 1, 1, 1);
     }
 
     @Override
@@ -399,7 +401,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
 
         @Override
         public void writeUpdateInfo(Widget widget, int updateId, Consumer<PacketBuffer> dataWriter) {
-            WidgetGroup.this.writeUpdateInfo(1, buffer -> {
+            WidgetGroup.this.writeUpdateInfo(-1, buffer -> {
                 buffer.writeVarInt(widgets.indexOf(widget));
                 buffer.writeVarInt(updateId);
                 dataWriter.accept(buffer);

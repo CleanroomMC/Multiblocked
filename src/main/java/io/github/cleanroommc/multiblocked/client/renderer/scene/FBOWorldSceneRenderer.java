@@ -83,7 +83,7 @@ public class FBOWorldSceneRenderer extends WorldSceneRenderer {
     public void render(float x, float y, float width, float height, float mouseX, float mouseY) {
         // bind to FBO
         int lastID = bindFBO();
-        super.render(0, 0, this.resolutionWidth, this.resolutionHeight, (int) (this.resolutionWidth * mouseX / width), (int) (this.resolutionHeight * (1 - mouseY / height)));
+        super.render(0, 0, this.resolutionWidth, this.resolutionHeight, (int) (this.resolutionWidth * (mouseX - x) / width), (int) (this.resolutionHeight * (1 - (mouseY - y) / height)));
         // unbind FBO
         unbindFBO(lastID);
 

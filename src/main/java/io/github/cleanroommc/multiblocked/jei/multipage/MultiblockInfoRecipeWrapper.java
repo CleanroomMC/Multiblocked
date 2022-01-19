@@ -537,7 +537,7 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
         worldSceneRenderer.addRenderedBlocks(world.renderedBlocks, null);
         worldSceneRenderer.setOnLookingAt(ray -> {});
         worldSceneRenderer.setAfterWorldRender(renderer -> {
-            BlockPos look = worldSceneRenderer.getLastTraceResult() == null ? null : worldSceneRenderer.getLastTraceResult().getBlockPos();
+            BlockPos look = renderer.getLastTraceResult() == null ? null : renderer.getLastTraceResult().getBlockPos();
             if (look != null && look.equals(selected)) {
                 renderBlockOverLay(selected, 200, 75, 75);
                 return;

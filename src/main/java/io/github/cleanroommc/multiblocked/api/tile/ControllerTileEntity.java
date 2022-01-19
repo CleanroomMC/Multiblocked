@@ -19,6 +19,7 @@ import io.github.cleanroommc.multiblocked.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.gui.util.ModularUIBuilder;
 import io.github.cleanroommc.multiblocked.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.LabelWidget;
+import io.github.cleanroommc.multiblocked.gui.widget.imp.SceneWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabButton;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
@@ -127,7 +128,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
         state.getMatchContext().reset();
 
-        writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
+        writeCustomData(-1, this::writeState);
         if (definition.structureFormed != null) {
             definition.structureFormed.apply(this);
         }
@@ -147,7 +148,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         }
         capabilities = null;
 
-        writeCustomData(-1, buffer -> buffer.writeBoolean(isFormed()));
+        writeCustomData(-1, this::writeState);
         if (definition.structureInvalid != null) {
             definition.structureInvalid.apply(this);
         }
@@ -156,33 +157,47 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public void receiveCustomData(int dataId, PacketBuffer buf) {
         if (dataId == -1) {
-            if (buf.readBoolean()) {
-                state = new MultiblockState(world, pos);
-            } else {
-                state = null;
-            }
+            readState(buf);
             scheduleChunkForRenderUpdate();
         } else {
             super.receiveCustomData(dataId, buf);
-
         }
     }
 
     @Override
     public void writeInitialSyncData(PacketBuffer buf) {
         super.writeInitialSyncData(buf);
-        buf.writeBoolean(isFormed());
+        writeState(buf);
     }
 
     @Override
     public void receiveInitialSyncData(PacketBuffer buf) {
         super.receiveInitialSyncData(buf);
-        if (buf.readBoolean()) {
+        readState(buf);
+        scheduleChunkForRenderUpdate();
+    }
+
+    private void writeState(PacketBuffer buffer) {
+        if (isFormed()) {
+            buffer.writeBoolean(true);
+            buffer.writeVarInt(state.cache.size());
+            state.cache.forEach(buffer::writeVarLong);
+        } else {
+            buffer.writeBoolean(false);
+        }
+    }
+
+    private void readState(PacketBuffer buffer) {
+        if (buffer.readBoolean()) {
             state = new MultiblockState(world, pos);
+            int size = buffer.readVarInt();
+            state.cache = new LongOpenHashSet();
+            for (int i = size; i > 0; i--) {
+                state.cache.add(buffer.readVarLong());
+            }
         } else {
             state = null;
         }
-        scheduleChunkForRenderUpdate();
     }
 
     @Override
@@ -237,20 +252,25 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
-        TabContainer tabContainer = new TabContainer(0, 15, 200, 135);
-        tabContainer.addTab(new TabButton(-15, 0, 15, 15)
-                .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 10, ()->"tab1").setTextColor(-1));
+        TabContainer tabContainer = new TabContainer(0, 0, 200, 300);
+        if (isFormed()) {
+            tabContainer.addTab(new TabButton(-15, 0, 15, 15)
+                            .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
+                    new WidgetGroup(0,0,200,135))
+                    .addWidget(new LabelWidget(10, 0, ()->"tab1").setTextColor(-1))
+                    .addWidget(new SceneWidget(5, 10, 150, 150)
+                            .setRenderedCore(state.getCache(), null)
+                            .setOnSelected((pos, face) -> System.out.println(pos)));
+        }
         tabContainer.addTab(new TabButton(-15, 15, 15, 15)
                 .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 10, ()->"tab2").setTextColor(-1));
+                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 0, ()->"tab2").setTextColor(-1));
         tabContainer.addTab(new TabButton(-15, 30, 15, 15)
                 .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 10, ()->"tab3").setTextColor(-1));
-        return new ModularUIBuilder(new ColorRectTexture(0x66000000), 200, 150)
-                .label(5, 5, "Hello World", 0xffff00ff)
+                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 0, ()->"tab3").setTextColor(-1));
+        return new ModularUIBuilder(new ColorRectTexture(0x66000000), 200, 232)
                 .widget(tabContainer)
-                .bindPlayerInventory(entityPlayer.inventory, IGuiTexture.EMPTY, 10, 30)
+//                .bindPlayerInventory(entityPlayer.inventory, IGuiTexture.EMPTY, 10, 30)
                 .build(this, entityPlayer);
     }
 }

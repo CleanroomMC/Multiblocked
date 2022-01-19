@@ -6,13 +6,9 @@ import io.github.cleanroommc.multiblocked.gui.util.ClickData;
 import io.github.cleanroommc.multiblocked.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.function.Consumer;
-
 
 public class ButtonWidget extends Widget {
 

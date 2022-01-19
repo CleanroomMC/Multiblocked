@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import com.google.common.collect.Sets;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
@@ -7,11 +8,11 @@ import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -22,19 +23,18 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Predicates {
-    private static Supplier<BlockInfo[]> getCandidates(
-            Set<IBlockState> allowedStates){
+    private static Supplier<BlockInfo[]> getCandidates(Set<IBlockState> allowedStates){
         return ()-> allowedStates.stream().map(state -> new BlockInfo(state, null)).toArray(BlockInfo[]::new);
     }
 
     public static TraceabilityPredicate states(IBlockState... allowedStates) {
-        Set<IBlockState> states = new ObjectOpenHashSet<>(Arrays.asList(allowedStates));
-        return new TraceabilityPredicate(blockWorldState -> states.contains(blockWorldState.getBlockState()), getCandidates(states));
+        return new TraceabilityPredicate(state -> ArrayUtils.contains(allowedStates, state.getBlockState()),
+                getCandidates(Sets.newHashSet(allowedStates)));
     }
 
     public static TraceabilityPredicate blocks(Block... blocks) {
-        Set<Block> bloxx = new ObjectOpenHashSet<>(Arrays.asList(blocks));
-        return new TraceabilityPredicate(blockWorldState -> bloxx.contains(blockWorldState.getBlockState().getBlock()), getCandidates(bloxx.stream().map(Block::getDefaultState).collect(
+        return new TraceabilityPredicate(state -> ArrayUtils.contains(blocks, state.getBlockState().getBlock()),
+                getCandidates(Arrays.stream(blocks).map(Block::getDefaultState).collect(
                 Collectors.toSet())));
     }
 
@@ -46,8 +46,10 @@ public class Predicates {
         BlockComponent randomBlock = new BlockComponent(new PartDefinition(new ResourceLocation(Multiblocked.MODID, capability.name)));
         randomBlock.definition.baseRenderer = new CycleBlockStateRenderer(candidates);
         randomBlock.definition.isOpaqueCube = false;
+        randomBlock.definition.allowRotate = false;
         return new TraceabilityPredicate(state -> {
-           if (state.getBlockState().getBlock() instanceof BlockComponent && randomBlock.getRegistryName() == null)  return true;
+            Block block = state.getBlockState().getBlock();
+           if (block instanceof BlockComponent && block.getRegistryName() == null)  return true;
            return checkCapability(io, capability, state);
         }, ()-> new BlockInfo[]{new BlockInfo(randomBlock.getDefaultState())});
     }
@@ -59,11 +61,10 @@ public class Predicates {
      */
     public static TraceabilityPredicate blocksWithCapability(IO io, MultiblockCapability<?> capability, Block... blocks) {
         if (blocks.length == 0) return anyCapability(io, capability);
-        Set<Block> bloxx = new ObjectOpenHashSet<>(Arrays.asList(blocks));
         return new TraceabilityPredicate(state -> {
-            if (!bloxx.contains(state.getBlockState().getBlock())) return false;
+            if (!ArrayUtils.contains(blocks, state.getBlockState().getBlock())) return false;
             return checkCapability(io, capability, state);
-        }, getCandidates(bloxx.stream().map(Block::getDefaultState).collect(Collectors.toSet())));
+        }, getCandidates(Arrays.stream(blocks).map(Block::getDefaultState).collect(Collectors.toSet())));
     }
 
     /**
@@ -73,11 +74,10 @@ public class Predicates {
      */
     public static TraceabilityPredicate statesWithCapability(IO io, MultiblockCapability<?> capability, IBlockState... allowedStates) {
         if (allowedStates.length == 0) return anyCapability(io, capability);
-        Set<IBlockState> states = new ObjectOpenHashSet<>(Arrays.asList(allowedStates));
         return new TraceabilityPredicate(state -> {
-            if (!states.contains(state.getBlockState())) return false;
+            if (!ArrayUtils.contains(allowedStates, state.getBlockState())) return false;
             return checkCapability(io, capability, state);
-        }, getCandidates(states));
+        }, getCandidates(Sets.newHashSet(allowedStates)));
     }
 
     private static boolean checkCapability(IO io, MultiblockCapability<?> capability, MultiblockState state) {

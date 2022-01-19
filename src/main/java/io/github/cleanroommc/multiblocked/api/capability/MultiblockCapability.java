@@ -1,13 +1,21 @@
 package io.github.cleanroommc.multiblocked.api.capability;
 
 import crafttweaker.annotations.ZenRegister;
+import io.github.cleanroommc.multiblocked.Multiblocked;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.stream.Collectors;
 
 /**
  * Used to detect whether a machine has a certain capability. And provide its capability in proxy {@link CapabilityProxy}.
@@ -17,11 +25,16 @@ import javax.annotation.Nonnull;
 @ZenClass("mods.multiblocked.capability.capability")
 @ZenRegister
 public abstract class MultiblockCapability<K> {
+    @SideOnly(Side.CLIENT)
+    private EnumMap<IO, IBlockState[]> scannedStates;
     @ZenProperty
     public final String name;
 
     public MultiblockCapability(String name) {
         this.name = name;
+        if (Multiblocked.isClient()) {
+            scannedStates = new EnumMap<>(IO.class);
+        }
     }
 
     /**
@@ -38,7 +51,32 @@ public abstract class MultiblockCapability<K> {
      * get candidates for rendering in jei.
      */
     public IBlockState[] getCandidates(IO io) {
-        return new IBlockState[]{Blocks.GLASS.getDefaultState(), Blocks.GOLD_ORE.getDefaultState(), Blocks.TNT.getDefaultState()};
+        if (Multiblocked.isClient()) {
+            return scanForCandidates(io);
+        }
+        return new IBlockState[0];
+    }
+
+    @SideOnly(Side.CLIENT)
+    protected IBlockState[] scanForCandidates(IO io){
+        if (!scannedStates.containsKey(io)) {
+            scannedStates.put(io, ForgeRegistries.BLOCKS.getValuesCollection()
+                    .stream()
+                    .map(Block::getDefaultState)
+                    .filter(s -> {
+                        TileEntity tile = s.getBlock().createTileEntity(Minecraft.getMinecraft().world, s);
+                        if (tile == null) return false;
+                        return isBlockHasCapability(io, tile);
+                    })
+                    .toArray(IBlockState[]::new));
+            Multiblocked.LOGGER.info("Available blocks for {} capability: {}", name,
+                    Arrays.stream(scannedStates.get(io))
+                            .map(IBlockState::getBlock)
+                            .distinct()
+                            .map(Block::getLocalizedName)
+                            .collect(Collectors.joining(", ")));
+        }
+        return scannedStates.get(io);
     }
 
     @Override

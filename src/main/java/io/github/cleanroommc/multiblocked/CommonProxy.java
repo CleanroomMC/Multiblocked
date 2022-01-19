@@ -48,6 +48,7 @@ public class CommonProxy {
         partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
         partDefinition.baseRenderer = new BlockStateRenderer(Blocks.BEDROCK.getDefaultState());
         partDefinition.isOpaqueCube = false;
+        partDefinition.allowRotate = false;
         MultiblockComponents.registerComponent(partDefinition);
 
         // create a recipeMap.

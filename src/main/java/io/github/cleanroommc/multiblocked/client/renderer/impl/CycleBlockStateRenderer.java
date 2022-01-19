@@ -36,7 +36,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     @Override
     protected IBlockState getState() {
         long time = System.currentTimeMillis();
-        if (time - lastTime > 1700) {
+        if (time - lastTime > 1000) {
             lastTime = time;
             index++;
         }

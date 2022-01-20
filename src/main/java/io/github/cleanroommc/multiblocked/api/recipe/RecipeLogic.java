@@ -89,7 +89,7 @@ public class RecipeLogic {
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         if (lastRecipe != null && isWorking) {
-            compound.setInteger("recipe", lastRecipe.uid);
+            compound.setString("recipe", lastRecipe.uid);
         }
         return compound;
     }

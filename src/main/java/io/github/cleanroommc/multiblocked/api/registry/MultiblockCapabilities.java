@@ -6,6 +6,8 @@ import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
 import io.github.cleanroommc.multiblocked.common.capability.FEMultiblockCapability;
 import io.github.cleanroommc.multiblocked.common.capability.FluidMultiblockCapability;
+import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
+import io.github.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ItemMultiblockCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 
@@ -33,6 +35,10 @@ public class MultiblockCapabilities {
         }
         if (Multiblocked.isModLoaded("thaumcraft")) {
             registerCapability(AspectThaumcraftCapability.CAP);
+        }
+        if (Multiblocked.isModLoaded("mekanism")) {
+            registerCapability(HeatMekanismCapability.CAP);
+            registerCapability(GasMekanismCapability.CAP);
         }
     }
 

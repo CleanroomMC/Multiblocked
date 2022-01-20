@@ -3,17 +3,16 @@ package io.github.cleanroommc.multiblocked.common.capability.proxy;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
+import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 
 import java.util.Iterator;
 import java.util.List;
 
-public class AspectThaumcraftCapabilityProxy extends CapabilityProxy<AspectList> {
+public class AspectThaumcraftCapabilityProxy extends CapabilityProxy<AspectStack> {
 
     public AspectThaumcraftCapabilityProxy(TileEntity tileEntity) {
         super(tileEntity);
@@ -24,36 +23,36 @@ public class AspectThaumcraftCapabilityProxy extends CapabilityProxy<AspectList>
     }
 
     @Override
-    protected List<AspectList> handleRecipeInner(IO io, Recipe recipe, List<AspectList> left, boolean simulate) {
+    protected List<AspectStack> handleRecipeInner(IO io, Recipe recipe, List<AspectStack> left, boolean simulate) {
         IAspectContainer capability = getCapability();
         if (capability == null) return left;
-        Iterator<AspectList> iterator = left.iterator();
+        Iterator<AspectStack> iterator = left.iterator();
         if (io == IO.IN) {
             while (iterator.hasNext()) {
-                AspectList aspectList = iterator.next();
-                Aspect aspect = aspectList.getAspects()[0];
-                int amount = aspectList.getAmount(aspect);
+                AspectStack aspectStack = iterator.next();
+                Aspect aspect = aspectStack.aspect;
+                int amount = aspectStack.amount;
                 if (!ArrayUtils.contains(capability.getAspects().getAspects(), aspect)) return left;
                 int stored = capability.getAspects().getAmount(aspect);
-                aspectList.aspects.put(aspect, Math.max(0, stored - amount));
+                aspectStack.amount = Math.max(0, stored - amount);
                 if (!simulate) {
-                    capability.takeFromContainer(aspect, stored - aspectList.getAmount(aspect));
+                    capability.takeFromContainer(aspect, stored - aspectStack.amount);
                 }
-                if (aspectList.getAmount(aspect) <= 0) {
+                if (aspectStack.amount <= 0) {
                     iterator.remove();
                 }
             }
         } else if (io == IO.OUT){
             while (iterator.hasNext()) {
-                AspectList aspectList = iterator.next();
-                Aspect aspect = aspectList.getAspects()[0];
-                int amount = aspectList.getAmount(aspect);
+                AspectStack aspectStack = iterator.next();
+                Aspect aspect = aspectStack.aspect;
+                int amount = aspectStack.amount;
                 int ll = capability.addToContainer(aspect, amount);
-                aspectList.aspects.put(aspect, Math.max(0, ll));
+                aspectStack.amount = ll;
                 if (simulate && amount - ll > 0) {
                     capability.takeFromContainer(aspect, amount - ll);
                 }
-                if (aspectList.getAmount(aspect) <= 0) {
+                if (aspectStack.amount <= 0) {
                     iterator.remove();
                 }
             }
@@ -62,7 +61,7 @@ public class AspectThaumcraftCapabilityProxy extends CapabilityProxy<AspectList>
     }
 
     @Override
-    protected AspectList copyInner(AspectList content) {
+    protected AspectStack copyInner(AspectStack content) {
         return content.copy();
     }
 }

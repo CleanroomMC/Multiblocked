@@ -1,8 +1,10 @@
 package io.github.cleanroommc.multiblocked.common.capability.proxy;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
+import mekanism.common.base.FluidHandlerWrapper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
@@ -19,8 +21,11 @@ public class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {
     }
 
     public IFluidHandler getCapability() {
-        //TODO MEK TANK only doesnt support the null side
-        return getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+        IFluidHandler fluidHandler = getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        if (Multiblocked.isModLoaded("mekanism") && fluidHandler instanceof FluidHandlerWrapper) {
+            return getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+        }
+        return fluidHandler;
     }
 
     @Override

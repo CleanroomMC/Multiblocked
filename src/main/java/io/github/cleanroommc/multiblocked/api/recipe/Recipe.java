@@ -19,12 +19,12 @@ import java.util.Map;
 @ZenRegister
 public class Recipe {
     @ZenProperty
-    public final int uid;
+    public final String uid;
     public final ImmutableMap<MultiblockCapability, ImmutableList<Object>> inputs;
     public final ImmutableMap<MultiblockCapability, ImmutableList<Object>> outputs;
     public final int duration;
 
-    public Recipe(int uid,
+    public Recipe(String uid,
                   ImmutableMap<MultiblockCapability, ImmutableList<Object>> inputs,
                   ImmutableMap<MultiblockCapability, ImmutableList<Object>> outputs,
                   int duration) {

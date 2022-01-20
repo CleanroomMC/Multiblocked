@@ -7,12 +7,11 @@ import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
+import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +25,7 @@ public class RecipeBuilder {
     private final Map<MultiblockCapability, ImmutableList.Builder<Object>> inputBuilder = new HashMap<>();
     private final Map<MultiblockCapability, ImmutableList.Builder<Object>> outputBuilder = new HashMap<>();
     int duration;
-    int hash; // to make each recipe has a unique identifier and no need to set name himself.
+    private StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name himself.
 
     public RecipeBuilder(RecipeMap recipeMap) {
         this.recipeMap = recipeMap;
@@ -37,7 +36,7 @@ public class RecipeBuilder {
         copy.inputBuilder.putAll(this.inputBuilder);
         copy.outputBuilder.putAll(this.outputBuilder);
         copy.duration = this.duration;
-        copy.hash = this.hash;
+        copy.keyBuilder = new StringBuilder(keyBuilder.toString());
         return copy;
     }
 
@@ -52,47 +51,47 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder inputFE(int forgeEnergy) {
-        hash += MultiblockCapabilities.FE.hashCode() + forgeEnergy;
+        keyBuilder.append(MultiblockCapabilities.FE.name).append(forgeEnergy);
         return input(MultiblockCapabilities.FE, forgeEnergy);
     }
 
     public RecipeBuilder outputFE(int forgeEnergy) {
-        hash += MultiblockCapabilities.FE.hashCode() + forgeEnergy;
+        keyBuilder.append(MultiblockCapabilities.FE.name).append(forgeEnergy);
         return output(MultiblockCapabilities.FE, forgeEnergy);
     }
 
     public RecipeBuilder inputItems(ItemsIngredient... inputs) {
-        hash += MultiblockCapabilities.ITEM.hashCode();
+        keyBuilder.append(MultiblockCapabilities.ITEM.name);
         for (ItemsIngredient input : inputs) {
-            hash += input.hashCode();
+            keyBuilder.append(input.hashCode());
         }
         return input(MultiblockCapabilities.ITEM, (Object[]) inputs);
     }
 
     public RecipeBuilder outputItems(ItemStack... outputs) {
-        hash += MultiblockCapabilities.ITEM.hashCode();
+        keyBuilder.append(MultiblockCapabilities.ITEM.name);
         for (ItemStack output : outputs) {
-            hash += output.getCount();
+            keyBuilder.append(output.getCount());
             ResourceLocation name = output.getItem().getRegistryName();
-            hash += name == null ? 0 : name.hashCode();
+            keyBuilder.append(name == null ? "" : name.hashCode());
         }
         return output(MultiblockCapabilities.ITEM, Arrays.stream(outputs).map(ItemsIngredient::new).toArray());
     }
 
     public RecipeBuilder inputFluids(FluidStack... inputs) {
-        hash += MultiblockCapabilities.FLUID.hashCode();
+        keyBuilder.append(MultiblockCapabilities.FLUID.name);
         for (FluidStack input : inputs) {
-            hash += input.amount;
-            hash += input.getUnlocalizedName().hashCode();
+            keyBuilder.append(input.amount);
+            keyBuilder.append(input.getUnlocalizedName());
         }
         return input(MultiblockCapabilities.FLUID, (Object[]) inputs);
     }
 
     public RecipeBuilder outputFluids(FluidStack... outputs) {
-        hash += MultiblockCapabilities.FLUID.hashCode();
+        keyBuilder.append(MultiblockCapabilities.FLUID.name);
         for (FluidStack output : outputs) {
-            hash += output.amount;
-            hash += output.getUnlocalizedName().hashCode();
+            keyBuilder.append(output.amount);
+            keyBuilder.append(output.getUnlocalizedName());
         }
         return output(MultiblockCapabilities.FLUID, (Object[]) outputs);
     }
@@ -103,29 +102,29 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder inputMana(int mana) {
-        hash += ManaBotainaCapability.CAP.hashCode() + mana;
+        keyBuilder.append(ManaBotainaCapability.CAP.name).append(mana);
         return input(ManaBotainaCapability.CAP, mana);
     }
 
     public RecipeBuilder outputMana(int mana) {
-        hash += ManaBotainaCapability.CAP.hashCode() + mana;
+        keyBuilder.append(ManaBotainaCapability.CAP.name).append(mana);
         return output(ManaBotainaCapability.CAP, mana);
     }
 
-    public RecipeBuilder inputAspects(AspectList... inputs) {
-        hash += AspectThaumcraftCapability.CAP.hashCode();
-        for (AspectList input : inputs) {
-            hash += input.visSize();
-            hash += input.getAspects()[0].getName().hashCode();
+    public RecipeBuilder inputAspects(AspectStack... inputs) {
+        keyBuilder.append(AspectThaumcraftCapability.CAP.name);
+        for (AspectStack input : inputs) {
+            keyBuilder.append(input.amount);
+            keyBuilder.append(input.aspect.getName());
         }
         return input(AspectThaumcraftCapability.CAP, (Object[]) inputs);
     }
 
-    public RecipeBuilder outputAspects(AspectList... outputs) {
-        hash += AspectThaumcraftCapability.CAP.hashCode();
-        for (AspectList output : outputs) {
-            hash += output.visSize();
-            hash += output.getAspects()[0].getName().hashCode();
+    public RecipeBuilder outputAspects(AspectStack... outputs) {
+        keyBuilder.append(AspectThaumcraftCapability.CAP.name);
+        for (AspectStack output : outputs) {
+            keyBuilder.append(output.amount);
+            keyBuilder.append(output.aspect.getName());
         }
         return output(AspectThaumcraftCapability.CAP, (Object[]) outputs);
     }
@@ -140,7 +139,7 @@ public class RecipeBuilder {
             outputBuilder.put(entry.getKey(), entry.getValue().build());
         }
 
-        return new Recipe(hash, inputBuilder.build(), outputBuilder.build(), duration);
+        return new Recipe(keyBuilder.toString(), inputBuilder.build(), outputBuilder.build(), duration);
     }
 
     public void buildAndRegister(){

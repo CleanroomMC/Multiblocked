@@ -13,6 +13,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class RecipeMap {
     @ZenProperty
     RecipeBuilder recipeBuilder = new RecipeBuilder(this);
 
-    public Int2ObjectMap<Recipe> recipes = new Int2ObjectOpenHashMap<>();
+    public HashMap<String, Recipe> recipes = new HashMap<>();
 
     public RecipeMap(String name) {
         this.name = name;

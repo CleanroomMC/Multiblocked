@@ -151,7 +151,10 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Override
     public boolean onBlockActivated(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityPlayer playerIn, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
         ComponentTileEntity<?> instance = getComponent(worldIn, pos);
-        return instance != null && instance.onRightClick(playerIn, hand, facing, hitX, hitY, hitZ);
+        if (instance != null) {
+            instance.onRightClick(playerIn, hand, facing, hitX, hitY, hitZ);
+        }
+        return true;
     }
 
     @Override

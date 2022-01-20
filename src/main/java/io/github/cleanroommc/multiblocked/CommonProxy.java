@@ -15,6 +15,7 @@ import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
+import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;
@@ -75,7 +76,7 @@ public class CommonProxy {
                 .outputItems(new ItemStack(Items.APPLE, 10))
                 .inputFluids(new FluidStack(FluidRegistry.LAVA, 2000))
                 .outputMana(100)
-                .outputAspects(new AspectList().add(Aspect.AURA, 50))
+                .outputAspects(new AspectStack(Aspect.AURA, 50))
                 .duration(60) // 60 tick -> 3s
                 .buildAndRegister();
         // create a controller component.

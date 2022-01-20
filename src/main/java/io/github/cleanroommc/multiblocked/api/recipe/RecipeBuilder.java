@@ -6,8 +6,11 @@ import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
+import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
+import io.github.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
+import mekanism.api.gas.GasStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
@@ -127,6 +130,34 @@ public class RecipeBuilder {
             keyBuilder.append(output.aspect.getName());
         }
         return output(AspectThaumcraftCapability.CAP, (Object[]) outputs);
+    }
+
+    public RecipeBuilder inputHeat(double heat) {
+        keyBuilder.append(HeatMekanismCapability.CAP.name).append(heat);
+        return input(HeatMekanismCapability.CAP, heat);
+    }
+
+    public RecipeBuilder outputHeat(double heat) {
+        keyBuilder.append(HeatMekanismCapability.CAP.name).append(heat);
+        return output(HeatMekanismCapability.CAP, heat);
+    }
+
+    public RecipeBuilder inputGas(GasStack... inputs) {
+        keyBuilder.append(GasMekanismCapability.CAP.name);
+        for (GasStack input : inputs) {
+            keyBuilder.append(input.amount);
+            keyBuilder.append(input.getGas().getID());
+        }
+        return input(GasMekanismCapability.CAP, (Object[]) inputs);
+    }
+
+    public RecipeBuilder outputGas(GasStack... outputs) {
+        keyBuilder.append(GasMekanismCapability.CAP.name);
+        for (GasStack output : outputs) {
+            keyBuilder.append(output.amount);
+            keyBuilder.append(output.getGas().getID());
+        }
+        return output(GasMekanismCapability.CAP, (Object[]) outputs);
     }
 
     public Recipe build() {

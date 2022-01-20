@@ -54,7 +54,7 @@ public class Recipe {
                     if (content == null) break;
                 }
             }
-            if (content == null) break;
+            if (content == null) continue;
             if (capabilityProxies.contains(IO.BOTH, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
                     content = proxy.searchingRecipe(io, this, content);
@@ -75,7 +75,7 @@ public class Recipe {
                     if (content == null) break;
                 }
             }
-            if (content == null) break;
+            if (content == null) continue;
             if (capabilityProxies.contains(IO.BOTH, entry.getKey())){
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
                     content = proxy.handleRecipeInput(this, content);
@@ -94,7 +94,7 @@ public class Recipe {
                     if (content == null) break;
                 }
             }
-            if (content == null) break;
+            if (content == null) continue;
             if (capabilityProxies.contains(IO.BOTH, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
                     content = proxy.handleRecipeOutput(this, content);

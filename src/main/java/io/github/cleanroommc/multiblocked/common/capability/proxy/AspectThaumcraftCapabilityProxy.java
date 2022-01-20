@@ -48,7 +48,6 @@ public class AspectThaumcraftCapabilityProxy extends CapabilityProxy<AspectList>
                 AspectList aspectList = iterator.next();
                 Aspect aspect = aspectList.getAspects()[0];
                 int amount = aspectList.getAmount(aspect);
-                if (!ArrayUtils.contains(capability.getAspects().getAspects(), aspect)) return left;
                 int ll = capability.addToContainer(aspect, amount);
                 aspectList.aspects.put(aspect, Math.max(0, ll));
                 if (simulate && amount - ll > 0) {

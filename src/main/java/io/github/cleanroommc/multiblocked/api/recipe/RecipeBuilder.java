@@ -5,11 +5,13 @@ import com.google.common.collect.ImmutableMap;
 import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
+import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
 import java.util.Arrays;
@@ -111,21 +113,21 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder inputAspects(AspectList... inputs) {
-        hash += MultiblockCapabilities.FLUID.hashCode();
+        hash += AspectThaumcraftCapability.CAP.hashCode();
         for (AspectList input : inputs) {
             hash += input.visSize();
             hash += input.getAspects()[0].getName().hashCode();
         }
-        return input(ManaBotainaCapability.CAP, (Object[]) inputs);
+        return input(AspectThaumcraftCapability.CAP, (Object[]) inputs);
     }
 
     public RecipeBuilder outputAspects(AspectList... outputs) {
-        hash += MultiblockCapabilities.FLUID.hashCode();
+        hash += AspectThaumcraftCapability.CAP.hashCode();
         for (AspectList output : outputs) {
             hash += output.visSize();
             hash += output.getAspects()[0].getName().hashCode();
         }
-        return output(ManaBotainaCapability.CAP, (Object[]) outputs);
+        return output(AspectThaumcraftCapability.CAP, (Object[]) outputs);
     }
 
     public Recipe build() {

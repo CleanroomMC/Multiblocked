@@ -26,10 +26,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 
 import java.util.function.Function;
 
@@ -69,12 +73,15 @@ public class CommonProxy {
         recipeMap.start()
                 .inputItems(new ItemsIngredient(2, new ItemStack(Items.GOLD_INGOT), new ItemStack(Items.IRON_INGOT)))
                 .outputItems(new ItemStack(Items.APPLE, 10))
+                .inputFluids(new FluidStack(FluidRegistry.LAVA, 2000))
+                .outputMana(100)
+                .outputAspects(new AspectList().add(Aspect.AURA, 50))
                 .duration(60) // 60 tick -> 3s
                 .buildAndRegister();
         // create a controller component.
         ControllerDefinition controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test_block"), recipeMap);
         controllerDefinition.basePattern = FactoryBlockPattern.start()
-                .aisle("XXX", "   ")
+                .aisle("TXX", "   ")
                 .aisle("C#A", " P ")
                 .aisle("BYD", "   ")
                 .where(' ', any())
@@ -82,8 +89,9 @@ public class CommonProxy {
                 .where('X', blocks(Blocks.STONE))
                 .where('#', air())
                 .where('A', anyCapability(IO.IN, MultiblockCapabilities.ITEM)) // if and only if available IN-Item-Capability here. (item inputBus)
-                .where('B', anyCapability(IO.BOTH, ManaBotainaCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
-                .where('D', anyCapability(IO.BOTH, AspectThaumcraftCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
+                .where('T', anyCapability(IO.IN, MultiblockCapabilities.FLUID)) // if and only if available IN-Item-Capability here. (item inputBus)
+                .where('B', anyCapability(IO.OUT, ManaBotainaCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
+                .where('D', anyCapability(IO.OUT, AspectThaumcraftCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('C', blocks(Blocks.CHEST)) // tho not define a specific Capability here. it will still be detected according to the recipeMap, so will create a proxy of the BOTH-Item-Capability here. (item in/outputBus)
                 .where('Y', controllerDefinition.selfPredicate())
                 .build();

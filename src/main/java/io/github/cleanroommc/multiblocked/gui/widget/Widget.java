@@ -38,6 +38,7 @@ public class Widget {
     private transient boolean isVisible;
     private transient boolean isActive;
     private transient boolean isFocus;
+    private transient boolean isClientSideWidget;
 
     public Widget(Position selfPosition, Size size) {
         Preconditions.checkNotNull(selfPosition, "selfPosition");
@@ -51,6 +52,11 @@ public class Widget {
 
     public Widget(int x, int y, int width, int height) {
         this(new Position(x, y), new Size(width, height));
+    }
+
+    public Widget setClientSideWidget(boolean clientSideWidget) {
+        isClientSideWidget = clientSideWidget;
+        return this;
     }
 
     public void setGui(ModularUI gui) {
@@ -245,15 +251,15 @@ public class Widget {
     /**
      * Writes data to be sent to client's {@link #readUpdateInfo}
      */
-    protected void writeUpdateInfo(int id, Consumer<PacketBuffer> packetBufferWriter) {
+    protected final void writeUpdateInfo(int id, Consumer<PacketBuffer> packetBufferWriter) {
         if (uiAccess != null && gui != null) {
             uiAccess.writeUpdateInfo(this, id, packetBufferWriter);
         }
     }
 
     @SideOnly(Side.CLIENT)
-    protected void writeClientAction(int id, Consumer<PacketBuffer> packetBufferWriter) {
-        if (uiAccess != null) {
+    protected final void writeClientAction(int id, Consumer<PacketBuffer> packetBufferWriter) {
+        if (uiAccess != null && !isClientSideWidget) {
             uiAccess.writeClientAction(this, id, packetBufferWriter);
         }
     }

@@ -18,7 +18,7 @@ public class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {
     }
 
     public IFluidHandler getCapability() {
-        return tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        return getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
     }
 
     @Override

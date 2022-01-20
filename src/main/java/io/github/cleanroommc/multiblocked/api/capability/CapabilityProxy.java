@@ -10,13 +10,16 @@ import java.util.stream.Collectors;
  * The Proxy of a specific capability that has been detected {@link MultiblockCapability}. Providing I/O and such features to a controller.
  */
 public abstract class CapabilityProxy<K> {
-    protected TileEntity tileEntity;
+    private TileEntity tileEntity;
 
     public CapabilityProxy(TileEntity tileEntity) {
         this.tileEntity = tileEntity;
     }
 
     public TileEntity getTileEntity() {
+        if (tileEntity != null && tileEntity.isInvalid()) {
+            tileEntity = tileEntity.getWorld().getTileEntity(tileEntity.getPos());
+        }
         return tileEntity;
     }
 

@@ -11,6 +11,7 @@ import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeLogic;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import io.github.cleanroommc.multiblocked.gui.factory.TileEntityUIFactory;
 import io.github.cleanroommc.multiblocked.gui.modular.ModularUI;
@@ -19,16 +20,19 @@ import io.github.cleanroommc.multiblocked.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.gui.util.ModularUIBuilder;
 import io.github.cleanroommc.multiblocked.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.LabelWidget;
-import io.github.cleanroommc.multiblocked.gui.widget.imp.SceneWidget;
+import io.github.cleanroommc.multiblocked.gui.widget.imp.controller.IOPageWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabButton;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -36,6 +40,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.common.util.Constants;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -44,6 +49,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +63,8 @@ import java.util.Set;
 @ZenRegister
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
     public MultiblockState state;
-    protected Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilities;
+    protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
+    private Map<Long, Map<MultiblockCapability<?>, IO>> settings;
     protected LongOpenHashSet parts;
     @ZenProperty
     protected RecipeLogic recipeLogic;
@@ -85,7 +92,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (recipeLogic != null) recipeLogic.update();
     }
 
-    public Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> getCapabilities() {
+    public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
         return capabilities;
     }
 
@@ -101,19 +108,36 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             for (Map.Entry<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> entry : capabilityMap.entrySet()) {
                 TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(entry.getKey()));
                 if (tileEntity != null) {
-                    entry.getValue().forEach((io,set)->{
-                        for (MultiblockCapability<?> capability : set) {
-                            if (capability.isBlockHasCapability(io, tileEntity)) {
+                    if (settings != null) {
+                        Map<MultiblockCapability<?>, IO> caps = settings.get(entry.getKey());
+                        if (caps != null) {
+                            for (Map.Entry<MultiblockCapability<?>, IO> ioEntry : caps.entrySet()) {
+                                IO io = ioEntry.getValue();
+                                MultiblockCapability<?> capability = ioEntry.getKey();
+                                if (io == null) continue;
                                 if (!capabilities.contains(io, capability)) {
-                                    capabilities.put(io, capability, new ArrayList<>());
+                                    capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                                 }
-                                capabilities.get(io, capability).add(capability.createProxy(io, tileEntity));
+                                capabilities.get(io, capability).put(entry.getKey().longValue(), capability.createProxy(io, tileEntity));
                             }
                         }
-                    });
+                    } else {
+                        entry.getValue().forEach((io,set)->{
+                            for (MultiblockCapability<?> capability : set) {
+                                if (capability.isBlockHasCapability(io, tileEntity)) {
+                                    if (!capabilities.contains(io, capability)) {
+                                        capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
+                                    }
+                                    capabilities.get(io, capability).put(entry.getKey().longValue(), capability.createProxy(io, tileEntity));
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }
+
+        settings = null;
 
         // init parts
         parts = state.getMatchContext().get("parts");
@@ -125,8 +149,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 }
             }
         }
-
-        state.getMatchContext().reset();
 
         writeCustomData(-1, this::writeState);
         if (definition.structureFormed != null) {
@@ -178,23 +200,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     }
 
     private void writeState(PacketBuffer buffer) {
-        if (isFormed()) {
-            buffer.writeBoolean(true);
-            buffer.writeVarInt(state.cache.size());
-            state.cache.forEach(buffer::writeVarLong);
-        } else {
-            buffer.writeBoolean(false);
-        }
+        buffer.writeBoolean(isFormed());
     }
 
     private void readState(PacketBuffer buffer) {
         if (buffer.readBoolean()) {
             state = new MultiblockState(world, pos);
-            int size = buffer.readVarInt();
-            state.cache = new LongOpenHashSet();
-            for (int i = size; i > 0; i--) {
-                state.cache.add(buffer.readVarLong());
-            }
         } else {
             state = null;
         }
@@ -207,6 +218,16 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             recipeLogic = new RecipeLogic(this);
             recipeLogic.readFromNBT(compound.getCompoundTag("recipeLogic"));
         }
+        if (compound.hasKey("capabilities")) {
+            NBTTagList tagList = compound.getTagList("capabilities", Constants.NBT.TAG_COMPOUND);
+            settings = new HashMap<>();
+            for (NBTBase base : tagList) {
+                NBTTagCompound tag = (NBTTagCompound) base;
+                settings.computeIfAbsent(tag.getLong("pos"), l->new HashMap<>())
+                        .put(MultiblockCapabilities.CAPABILITY_REGISTRY.get(tag.getString("cap")),
+                                IO.VALUES[tag.getInteger("io")]);
+            }
+        }
         state = MultiblockWorldSavedData.getOrCreate(world).mapping.get(pos);
     }
 
@@ -215,6 +236,24 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
         super.writeToNBT(compound);
         if (recipeLogic != null) compound.setTag("recipeLogic", recipeLogic.writeToNBT(new NBTTagCompound()));
+        if (capabilities != null) {
+            NBTTagList tagList = new NBTTagList();
+            for (Table.Cell<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> cell : capabilities.cellSet()) {
+                IO io = cell.getRowKey();
+                MultiblockCapability<?> cap = cell.getColumnKey();
+                Long2ObjectOpenHashMap<CapabilityProxy<?>> value = cell.getValue();
+                if (io != null && cap != null && value != null) {
+                    for (long posLong : value.keySet()) {
+                        NBTTagCompound tag = new NBTTagCompound();
+                        tag.setInteger("io", io.ordinal());
+                        tag.setString("cap", cap.name);
+                        tag.setLong("pos", posLong);
+                        tagList.appendTag(tag);
+                    }
+                }
+            }
+            compound.setTag("capabilities", tagList);
+        }
         return compound;
     }
 
@@ -252,25 +291,20 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
-        TabContainer tabContainer = new TabContainer(0, 0, 200, 300);
+        TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
         if (isFormed()) {
-            tabContainer.addTab(new TabButton(-15, 0, 15, 15)
-                            .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                    new WidgetGroup(0,0,200,135))
-                    .addWidget(new LabelWidget(10, 0, ()->"tab1").setTextColor(-1))
-                    .addWidget(new SceneWidget(5, 10, 150, 150)
-                            .setRenderedCore(state.getCache(), null)
-                            .setOnSelected((pos, face) -> System.out.println(pos)));
+            tabContainer.addTab(
+                    new TabButton(0, 0, 20, 20).setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
+                    new IOPageWidget(this));
         }
-        tabContainer.addTab(new TabButton(-15, 15, 15, 15)
+        tabContainer.addTab(new TabButton(0, 20, 20, 20)
                 .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 0, ()->"tab2").setTextColor(-1));
-        tabContainer.addTab(new TabButton(-15, 30, 15, 15)
+                new WidgetGroup(20,0,200,135)).addWidget(new LabelWidget(10, 0, ()->"tab2").setTextColor(-1));
+        tabContainer.addTab(new TabButton(0, 40, 20, 20)
                 .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                new WidgetGroup(0,0,200,135)).addWidget(new LabelWidget(10, 0, ()->"tab3").setTextColor(-1));
-        return new ModularUIBuilder(new ColorRectTexture(0x66000000), 200, 232)
+                new WidgetGroup(20,0,200,135)).addWidget(new LabelWidget(10, 0, ()->"tab3").setTextColor(-1));
+        return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
                 .widget(tabContainer)
-//                .bindPlayerInventory(entityPlayer.inventory, IGuiTexture.EMPTY, 10, 30)
                 .build(this, entityPlayer);
     }
 }

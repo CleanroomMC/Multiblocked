@@ -539,11 +539,11 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
         worldSceneRenderer.setAfterWorldRender(renderer -> {
             BlockPos look = renderer.getLastTraceResult() == null ? null : renderer.getLastTraceResult().getBlockPos();
             if (look != null && look.equals(selected)) {
-                renderBlockOverLay(selected, 200, 75, 75);
+                RenderUtils.renderBlockOverLay(selected, 200 / 255f, 75 / 255f, 75 / 255f);
                 return;
             }
-            renderBlockOverLay(look, 150, 150, 150);
-            renderBlockOverLay(selected, 255, 0, 0);
+            RenderUtils.renderBlockOverLay(look, 150 / 255f, 150 / 255f, 150 / 255f);
+            RenderUtils.renderBlockOverLay(selected, 1, 0, 0);
         });
         world.setRenderFilter(pos->worldSceneRenderer.renderedBlocksMap.keySet().stream().anyMatch(c->c.contains(pos)));
         world.setTEHook(te->{
@@ -570,29 +570,6 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
 //            controllerBase.state.getCache().forEach(pos-> predicateMap.put(pos, (TraceabilityPredicate) blockInfo.getInfo()));
         }
         return new MBPattern(worldSceneRenderer, parts, predicateMap);
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void renderBlockOverLay(BlockPos pos, int r, int g, int b) {
-        if (pos == null) return;
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        GlStateManager.translate((pos.getX() + 0.5), (pos.getY() + 0.5), (pos.getZ() + 0.5));
-        GlStateManager.scale(1.01, 1.01, 1.01);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        GlStateManager.disableTexture2D();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        RenderUtils.renderCubeFace(buffer, -0.5f, -0.5f, -0.5f, 0.5, 0.5, 0.5, r, g, b, 1);
-        tessellator.draw();
-
-        GlStateManager.scale(1 / 1.01, 1 / 1.01, 1 / 1.01);
-        GlStateManager.translate(-(pos.getX() + 0.5), -(pos.getY() + 0.5), -(pos.getZ() + 0.5));
-        GlStateManager.enableTexture2D();
-
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color(1, 1, 1, 1);
     }
 
     public static ItemStack getHoveredItemStack() {

@@ -1,6 +1,5 @@
 package io.github.cleanroommc.multiblocked.gui.texture;
 
-import io.github.cleanroommc.multiblocked.Multiblocked;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -13,24 +12,47 @@ public class ResourceTexture implements IGuiTexture {
 
     public final ResourceLocation imageLocation;
 
-    public ResourceTexture(ResourceLocation imageLocation) {
+    public final double offsetX;
+    public final double offsetY;
+
+    public final double imageWidth;
+    public final double imageHeight;
+
+
+    public ResourceTexture(ResourceLocation imageLocation, double offsetX, double offsetY, double width, double height) {
         this.imageLocation = imageLocation;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+        this.imageWidth = width;
+        this.imageHeight = height;
     }
 
     public ResourceTexture(String imageLocation) {
-        this(new ResourceLocation(Multiblocked.MODID, imageLocation));
+        this(new ResourceLocation(imageLocation), 0.0, 0.0, 1.0, 1.0);
+    }
+
+    public ResourceTexture getSubTexture(double offsetX, double offsetY, double width, double height) {
+        return new ResourceTexture(imageLocation,
+                this.offsetX + (imageWidth * offsetX),
+                this.offsetY + (imageHeight * offsetY),
+                this.imageWidth * width,
+                this.imageHeight * height);
     }
 
     @SideOnly(Side.CLIENT)
     public void draw(int mouseX, int mouseY, double x, double y, int width, int height) {
+        double imageU = this.offsetX;
+        double imageV = this.offsetY;
+        double imageWidth = this.imageWidth;
+        double imageHeight = this.imageHeight;
         Minecraft.getMinecraft().renderEngine.bindTexture(imageLocation);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(x, y + height, 0.0D).tex(0, 1).endVertex();
-        bufferbuilder.pos(x + width, y + height, 0.0D).tex(1, 1).endVertex();
-        bufferbuilder.pos(x + width, y, 0.0D).tex(1, 0).endVertex();
-        bufferbuilder.pos(x, y, 0.0D).tex(0, 0).endVertex();
+        bufferbuilder.pos(x, y + height, 0.0D).tex(imageU, imageV + imageHeight).endVertex();
+        bufferbuilder.pos(x + width, y + height, 0.0D).tex(imageU + imageWidth, imageV + imageHeight).endVertex();
+        bufferbuilder.pos(x + width, y, 0.0D).tex(imageU + imageWidth, imageV).endVertex();
+        bufferbuilder.pos(x, y, 0.0D).tex(imageU, imageV).endVertex();
         tessellator.draw();
     }
 

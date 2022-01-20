@@ -13,9 +13,10 @@ import java.util.function.Consumer;
 public class ButtonWidget extends Widget {
 
     protected IGuiTexture buttonTexture;
+    protected IGuiTexture hoverTexture;
     protected final Consumer<ClickData> onPressCallback;
 
-    public ButtonWidget(int xPosition, int yPosition, int width, int height, IGuiTexture buttonTexture,Consumer<ClickData> onPressed) {
+    public ButtonWidget(int xPosition, int yPosition, int width, int height, IGuiTexture buttonTexture, Consumer<ClickData> onPressed) {
         super(xPosition, yPosition, width, height);
         this.onPressCallback = onPressed;
     }
@@ -25,10 +26,18 @@ public class ButtonWidget extends Widget {
         return this;
     }
 
+    public ButtonWidget setHoverTexture(IGuiTexture hoverTexture) {
+        this.hoverTexture = hoverTexture;
+        return this;
+    }
+
     @Override
     public void updateScreen() {
         if (buttonTexture != null) {
             buttonTexture.updateTick();
+        }
+        if (hoverTexture != null) {
+            hoverTexture.updateTick();
         }
     }
 
@@ -36,7 +45,9 @@ public class ButtonWidget extends Widget {
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
         Position position = getPosition();
         Size size = getSize();
-        if (buttonTexture != null) {
+        if (isMouseOverElement(mouseX, mouseY) && hoverTexture != null) {
+            hoverTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+        } else if (buttonTexture != null) {
             buttonTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
         }
     }

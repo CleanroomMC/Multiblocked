@@ -263,7 +263,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Override
     public final boolean isRemote() {
-        return world.isRemote;
+        return world == null ? Multiblocked.isClient() : world.isRemote;
     }
 
     @Override

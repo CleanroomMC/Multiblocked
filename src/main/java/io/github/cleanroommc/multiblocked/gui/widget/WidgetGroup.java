@@ -401,7 +401,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
 
         @Override
         public void writeUpdateInfo(Widget widget, int updateId, Consumer<PacketBuffer> dataWriter) {
-            WidgetGroup.this.writeUpdateInfo(-1, buffer -> {
+            WidgetGroup.this.writeUpdateInfo(1, buffer -> {
                 buffer.writeVarInt(widgets.indexOf(widget));
                 buffer.writeVarInt(updateId);
                 dataWriter.accept(buffer);

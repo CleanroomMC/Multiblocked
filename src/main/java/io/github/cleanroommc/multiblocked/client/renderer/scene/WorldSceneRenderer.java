@@ -59,7 +59,7 @@ public abstract class WorldSceneRenderer {
     private Consumer<WorldSceneRenderer> beforeRender;
     private Consumer<WorldSceneRenderer> afterRender;
     private Consumer<RayTraceResult> onLookingAt;
-    private int clearColor;
+    protected int clearColor;
     private RayTraceResult lastTraceResult;
     private Vector3f eyePos = new Vector3f(0, 0, 10f);
     private Vector3f lookAt = new Vector3f(0, 0, 0);

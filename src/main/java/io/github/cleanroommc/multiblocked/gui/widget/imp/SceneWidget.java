@@ -161,8 +161,8 @@ public class SceneWidget extends WidgetGroup {
             });
             GlStateManager.popMatrix();
         }
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        if (selectedPosFace == null) return;
+        RenderUtils.renderBlockOverLay(selectedPosFace.pos, 0, 0, 0.6f);
     }
 
     private void drawFacingBorder(BlockPosFace posFace, int color) {
@@ -254,11 +254,9 @@ public class SceneWidget extends WidgetGroup {
         int y = getPosition().y;
         int width = getSize().width;
         int height = getSize().height;
-        DrawerHelper.drawSolidRect(x, y, width, height, 0xaf000000);
         if (renderer != null) {
             renderer.render(x, y, width, height, mouseX, mouseY);
         }
-        DrawerHelper.drawBorder(x + 1, y + 1, width - 2, height - 2, 0xff000000, 1);
         super.drawInBackground(mouseX, mouseY, partialTicks);
         currentMouseX = mouseX;
         currentMouseY = mouseY;

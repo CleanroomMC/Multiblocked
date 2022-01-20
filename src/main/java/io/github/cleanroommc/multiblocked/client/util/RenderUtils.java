@@ -3,12 +3,41 @@ package io.github.cleanroommc.multiblocked.client.util;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
+@SideOnly(Side.CLIENT)
 public class RenderUtils {
+
+    public static void renderBlockOverLay(BlockPos pos, float r, float g, float b) {
+        if (pos == null) return;
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        GlStateManager.translate((pos.getX() + 0.5), (pos.getY() + 0.5), (pos.getZ() + 0.5));
+        GlStateManager.scale(1.01, 1.01, 1.01);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        GlStateManager.disableTexture2D();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        RenderUtils.renderCubeFace(buffer, -0.5f, -0.5f, -0.5f, 0.5, 0.5, 0.5, r, g, b, 1);
+        tessellator.draw();
+
+        GlStateManager.scale(1 / 1.01, 1 / 1.01, 1 / 1.01);
+        GlStateManager.translate(-(pos.getX() + 0.5), -(pos.getY() + 0.5), -(pos.getZ() + 0.5));
+        GlStateManager.enableTexture2D();
+
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.color(1, 1, 1, 1);
+    }
+
     public static void renderCubeFace(BufferBuilder buffer, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float r, float g, float b, float a) {
         buffer.pos(minX, minY, minZ).color(r, g, b, a).endVertex();
         buffer.pos(minX, minY, maxZ).color(r, g, b, a).endVertex();
@@ -58,8 +87,7 @@ public class RenderUtils {
     }
 
     public static void moveToFace(double x, double y, double z, EnumFacing face) {
-        GlStateManager
-                .translate(x + 0.5 + face.getXOffset() * 0.5, y + 0.5 + face.getYOffset() * 0.5, z + 0.5 + face.getZOffset() * 0.5);
+        GlStateManager.translate(x + 0.5 + face.getXOffset() * 0.5, y + 0.5 + face.getYOffset() * 0.5, z + 0.5 + face.getZOffset() * 0.5);
     }
 
     public static void rotateToFace(EnumFacing face, @Nullable EnumFacing spin) {

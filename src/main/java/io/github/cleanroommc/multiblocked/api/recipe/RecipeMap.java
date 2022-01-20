@@ -7,6 +7,7 @@ import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -56,7 +57,7 @@ public class RecipeMap {
         outputCapabilities.addAll(recipe.outputs.keySet());
     }
 
-    public Recipe searchRecipe(Table<IO, MultiblockCapability<?>, List<CapabilityProxy<?>>> capabilityProxies) {
+    public Recipe searchRecipe(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
         if (capabilityProxies == null) return null;
         for (Recipe recipe : recipes.values()) {
             if (recipe.match(capabilityProxies)) {

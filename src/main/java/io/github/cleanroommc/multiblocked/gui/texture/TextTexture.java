@@ -29,6 +29,14 @@ public class TextTexture implements IGuiTexture{
         }
     }
 
+    public void updateText(String text) {
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            this.text = I18n.format(text);
+            texts = Collections.singletonList(this.text);
+            setWidth(this.width);
+        }
+    }
+
     public TextTexture setColor(int color) {
         this.color = color;
         return this;

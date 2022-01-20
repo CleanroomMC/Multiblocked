@@ -17,7 +17,7 @@ public class FECapabilityProxy extends CapabilityProxy<Integer> {
     }
 
     public IEnergyStorage getCapability() {
-        return tileEntity.getCapability(CapabilityEnergy.ENERGY, null);
+        return getTileEntity().getCapability(CapabilityEnergy.ENERGY, null);
     }
 
     @Override

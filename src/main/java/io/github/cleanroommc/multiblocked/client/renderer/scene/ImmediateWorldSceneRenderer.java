@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked.client.renderer.scene;
 import io.github.cleanroommc.multiblocked.util.PositionedRect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -39,6 +40,11 @@ public class ImmediateWorldSceneRenderer extends WorldSceneRenderer {
 
     @Override
     protected void clearView(int x, int y, int width, int height) {
+        int a = (clearColor & 0xFF000000) >> 24;
+        if (a == 0) {
+            GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+            return;
+        }
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(x, y, width, height);
         super.clearView(x, y, width, height);

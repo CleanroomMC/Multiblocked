@@ -7,20 +7,16 @@ import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 public class ImageWidget extends Widget {
 
     protected IGuiTexture area;
 
-    private BooleanSupplier predicate;
-    private boolean isVisible = true;
     private int border;
     private int borderColor;
     private String tooltipText;
@@ -45,11 +41,6 @@ public class ImageWidget extends Widget {
         return this;
     }
 
-    public ImageWidget setPredicate(BooleanSupplier predicate) {
-        this.predicate = predicate;
-        this.isVisible = false;
-        return this;
-    }
 
     public ImageWidget setTooltip(String tooltipText) {
         this.tooltipText = tooltipText;
@@ -64,26 +55,9 @@ public class ImageWidget extends Widget {
     }
 
     @Override
-    public void detectAndSendChanges() {
-        super.detectAndSendChanges();
-        if (predicate != null && predicate.getAsBoolean() != isVisible) {
-            this.isVisible = predicate.getAsBoolean();
-            writeUpdateInfo(1, buf -> buf.writeBoolean(isVisible));
-        }
-    }
-
-    @Override
-    public void readUpdateInfo(int id, PacketBuffer buffer) {
-        super.readUpdateInfo(id, buffer);
-        if (id == 1) {
-            this.isVisible = buffer.readBoolean();
-        }
-    }
-
-    @Override
     @SideOnly(Side.CLIENT)
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
-        if (!this.isVisible || area == null) return;
+        if (area == null) return;
         Position position = getPosition();
         Size size = getSize();
         area.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
@@ -94,7 +68,7 @@ public class ImageWidget extends Widget {
 
     @Override
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
-        if (this.isVisible && tooltipText != null && area != null && isMouseOverElement(mouseX, mouseY)) {
+        if (area != null && isMouseOverElement(mouseX, mouseY) && tooltipText != null) {
             List<String> hoverList = Arrays.asList(I18n.format(tooltipText).split("/n"));
             DrawerHelper.drawHoveringText(ItemStack.EMPTY, hoverList, 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
         }

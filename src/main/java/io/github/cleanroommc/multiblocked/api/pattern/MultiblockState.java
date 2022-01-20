@@ -145,7 +145,9 @@ public class MultiblockState {
         if (getController() != null) {
             if (controller.checkPattern()) {
                 MultiblockWorldSavedData.getOrCreate(world).addLoading(controller);
-                controller.onStructureFormed();
+                if (controller.getCapabilities() == null) {
+                    controller.onStructureFormed();
+                }
             } else {
                 error = UNLOAD_ERROR;
             }

@@ -11,5 +11,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 public enum IO {
     IN,
     OUT,
-    BOTH
+    BOTH;
+
+    public static IO[] VALUES = IO.values();
 }

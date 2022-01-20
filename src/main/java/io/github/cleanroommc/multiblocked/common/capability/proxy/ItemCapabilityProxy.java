@@ -19,7 +19,7 @@ public class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
     }
 
     public IItemHandler getCapability() {
-        return tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        return getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
     @Override

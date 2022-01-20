@@ -14,6 +14,7 @@ public class SwitchWidget extends Widget {
 
     protected IGuiTexture baseTexture;
     protected IGuiTexture pressedTexture;
+    protected IGuiTexture hoverTexture;
     protected boolean isPressed;
     protected BiConsumer<ClickData, Boolean> onPressCallback;
 
@@ -32,6 +33,11 @@ public class SwitchWidget extends Widget {
         return this;
     }
 
+    public SwitchWidget setHoverTexture(IGuiTexture hoverTexture) {
+        this.hoverTexture = hoverTexture;
+        return this;
+    }
+
     @Override
     public void updateScreen() {
         if (baseTexture != null) {
@@ -39,6 +45,9 @@ public class SwitchWidget extends Widget {
         }
         if (pressedTexture != null) {
             pressedTexture.updateTick();
+        }
+        if (hoverTexture != null) {
+            hoverTexture.updateTick();
         }
     }
 
@@ -61,7 +70,9 @@ public class SwitchWidget extends Widget {
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
         Position position = getPosition();
         Size size = getSize();
-        if (baseTexture != null && !isPressed) {
+        if (isMouseOverElement(mouseX, mouseY) && hoverTexture != null) {
+            hoverTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+        } else if (baseTexture != null && !isPressed) {
             baseTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
         } else if (pressedTexture != null && isPressed) {
             pressedTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);

@@ -25,9 +25,9 @@ public class RecipeMap {
     @ZenProperty
     public final String name;
     @ZenProperty
-    public Set<MultiblockCapability<?>> inputCapabilities = new ObjectOpenHashSet<>();
+    public Set<MultiblockCapability> inputCapabilities = new ObjectOpenHashSet<>();
     @ZenProperty
-    public Set<MultiblockCapability<?>> outputCapabilities = new ObjectOpenHashSet<>();
+    public Set<MultiblockCapability> outputCapabilities = new ObjectOpenHashSet<>();
     @ZenProperty
     RecipeBuilder recipeBuilder = new RecipeBuilder(this);
 
@@ -42,7 +42,7 @@ public class RecipeMap {
         return recipeBuilder.copy();
     }
 
-    public boolean hasCapability(IO io, MultiblockCapability<?> capability) {
+    public boolean hasCapability(IO io, MultiblockCapability capability) {
         switch (io) {
             case IN: return inputCapabilities.contains(capability);
             case OUT: return outputCapabilities.contains(capability);
@@ -57,7 +57,7 @@ public class RecipeMap {
         outputCapabilities.addAll(recipe.outputs.keySet());
     }
 
-    public Recipe searchRecipe(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
+    public Recipe searchRecipe(Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
         if (capabilityProxies == null) return null;
         for (Recipe recipe : recipes.values()) {
             if (recipe.match(capabilityProxies)) {

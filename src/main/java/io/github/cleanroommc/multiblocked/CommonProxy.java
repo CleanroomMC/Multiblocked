@@ -25,6 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -42,7 +43,17 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.init();
         MultiblockCapabilities.registerCapabilities();
+    }
 
+    public void init() {
+
+    }
+
+    public void postInit() {
+
+    }
+
+    public static void registerComponents(){
         // create a part component.
         PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "test_part"));
         partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
@@ -78,17 +89,10 @@ public class CommonProxy {
         MultiblockComponents.registerComponent(controllerDefinition);
     }
 
-    public void init() {
-
-    }
-
-    public void postInit() {
-
-    }
-
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         IForgeRegistry<Block> registry = event.getRegistry();
+        registerComponents();
         MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.values().forEach(registry::register);
         MultiblockComponents.registerTileEntity();
     }

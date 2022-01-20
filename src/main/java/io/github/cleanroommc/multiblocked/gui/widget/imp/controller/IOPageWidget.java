@@ -58,9 +58,9 @@ public class IOPageWidget extends WidgetGroup {
     private final ImageWidget[][] lines;
     private final TextTexture[] labels;
 
-    private Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap;
+    private Map<Long, EnumMap<IO, Set<MultiblockCapability>>> capabilityMap;
     @SideOnly(Side.CLIENT)
-    private Map<MultiblockCapability<?>, IO> capabilitySettings;
+    private Map<MultiblockCapability, IO> capabilitySettings;
     private BlockPos pos;
     int index;
 
@@ -113,9 +113,9 @@ public class IOPageWidget extends WidgetGroup {
     }
 
     private void refresh() {
-        List<MultiblockCapability<?>> values = new ArrayList<>(capabilitySettings.keySet());
+        List<MultiblockCapability> values = new ArrayList<>(capabilitySettings.keySet());
         for (int i = index; i < index + 3; i++) {
-            MultiblockCapability<?> capability = null;
+            MultiblockCapability capability = null;
             if (i < values.size()) {
                 capability = values.get(i);
                 labels[i - index].updateText(capability.name);
@@ -129,15 +129,15 @@ public class IOPageWidget extends WidgetGroup {
 
     private void click(ClickData clickData, int index, IO io) {
         if (clickData.isRemote) {
-            EnumMap<IO, Set<MultiblockCapability<?>>> enumMap;
+            EnumMap<IO, Set<MultiblockCapability>> enumMap;
             if (pos != null && capabilityMap.containsKey(pos.toLong())) {
                 enumMap = capabilityMap.get(pos.toLong());
             } else {
                 return;
             }
-            List<MultiblockCapability<?>> values = new ArrayList<>(capabilitySettings.keySet());
+            List<MultiblockCapability> values = new ArrayList<>(capabilitySettings.keySet());
             if (index >= 0 && index < values.size()) {
-                MultiblockCapability<?> capability = values.get(index);
+                MultiblockCapability capability = values.get(index);
                 IO original = capabilitySettings.get(capability);
                 boolean find = false;
                 if (enumMap.get(io) != null && enumMap.get(io).contains(capability)) {
@@ -175,7 +175,7 @@ public class IOPageWidget extends WidgetGroup {
 
     private void onRightClick(ClickData clickData) {
         if (clickData.isRemote) {
-            List<MultiblockCapability<?>> values = new ArrayList<>(capabilitySettings.keySet());
+            List<MultiblockCapability> values = new ArrayList<>(capabilitySettings.keySet());
             if (index < values.size() - 3) {
                 index ++;
                 refresh();
@@ -198,11 +198,11 @@ public class IOPageWidget extends WidgetGroup {
             if (!capabilityMap.containsKey(pos.toLong()) || controller.getCapabilities() == null) return;
             writeUpdateInfo(-1, buffer -> {
                 long posLong = pos.toLong();
-                Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities = controller.getCapabilities();
-                List<Tuple<IO, MultiblockCapability<?>>> real = new ArrayList<>();
-                for (Map.Entry<IO, Set<MultiblockCapability<?>>> entry : capabilityMap.get(pos.toLong()).entrySet()) {
-                    Set<MultiblockCapability<?>> set = entry.getValue();
-                    for (MultiblockCapability<?> capability : set) {
+                Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities = controller.getCapabilities();
+                List<Tuple<IO, MultiblockCapability>> real = new ArrayList<>();
+                for (Map.Entry<IO, Set<MultiblockCapability>> entry : capabilityMap.get(pos.toLong()).entrySet()) {
+                    Set<MultiblockCapability> set = entry.getValue();
+                    for (MultiblockCapability capability : set) {
                         if (capabilities.contains(entry.getKey(), capability) && capabilities.get(entry.getKey(), capability).containsKey(posLong)) {
                             real.add(new Tuple<>(entry.getKey(), capability));
                         }
@@ -217,7 +217,7 @@ public class IOPageWidget extends WidgetGroup {
                     }
                 }
                 buffer.writeVarInt(real.size());
-                for (Tuple<IO, MultiblockCapability<?>> tuple : real) {
+                for (Tuple<IO, MultiblockCapability> tuple : real) {
                     buffer.writeEnumValue(tuple.getFirst());
                     buffer.writeString(tuple.getSecond().name);
                 }
@@ -238,7 +238,7 @@ public class IOPageWidget extends WidgetGroup {
             int size = buffer.readVarInt();
             for (int i = size; i > 0; i--) {
                 IO io = buffer.readEnumValue(IO.class);
-                MultiblockCapability<?> capability = MultiblockCapabilities.CAPABILITY_REGISTRY.get(buffer.readString(Short.MAX_VALUE));
+                MultiblockCapability capability = MultiblockCapabilities.CAPABILITY_REGISTRY.get(buffer.readString(Short.MAX_VALUE));
                 capabilitySettings.put(capability, io);
             }
             refresh();
@@ -250,8 +250,8 @@ public class IOPageWidget extends WidgetGroup {
     @Override
     public void handleClientAction(int id, PacketBuffer buffer) {
         if (id == -1) {
-            MultiblockCapability<?> capability = MultiblockCapabilities.CAPABILITY_REGISTRY.get(buffer.readString(Short.MAX_VALUE));
-            Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities = controller.getCapabilities();
+            MultiblockCapability capability = MultiblockCapabilities.CAPABILITY_REGISTRY.get(buffer.readString(Short.MAX_VALUE));
+            Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities = controller.getCapabilities();
             if (buffer.readBoolean()) {
                 IO io = buffer.readEnumValue(IO.class);
                 capabilities.get(io, capability).remove(pos.toLong());

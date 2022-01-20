@@ -41,7 +41,7 @@ public class Predicates {
     /**
      * Use it when you require that a position must have a specific capability.
      */
-    public static TraceabilityPredicate anyCapability(IO io, MultiblockCapability<?> capability) {
+    public static TraceabilityPredicate anyCapability(IO io, MultiblockCapability capability) {
         IBlockState[] candidates = capability.getCandidates(io);
         BlockComponent randomBlock = new BlockComponent(new PartDefinition(new ResourceLocation(Multiblocked.MODID, capability.name)));
         randomBlock.definition.baseRenderer = new CycleBlockStateRenderer(candidates);
@@ -59,7 +59,7 @@ public class Predicates {
      * <br>
      * Otherwise all capacities of it which meet the recipeMap needs will be captured.
      */
-    public static TraceabilityPredicate blocksWithCapability(IO io, MultiblockCapability<?> capability, Block... blocks) {
+    public static TraceabilityPredicate blocksWithCapability(IO io, MultiblockCapability capability, Block... blocks) {
         if (blocks.length == 0) return anyCapability(io, capability);
         return new TraceabilityPredicate(state -> {
             if (!ArrayUtils.contains(blocks, state.getBlockState().getBlock())) return false;
@@ -72,7 +72,7 @@ public class Predicates {
      * <br>
      * Otherwise all capacities of it which meet the recipeMap needs will be captured.
      */
-    public static TraceabilityPredicate statesWithCapability(IO io, MultiblockCapability<?> capability, IBlockState... allowedStates) {
+    public static TraceabilityPredicate statesWithCapability(IO io, MultiblockCapability capability, IBlockState... allowedStates) {
         if (allowedStates.length == 0) return anyCapability(io, capability);
         return new TraceabilityPredicate(state -> {
             if (!ArrayUtils.contains(allowedStates, state.getBlockState())) return false;
@@ -80,10 +80,10 @@ public class Predicates {
         }, getCandidates(Sets.newHashSet(allowedStates)));
     }
 
-    private static boolean checkCapability(IO io, MultiblockCapability<?> capability, MultiblockState state) {
+    private static boolean checkCapability(IO io, MultiblockCapability capability, MultiblockState state) {
         TileEntity tileEntity = state.getTileEntity();
         if (tileEntity != null && capability.isBlockHasCapability(io, tileEntity)) {
-            Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilities = state.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
+            Map<Long, EnumMap<IO, Set<MultiblockCapability>>> capabilities = state.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
             capabilities.computeIfAbsent(state.getPos().toLong(), l-> new EnumMap<>(IO.class))
                     .computeIfAbsent(io, x->new HashSet<>())
                     .add(capability);

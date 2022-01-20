@@ -9,10 +9,10 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredient> {
+public class ItemMultiblockCapability extends MultiblockCapability {
 
-    public ItemMultiblockCapability(String name) {
-        super(name);
+    public ItemMultiblockCapability() {
+        super("item");
     }
 
     @Override

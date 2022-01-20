@@ -9,10 +9,10 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import javax.annotation.Nonnull;
 
-public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
+public class FluidMultiblockCapability extends MultiblockCapability {
 
-    public FluidMultiblockCapability(String name) {
-        super(name);
+    public FluidMultiblockCapability() {
+        super("fluid");
     }
 
     @Override

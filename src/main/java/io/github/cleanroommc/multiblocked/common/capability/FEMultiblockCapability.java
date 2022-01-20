@@ -9,10 +9,10 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 
-public class FEMultiblockCapability extends MultiblockCapability<Integer> {
+public class FEMultiblockCapability extends MultiblockCapability {
 
-    public FEMultiblockCapability(String name) {
-        super(name);
+    public FEMultiblockCapability() {
+        super("forge_energy");
     }
 
     @Override

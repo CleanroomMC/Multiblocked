@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 @ZenClass("mods.multiblocked.capability.capability")
 @ZenRegister
-public abstract class MultiblockCapability<K> {
+public abstract class MultiblockCapability {
     @SideOnly(Side.CLIENT)
     private EnumMap<IO, IBlockState[]> scannedStates;
     @ZenProperty
@@ -45,7 +45,7 @@ public abstract class MultiblockCapability<K> {
     /**
      * create a proxy of this block.
      */
-    public abstract CapabilityProxy<K> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity);
+    public abstract CapabilityProxy<?> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity);
 
     /**
      * get candidates for rendering in jei.
@@ -64,9 +64,13 @@ public abstract class MultiblockCapability<K> {
                     .stream()
                     .map(Block::getDefaultState)
                     .filter(s -> {
-                        TileEntity tile = s.getBlock().createTileEntity(Minecraft.getMinecraft().world, s);
-                        if (tile == null) return false;
-                        return isBlockHasCapability(io, tile);
+                        try {
+                            TileEntity tile = s.getBlock().createTileEntity(Minecraft.getMinecraft().world, s);
+                            if (tile == null) return false;
+                            return isBlockHasCapability(io, tile);
+                        } catch (Exception e) {
+                            return false;
+                        }
                     })
                     .toArray(IBlockState[]::new));
             Multiblocked.LOGGER.info("Available blocks for {} capability: {}", name,

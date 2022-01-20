@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.client.renderer.impl;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -38,7 +39,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         long time = System.currentTimeMillis();
         if (time - lastTime > 1000) {
             lastTime = time;
-            index++;
+            index = Multiblocked.RNG.nextInt();
         }
         return states[Math.abs(index) % states.length];
     }

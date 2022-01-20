@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.recipe;
 
 import crafttweaker.annotations.ZenRegister;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,20 +23,25 @@ public class RecipeLogic {
     public int progress;
     @ZenProperty
     public int duration;
-
+    @ZenProperty
+    public int timer;
 
     public RecipeLogic(ControllerTileEntity controller) {
         this.controller = controller;
         this.definition = controller.getDefinition();
+        this.timer = Multiblocked.RNG.nextInt();
     }
 
     public void update() {
+        timer++;
         if (isWorking) {
             progress++;
             if (progress == duration) {
                 onRecipeFinish();
             }
-        } else { // TODO Low frequency here
+        } else if (lastRecipe != null) {
+            findAndHandleRecipe();
+        } else if (timer % 5 == 0) {
             findAndHandleRecipe();
         }
     }
@@ -47,6 +53,7 @@ public class RecipeLogic {
         } else {
             recipe = this.definition.recipeMap.searchRecipe(this.controller.getCapabilities());
         }
+        lastRecipe = null;
         if (recipe != null) setupRecipe(recipe);
     }
 

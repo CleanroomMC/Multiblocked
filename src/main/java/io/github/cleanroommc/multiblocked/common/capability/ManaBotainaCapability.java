@@ -9,8 +9,9 @@ import vazkii.botania.api.mana.IManaReceiver;
 import javax.annotation.Nonnull;
 
 public class ManaBotainaCapability extends MultiblockCapability {
+    public static final ManaBotainaCapability CAP = new ManaBotainaCapability();
 
-    public ManaBotainaCapability() {
+    private ManaBotainaCapability() {
         super("bot_mana");
     }
 

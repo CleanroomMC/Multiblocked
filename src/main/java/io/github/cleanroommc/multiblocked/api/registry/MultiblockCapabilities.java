@@ -18,7 +18,7 @@ public class MultiblockCapabilities {
 
     public static MultiblockCapability FLUID;
 
-    public static final Map<String, MultiblockCapability> CAPABILITY_REGISTRY = Maps.newHashMap();
+    private static final Map<String, MultiblockCapability> CAPABILITY_REGISTRY = Maps.newHashMap();
 
     public static void registerCapability(MultiblockCapability capability) {
         CAPABILITY_REGISTRY.put(capability.name, capability);
@@ -29,10 +29,14 @@ public class MultiblockCapabilities {
         registerCapability(ITEM = new ItemMultiblockCapability());
         registerCapability(FLUID = new FluidMultiblockCapability());
         if (Multiblocked.isModLoaded("botania")) {
-            registerCapability(new ManaBotainaCapability());
+            registerCapability(ManaBotainaCapability.CAP);
         }
         if (Multiblocked.isModLoaded("thaumcraft")) {
-            registerCapability(new AspectThaumcraftCapability());
+            registerCapability(AspectThaumcraftCapability.CAP);
         }
+    }
+
+    public static MultiblockCapability get(String s) {
+        return CAPABILITY_REGISTRY.get(s);
     }
 }

@@ -9,8 +9,9 @@ import thaumcraft.api.aspects.IAspectContainer;
 import javax.annotation.Nonnull;
 
 public class AspectThaumcraftCapability extends MultiblockCapability {
+    public static final AspectThaumcraftCapability CAP = new AspectThaumcraftCapability();
 
-    public AspectThaumcraftCapability() {
+    private AspectThaumcraftCapability() {
         super("tc6_aspect");
     }
 

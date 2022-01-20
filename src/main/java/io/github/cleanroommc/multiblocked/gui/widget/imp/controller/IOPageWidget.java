@@ -238,7 +238,7 @@ public class IOPageWidget extends WidgetGroup {
             int size = buffer.readVarInt();
             for (int i = size; i > 0; i--) {
                 IO io = buffer.readEnumValue(IO.class);
-                MultiblockCapability capability = MultiblockCapabilities.CAPABILITY_REGISTRY.get(buffer.readString(Short.MAX_VALUE));
+                MultiblockCapability capability = MultiblockCapabilities.get(buffer.readString(Short.MAX_VALUE));
                 capabilitySettings.put(capability, io);
             }
             refresh();
@@ -250,7 +250,7 @@ public class IOPageWidget extends WidgetGroup {
     @Override
     public void handleClientAction(int id, PacketBuffer buffer) {
         if (id == -1) {
-            MultiblockCapability capability = MultiblockCapabilities.CAPABILITY_REGISTRY.get(buffer.readString(Short.MAX_VALUE));
+            MultiblockCapability capability = MultiblockCapabilities.get(buffer.readString(Short.MAX_VALUE));
             Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities = controller.getCapabilities();
             if (buffer.readBoolean()) {
                 IO io = buffer.readEnumValue(IO.class);

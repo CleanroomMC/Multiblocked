@@ -222,7 +222,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             for (NBTBase base : tagList) {
                 NBTTagCompound tag = (NBTTagCompound) base;
                 settings.computeIfAbsent(tag.getLong("pos"), l->new HashMap<>())
-                        .put(MultiblockCapabilities.CAPABILITY_REGISTRY.get(tag.getString("cap")),
+                        .put(MultiblockCapabilities.get(tag.getString("cap")),
                                 IO.VALUES[tag.getInteger("io")]);
             }
         }

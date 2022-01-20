@@ -13,6 +13,8 @@ import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
+import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
+import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;
@@ -74,12 +76,14 @@ public class CommonProxy {
         controllerDefinition.basePattern = FactoryBlockPattern.start()
                 .aisle("XXX", "   ")
                 .aisle("C#A", " P ")
-                .aisle("XYX", "   ")
+                .aisle("BYD", "   ")
                 .where(' ', any())
                 .where('P', partDefinition.selfPredicate())
                 .where('X', blocks(Blocks.STONE))
                 .where('#', air())
                 .where('A', anyCapability(IO.IN, MultiblockCapabilities.ITEM)) // if and only if available IN-Item-Capability here. (item inputBus)
+                .where('B', anyCapability(IO.BOTH, ManaBotainaCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
+                .where('D', anyCapability(IO.BOTH, AspectThaumcraftCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('C', blocks(Blocks.CHEST)) // tho not define a specific Capability here. it will still be detected according to the recipeMap, so will create a proxy of the BOTH-Item-Capability here. (item in/outputBus)
                 .where('Y', controllerDefinition.selfPredicate())
                 .build();

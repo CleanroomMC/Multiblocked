@@ -5,10 +5,12 @@ import com.google.common.collect.ImmutableMap;
 import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
+import thaumcraft.api.aspects.AspectList;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,6 +98,34 @@ public class RecipeBuilder {
     public RecipeBuilder duration(int duration) {
         this.duration = duration;
         return this;
+    }
+
+    public RecipeBuilder inputMana(int mana) {
+        hash += ManaBotainaCapability.CAP.hashCode() + mana;
+        return input(ManaBotainaCapability.CAP, mana);
+    }
+
+    public RecipeBuilder outputMana(int mana) {
+        hash += ManaBotainaCapability.CAP.hashCode() + mana;
+        return output(ManaBotainaCapability.CAP, mana);
+    }
+
+    public RecipeBuilder inputAspects(AspectList... inputs) {
+        hash += MultiblockCapabilities.FLUID.hashCode();
+        for (AspectList input : inputs) {
+            hash += input.visSize();
+            hash += input.getAspects()[0].getName().hashCode();
+        }
+        return input(ManaBotainaCapability.CAP, (Object[]) inputs);
+    }
+
+    public RecipeBuilder outputAspects(AspectList... outputs) {
+        hash += MultiblockCapabilities.FLUID.hashCode();
+        for (AspectList output : outputs) {
+            hash += output.visSize();
+            hash += output.getAspects()[0].getName().hashCode();
+        }
+        return output(ManaBotainaCapability.CAP, (Object[]) outputs);
     }
 
     public Recipe build() {

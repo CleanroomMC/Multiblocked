@@ -61,6 +61,13 @@ dependencies {
     }
     compile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.673"
     compile "mezz.jei:jei_1.12.2:4.15.0.293"
+    compile files("libs/Baubles-1.12-1.5.2.jar")
+    compile files("libs/Botania+r1.10-364.4.jar")
+    compile files("libs/MCMultiPart-2.5.3.jar")
+    compile files("libs/Mekanism-1.12.2-9.8.3.390.jar")
+    compile files("libs/Thaumcraft-1.12.2-6.1.BETA26.jar")
+    compile files("libs/NuclearCraft-2o.5.5-1.12.2.jar")
+    compile files("libs/QMD-1.0.4-1.12.2.jar")
 }
 
 processResources {

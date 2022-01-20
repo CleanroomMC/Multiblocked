@@ -88,6 +88,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     public void updateFormed() {
         if (recipeLogic != null) recipeLogic.update();
+        if (definition.updateFormed != null) {
+            definition.updateFormed.apply(this);
+        }
     }
 
     public Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {

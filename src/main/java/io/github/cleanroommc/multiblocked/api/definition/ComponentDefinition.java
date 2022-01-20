@@ -2,7 +2,10 @@ package io.github.cleanroommc.multiblocked.api.definition;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.api.util.IAxisAlignedBB;
 import crafttweaker.mc1120.item.MCItemStack;
+import crafttweaker.mc1120.util.MCAxisAlignedBB;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDrops;
@@ -18,12 +21,18 @@ import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
+import stanhebben.zenscript.annotations.ZenSetter;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Definition of a component.
@@ -51,6 +60,8 @@ public class ComponentDefinition {
     public INeighborChanged onNeighborChanged;
     @ZenProperty
     public IGetOutputRedstoneSignal getOutputRedstoneSignal;
+    public List<AxisAlignedBB> baseAABB;
+    public List<AxisAlignedBB> formedAABB;
 
     protected ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
         this.location = location;
@@ -91,6 +102,30 @@ public class ComponentDefinition {
     @ZenMethod("getStackForm")
     public IItemStack stackForm(){
         return new MCItemStack(getStackForm());
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_CT)
+    @ZenGetter("baseAABB")
+    public List<IAxisAlignedBB> getBaseAABB() {
+        return baseAABB == null ? null : baseAABB.stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_CT)
+    @ZenSetter("baseAABB")
+    public void setBaseAABB(IAxisAlignedBB[] baseAABB) {
+        this.baseAABB = baseAABB == null ? null : Arrays.stream(baseAABB).map(CraftTweakerMC::getAxisAlignedBB).collect(Collectors.toList());;
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_CT)
+    @ZenGetter("formedAABB")
+    public List<IAxisAlignedBB> getFormedAABB() {
+        return formedAABB == null ? null : formedAABB.stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_CT)
+    @ZenSetter("formedAABB")
+    public void setFormedAABB(IAxisAlignedBB[] formedAABB) {
+        this.formedAABB = formedAABB == null ? null : Arrays.stream(formedAABB).map(CraftTweakerMC::getAxisAlignedBB).collect(Collectors.toList());;
     }
 
     @ZenMethod

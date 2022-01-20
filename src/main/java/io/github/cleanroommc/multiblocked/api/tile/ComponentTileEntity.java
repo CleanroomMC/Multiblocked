@@ -3,12 +3,10 @@ package io.github.cleanroommc.multiblocked.api.tile;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
-import crafttweaker.api.util.IAxisAlignedBB;
 import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IFacing;
 import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.player.MCPlayer;
-import crafttweaker.mc1120.util.MCAxisAlignedBB;
 import crafttweaker.mc1120.world.MCBlockPos;
 import crafttweaker.mc1120.world.MCFacing;
 import crafttweaker.mc1120.world.MCWorld;
@@ -59,7 +57,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * A TileEntity that defies everything a TileEntity represents.
@@ -119,13 +116,11 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public abstract boolean isFormed();
 
     public List<AxisAlignedBB> getCollisionBoundingBox() {
-        return Collections.singletonList(Block.FULL_BLOCK_AABB);
-    }
-
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod("getCollisionBoundingBox")
-    public List<IAxisAlignedBB> collisionBoundingBox() {
-        return getCollisionBoundingBox().stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
+        if (isFormed()) {
+            return definition.formedAABB == null ? Collections.singletonList(Block.FULL_BLOCK_AABB) : definition.formedAABB;
+        } else {
+            return definition.baseAABB == null ? Collections.singletonList(Block.FULL_BLOCK_AABB) : definition.baseAABB;
+        }
     }
 
     public EnumFacing getFrontFacing() {

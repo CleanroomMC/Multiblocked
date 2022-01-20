@@ -64,6 +64,9 @@ public class RecipeLogic {
         duration = recipe.duration;
         recipe.handleInput(this.controller.getCapabilities());
         markDirty();
+        if (definition.setupRecipe != null) {
+            definition.setupRecipe.apply(this, recipe);
+        }
     }
 
     public void onRecipeFinish() {
@@ -72,6 +75,9 @@ public class RecipeLogic {
         duration = 0;
         lastRecipe.handleOutput(this.controller.getCapabilities());
         markDirty();
+        if (definition.recipeFinish != null) {
+            definition.recipeFinish.apply(this, lastRecipe);
+        }
     }
 
     @ZenMethod

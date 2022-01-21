@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 @ZenClass("mods.multiblocked.pattern.BlockPattern")
 @ZenRegister
@@ -76,7 +77,7 @@ public class BlockPattern {
         }
     }
 
-    public boolean checkPatternAt(MultiblockState worldState) {
+    public boolean checkPatternAt(MultiblockState worldState, boolean savePredicate) {
         boolean findFirstAisle = false;
         int minZ = -centerOffset[4];
         worldState.clean();
@@ -102,6 +103,9 @@ public class BlockPattern {
                         worldState.update(pos, predicate);
                         if (predicate != TraceabilityPredicate.ANY) {
                             worldState.addPosCache(pos);
+                            if (savePredicate) {
+                                worldState.getMatchContext().getOrCreate("predicates", (Supplier<HashMap<BlockPos, TraceabilityPredicate>>) HashMap::new).put(pos, predicate);
+                            }
                         }
                         boolean canPartShared = true;
                         TileEntity tileEntity = worldState.getTileEntity();

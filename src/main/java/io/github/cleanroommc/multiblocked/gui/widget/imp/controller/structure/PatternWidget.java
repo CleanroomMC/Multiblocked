@@ -1,6 +1,5 @@
 package io.github.cleanroommc.multiblocked.gui.widget.imp.controller.structure;
 
-import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
@@ -10,6 +9,7 @@ import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import io.github.cleanroommc.multiblocked.gui.texture.ColorRectTexture;
 import io.github.cleanroommc.multiblocked.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.gui.texture.TextTexture;
@@ -19,6 +19,7 @@ import io.github.cleanroommc.multiblocked.gui.widget.imp.ImageWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.SceneWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.SlotWidget;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import io.github.cleanroommc.multiblocked.util.CycleItemStackHandler;
 import io.github.cleanroommc.multiblocked.util.ItemStackKey;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -73,13 +74,17 @@ public class PatternWidget extends WidgetGroup {
     public final ControllerDefinition controllerDefinition;
     public final MBPattern[] patterns;
     public final List<ItemStack> allItemStackInputs;
+    private final List<TraceabilityPredicate.SimplePredicate> predicates;
     private int index;
     private SlotWidget[] slotWidgets;
+    private SlotWidget[] candidates;
+    private CycleItemStackHandler itemHandler;
 
     private PatternWidget(ControllerDefinition controllerDefinition) {
         super(0, 0, 176, 256);
         setClientSideWidget(true);
         allItemStackInputs = new ArrayList<>();
+        predicates = new ArrayList<>();
         addWidget(sceneWidget = new SceneWidget(6, 51, 164, 143, world)
                 .setOnSelected(this::onPosSelected)
                 .setRenderFacing(false));
@@ -124,16 +129,58 @@ public class PatternWidget extends WidgetGroup {
         }
         leftButton.setVisible(index > 0);
         rightButton.setVisible(index < patterns.length - 1);
+        updateClientSlots();
     }
 
     private void onPosSelected(BlockPos pos, EnumFacing facing) {
+        TraceabilityPredicate predicate = patterns[index].predicateMap.get(pos);
+        if (predicate != null) {
+            predicates.clear();
+            predicates.addAll(predicate.common);
+            predicates.addAll(predicate.limited);
+            predicates.removeIf(p -> p.candidates == null);
+            if (candidates != null) {
+                for (SlotWidget candidate : candidates) {
+                    removeWidget(candidate);
+                }
+            }
+            List<List<ItemStack>> candidateStacks = new ArrayList<>();
+            for (TraceabilityPredicate.SimplePredicate simplePredicate : predicates) {
+                List<ItemStack> itemStacks = simplePredicate.getCandidates();
+                if (!itemStacks.isEmpty()) {
+                    candidateStacks.add(itemStacks);
+                }
+            }
+            candidates = new SlotWidget[candidateStacks.size()];
+            itemHandler = new CycleItemStackHandler(candidateStacks);
+            for (int i = 0; i < candidateStacks.size(); i++) {
+                candidates[i] = new SlotWidget(itemHandler, i, 8 + (i / 6) * 18, 55 + (i % 6) * 18, false, false).setBackgroundTexture(new ColorRectTexture(0x4fffffff));
+                addWidget(candidates[i]);
+            }
+            updateClientSlots();
+        }
+    }
 
+    private void updateClientSlots() {
+        if (gui == null || gui.getModularUIGui() == null) return;
+        gui.getModularUIGui().inventorySlots.inventorySlots.clear();
+        for (SlotWidget slotWidget : getNativeWidgets()) {
+            gui.getModularUIGui().inventorySlots.inventorySlots.add(slotWidget.getHandle());
+        }
     }
 
     public static BlockPos locateNextRegion(int range) {
         BlockPos pos = LAST_POS;
         LAST_POS = LAST_POS.add(range, 0, range);
         return pos;
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        if (itemHandler != null && Minecraft.getMinecraft().player.ticksExisted % 20 ==0) {
+            itemHandler.update();
+        }
     }
 
     @Override
@@ -180,7 +227,7 @@ public class PatternWidget extends WidgetGroup {
         Map<BlockPos, TraceabilityPredicate> predicateMap = new HashMap<>();
         if (controllerBase != null) {
             controllerBase.state = new MultiblockState(world, controllerBase.getPos());
-            controllerBase.checkPattern();
+            controllerBase.getDefinition().basePattern.checkPatternAt(controllerBase.state, true);
             controllerBase.onStructureFormed();
             if (controllerBase.isFormed() && controllerBase.getDefinition().disableOthersRendering) {
                 long controllerLong = controllerBase.getPos().toLong();
@@ -191,8 +238,7 @@ public class PatternWidget extends WidgetGroup {
                 }
                 MultiblockWorldSavedData.addDisableModel(world, modelDisabled);
             }
-            // TODO
-//            controllerBase.state.getCache().forEach(pos-> predicateMap.put(pos, (TraceabilityPredicate) blockInfo.getInfo()));
+            predicateMap = controllerBase.state.getMatchContext().get("predicates");
         }
         return new MBPattern(blockMap, parts.values().stream().sorted((one, two) -> {
             if (one.isController) return -1;

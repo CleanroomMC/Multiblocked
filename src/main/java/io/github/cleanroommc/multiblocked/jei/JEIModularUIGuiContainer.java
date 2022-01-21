@@ -39,11 +39,6 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
         Position displayOffset = new Position(modularUI.getGuiLeft(), layout.getPosY());
         modularUI.guiWidgets.values().forEach(widget -> widget.setParentPosition(displayOffset));
         this.inventorySlots.inventorySlots.clear();
-        for (Widget widget : modularUI.getFlatVisibleWidgetCollection()) {
-            if (widget instanceof SlotWidget) {
-                this.inventorySlots.inventorySlots.add(((SlotWidget) widget).getHandle());
-            }
-        }
     }
 
     public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
@@ -65,9 +60,9 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.hoveredSlot = null;
         drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-        for (int i = 0; i < this.inventorySlots.inventorySlots.size(); ++i) {
-            Slot slot = this.inventorySlots.inventorySlots.get(i);
-            if (slot instanceof SlotWidget.ISlotWidget) {
+        for (Widget widget : modularUI.getFlatVisibleWidgetCollection()) {
+            if (widget instanceof SlotWidget) {
+                Slot slot = ((SlotWidget) widget).getHandle();
                 if (((SlotWidget.ISlotWidget) slot).isHover()) {
                     setHoveredSlot(slot);
                     ItemStack stack = slot.getStack();

@@ -75,7 +75,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @ZenMethod
     public boolean checkPattern() {
         if (state == null) return false;
-        return definition.basePattern.checkPatternAt(state);
+        return definition.basePattern.checkPatternAt(state, false);
     }
 
     @Override

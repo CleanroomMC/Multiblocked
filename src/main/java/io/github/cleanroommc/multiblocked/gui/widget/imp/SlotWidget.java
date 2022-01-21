@@ -212,6 +212,7 @@ public class SlotWidget extends Widget {
     }
 
     public void onSlotChanged() {
+        if (gui == null) return;
         gui.holder.markDirty();
     }
 
@@ -267,6 +268,7 @@ public class SlotWidget extends Widget {
 
         @Override
         public void putStack(@Nonnull ItemStack stack) {
+            if(!SlotWidget.this.canPutStack(stack)) return;
             super.putStack(stack);
             if (changeListener != null) {
                 changeListener.run();
@@ -320,6 +322,7 @@ public class SlotWidget extends Widget {
 
         @Override
         public void putStack(@Nonnull ItemStack stack) {
+            if(!SlotWidget.this.canPutStack(stack)) return;
             super.putStack(stack);
             if (changeListener != null) {
                 changeListener.run();

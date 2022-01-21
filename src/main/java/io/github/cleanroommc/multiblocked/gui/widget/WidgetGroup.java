@@ -112,7 +112,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
             widget.initWidget();
         }
         recomputeSize();
-        if (uiAccess != null) {
+        if (uiAccess != null && !isClientSideWidget) {
             uiAccess.notifyWidgetChange();
         }
         return this;
@@ -155,7 +155,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         widget.setGui(null);
         widget.setParentPosition(Position.ORIGIN);
         recomputeSize();
-        if (uiAccess != null) {
+        if (uiAccess != null && !isClientSideWidget) {
             this.uiAccess.notifyWidgetChange();
         }
     }

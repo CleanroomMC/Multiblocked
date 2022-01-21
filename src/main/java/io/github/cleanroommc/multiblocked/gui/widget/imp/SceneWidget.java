@@ -37,6 +37,7 @@ public class SceneWidget extends WidgetGroup {
     @SideOnly(Side.CLIENT)
     private TrackedDummyWorld dummyWorld;
     private boolean dragging;
+    private boolean renderFacing = true;
     private int lastMouseX;
     private int lastMouseY;
     private int currentMouseX;
@@ -51,15 +52,17 @@ public class SceneWidget extends WidgetGroup {
     private BiConsumer<BlockPos, EnumFacing> onSelected;
     private Set<BlockPos> core;
 
-    public SceneWidget(int x, int y, int width, int height) {
+    public SceneWidget(int x, int y, int width, int height, World world) {
         super(x, y, width, height);
         if (Multiblocked.isClient()) {
-            createScene();
+            createScene(world);
         }
     }
 
-    private void createScene() {
-        dummyWorld = new TrackedDummyWorld(Minecraft.getMinecraft().world);
+    @SideOnly(Side.CLIENT)
+    private void createScene(World world) {
+        core = new HashSet<>();
+        dummyWorld = new TrackedDummyWorld(world == null ? Minecraft.getMinecraft().world : world);
         dummyWorld.setRenderFilter(pos -> renderer.renderedBlocksMap.keySet().stream().anyMatch(c -> c.contains(pos)));
         renderer = new ImmediateWorldSceneRenderer(dummyWorld);
         center = new Vector3f();
@@ -90,9 +93,15 @@ public class SceneWidget extends WidgetGroup {
         return this;
     }
 
+    public SceneWidget setRenderFacing(boolean renderFacing) {
+        this.renderFacing = renderFacing;
+        return this;
+    }
+
     public SceneWidget setRenderedCore(Collection<BlockPos> blocks, ISceneRenderHook renderHook) {
         if (Multiblocked.isClient()) {
-            core = new HashSet<>(blocks);
+            core.clear();
+            core.addAll(blocks);
             int minX = Integer.MAX_VALUE;
             int minY = Integer.MAX_VALUE;
             int minZ = Integer.MAX_VALUE;
@@ -166,6 +175,7 @@ public class SceneWidget extends WidgetGroup {
     }
 
     private void drawFacingBorder(BlockPosFace posFace, int color) {
+        if (!renderFacing) return;
         GlStateManager.pushMatrix();
         RenderUtils.moveToFace(posFace.pos.getX(), posFace.pos.getY(), posFace.pos.getZ(), posFace.facing);
         RenderUtils.rotateToFace(posFace.facing, null);

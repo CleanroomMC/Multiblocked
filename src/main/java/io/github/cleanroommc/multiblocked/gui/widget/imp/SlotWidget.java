@@ -166,7 +166,7 @@ public class SlotWidget extends Widget {
 
     @Override
     protected void onPositionUpdate() {
-        if (slotReference != null) {
+        if (slotReference != null && gui != null) {
             Position position = getPosition();
             this.slotReference.xPos = position.x + 1 - gui.getGuiLeft();
             this.slotReference.yPos = position.y + 1 - gui.getGuiTop();

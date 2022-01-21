@@ -101,8 +101,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Nonnull
     @Override
     public ItemStack getPickBlock(@Nonnull IBlockState state, @Nonnull RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
-        ComponentTileEntity<?> instance = getComponent(world, pos);
-        return instance == null ? ItemStack.EMPTY : instance.getDefinition().getStackForm();
+        return definition.getStackForm();
     }
 
     @Override

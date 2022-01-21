@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.gui.widget.imp.controller;
 
 import com.google.common.collect.Table;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
@@ -17,6 +18,7 @@ import io.github.cleanroommc.multiblocked.gui.widget.imp.ImageWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.SceneWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabContainer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -84,9 +86,10 @@ public class IOPageWidget extends PageWidget {
         addWidget(lines[1][1] = new ImageWidget(86, 202, 4, 35));
         addWidget(lines[1][2] = new ImageWidget(138, 202, 4, 35));
 
-        addWidget(new SceneWidget(6, 6, 164, 143)
+        addWidget(new SceneWidget(6, 6, 164, 143, Multiblocked.isClient() ? Minecraft.getMinecraft().world : null)
                 .setRenderedCore(controller.state.getCache(), null)
-                .setOnSelected(this::onPosSelected));
+                .setOnSelected(this::onPosSelected)
+                .setRenderFacing(false));
         addWidget(new ButtonWidget(4, 156, 5, 17, LEFT_BUTTON, this::onLeftClick).setHoverTexture(LEFT_BUTTON_HOVER));
         addWidget(new ButtonWidget(167, 156, 5, 17, RIGHT_BUTTON, this::onRightClick).setHoverTexture(RIGHT_BUTTON_HOVER));
         labels = new TextTexture[3];

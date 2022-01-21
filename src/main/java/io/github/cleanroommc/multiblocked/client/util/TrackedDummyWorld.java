@@ -1,6 +1,8 @@
 package io.github.cleanroommc.multiblocked.client.util;
 
 import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
+import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.util.world.DummyWorld;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -27,6 +29,7 @@ import java.util.function.Predicate;
  */
 @SideOnly(Side.CLIENT)
 public class TrackedDummyWorld extends DummyWorld {
+
     public final Set<BlockPos> renderedBlocks = new HashSet<>();
     private Predicate<BlockPos> renderFilter;
     private Function<TileEntity, TileEntity> teHook;

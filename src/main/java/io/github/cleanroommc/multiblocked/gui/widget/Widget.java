@@ -38,7 +38,7 @@ public class Widget {
     private transient boolean isVisible;
     private transient boolean isActive;
     private transient boolean isFocus;
-    private transient boolean isClientSideWidget;
+    protected transient boolean isClientSideWidget;
 
     public Widget(Position selfPosition, Size size) {
         Preconditions.checkNotNull(selfPosition, "selfPosition");

@@ -14,7 +14,7 @@ public abstract class PageWidget extends WidgetGroup {
         super(20, 0, 176, 256);
         this.page = page;
         this.background = page.getSubTexture(0, 0, 176 / 256.0, 1);
-        tabContainer.addTab(new TabButton(0, tabContainer.widgets.size() * 20, 20, 20)
+        tabContainer.addTab(new TabButton(0, tabContainer.widgets.size() * 10, 20, 20)
                         .setTexture(page.getSubTexture(176 / 256.0, 216 / 256.0, 20 / 256.0, 20 / 256.0),
                                 page.getSubTexture(176 / 256.0, 236 / 256.0, 20 / 256.0, 20 / 256.0)),
                 this);

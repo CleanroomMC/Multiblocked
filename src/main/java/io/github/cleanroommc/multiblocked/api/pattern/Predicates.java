@@ -1,17 +1,13 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
 import com.google.common.collect.Sets;
-import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
-import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
@@ -42,16 +38,11 @@ public class Predicates {
      * Use it when you require that a position must have a specific capability.
      */
     public static TraceabilityPredicate anyCapability(IO io, MultiblockCapability capability) {
-        IBlockState[] candidates = capability.getCandidates(io);
-        BlockComponent randomBlock = new BlockComponent(new PartDefinition(new ResourceLocation(Multiblocked.MODID, capability.name)));
-        randomBlock.definition.baseRenderer = new CycleBlockStateRenderer(candidates);
-        randomBlock.definition.isOpaqueCube = false;
-        randomBlock.definition.allowRotate = false;
+        Block block = MultiblockComponents.getOrRegisterAnyCapabilityBlock(io, capability);
         return new TraceabilityPredicate(state -> {
-            Block block = state.getBlockState().getBlock();
-           if (block instanceof BlockComponent && block.getRegistryName() == null)  return true;
-           return checkCapability(io, capability, state);
-        }, ()-> new BlockInfo[]{new BlockInfo(randomBlock.getDefaultState())});
+            if (state.getBlockState().getBlock() == block)  return true;
+            return checkCapability(io, capability, state);
+        }, ()-> new BlockInfo[]{new BlockInfo(block)});
     }
 
     /**

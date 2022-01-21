@@ -21,6 +21,7 @@ import io.github.cleanroommc.multiblocked.gui.util.ModularUIBuilder;
 import io.github.cleanroommc.multiblocked.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.LabelWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.controller.IOPageWidget;
+import io.github.cleanroommc.multiblocked.gui.widget.imp.controller.structure.StructurePageWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabButton;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
@@ -313,15 +314,10 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
         TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
+        new StructurePageWidget(this.definition, tabContainer);
         if (isFormed()) {
             new IOPageWidget(this, tabContainer);
         }
-        tabContainer.addTab(new TabButton(0, 20, 20, 20)
-                .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                new WidgetGroup(20,0,200,135)).addWidget(new LabelWidget(10, 0, ()->"tab2").setTextColor(-1));
-        tabContainer.addTab(new TabButton(0, 40, 20, 20)
-                .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                new WidgetGroup(20,0,200,135)).addWidget(new LabelWidget(10, 0, ()->"tab3").setTextColor(-1));
         return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
                 .widget(tabContainer)
                 .build(this, entityPlayer);

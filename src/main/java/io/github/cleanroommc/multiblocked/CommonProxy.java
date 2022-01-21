@@ -14,6 +14,7 @@ import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRendere
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
+import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import io.github.cleanroommc.multiblocked.events.Listeners;
@@ -94,6 +95,26 @@ public class CommonProxy {
                 .where('B', anyCapability(IO.OUT, ManaBotainaCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('D', anyCapability(IO.OUT, AspectThaumcraftCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('C', blocks(Blocks.CHEST)) // tho not define a specific Capability here. it will still be detected according to the recipeMap, so will create a proxy of the BOTH-Item-Capability here. (item in/outputBus)
+                .where('Y', controllerDefinition.selfPredicate())
+                .build();
+        controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));
+        controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"));
+        controllerDefinition.isOpaqueCube = false;
+//        controllerDefinition.disableOthersRendering = true;
+        MultiblockComponents.registerComponent(controllerDefinition);
+
+        // create a recipeMap.
+        recipeMap = new RecipeMap("test2_recipe_map");
+        // create a controller component.
+        controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test2_block"), recipeMap);
+        controllerDefinition.basePattern = FactoryBlockPattern.start()
+                .aisle("XXX")
+                .aisle("X#X")
+                .aisle("AYX")
+                .where(' ', any())
+                .where('A', anyCapability(IO.BOTH, GasMekanismCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
+                .where('X', blocks(Blocks.STONE))
+                .where('#', air())
                 .where('Y', controllerDefinition.selfPredicate())
                 .build();
         controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));

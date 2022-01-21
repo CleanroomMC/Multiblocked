@@ -51,6 +51,8 @@ public class ControllerDefinition extends ComponentDefinition {
     public boolean consumeCatalyst;
     @ZenProperty
     public List<MultiblockShapeInfo> designs;
+    @ZenProperty
+    public boolean disableOthersRendering; // if true, only render controller, all other blocks of the multi do not render.
 
 
     public ControllerDefinition(ResourceLocation location, RecipeMap recipeMap) {

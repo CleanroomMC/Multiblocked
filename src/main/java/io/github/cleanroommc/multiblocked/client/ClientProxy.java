@@ -1,22 +1,21 @@
 package io.github.cleanroommc.multiblocked.client;
 
 import io.github.cleanroommc.multiblocked.CommonProxy;
-import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.model.emissivemodel.MetadataSectionEmissive;
 import io.github.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
-import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
+import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -53,6 +52,13 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public static void onModelsBake(ModelBakeEvent event) {
         event.getModelRegistry().putObject(BlockComponent.MODEL_LOCATION, ComponentRenderer.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public static void onWorldUnload(WorldEvent.Unload event) {
+        if (MultiblockWorldSavedData.modelDisabled != null && event.getWorld() != null) {
+            MultiblockWorldSavedData.modelDisabled.remove(event.getWorld());
+        }
     }
 
 }

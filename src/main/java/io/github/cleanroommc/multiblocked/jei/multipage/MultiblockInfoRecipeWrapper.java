@@ -14,6 +14,7 @@ import io.github.cleanroommc.multiblocked.client.renderer.scene.ImmediateWorldSc
 import io.github.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRenderer;
 import io.github.cleanroommc.multiblocked.client.util.RenderUtils;
 import io.github.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import io.github.cleanroommc.multiblocked.util.ItemStackKey;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -27,11 +28,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
@@ -45,10 +43,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.vecmath.Vector3f;
@@ -66,6 +61,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
+    private static final TrackedDummyWorld world = new TrackedDummyWorld();
+    private static BlockPos lastMultiPos = new BlockPos(50, 50, 50);
     private static final int MAX_PARTS = 18;
     private static final int PARTS_HEIGHT = 36;
     private final int SLOT_SIZE = 18;
@@ -510,7 +507,6 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
         Map<BlockPos, BlockInfo> blockMap = new HashMap<>();
         ControllerTileEntity controllerBase = null;
         BlockInfo[][][] blocks = shapeInfo.getBlocks();
-        TrackedDummyWorld world = new TrackedDummyWorld();
         for (int x = 0; x < blocks.length; x++) {
             BlockInfo[][] aisle = blocks[x];
             for (int y = 0; y < aisle.length; y++) {
@@ -524,7 +520,7 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
                     if (tileEntity instanceof ControllerTileEntity) {
                         controllerBase = (ControllerTileEntity) tileEntity;
                     }
-                    blockMap.put(new BlockPos(x, y, z), new BlockInfo(blockState, tileEntity));
+                    blockMap.put(lastMultiPos.add(x, y, z), new BlockInfo(blockState, tileEntity));
                 }
             }
         }
@@ -566,9 +562,19 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
             controllerBase.state = new MultiblockState(world, controllerBase.getPos());
             controllerBase.checkPattern();
             controllerBase.onStructureFormed();
+            if (controllerBase.isFormed() && controllerBase.getDefinition().disableOthersRendering) {
+                long controllerLong = controllerBase.getPos().toLong();
+                Set<BlockPos> modelDisabled = new HashSet<>();
+                for (long blockPos : controllerBase.state.cache) {
+                    if (controllerLong == blockPos) continue;
+                    modelDisabled.add(BlockPos.fromLong(blockPos));
+                }
+                MultiblockWorldSavedData.addDisableModel(world, modelDisabled);
+            }
             // TODO
 //            controllerBase.state.getCache().forEach(pos-> predicateMap.put(pos, (TraceabilityPredicate) blockInfo.getInfo()));
         }
+        lastMultiPos = lastMultiPos.add(500, 0, 500);
         return new MBPattern(worldSceneRenderer, parts, predicateMap);
     }
 

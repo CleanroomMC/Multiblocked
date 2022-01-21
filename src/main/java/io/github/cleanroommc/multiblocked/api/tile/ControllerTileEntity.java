@@ -51,6 +51,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A TileEntity that defies all controller machines.
@@ -202,12 +203,31 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     private void writeState(PacketBuffer buffer) {
         buffer.writeBoolean(isFormed());
+        if (isFormed() && definition.disableOthersRendering) {
+            buffer.writeVarInt(state.cache.size());
+            for (long blockPos : state.cache) {
+                buffer.writeLong(blockPos);
+            }
+        }
     }
 
     private void readState(PacketBuffer buffer) {
         if (buffer.readBoolean()) {
             state = new MultiblockState(world, pos);
+            if (definition.disableOthersRendering) {
+                int size = buffer.readVarInt();
+                state.cache = new LongOpenHashSet();
+                for (int i = size; i > 0; i--) {
+                    state.cache.add(buffer.readLong());
+                }
+            }
+            long controllerPos = getPos().toLong();
+            MultiblockWorldSavedData.addDisableModel(getWorld(), state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
         } else {
+            if (state != null && definition.disableOthersRendering && state.cache != null) {
+                long controllerPos = getPos().toLong();
+                MultiblockWorldSavedData.removeDisableModel(getWorld(), state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
+            }
             state = null;
         }
     }

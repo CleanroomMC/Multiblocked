@@ -7,12 +7,12 @@
   "mixins": [
     "ChunkMixin",
     "NBTTagCompoundMapExposer",
-    "NetHandlerPlayClientMixin",
     "WorldMixin"
   ],
   "client": [
     "BlockRendererDispatcherMixin",
     "MinecraftMixin",
+    "TileEntityRendererDispatcherMixin",
     "RenderItemMixin"
   ]
 }

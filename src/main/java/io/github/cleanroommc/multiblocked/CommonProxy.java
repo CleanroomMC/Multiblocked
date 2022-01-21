@@ -99,6 +99,7 @@ public class CommonProxy {
         controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));
         controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"));
         controllerDefinition.isOpaqueCube = false;
+//        controllerDefinition.disableOthersRendering = true;
         MultiblockComponents.registerComponent(controllerDefinition);
     }
 

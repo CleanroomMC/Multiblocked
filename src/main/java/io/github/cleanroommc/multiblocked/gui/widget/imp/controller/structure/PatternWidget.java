@@ -145,16 +145,21 @@ public class PatternWidget extends WidgetGroup {
                 }
             }
             List<List<ItemStack>> candidateStacks = new ArrayList<>();
+            List<List<String>> predicateTips = new ArrayList<>();
             for (TraceabilityPredicate.SimplePredicate simplePredicate : predicates) {
                 List<ItemStack> itemStacks = simplePredicate.getCandidates();
                 if (!itemStacks.isEmpty()) {
                     candidateStacks.add(itemStacks);
+                    predicateTips.add(simplePredicate.getToolTips(predicate));
                 }
             }
             candidates = new SlotWidget[candidateStacks.size()];
             itemHandler = new CycleItemStackHandler(candidateStacks);
             for (int i = 0; i < candidateStacks.size(); i++) {
-                candidates[i] = new SlotWidget(itemHandler, i, 8 + (i / 6) * 18, 55 + (i % 6) * 18, false, false).setBackgroundTexture(new ColorRectTexture(0x4fffffff));
+                int finalI = i;
+                candidates[i] = new SlotWidget(itemHandler, i, 8 + (i / 6) * 18, 55 + (i % 6) * 18, false, false)
+                        .setBackgroundTexture(new ColorRectTexture(0x4fffffff))
+                        .setOnAddedTooltips((slot, list) -> list.addAll(predicateTips.get(finalI)));
                 addWidget(candidates[i]);
             }
             updateClientSlots();

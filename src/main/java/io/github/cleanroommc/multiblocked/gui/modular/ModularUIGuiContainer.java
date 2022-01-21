@@ -4,6 +4,7 @@ import io.github.cleanroommc.multiblocked.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.SlotWidget;
 import io.github.cleanroommc.multiblocked.network.s2c.SPacketUIWidgetUpdate;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -122,6 +123,20 @@ public class ModularUIGuiContainer extends GuiContainer {
         renderHoveredToolTip(mouseX, mouseY);
     }
 
+    @Override
+    protected void renderHoveredToolTip(int mouseX, int mouseY) {
+        if (this.mc.player.inventory.getItemStack().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.getHasStack()) {
+            ItemStack stack = this.hoveredSlot.getStack();
+            if (this.hoveredSlot instanceof SlotWidget.ISlotWidget) {
+                FontRenderer font = stack.getItem().getFontRenderer(stack);
+                net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
+                this.drawHoveringText(((SlotWidget.ISlotWidget) this.hoveredSlot).getToolTips(this.getItemToolTip(stack)), mouseX, mouseY, (font == null ? fontRenderer : font));
+                net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
+            } else {
+                this.renderToolTip(stack, mouseX, mouseY);
+            }
+        }
+    }
 
     public void setHoveredSlot(Slot hoveredSlot) {
         this.hoveredSlot = hoveredSlot;

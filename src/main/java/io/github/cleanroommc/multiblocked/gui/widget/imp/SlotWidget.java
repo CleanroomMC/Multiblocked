@@ -23,6 +23,8 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 public class SlotWidget extends Widget {
 
@@ -34,6 +36,7 @@ public class SlotWidget extends Widget {
 
     protected IGuiTexture[] backgroundTexture;
     protected Runnable changeListener;
+    protected BiConsumer<SlotWidget, List<String>> onAddedTooltips;
 
     public SlotWidget(IInventory inventory, int slotIndex, int xPosition, int yPosition, boolean canTakeItems, boolean canPutItems) {
         super(new Position(xPosition, yPosition), new Size(18, 18));
@@ -55,6 +58,11 @@ public class SlotWidget extends Widget {
 
     protected Slot createSlot(IItemHandler itemHandler, int index) {
         return new WidgetSlotItemHandler(itemHandler, index, 0, 0);
+    }
+
+    public SlotWidget setOnAddedTooltips(BiConsumer<SlotWidget, List<String>> onAddedTooltips) {
+        this.onAddedTooltips = onAddedTooltips;
+        return this;
     }
 
     @Override
@@ -234,9 +242,17 @@ public class SlotWidget extends Widget {
         return stack;
     }
 
+    private List<String> getToolTips(List<String> list) {
+        if (this.onAddedTooltips != null) {
+            this.onAddedTooltips.accept(this, list);
+        }
+        return list;
+    }
+
     public interface ISlotWidget {
         void setHover(boolean isHover);
         boolean isHover();
+        List<String> getToolTips(List<String> list);
     }
 
     protected class WidgetSlot extends Slot implements ISlotWidget {
@@ -254,6 +270,11 @@ public class SlotWidget extends Widget {
         @Override
         public boolean isHover() {
             return isHover;
+        }
+
+        @Override
+        public List<String> getToolTips(List<String> list) {
+            return SlotWidget.this.getToolTips(list);
         }
 
         @Override
@@ -308,6 +329,11 @@ public class SlotWidget extends Widget {
         @Override
         public boolean isHover() {
             return isHover;
+        }
+
+        @Override
+        public List<String> getToolTips(List<String> list) {
+            return SlotWidget.this.getToolTips(list);
         }
 
         @Override

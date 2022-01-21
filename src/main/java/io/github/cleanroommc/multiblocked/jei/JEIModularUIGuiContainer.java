@@ -38,6 +38,7 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
         modularUI.updateScreenSize(this.width, this.height);
         Position displayOffset = new Position(modularUI.getGuiLeft(), layout.getPosY());
         modularUI.guiWidgets.values().forEach(widget -> widget.setParentPosition(displayOffset));
+        this.inventorySlots.inventorySlots.clear();
         for (Widget widget : modularUI.getFlatVisibleWidgetCollection()) {
             if (widget instanceof SlotWidget) {
                 this.inventorySlots.inventorySlots.add(((SlotWidget) widget).getHandle());

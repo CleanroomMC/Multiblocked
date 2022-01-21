@@ -8,7 +8,6 @@ import io.github.cleanroommc.multiblocked.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.gui.util.ModularUIBuilder;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.controller.structure.PatternWidget;
 import io.github.cleanroommc.multiblocked.jei.JEIModularUIGuiContainer;
-import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -25,7 +24,6 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
     private final JEIModularUIGuiContainer guiContainer;
     private static long lastRender;
     private static ItemStack tooltipBlockStack;
-    private RecipeLayout layout;
 
     public MultiblockInfoRecipeWrapper(ControllerDefinition definition) {
         patternWidget = PatternWidget.getPatternWidget(definition);
@@ -37,8 +35,7 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
         guiContainer = new JEIModularUIGuiContainer(gui);
     }
 
-    public void setRecipeLayout(RecipeLayout layout, IGuiHelper guiHelper) {
-        this.layout = layout;
+    public void setRecipeLayout(RecipeLayout layout) {
         guiContainer.setRecipeLayout(layout);
     }
 
@@ -51,7 +48,7 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
     @Override
     public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
         lastRender = System.currentTimeMillis();
-        guiContainer.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
+        guiContainer.drawInfo(minecraft, mouseX, mouseY);
     }
 
     public static void setTooltipBlockStack(ItemStack tooltipBlockStack) {

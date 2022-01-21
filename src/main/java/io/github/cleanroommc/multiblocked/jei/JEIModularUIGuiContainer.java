@@ -30,6 +30,7 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
     }
 
     public void setRecipeLayout(RecipeLayout layout) {
+        modularUI.initWidgets();
         this.layout = layout;
         ScaledResolution resolution = new ScaledResolution(mc);
         this.width = resolution.getScaledWidth();
@@ -37,9 +38,14 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
         modularUI.updateScreenSize(this.width, this.height);
         Position displayOffset = new Position(modularUI.getGuiLeft(), layout.getPosY());
         modularUI.guiWidgets.values().forEach(widget -> widget.setParentPosition(displayOffset));
+        for (Widget widget : modularUI.getFlatVisibleWidgetCollection()) {
+            if (widget instanceof SlotWidget) {
+                this.inventorySlots.inventorySlots.add(((SlotWidget) widget).getHandle());
+            }
+        }
     }
 
-    public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+    public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
         if (minecraft.player.ticksExisted != lastTick) {
             updateScreen();
             lastTick = minecraft.player.ticksExisted;
@@ -47,10 +53,6 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
         GlStateManager.translate(-layout.getPosX(), -layout.getPosY(),0);
         drawScreen(mouseX + layout.getPosX(), mouseY + layout.getPosY(), minecraft.getRenderPartialTicks());
         GlStateManager.translate(layout.getPosX(), layout.getPosY(),0);
-    }
-
-    public void handleClick(int mouseX, int mouseY, int mouseButton) {
-        mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -78,4 +80,15 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
         renderHoveredToolTip(mouseX, mouseY);
     }
 
+    @Override
+    public void superMouseClicked(int mouseX, int mouseY, int mouseButton) {
+    }
+
+    @Override
+    public void superMouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+    }
+
+    @Override
+    public void superMouseReleased(int mouseX, int mouseY, int state) {
+    }
 }

@@ -22,11 +22,10 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoRec
     private final static String UID = Multiblocked.MODID + ":multiblock_info";
     private final IDrawable background;
     private final IDrawable icon;
-    private final IGuiHelper guiHelper;
 
     public MultiblockInfoCategory(IJeiHelpers helpers) {
-        this.guiHelper = helpers.getGuiHelper();
-        this.background = this.guiHelper.createBlankDrawable(176, 256);
+        IGuiHelper guiHelper = helpers.getGuiHelper();
+        this.background = guiHelper.createBlankDrawable(176, 256);
         this.icon = guiHelper.drawableBuilder(new ResourceLocation(Multiblocked.MODID, "textures/test/d.png"), 0, 0, 18, 18).setTextureSize(18, 18).build();
     }
 
@@ -71,6 +70,6 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoRec
 
     @Override
     public void setRecipe(@Nonnull IRecipeLayout recipeLayout, MultiblockInfoRecipeWrapper recipeWrapper, @Nonnull IIngredients ingredients) {
-        recipeWrapper.setRecipeLayout((RecipeLayout) recipeLayout, this.guiHelper);
+        recipeWrapper.setRecipeLayout((RecipeLayout) recipeLayout);
     }
 }

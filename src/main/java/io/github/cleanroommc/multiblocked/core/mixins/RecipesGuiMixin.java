@@ -19,7 +19,7 @@ import java.util.List;
 public class RecipesGuiMixin {
     @Shadow @Final private List<RecipeLayout> recipeLayouts;
 
-    @Inject(method = "func_146274_d", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "handleMouseInput", at = @At(value = "HEAD"), cancellable = true)
     private void injectRenderBlockDamage(CallbackInfo ci) {
         RecipesGui recipesGui = ((RecipesGui) (Object) this);
         if (recipesGui.mc == null) ci.cancel();

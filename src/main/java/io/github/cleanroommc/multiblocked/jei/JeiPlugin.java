@@ -28,6 +28,7 @@ public class JeiPlugin implements IModPlugin {
     static {
         try {
             fieldRecipeLayout = RecipeLayout.class.getDeclaredField("recipeWrapper");
+            fieldRecipeLayout.setAccessible(true);
         } catch (NoSuchFieldException e) {
             Multiblocked.LOGGER.error(e);
         }

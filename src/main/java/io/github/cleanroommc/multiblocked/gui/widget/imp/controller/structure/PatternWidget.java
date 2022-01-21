@@ -72,13 +72,14 @@ public class PatternWidget extends WidgetGroup {
     private final ButtonWidget rightButton;
     public final ControllerDefinition controllerDefinition;
     public final MBPattern[] patterns;
-    public final List<ItemStack> allItemStackInputs = new ArrayList<>();
+    public final List<ItemStack> allItemStackInputs;
     private int index;
     private SlotWidget[] slotWidgets;
 
     private PatternWidget(ControllerDefinition controllerDefinition) {
         super(0, 0, 176, 256);
         setClientSideWidget(true);
+        allItemStackInputs = new ArrayList<>();
         addWidget(sceneWidget = new SceneWidget(6, 51, 164, 143, world)
                 .setOnSelected(this::onPosSelected)
                 .setRenderFacing(false));
@@ -99,7 +100,7 @@ public class PatternWidget extends WidgetGroup {
                         .setDropShadow(true)));
     }
 
-    public static PatternWidget getPatternWidget (ControllerDefinition controllerDefinition) {
+    public static PatternWidget getPatternWidget(ControllerDefinition controllerDefinition) {
         PatternWidget patternWidget = CACHE.computeIfAbsent(controllerDefinition, PatternWidget::new);
         patternWidget.reset(0);
         return patternWidget;

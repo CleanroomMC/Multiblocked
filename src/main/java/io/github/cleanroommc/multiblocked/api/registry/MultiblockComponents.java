@@ -40,6 +40,7 @@ public class MultiblockComponents {
                 CLASS_SET.add(definition.clazz);
             }
         }
+        CLASS_SET.clear();
     }
 
     @SideOnly(Side.CLIENT)

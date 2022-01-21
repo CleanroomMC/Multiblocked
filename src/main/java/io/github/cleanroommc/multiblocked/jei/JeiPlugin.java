@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.jei;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.gui.modular.ModularUIGuiHandler;
 import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
 import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoRecipeFocusShower;
@@ -10,7 +11,9 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
+import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -21,7 +24,24 @@ import java.util.List;
 
 @JEIPlugin
 public class JeiPlugin implements IModPlugin {
+    public static Field fieldRecipeLayout;
+    static {
+        try {
+            fieldRecipeLayout = RecipeLayout.class.getDeclaredField("recipeWrapper");
+        } catch (NoSuchFieldException e) {
+            Multiblocked.LOGGER.error(e);
+        }
+    }
     public static IJeiRuntime jeiRuntime;
+
+    public static IRecipeWrapper getWrapper(RecipeLayout layout) {
+        try {
+            return (IRecipeWrapper)fieldRecipeLayout.get(layout);
+        } catch (IllegalAccessException e) {
+            Multiblocked.LOGGER.error(e);
+        }
+        return null;
+    }
 
     @Override
     public void onRuntimeAvailable(@Nonnull IJeiRuntime jeiRuntime) {

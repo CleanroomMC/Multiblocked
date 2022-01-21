@@ -35,7 +35,7 @@ public final class ModularUI {
 
     public ModularUI(ImmutableBiMap<Integer, Widget> guiWidgets, IGuiTexture backgroundPath, int width, int height, IUIHolder holder, EntityPlayer entityPlayer) {
         this.guiWidgets = guiWidgets;
-        this.backgroundPath = backgroundPath;
+        this.backgroundPath = backgroundPath == null ? IGuiTexture.EMPTY : backgroundPath;
         this.width = width;
         this.height = height;
         this.holder = holder;

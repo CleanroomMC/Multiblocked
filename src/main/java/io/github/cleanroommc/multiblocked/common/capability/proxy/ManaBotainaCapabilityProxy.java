@@ -31,6 +31,9 @@ public class ManaBotainaCapabilityProxy extends CapabilityProxy<Integer> {
             }
             sum = sum - stored;
         } else if (io == IO.OUT) {
+            if (capability.isFull()) {
+                return left;
+            }
             if (!simulate) {
                 capability.recieveMana(sum);
             }

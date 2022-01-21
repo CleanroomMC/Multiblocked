@@ -220,9 +220,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 for (int i = size; i > 0; i--) {
                     state.cache.add(buffer.readLong());
                 }
+                long controllerPos = getPos().toLong();
+                MultiblockWorldSavedData.addDisableModel(getWorld(), state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
             }
-            long controllerPos = getPos().toLong();
-            MultiblockWorldSavedData.addDisableModel(getWorld(), state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
         } else {
             if (state != null && definition.disableOthersRendering && state.cache != null) {
                 long controllerPos = getPos().toLong();
@@ -314,9 +314,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public ModularUI createUI(EntityPlayer entityPlayer) {
         TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
         if (isFormed()) {
-            tabContainer.addTab(
-                    new TabButton(0, 0, 20, 20).setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),
-                    new IOPageWidget(this));
+            new IOPageWidget(this, tabContainer);
         }
         tabContainer.addTab(new TabButton(0, 20, 20, 20)
                 .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xff000000)),

@@ -15,6 +15,7 @@ import io.github.cleanroommc.multiblocked.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.ButtonWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.ImageWidget;
 import io.github.cleanroommc.multiblocked.gui.widget.imp.SceneWidget;
+import io.github.cleanroommc.multiblocked.gui.widget.imp.tab.TabContainer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -32,9 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class IOPageWidget extends WidgetGroup {
+public class IOPageWidget extends PageWidget {
     private static final ResourceTexture PAGE = new ResourceTexture("multiblocked:textures/gui/io_page.png");
-    private static final IGuiTexture BACKGROUND = PAGE.getSubTexture(0, 0, 176 / 256.0, 1);
     private static final IGuiTexture RIGHT_BUTTON = PAGE.getSubTexture(176 / 256.0, 84 / 256.0, 5 / 256.0, 17 / 256.0);
     private static final IGuiTexture RIGHT_BUTTON_HOVER = PAGE.getSubTexture(181 / 256.0, 84 / 256.0, 5 / 256.0, 17 / 256.0);
     private static final IGuiTexture LEFT_BUTTON = PAGE.getSubTexture(176 / 256.0, 101 / 256.0, 5 / 256.0, 17 / 256.0);
@@ -64,8 +64,8 @@ public class IOPageWidget extends WidgetGroup {
     private BlockPos pos;
     int index;
 
-    public IOPageWidget(ControllerTileEntity controller) {
-        super(20, 0, 176, 256);
+    public IOPageWidget(ControllerTileEntity controller, TabContainer container) {
+        super(PAGE, container);
         this.controller = controller;
         if (controller.state.cache == null) {
             controller.checkPattern();
@@ -273,15 +273,5 @@ public class IOPageWidget extends WidgetGroup {
         } else {
             super.handleClientAction(id, buffer);
         }
-    }
-
-    @Override
-    public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
-        int x = getPosition().x;
-        int y = getPosition().y;
-        int width = getSize().width;
-        int height = getSize().height;
-        BACKGROUND.draw(x, y, width, height);
-        super.drawInBackground(mouseX, mouseY, partialTicks);
     }
 }

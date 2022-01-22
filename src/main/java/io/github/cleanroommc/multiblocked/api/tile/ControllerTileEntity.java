@@ -198,7 +198,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         scheduleChunkForRenderUpdate();
     }
 
-    private void writeState(PacketBuffer buffer) {
+    protected void writeState(PacketBuffer buffer) {
         buffer.writeBoolean(isFormed());
         if (isFormed() && definition.disableOthersRendering) {
             buffer.writeVarInt(state.cache.size());
@@ -208,7 +208,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         }
     }
 
-    private void readState(PacketBuffer buffer) {
+    protected void readState(PacketBuffer buffer) {
         if (buffer.readBoolean()) {
             state = new MultiblockState(world, pos);
             if (definition.disableOthersRendering) {

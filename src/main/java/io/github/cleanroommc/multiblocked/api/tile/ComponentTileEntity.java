@@ -326,6 +326,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         super.writeToNBT(compound);
         compound.setString("loc", definition.location.toString());
         compound.setByte("frontFacing", (byte) frontFacing.getIndex());
+        compound.setString("mbd_def", definition.location.toString());
         return compound;
     }
 

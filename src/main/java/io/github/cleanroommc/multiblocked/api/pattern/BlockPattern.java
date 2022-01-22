@@ -98,6 +98,7 @@ public class BlockPattern {
 
                 for (int b = 0, y = -centerOffset[1]; b < this.thumbLength; b++, y++) {
                     for (int a = 0, x = -centerOffset[0]; a < this.palmLength; a++, x++) {
+                        worldState.setError(null);
                         TraceabilityPredicate predicate = this.blockMatches[c][b][a];
                         BlockPos pos = setActualRelativeOffset(x, y, z, facing).add(centerPos.getX(), centerPos.getY(), centerPos.getZ());
                         worldState.update(pos, predicate);
@@ -175,7 +176,7 @@ public class BlockPattern {
                 }
             }
             //Repetitions out of range
-            if (r < aisleRepetitions[c][0]) {
+            if (r < aisleRepetitions[c][0] || !worldState.isFormed()) {
                 if (worldState.isFormed()) {
                     worldState.setError(new PatternError());
                 }

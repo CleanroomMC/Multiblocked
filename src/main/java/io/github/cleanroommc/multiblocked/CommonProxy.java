@@ -10,6 +10,7 @@ import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
@@ -62,6 +63,9 @@ public class CommonProxy {
     }
 
     public static void registerComponents(){
+        // register blueprint table
+        MultiblockComponents.registerComponent(BlueprintTableTileEntity.definition);
+
         // create a part component.
         PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "test_part"));
         partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));

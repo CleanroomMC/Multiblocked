@@ -1,1 +1,22 @@
 multiblocked.multiblock.formed=%s Multiblock Formed!
+
+multiblocked.capability.tc6_aspect=Thaumcraft Aspect
+multiblocked.capability.forge_energy=Forge Energy
+multiblocked.capability.fluid=Fluid
+multiblocked.capability.mek_gas=Mekanism Gas
+multiblocked.capability.mek_heat=Mekanism Heat
+multiblocked.capability.item=Item
+multiblocked.capability.bot_mana=Botaina Mana
+
+multiblocked.pattern.error=Expected components (%s) at (%s)
+multiblocked.pattern.error.share=This part cant be shared
+multiblocked.pattern.error.chunk=Chunk unload
+multiblocked.pattern.error.capability=Can't find specific capability (io): %s (%s)
+multiblocked.pattern.error.limited.0=§cMaximum: %d§r
+multiblocked.pattern.error.limited.1=§cMinimum: %d§r
+multiblocked.pattern.error.limited.2=§cMaximum: %d per layer§r
+multiblocked.pattern.error.limited.3=§cMinimum: %d per layer§r
+multiblocked.pattern.limited_exact=§cExactly: %d§r
+multiblocked.pattern.limited_within=§cBetween %d and %d§r
+multiblocked.pattern.single=§6Only this block can be used§r
+multiblocked.pattern.replaceable_air=Replaceable by Air

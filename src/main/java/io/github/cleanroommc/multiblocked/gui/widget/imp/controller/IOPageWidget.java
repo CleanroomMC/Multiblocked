@@ -121,7 +121,7 @@ public class IOPageWidget extends PageWidget {
             MultiblockCapability capability = null;
             if (i < values.size()) {
                 capability = values.get(i);
-                labels[i - index].updateText(capability.name);
+                labels[i - index].updateText(capability.getUnlocalizedName());
             } else {
                 labels[i - index].updateText("Empty");
             }

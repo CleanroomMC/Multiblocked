@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MultiblockState {
-    public final static PatternError UNLOAD_ERROR = new PatternStringError("chunk_unload");
+    public final static PatternError UNLOAD_ERROR = new PatternStringError("multiblocked.pattern.error.chunk");
 
     protected BlockPos pos;
     protected IBlockState state;

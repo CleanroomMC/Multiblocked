@@ -9,13 +9,14 @@ import mekanism.common.capabilities.Capabilities;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
+import java.awt.Color;
 import java.util.List;
 
 public class HeatMekanismCapability extends MultiblockCapability {
     public static final HeatMekanismCapability CAP = new HeatMekanismCapability();
 
     private HeatMekanismCapability() {
-        super("mek_heat");
+        super("mek_heat", new Color(0xD9068D).getRGB());
     }
 
     @Override

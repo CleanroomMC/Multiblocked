@@ -13,13 +13,14 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nonnull;
+import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 
 public class FluidMultiblockCapability extends MultiblockCapability {
 
     public FluidMultiblockCapability() {
-        super("fluid");
+        super("fluid", new Color(0x3C70EE).getRGB());
     }
 
     @Override

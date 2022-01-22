@@ -11,6 +11,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
+import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class GasMekanismCapability extends MultiblockCapability {
     public static final GasMekanismCapability CAP = new GasMekanismCapability();
 
     private GasMekanismCapability() {
-        super("mek_gas");
+        super("mek_gas", new Color(0x85909E).getRGB());
     }
 
     @Override

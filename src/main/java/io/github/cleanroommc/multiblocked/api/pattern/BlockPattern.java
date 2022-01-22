@@ -114,7 +114,7 @@ public class BlockPattern {
                                 PartTileEntity<?> partTileEntity = (PartTileEntity<?>) tileEntity;
                                 if (partTileEntity.isFormed() && !partTileEntity.canShared()) { // check part can be shared
                                     canPartShared = false;
-                                    worldState.setError(new PatternStringError("this part cant be shared"));
+                                    worldState.setError(new PatternStringError("multiblocked.pattern.error.share"));
                                 } else {
                                     worldState.getMatchContext()
                                             .getOrCreate("parts", LongOpenHashSet::new)

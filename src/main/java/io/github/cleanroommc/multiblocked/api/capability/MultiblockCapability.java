@@ -29,12 +29,19 @@ public abstract class MultiblockCapability {
     private EnumMap<IO, IBlockState[]> scannedStates;
     @ZenProperty
     public final String name;
+    @ZenProperty
+    public final int color;
 
-    public MultiblockCapability(String name) {
+    public MultiblockCapability(String name, int color) {
         this.name = name;
+        this.color = color;
         if (Multiblocked.isClient()) {
             scannedStates = new EnumMap<>(IO.class);
         }
+    }
+
+    public String getUnlocalizedName() {
+        return "multiblocked.capability" + name;
     }
 
     /**

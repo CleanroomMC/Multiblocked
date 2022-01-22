@@ -9,13 +9,14 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
+import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
 public class FEMultiblockCapability extends MultiblockCapability {
 
     public FEMultiblockCapability() {
-        super("forge_energy");
+        super("forge_energy", new Color(0xCB0000).getRGB());
     }
 
     @Override

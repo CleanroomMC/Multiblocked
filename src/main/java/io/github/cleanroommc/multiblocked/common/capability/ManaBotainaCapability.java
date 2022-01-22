@@ -8,6 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import vazkii.botania.api.mana.IManaReceiver;
 
 import javax.annotation.Nonnull;
+import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class ManaBotainaCapability extends MultiblockCapability {
     public static final ManaBotainaCapability CAP = new ManaBotainaCapability();
 
     private ManaBotainaCapability() {
-        super("bot_mana");
+        super("bot_mana", new Color(0x06D2D9).getRGB());
     }
 
     @Override

@@ -96,7 +96,7 @@ public class ControllerDefinition extends ComponentDefinition {
         this.catalyst = catalyst == null ? null : CraftTweakerMC.getItemStack(catalyst);
     }
 
-    public String getTips() {
-        return location.getPath() + ".tooltips";
+    public String getDescription() {
+        return location.getPath() + ".description";
     }
 }

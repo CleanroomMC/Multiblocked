@@ -11,13 +11,14 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
+import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 
 public class ItemMultiblockCapability extends MultiblockCapability {
 
     public ItemMultiblockCapability() {
-        super("item");
+        super("item", new Color(0xD96106).getRGB());
     }
 
     @Override

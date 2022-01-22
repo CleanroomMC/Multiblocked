@@ -11,6 +11,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IAspectContainer;
 
 import javax.annotation.Nonnull;
+import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class AspectThaumcraftCapability extends MultiblockCapability {
     public static final AspectThaumcraftCapability CAP = new AspectThaumcraftCapability();
 
     private AspectThaumcraftCapability() {
-        super("tc6_aspect");
+        super("tc6_aspect", new Color(0xCB00C8).getRGB());
     }
 
     @Override

@@ -1,12 +1,14 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
 import com.google.common.collect.Sets;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -80,7 +82,11 @@ public class Predicates {
                     .add(capability);
             return true;
         }
-        state.setError(new PatternStringError("find no io_capability: " + io.name() + "_" + capability.name));
+        if (Multiblocked.isClient()) {
+            state.setError(new PatternStringError(I18n.format("multiblocked.pattern.error.capability", I18n.format(capability.getUnlocalizedName()), io.name())));
+        } else {
+            state.setError(new PatternStringError("find no io_capability: " + io.name() + "_" + capability.name));
+        }
         return false;
     }
 

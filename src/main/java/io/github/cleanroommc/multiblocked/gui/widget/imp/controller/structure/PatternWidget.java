@@ -97,7 +97,7 @@ public class PatternWidget extends WidgetGroup {
         drops.forEach(it -> allItemStackInputs.add(it.getItemStack()));
         addWidget(leftButton = new ButtonWidget(7, 198, 5, 17, LEFT_BUTTON, (x)->reset(index - 1)).setHoverTexture(LEFT_BUTTON_HOVER));
         addWidget(rightButton = new ButtonWidget(164, 198, 5, 17, RIGHT_BUTTON, (x)->reset(index + 1)).setHoverTexture(RIGHT_BUTTON_HOVER));
-        addWidget(new ImageWidget(149, 27, 20, 20, TIPS).setTooltip(controllerDefinition.getTips()));
+        addWidget(new ImageWidget(149, 27, 20, 20, TIPS).setTooltip(controllerDefinition.getDescription()));
         addWidget(new ImageWidget(7, 7, 162, 16,
                 new TextTexture(controllerDefinition.location.getPath() + ".name", -1)
                         .setType(TextTexture.TextType.ROLL)

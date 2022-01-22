@@ -1,7 +1,7 @@
 package io.github.cleanroommc.multiblocked.jei;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.gui.modular.ModularUIGuiHandler;
+import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiHandler;
 import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
 import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoRecipeFocusShower;
 import mezz.jei.Internal;

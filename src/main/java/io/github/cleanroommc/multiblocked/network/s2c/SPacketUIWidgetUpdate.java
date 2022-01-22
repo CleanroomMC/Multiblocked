@@ -1,6 +1,6 @@
 package io.github.cleanroommc.multiblocked.network.s2c;
 
-import io.github.cleanroommc.multiblocked.gui.modular.ModularUIGuiContainer;
+import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiContainer;
 import io.github.cleanroommc.multiblocked.network.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

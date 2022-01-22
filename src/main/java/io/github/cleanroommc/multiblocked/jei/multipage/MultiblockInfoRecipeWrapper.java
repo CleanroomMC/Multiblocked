@@ -2,11 +2,11 @@ package io.github.cleanroommc.multiblocked.jei.multipage;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import io.github.cleanroommc.multiblocked.gui.modular.IUIHolder;
-import io.github.cleanroommc.multiblocked.gui.modular.ModularUI;
-import io.github.cleanroommc.multiblocked.gui.texture.IGuiTexture;
-import io.github.cleanroommc.multiblocked.gui.util.ModularUIBuilder;
-import io.github.cleanroommc.multiblocked.gui.widget.imp.controller.structure.PatternWidget;
+import io.github.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
+import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
+import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import io.github.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.PatternWidget;
 import io.github.cleanroommc.multiblocked.jei.JEIModularUIGuiContainer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;

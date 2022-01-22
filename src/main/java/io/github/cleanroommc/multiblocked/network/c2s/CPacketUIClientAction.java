@@ -1,7 +1,7 @@
 package io.github.cleanroommc.multiblocked.network.c2s;
 
-import io.github.cleanroommc.multiblocked.gui.modular.ModularUI;
-import io.github.cleanroommc.multiblocked.gui.modular.ModularUIContainer;
+import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
+import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIContainer;
 import io.github.cleanroommc.multiblocked.network.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

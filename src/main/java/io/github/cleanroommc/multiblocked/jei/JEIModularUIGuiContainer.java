@@ -1,9 +1,9 @@
 package io.github.cleanroommc.multiblocked.jei;
 
-import io.github.cleanroommc.multiblocked.gui.modular.ModularUI;
-import io.github.cleanroommc.multiblocked.gui.modular.ModularUIGuiContainer;
-import io.github.cleanroommc.multiblocked.gui.widget.Widget;
-import io.github.cleanroommc.multiblocked.gui.widget.imp.SlotWidget;
+import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
+import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiContainer;
+import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoRecipeWrapper;
 import io.github.cleanroommc.multiblocked.util.Position;
 import mezz.jei.gui.recipes.RecipeLayout;

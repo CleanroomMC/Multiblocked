@@ -115,7 +115,11 @@ public class FactoryBlockPattern {
     }
 
     public FactoryBlockPattern where(char symbol, TraceabilityPredicate blockMatcher) {
-        this.symbolMap.put(symbol, new TraceabilityPredicate(blockMatcher).sort());
+        if (blockMatcher == TraceabilityPredicate.ANY || blockMatcher == TraceabilityPredicate.AIR) {
+            this.symbolMap.put(symbol, blockMatcher);
+        } else {
+            this.symbolMap.put(symbol, new TraceabilityPredicate(blockMatcher).sort());
+        }
         return this;
     }
 

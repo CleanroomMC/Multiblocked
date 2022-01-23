@@ -56,9 +56,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event) {
-        if (MultiblockWorldSavedData.modelDisabled != null && event.getWorld() != null) {
-            MultiblockWorldSavedData.modelDisabled.remove(event.getWorld());
-        }
+        MultiblockWorldSavedData.modelDisabled.clear();
     }
 
 }

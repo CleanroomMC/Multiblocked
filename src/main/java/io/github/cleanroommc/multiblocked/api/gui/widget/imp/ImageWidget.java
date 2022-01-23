@@ -5,13 +5,8 @@ import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class ImageWidget extends Widget {
 
@@ -19,7 +14,6 @@ public class ImageWidget extends Widget {
 
     private int border;
     private int borderColor;
-    private String tooltipText;
 
     public ImageWidget(int xPosition, int yPosition, int width, int height) {
         super(xPosition, yPosition, width, height);
@@ -41,12 +35,6 @@ public class ImageWidget extends Widget {
         return this;
     }
 
-
-    public ImageWidget setTooltip(String tooltipText) {
-        this.tooltipText = tooltipText;
-        return this;
-    }
-
     @Override
     public void updateScreen() {
         if (area != null) {
@@ -63,14 +51,6 @@ public class ImageWidget extends Widget {
         area.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
         if (border > 0) {
             DrawerHelper.drawBorder(position.x, position.y, size.width, size.height, borderColor, border);
-        }
-    }
-
-    @Override
-    public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
-        if (area != null && isMouseOverElement(mouseX, mouseY) && tooltipText != null) {
-            List<String> hoverList = Arrays.asList(I18n.format(tooltipText).split("/n"));
-            DrawerHelper.drawHoveringText(ItemStack.EMPTY, hoverList, 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
         }
     }
 }

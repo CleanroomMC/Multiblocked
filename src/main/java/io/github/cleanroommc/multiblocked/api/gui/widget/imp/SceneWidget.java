@@ -12,7 +12,6 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.util.BlockPosFace;
 import io.github.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.PacketBuffer;
@@ -54,7 +53,7 @@ public class SceneWidget extends WidgetGroup {
 
     public SceneWidget(int x, int y, int width, int height, World world) {
         super(x, y, width, height);
-        if (Multiblocked.isClient()) {
+        if (Multiblocked.isClient() && world != null) {
             createScene(world);
         }
     }
@@ -62,7 +61,7 @@ public class SceneWidget extends WidgetGroup {
     @SideOnly(Side.CLIENT)
     private void createScene(World world) {
         core = new HashSet<>();
-        dummyWorld = new TrackedDummyWorld(world == null ? Minecraft.getMinecraft().world : world);
+        dummyWorld = new TrackedDummyWorld(world);
         dummyWorld.setRenderFilter(pos -> renderer.renderedBlocksMap.keySet().stream().anyMatch(c -> c.contains(pos)));
         renderer = new ImmediateWorldSceneRenderer(dummyWorld);
         center = new Vector3f();

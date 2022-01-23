@@ -2,17 +2,14 @@ package io.github.cleanroommc.multiblocked.persistence;
 
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
-import io.github.cleanroommc.multiblocked.util.world.DummyWorld;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
@@ -32,8 +29,7 @@ import java.util.Set;
 public class MultiblockWorldSavedData extends WorldSavedData {
 
     @SideOnly(Side.CLIENT)
-    public static Map<IBlockAccess, Set<BlockPos>> modelDisabled;
-    private final static Minecraft MC = Minecraft.getMinecraft();
+    public static Set<BlockPos> modelDisabled = new HashSet<>();
 
     private static WeakReference<World> worldRef;
 
@@ -102,23 +98,18 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void removeDisableModel(IBlockAccess blockAccess, Collection<BlockPos> pos) {
-        if (modelDisabled == null) modelDisabled = new HashMap<>();
-        modelDisabled.computeIfAbsent(blockAccess, world -> new HashSet<>()).removeAll(pos);
+    public static void removeDisableModel(Collection<BlockPos> pos) {
+        modelDisabled.removeAll(pos);
     }
 
     @SideOnly(Side.CLIENT)
-    public static void addDisableModel(IBlockAccess blockAccess, Collection<BlockPos> pos) {
-        if (modelDisabled == null) modelDisabled = new HashMap<>();
-        modelDisabled.computeIfAbsent(blockAccess, world -> new HashSet<>()).addAll(pos);
+    public static void addDisableModel(Collection<BlockPos> pos) {
+        modelDisabled.addAll(pos);
     }
 
-    @SuppressWarnings("unchecked")
     @SideOnly(Side.CLIENT)
-    public static boolean isModelDisabled(IBlockAccess blockAccess, BlockPos pos) {
-        if (modelDisabled == null) return false;
-        if (blockAccess instanceof DummyWorld) return modelDisabled.getOrDefault(blockAccess, Collections.EMPTY_SET).contains(pos);
-        return modelDisabled.getOrDefault(MC.world, Collections.EMPTY_SET).contains(pos);
+    public static boolean isModelDisabled(BlockPos pos) {
+        return modelDisabled.contains(pos);
     }
 
     @Override

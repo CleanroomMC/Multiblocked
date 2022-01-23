@@ -20,3 +20,9 @@ multiblocked.pattern.limited_exact=§cExactly: %d§r
 multiblocked.pattern.limited_within=§cBetween %d and %d§r
 multiblocked.pattern.single=§6Only this block can be used§r
 multiblocked.pattern.replaceable_air=Replaceable by Air
+
+multiblocked.structure_page.candidates=Candidates
+multiblocked.structure_page.switch=§6formed§r/§coriginal§r
+
+blueprint_table.name=Multiblocked Blueprint Table
+blueprint_table.description=Help you customize multiblock

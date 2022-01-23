@@ -3,18 +3,22 @@ package io.github.cleanroommc.multiblocked.api.gui.widget;
 import com.google.common.base.Preconditions;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.github.cleanroommc.multiblocked.api.gui.modular.WidgetUIAccess;
+import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.Rectangle;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,16 +30,17 @@ import java.util.function.Consumer;
  */
 public class Widget {
 
-    protected transient ModularUI gui;
-    protected transient WidgetUIAccess uiAccess;
-    private transient Position parentPosition = Position.ORIGIN;
-    private transient Position selfPosition;
-    private transient Position position;
-    private transient Size size;
-    private transient boolean isVisible;
-    private transient boolean isActive;
-    private transient boolean isFocus;
-    protected transient boolean isClientSideWidget;
+    protected ModularUI gui;
+    protected WidgetUIAccess uiAccess;
+    private Position parentPosition = Position.ORIGIN;
+    private Position selfPosition;
+    private Position position;
+    private Size size;
+    private boolean isVisible;
+    private boolean isActive;
+    private boolean isFocus;
+    protected boolean isClientSideWidget;
+    private String tooltipText;
 
     public Widget(Position selfPosition, Size size) {
         Preconditions.checkNotNull(selfPosition, "selfPosition");
@@ -53,6 +58,11 @@ public class Widget {
 
     public Widget setClientSideWidget(boolean clientSideWidget) {
         isClientSideWidget = clientSideWidget;
+        return this;
+    }
+
+    public Widget setHoverTooltip(String tooltipText) {
+        this.tooltipText = tooltipText;
         return this;
     }
 
@@ -173,6 +183,10 @@ public class Widget {
      */
     @SideOnly(Side.CLIENT)
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
+        if (tooltipText != null && gui != null && isMouseOverElement(mouseX, mouseY)) {
+            List<String> hoverList = Arrays.asList(I18n.format(tooltipText).split("/n"));
+            DrawerHelper.drawHoveringText(ItemStack.EMPTY, hoverList, 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
+        }
     }
 
     /**

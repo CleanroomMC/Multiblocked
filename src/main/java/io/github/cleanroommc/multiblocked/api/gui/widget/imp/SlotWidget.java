@@ -67,6 +67,7 @@ public class SlotWidget extends Widget {
 
     @Override
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
+        super.drawInForeground(mouseX, mouseY, partialTicks);
         ((ISlotWidget) slotReference).setHover(isMouseOverElement(mouseX, mouseY) && isActive());
     }
 

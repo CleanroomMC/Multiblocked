@@ -218,12 +218,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                     state.cache.add(buffer.readLong());
                 }
                 long controllerPos = getPos().toLong();
-                MultiblockWorldSavedData.addDisableModel(getWorld(), state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
+                MultiblockWorldSavedData.addDisableModel(state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
             }
         } else {
             if (state != null && definition.disableOthersRendering && state.cache != null) {
                 long controllerPos = getPos().toLong();
-                MultiblockWorldSavedData.removeDisableModel(getWorld(), state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
+                MultiblockWorldSavedData.removeDisableModel(state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
             }
             state = null;
         }

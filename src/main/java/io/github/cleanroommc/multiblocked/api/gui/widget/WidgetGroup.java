@@ -253,6 +253,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
 
     @Override
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
+        super.drawInForeground(mouseX, mouseY, partialTicks);
         for (Widget widget : widgets) {
             if (widget.isVisible()) {
                 widget.drawInForeground(mouseX, mouseY, partialTicks);

@@ -1,8 +1,6 @@
 package io.github.cleanroommc.multiblocked.client.util;
 
 import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
-import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
-import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.util.world.DummyWorld;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;

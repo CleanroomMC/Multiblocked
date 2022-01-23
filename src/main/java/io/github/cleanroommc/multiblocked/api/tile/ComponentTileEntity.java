@@ -12,15 +12,13 @@ import crafttweaker.mc1120.world.MCFacing;
 import crafttweaker.mc1120.world.MCWorld;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
-import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
-import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
 import io.github.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
-import io.github.cleanroommc.multiblocked.util.RayTraceUtils;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,10 +53,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * A TileEntity that defies everything a TileEntity represents.

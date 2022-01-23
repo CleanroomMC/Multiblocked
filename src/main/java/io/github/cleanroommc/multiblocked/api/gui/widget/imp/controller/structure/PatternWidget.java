@@ -1,6 +1,17 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure;
 
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import io.github.cleanroommc.multiblocked.api.gui.util.ClickData;
+import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
@@ -9,16 +20,6 @@ import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
-import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
-import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
-import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
-import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
-import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import io.github.cleanroommc.multiblocked.util.CycleItemStackHandler;
 import io.github.cleanroommc.multiblocked.util.ItemStackKey;
 import net.minecraft.block.Block;
@@ -67,10 +68,13 @@ public class PatternWidget extends WidgetGroup {
     private static final IGuiTexture LEFT_BUTTON = PAGE.getSubTexture(176 / 256.0, 17 / 256.0, 5 / 256.0, 17 / 256.0);
     private static final IGuiTexture LEFT_BUTTON_HOVER = PAGE.getSubTexture(181 / 256.0, 17 / 256.0, 5 / 256.0, 17 / 256.0);
     private static final IGuiTexture TIPS = PAGE.getSubTexture(176 / 256.0, 32 / 256.0, 20 / 256.0, 20 / 256.0);
+    private static final IGuiTexture FORMED_BUTTON = PAGE.getSubTexture(176 / 256.0, 184 / 256.0, 16 / 256.0, 16 / 256.0);
+    private static final IGuiTexture FORMED_BUTTON_PRESSED = PAGE.getSubTexture(176 / 256.0, 200 / 256.0, 16 / 256.0, 16 / 256.0);
 
     private final SceneWidget sceneWidget;
     private final ButtonWidget leftButton;
     private final ButtonWidget rightButton;
+    private final SwitchWidget switchWidget;
     public final ControllerDefinition controllerDefinition;
     public final MBPattern[] patterns;
     public final List<ItemStack> allItemStackInputs;
@@ -97,12 +101,17 @@ public class PatternWidget extends WidgetGroup {
         drops.forEach(it -> allItemStackInputs.add(it.getItemStack()));
         addWidget(leftButton = new ButtonWidget(7, 198, 5, 17, LEFT_BUTTON, (x)->reset(index - 1)).setHoverTexture(LEFT_BUTTON_HOVER));
         addWidget(rightButton = new ButtonWidget(164, 198, 5, 17, RIGHT_BUTTON, (x)->reset(index + 1)).setHoverTexture(RIGHT_BUTTON_HOVER));
-        addWidget(new ImageWidget(149, 27, 20, 20, TIPS).setTooltip(controllerDefinition.getDescription()));
+        addWidget(switchWidget = (SwitchWidget) new SwitchWidget(150, 173, 16, 16, this::onFormedSwitch)
+                .setTexture(FORMED_BUTTON, FORMED_BUTTON_PRESSED)
+                .setHoverTooltip("multiblocked.structure_page.switch"));
+        addWidget(new ImageWidget(149, 27, 20, 20, TIPS).setHoverTooltip(controllerDefinition.getDescription()));
         addWidget(new ImageWidget(7, 7, 162, 16,
                 new TextTexture(controllerDefinition.location.getPath() + ".name", -1)
                         .setType(TextTexture.TextType.ROLL)
                         .setWidth(162)
                         .setDropShadow(true)));
+        addWidget(new ImageWidget(17, 196, 142, 18,
+                new TextTexture("multiblocked.structure_page.candidates", 0xff000000)));
     }
 
     public static PatternWidget getPatternWidget(ControllerDefinition controllerDefinition) {
@@ -130,6 +139,32 @@ public class PatternWidget extends WidgetGroup {
         leftButton.setVisible(index > 0);
         rightButton.setVisible(index < patterns.length - 1);
         updateClientSlots();
+        switchWidget.setPressed(pattern.controllerBase.isFormed());
+    }
+
+    private void onFormedSwitch(ClickData clickData, Boolean isPressed) {
+        MBPattern pattern = patterns[index];
+        ControllerTileEntity controllerBase = pattern.controllerBase;
+        if (isPressed) {
+            controllerBase.state = new MultiblockState(world, controllerBase.getPos());
+            controllerBase.getDefinition().basePattern.checkPatternAt(controllerBase.state, true);
+            controllerBase.onStructureFormed();
+            if (controllerBase.isFormed() && controllerBase.getDefinition().disableOthersRendering) {
+                long controllerLong = controllerBase.getPos().toLong();
+                Set<BlockPos> modelDisabled = new HashSet<>();
+                for (long blockPos : controllerBase.state.cache) {
+                    if (controllerLong == blockPos) continue;
+                    modelDisabled.add(BlockPos.fromLong(blockPos));
+                }
+                world.setRenderFilter(pos -> !modelDisabled.contains(pos));
+            }
+        } else {
+            if (controllerBase.getDefinition().disableOthersRendering) {
+                world.setRenderFilter(null);
+            }
+            controllerBase.state = null;
+            controllerBase.onStructureInvalid();
+        }
     }
 
     private void onPosSelected(BlockPos pos, EnumFacing facing) {
@@ -241,7 +276,7 @@ public class PatternWidget extends WidgetGroup {
                     if (controllerLong == blockPos) continue;
                     modelDisabled.add(BlockPos.fromLong(blockPos));
                 }
-                MultiblockWorldSavedData.addDisableModel(world, modelDisabled);
+                world.setRenderFilter(pos -> !modelDisabled.contains(pos));
             }
             predicateMap = controllerBase.state.getMatchContext().get("predicates");
         }
@@ -252,7 +287,7 @@ public class PatternWidget extends WidgetGroup {
             if (two.isTile && !one.isTile) return +1;
             if (one.blockId != two.blockId) return two.blockId - one.blockId;
             return two.amount - one.amount;
-        }).map(PartInfo::getItemStack).toArray(ItemStack[]::new), predicateMap);
+        }).map(PartInfo::getItemStack).toArray(ItemStack[]::new), predicateMap, controllerBase);
     }
 
     private Map<ItemStackKey, PartInfo> gatherBlockDrops(Map<BlockPos, BlockInfo> blocks) {
@@ -305,11 +340,13 @@ public class PatternWidget extends WidgetGroup {
         final NonNullList<ItemStack> parts;
         final Map<BlockPos, TraceabilityPredicate> predicateMap;
         final Map<BlockPos, BlockInfo> blockMap;
+        final ControllerTileEntity controllerBase;
 
-        public MBPattern(Map<BlockPos, BlockInfo> blockMap, ItemStack[] parts, Map<BlockPos, TraceabilityPredicate> predicateMap) {
+        public MBPattern(Map<BlockPos, BlockInfo> blockMap, ItemStack[] parts, Map<BlockPos, TraceabilityPredicate> predicateMap, ControllerTileEntity controllerBase) {
             this.parts = NonNullList.from(ItemStack.EMPTY, parts);
             this.blockMap = blockMap;
             this.predicateMap = predicateMap;
+            this.controllerBase = controllerBase;
         }
     }
 }

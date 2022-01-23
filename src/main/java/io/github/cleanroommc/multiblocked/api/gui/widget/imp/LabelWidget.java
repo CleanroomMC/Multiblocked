@@ -38,7 +38,7 @@ public class LabelWidget extends Widget {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void drawInForeground(int mouseX, int mouseY, float particleTicks) {
+    public void drawInBackground(int mouseX, int mouseY, float particleTicks) {
         String suppliedText = textSupplier.get();
         if (!suppliedText.equals(lastTextValue)) {
             this.lastTextValue = suppliedText;

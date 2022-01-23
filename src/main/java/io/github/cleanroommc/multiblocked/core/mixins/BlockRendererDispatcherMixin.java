@@ -10,6 +10,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +23,7 @@ public class BlockRendererDispatcherMixin {
 
     @Inject(method = "renderBlockDamage", at = @At(value = "HEAD"), cancellable = true)
     private void injectRenderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess, CallbackInfo ci) {
-        if (MultiblockWorldSavedData.isModelDisabled(blockAccess, pos)) {
+        if (blockAccess instanceof ChunkCache && MultiblockWorldSavedData.isModelDisabled(pos)) {
             ci.cancel();
         } else if (state.getRenderType() == ComponentRenderer.COMPONENT_RENDER_TYPE) {
             ComponentRenderer.INSTANCE.renderBlockDamage(state, pos, texture, blockAccess);
@@ -32,7 +33,7 @@ public class BlockRendererDispatcherMixin {
 
     @Inject(method = "renderBlock", at = @At(value = "HEAD"), cancellable = true)
     public void injectRenderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder bufferBuilderIn, CallbackInfoReturnable<Boolean> cir) {
-        if (MultiblockWorldSavedData.isModelDisabled(blockAccess, pos)) {
+        if (blockAccess instanceof ChunkCache && MultiblockWorldSavedData.isModelDisabled(pos)) {
             cir.setReturnValue(false);
         } else if (state.getRenderType() == ComponentRenderer.COMPONENT_RENDER_TYPE) {
             try {

@@ -84,6 +84,10 @@ public class BlockPattern {
         PatternMatchContext matchContext = worldState.matchContext;
         Map<TraceabilityPredicate.SimplePredicate, Integer> globalCount = worldState.globalCount;
         Map<TraceabilityPredicate.SimplePredicate, Integer> layerCount = worldState.layerCount;
+        if (worldState.getController() == null) {
+            worldState.setError(new PatternStringError("no controller found"));
+            return false;
+        }
         BlockPos centerPos = worldState.getController().getPos();
         EnumFacing facing = worldState.getController().getFrontFacing().getOpposite();
         Set<MultiblockCapability> inputCapabilities = worldState.getController().getDefinition().recipeMap.inputCapabilities;

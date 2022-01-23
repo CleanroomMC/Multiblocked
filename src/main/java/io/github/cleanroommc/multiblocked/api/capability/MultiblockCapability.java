@@ -41,7 +41,7 @@ public abstract class MultiblockCapability {
     }
 
     public String getUnlocalizedName() {
-        return "multiblocked.capability" + name;
+        return "multiblocked.capability." + name;
     }
 
     /**

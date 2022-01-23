@@ -15,7 +15,7 @@ public class MultiblockedLoadingPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        return null;
+        return new String[]{"io.github.cleanroommc.multiblocked.core.ASMTransformer"};
     }
 
     @Override

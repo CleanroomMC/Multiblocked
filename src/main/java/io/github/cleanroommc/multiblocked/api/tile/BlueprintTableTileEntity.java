@@ -15,7 +15,6 @@ import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
-import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -23,7 +22,6 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
 
     @Override
     public void updateFormed() {
-        MultiblockWorldSavedData.getOrCreate(getWorld()).removeLoading(this);
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked.core.mixins;
 import io.github.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -23,7 +24,7 @@ public class BlockRendererDispatcherMixin {
 
     @Inject(method = "renderBlockDamage", at = @At(value = "HEAD"), cancellable = true)
     private void injectRenderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess, CallbackInfo ci) {
-        if (blockAccess instanceof ChunkCache && MultiblockWorldSavedData.isModelDisabled(pos)) {
+        if (blockAccess instanceof ChunkCache && ((ChunkCache) blockAccess).world == Minecraft.getMinecraft().world && MultiblockWorldSavedData.isModelDisabled(pos)) {
             ci.cancel();
         } else if (state.getRenderType() == ComponentRenderer.COMPONENT_RENDER_TYPE) {
             ComponentRenderer.INSTANCE.renderBlockDamage(state, pos, texture, blockAccess);
@@ -33,7 +34,7 @@ public class BlockRendererDispatcherMixin {
 
     @Inject(method = "renderBlock", at = @At(value = "HEAD"), cancellable = true)
     public void injectRenderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder bufferBuilderIn, CallbackInfoReturnable<Boolean> cir) {
-        if (blockAccess instanceof ChunkCache && MultiblockWorldSavedData.isModelDisabled(pos)) {
+        if (blockAccess instanceof ChunkCache && ((ChunkCache) blockAccess).world == Minecraft.getMinecraft().world && MultiblockWorldSavedData.isModelDisabled(pos)) {
             cir.setReturnValue(false);
         } else if (state.getRenderType() == ComponentRenderer.COMPONENT_RENDER_TYPE) {
             try {

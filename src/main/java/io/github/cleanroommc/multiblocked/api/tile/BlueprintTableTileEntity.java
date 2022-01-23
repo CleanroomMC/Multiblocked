@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked.api.tile;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
@@ -39,19 +40,34 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .widget(tabContainer)
                 .build(this, entityPlayer);
     }
-    
-    public static ControllerDefinition definition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table"), new RecipeMap("blueprint_table"));
 
-    static {
-        definition.recipeMap.inputCapabilities.add(MultiblockCapabilities.ITEM);
-        definition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"));
-        definition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"));
-        definition.isOpaqueCube = false;
-        definition.basePattern = FactoryBlockPattern.start()
-                .aisle("T", "C")
-                .where('T', definition.selfPredicate())
+    public static void registerBlueprintTable() {
+        ControllerDefinition tableDefinition = new ControllerDefinition(
+                new ResourceLocation(Multiblocked.MODID, "blueprint_table"),
+                new RecipeMap("blueprint_table"),
+                BlueprintTableTileEntity.class);
+        tableDefinition.recipeMap.inputCapabilities.add(MultiblockCapabilities.ITEM);
+        tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"));
+        tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"));
+        tableDefinition.isOpaqueCube = false;
+        tableDefinition.disableOthersRendering = true;
+
+
+        PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));
+        partDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"));
+        partDefinition.allowRotate = false;
+        partDefinition.isOpaqueCube = false;
+
+        tableDefinition.basePattern = FactoryBlockPattern.start()
+                .aisle("PPP", "C  ")
+                .aisle("PTP", "   ")
+                .where(' ', Predicates.any())
+                .where('T', tableDefinition.selfPredicate(true))
+                .where('P', partDefinition.selfPredicate())
                 .where('C', Predicates.anyCapability(IO.IN, MultiblockCapabilities.ITEM))
                 .build();
-    }
 
+        MultiblockComponents.registerComponent(tableDefinition);
+        MultiblockComponents.registerComponent(partDefinition);
+    }
 }

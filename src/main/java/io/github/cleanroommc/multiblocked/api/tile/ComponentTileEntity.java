@@ -17,6 +17,7 @@ import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
 import io.github.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
+import io.github.cleanroommc.multiblocked.util.RayTraceUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
@@ -57,6 +58,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * A TileEntity that defies everything a TileEntity represents.
@@ -116,11 +118,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public abstract boolean isFormed();
 
     public List<AxisAlignedBB> getCollisionBoundingBox() {
-        if (isFormed()) {
-            return definition.formedAABB == null ? Collections.singletonList(Block.FULL_BLOCK_AABB) : definition.formedAABB;
-        } else {
-            return definition.baseAABB == null ? Collections.singletonList(Block.FULL_BLOCK_AABB) : definition.baseAABB;
-        }
+        return definition.getAABB(isFormed(), frontFacing);
     }
 
     public EnumFacing getFrontFacing() {

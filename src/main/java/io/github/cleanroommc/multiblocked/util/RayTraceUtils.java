@@ -10,6 +10,42 @@ import java.util.List;
 
 public class RayTraceUtils {
 
+    public static AxisAlignedBB rotateAABB(AxisAlignedBB aaBB, EnumFacing facing) {
+        Vector3 min = new Vector3(aaBB.minX, aaBB.minY, aaBB.minZ).subtract(0.5);
+        Vector3 max = new Vector3(aaBB.maxX, aaBB.maxY, aaBB.maxZ).subtract(0.5);
+        double radians;
+        switch (facing) {
+            case SOUTH:
+                radians = Math.toRadians(180);
+                min.rotate(radians, new Vector3(0, 1, 0));
+                max.rotate(radians, new Vector3(0, 1, 0));
+                break;
+            case EAST:
+                radians = Math.toRadians(-90);
+                min.rotate(radians, new Vector3(0, 1, 0));
+                max.rotate(radians, new Vector3(0, 1, 0));
+                break;
+            case WEST:
+                radians = Math.toRadians(90);
+                min.rotate(radians, new Vector3(0, 1, 0));
+                max.rotate(radians, new Vector3(0, 1, 0));
+                break;
+            case UP:
+                radians = Math.toRadians(90);
+                min.rotate(radians, new Vector3(0, 0, 1));
+                max.rotate(radians, new Vector3(0, 0, 1));
+                break;
+            case DOWN:
+                radians = Math.toRadians(-90);
+                min.rotate(radians, new Vector3(0, 0, 1));
+                max.rotate(radians, new Vector3(0, 0, 1));
+                break;
+        }
+        min.add(0.5);
+        max.add(0.5);
+        return new AxisAlignedBB(min.x, min.y, min.z, max.x, max.y, max.z);
+    }
+
     public static DistRayTraceResult rayTrace(BlockPos pos, Vector3 start, Vector3 end, AxisAlignedBB aaBB) {
         Vector3 startRay = start.copy().subtract(pos);
         Vector3 endRay = end.copy().subtract(pos);

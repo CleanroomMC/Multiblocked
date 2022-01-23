@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.ingredient.IGhostIngredientTarget;
 import io.github.cleanroommc.multiblocked.api.gui.ingredient.IIngredientSlot;
 import io.github.cleanroommc.multiblocked.api.gui.modular.WidgetUIAccess;
@@ -340,8 +341,12 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         if (id == 1) {
             int widgetIndex = buffer.readVarInt();
             int widgetUpdateId = buffer.readVarInt();
-            Widget widget = widgets.get(widgetIndex);
-            widget.handleClientAction(widgetUpdateId, buffer);
+            if (widgetIndex < widgets.size()) {
+                Widget widget = widgets.get(widgetIndex);
+                widget.handleClientAction(widgetUpdateId, buffer);
+            } else {
+                Multiblocked.LOGGER.error("xxx");
+            }
         }
     }
 

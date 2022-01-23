@@ -60,6 +60,11 @@ public class ControllerDefinition extends ComponentDefinition {
         this.recipeMap = recipeMap;
     }
 
+    public ControllerDefinition(ResourceLocation location, RecipeMap recipeMap, Class<? extends ControllerTileEntity> clazz) {
+        super(location, clazz);
+        this.recipeMap = recipeMap;
+    }
+
     public List<MultiblockShapeInfo> getDesigns() {
         if (designs != null) return designs;
         // auto gen

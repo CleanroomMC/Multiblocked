@@ -36,7 +36,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
 
 import java.util.function.Function;
 
@@ -64,8 +63,8 @@ public class CommonProxy {
 
     public static void registerComponents(){
         // register blueprint table
-        MultiblockComponents.registerComponent(BlueprintTableTileEntity.definition);
-
+        BlueprintTableTileEntity.registerBlueprintTable();
+        
         // create a part component.
         PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "test_part"));
         partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
@@ -99,7 +98,7 @@ public class CommonProxy {
                 .where('B', anyCapability(IO.OUT, ManaBotainaCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('D', anyCapability(IO.OUT, AspectThaumcraftCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('C', blocks(Blocks.CHEST)) // tho not define a specific Capability here. it will still be detected according to the recipeMap, so will create a proxy of the BOTH-Item-Capability here. (item in/outputBus)
-                .where('Y', controllerDefinition.selfPredicate())
+                .where('Y', controllerDefinition.selfPredicate(true))
                 .build();
         controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));
         controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"));
@@ -119,12 +118,11 @@ public class CommonProxy {
                 .where('A', anyCapability(IO.BOTH, GasMekanismCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('X', blocks(Blocks.STONE))
                 .where('#', air())
-                .where('Y', controllerDefinition.selfPredicate())
+                .where('Y', controllerDefinition.selfPredicate(true))
                 .build();
         controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"));
         controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"));
         controllerDefinition.isOpaqueCube = false;
-//        controllerDefinition.disableOthersRendering = true;
         MultiblockComponents.registerComponent(controllerDefinition);
     }
 

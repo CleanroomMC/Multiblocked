@@ -18,8 +18,10 @@ import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
+import io.github.cleanroommc.multiblocked.util.RayTraceUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -30,7 +32,10 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 import stanhebben.zenscript.annotations.ZenSetter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +47,8 @@ import java.util.stream.Collectors;
 public class ComponentDefinition {
     public final ResourceLocation location;
     public final Class<? extends ComponentTileEntity<?>> clazz;
+    public final EnumMap<EnumFacing, List<AxisAlignedBB>> baseAABB;
+    public final EnumMap<EnumFacing, List<AxisAlignedBB>> formedAABB;
     @ZenProperty
     public boolean allowRotate;
     @ZenProperty
@@ -60,8 +67,6 @@ public class ComponentDefinition {
     public INeighborChanged onNeighborChanged;
     @ZenProperty
     public IGetOutputRedstoneSignal getOutputRedstoneSignal;
-    public List<AxisAlignedBB> baseAABB;
-    public List<AxisAlignedBB> formedAABB;
 
     protected ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
         this.location = location;
@@ -69,6 +74,8 @@ public class ComponentDefinition {
         this.baseRenderer = null;
         this.isOpaqueCube = true;
         this.allowRotate = true;
+        baseAABB = new EnumMap<>(EnumFacing.class);
+        formedAABB = new EnumMap<>(EnumFacing.class);
     }
 
     public ComponentTileEntity<?> createNewTileEntity(World world){
@@ -104,35 +111,56 @@ public class ComponentDefinition {
         return new MCItemStack(getStackForm());
     }
 
+    public void setAABB(boolean isFormed, AxisAlignedBB... aaBBs) {
+        if (isFormed) this.formedAABB.clear(); else this.baseAABB.clear();
+        EnumMap<EnumFacing, List<AxisAlignedBB>> aabb = isFormed ? this.formedAABB : this.baseAABB;
+        Arrays.stream(aaBBs).forEach(aaBB->{
+            for (EnumFacing facing : EnumFacing.values()) {
+                aabb.computeIfAbsent(facing, f->new ArrayList<>()).add(RayTraceUtils.rotateAABB(aaBB, facing));
+            }
+        });
+    }
+
+    public List<AxisAlignedBB> getAABB(boolean isFormed, EnumFacing facing) {
+        return isFormed ? this.formedAABB.getOrDefault(facing, Collections.singletonList(Block.FULL_BLOCK_AABB)) :
+                this.baseAABB.getOrDefault(facing, Collections.singletonList(Block.FULL_BLOCK_AABB));
+    }
+
     @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenGetter("baseAABB")
     public List<IAxisAlignedBB> getBaseAABB() {
-        return baseAABB == null ? null : baseAABB.stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
+        return getAABB(false, EnumFacing.NORTH).stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
     }
 
     @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenSetter("baseAABB")
     public void setBaseAABB(IAxisAlignedBB[] baseAABB) {
-        this.baseAABB = baseAABB == null ? null : Arrays.stream(baseAABB).map(CraftTweakerMC::getAxisAlignedBB).collect(Collectors.toList());;
+        setAABB(false, Arrays.stream(baseAABB).map(CraftTweakerMC::getAxisAlignedBB).toArray(AxisAlignedBB[]::new));
     }
 
     @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenGetter("formedAABB")
     public List<IAxisAlignedBB> getFormedAABB() {
-        return formedAABB == null ? null : formedAABB.stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
+        return getAABB(true, EnumFacing.NORTH).stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
     }
 
     @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenSetter("formedAABB")
     public void setFormedAABB(IAxisAlignedBB[] formedAABB) {
-        this.formedAABB = formedAABB == null ? null : Arrays.stream(formedAABB).map(CraftTweakerMC::getAxisAlignedBB).collect(Collectors.toList());;
+        setAABB(true, Arrays.stream(formedAABB).map(CraftTweakerMC::getAxisAlignedBB).toArray(AxisAlignedBB[]::new));
     }
 
     @ZenMethod
     public TraceabilityPredicate selfPredicate() {
-        return new TraceabilityPredicate(state -> {
+        return this.selfPredicate(false);
+    }
+
+    @ZenMethod
+    public TraceabilityPredicate selfPredicate(boolean isController) {
+        TraceabilityPredicate result = new TraceabilityPredicate(state -> {
             Block block = state.getBlockState().getBlock();
             return block instanceof BlockComponent && ((BlockComponent) block).definition == this;
-        }, ()-> new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location))}).setCenter();
+        }, ()-> new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location))});
+        return isController ? result.setCenter() : result;
     }
 }

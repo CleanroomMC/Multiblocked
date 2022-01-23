@@ -55,6 +55,11 @@ public class Vector3 {
         return new BlockPos(this.x, this.y, this.z);
     }
 
+    public Vector3 rotate(double angle, Vector3 axis) {
+        Quat.aroundAxis(axis.copy().normalize(), angle).rotate(this);
+        return this;
+    }
+
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         tag.setDouble("x", this.x);
         tag.setDouble("y", this.y);

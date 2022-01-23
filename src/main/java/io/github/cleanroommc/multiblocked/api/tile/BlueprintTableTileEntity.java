@@ -16,6 +16,7 @@ import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 
 public class BlueprintTableTileEntity extends ControllerTileEntity{
@@ -45,14 +46,17 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 new RecipeMap("blueprint_table"),
                 BlueprintTableTileEntity.class);
         tableDefinition.recipeMap.inputCapabilities.add(MultiblockCapabilities.ITEM);
-        tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"));
-        tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"));
+        tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"))
+                .setRenderLayer(BlockRenderLayer.SOLID, true);
+        tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"))
+                .setRenderLayer(BlockRenderLayer.SOLID, true);
         tableDefinition.isOpaqueCube = false;
         tableDefinition.disableOthersRendering = true;
 
 
         PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));
-        partDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"));
+        partDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"))
+                .setRenderLayer(BlockRenderLayer.SOLID, true);
         partDefinition.allowRotate = false;
         partDefinition.isOpaqueCube = false;
 

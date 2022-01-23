@@ -17,10 +17,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -38,13 +40,20 @@ public class IModelRenderer implements IRenderer {
     protected IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
     protected Map<EnumFacing, IBakedModel> blockModels;
+    protected EnumMap<BlockRenderLayer, Boolean> renderLayer;
 
     public IModelRenderer(ResourceLocation modelLocation) {
         this.modelLocation = modelLocation;
+        this.renderLayer = new EnumMap<>(BlockRenderLayer.class);
         if (Multiblocked.isClient()) {
             registerNeeds.add(this);
             blockModels = new EnumMap<>(EnumFacing.class);
         }
+    }
+
+    public IModelRenderer setRenderLayer(BlockRenderLayer layer, boolean shouldRender) {
+        renderLayer.put(layer, shouldRender);
+        return this;
     }
 
     protected IModel getModel() {
@@ -60,6 +69,7 @@ public class IModelRenderer implements IRenderer {
 
     @Override
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
+        if (!renderLayer.isEmpty() && !renderLayer.getOrDefault(MinecraftForgeClient.getRenderLayer(), false)) return false;
         BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
         blockModelRenderer.renderModel(blockAccess, getBlockBakedModel(pos, blockAccess), state, pos, buffer, true);
         return true;

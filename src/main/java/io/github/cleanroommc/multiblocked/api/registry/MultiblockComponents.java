@@ -49,7 +49,7 @@ public class MultiblockComponents {
     }
 
     public static BlockComponent getOrRegisterAnyCapabilityBlock(IO io, MultiblockCapability capability) {
-        ResourceLocation location = new ResourceLocation(Multiblocked.MODID, capability.name + io.name());
+        ResourceLocation location = new ResourceLocation(Multiblocked.MODID, capability.name + "." + io.name());
         if (!DEFINITION_REGISTRY.containsKey(location)) {
             ComponentDefinition definition = new PartDefinition(location);
             definition.baseRenderer = new CycleBlockStateRenderer(capability.getCandidates(io));

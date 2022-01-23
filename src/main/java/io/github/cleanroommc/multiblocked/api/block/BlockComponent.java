@@ -80,7 +80,6 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         return instance instanceof ComponentTileEntity<?> ? ((ComponentTileEntity<?>) instance) : null;
     }
 
-
     @Override
     public void onBlockPlacedBy(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityLivingBase placer, @Nonnull ItemStack stack) {
         ComponentTileEntity<?> componentTileEntity = getComponent(worldIn, pos);
@@ -91,11 +90,6 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
                 componentTileEntity.setFrontFacing(placer.getHorizontalFacing().getOpposite());
             }
         }
-    }
-
-    @Override
-    public boolean doesSideBlockRendering(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull EnumFacing face) {
-        return state.isOpaqueCube() && getComponent(world, pos) != null;
     }
 
     @Nonnull
@@ -205,6 +199,18 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     }
 
     @Override
+    public int getPackedLightmapCoords(@Nonnull IBlockState state, @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
+        if (definition.isOpaqueCube) return super.getPackedLightmapCoords(state, source, pos);
+        int i = source.getCombinedLight(pos, 0);
+        int j = source.getCombinedLight(pos.up(), 0);
+        int k = i & 255;
+        int l = j & 255;
+        int i1 = i >> 16 & 255;
+        int j1 = j >> 16 & 255;
+        return (Math.max(k, l)) | (Math.max(i1, j1)) << 16;
+    }
+
+    @Override
     public int getLightOpacity(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
         return definition.isOpaqueCube ? 255 : 1;
     }
@@ -223,6 +229,11 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Nonnull
     public EnumBlockRenderType getRenderType(@Nonnull IBlockState state) {
         return ComponentRenderer.COMPONENT_RENDER_TYPE;
+    }
+
+    @Override
+    public boolean shouldSideBeRendered(@Nonnull IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos pos, @Nonnull EnumFacing side) {
+        return !definition.isOpaqueCube || super.shouldSideBeRendered(blockState, blockAccess, pos, side);
     }
 
     @SideOnly(Side.CLIENT)

@@ -287,7 +287,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 if (definition.catalyst == null || held.isItemEqual(definition.catalyst)) {
                     if (checkPattern()) { // formed
                         player.swingArm(hand);
-                        ITextComponent formedMsg = new TextComponentTranslation("multiblocked.multiblock.formed", getLocalizedName());
+                        ITextComponent formedMsg = new TextComponentTranslation(getUnlocalizedName()).appendSibling(new TextComponentTranslation("multiblocked.multiblock.formed"));
                         player.sendStatusMessage(formedMsg, true);
                         if (!player.isCreative() && definition.consumeCatalyst) {
                             held.shrink(1);

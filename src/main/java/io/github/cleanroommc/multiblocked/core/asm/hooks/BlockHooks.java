@@ -14,4 +14,11 @@ public class BlockHooks {
         }
         return null;
     }
+
+    public static Boolean isFullCube(IBlockAccess world, BlockPos pos) {
+        if (world instanceof ChunkCache && ((ChunkCache) world).world == Minecraft.getMinecraft().world && MultiblockWorldSavedData.isModelDisabled(pos)) {
+            return false;
+        }
+        return null;
+    }
 }

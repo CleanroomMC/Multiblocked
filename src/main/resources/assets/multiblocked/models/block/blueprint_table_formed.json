@@ -1,5 +1,6 @@
 {
 	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
 	"textures": {
 		"particle": "multiblocked:blocks/blueprint_table",
 		"table": "multiblocked:blocks/blueprint_table"

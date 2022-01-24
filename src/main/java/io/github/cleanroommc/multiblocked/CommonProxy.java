@@ -15,7 +15,6 @@ import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRendere
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
-import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import io.github.cleanroommc.multiblocked.events.Listeners;

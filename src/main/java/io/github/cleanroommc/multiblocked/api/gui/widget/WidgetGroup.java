@@ -119,7 +119,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         return this;
     }
 
-    protected WidgetGroup addWidget(int index, Widget widget) {
+    public WidgetGroup addWidget(int index, Widget widget) {
         if (widget == this) {
             throw new IllegalArgumentException("Cannot add self");
         }
@@ -140,14 +140,14 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         return this;
     }
 
-    protected void waitToRemoved(Widget widget) {
+    public void waitToRemoved(Widget widget) {
         if (waitToRemoved == null) {
             waitToRemoved = new ArrayList<>();
         }
         waitToRemoved.add(widget);
     }
 
-    protected void removeWidget(Widget widget) {
+    public void removeWidget(Widget widget) {
         if (!widgets.contains(widget)) {
             return;
         }
@@ -159,23 +159,6 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         if (uiAccess != null && !isClientSideWidget) {
             this.uiAccess.notifyWidgetChange();
         }
-    }
-
-    protected void clearAllWidgets() {
-        this.widgets.forEach(it -> {
-            it.setUiAccess(null);
-            it.setGui(null);
-            it.setParentPosition(Position.ORIGIN);
-        });
-        this.widgets.clear();
-        recomputeSize();
-        if (uiAccess != null) {
-            this.uiAccess.notifyWidgetChange();
-        }
-    }
-
-    public boolean isWidgetClickable(Widget widget) {
-        return isVisible();
     }
 
     @Override

@@ -2,6 +2,7 @@ package io.github.cleanroommc.multiblocked.api.capability;
 
 import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.Multiblocked;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.content.ContentWidget;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -53,6 +54,13 @@ public abstract class MultiblockCapability {
      * create a proxy of this block.
      */
     public abstract CapabilityProxy<?> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity);
+
+    /**
+     * Create a Widget of given contents
+     */
+    public ContentWidget<?> createContentWidget(@Nonnull IO io, Object object) {
+        return new ContentWidget<>(io, object);
+    }
 
     /**
      * get candidates for rendering in jei.

@@ -1,8 +1,9 @@
 package io.github.cleanroommc.multiblocked.common.capability;
 
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
-import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
+import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.content.NumberContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -30,6 +31,11 @@ public class FEMultiblockCapability extends MultiblockCapability {
     @Override
     public FECapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new FECapabilityProxy(tileEntity);
+    }
+
+    @Override
+    public NumberContentWidget createContentWidget(@Nonnull IO io, Object object) {
+        return new NumberContentWidget(io, (Integer) object);
     }
 
     public static class FECapabilityProxy extends CapabilityProxy<Integer> {

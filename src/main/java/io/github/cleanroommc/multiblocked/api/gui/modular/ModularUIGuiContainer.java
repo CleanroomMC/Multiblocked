@@ -208,7 +208,7 @@ public class ModularUIGuiContainer extends GuiContainer {
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.enableBlend();
         GlStateManager.popMatrix();
-        modularUI.backgroundPath.draw(guiLeft, guiTop, xSize, ySize);
+        modularUI.backgroundPath.draw(mouseX, mouseY, guiLeft, guiTop, xSize, ySize);
         modularUI.guiWidgets.values().forEach(widget -> {
             if (!widget.isVisible()) return;
             GlStateManager.pushMatrix();

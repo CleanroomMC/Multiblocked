@@ -1,7 +1,8 @@
 package io.github.cleanroommc.multiblocked.api.gui.texture;
 
 public interface IGuiTexture {
-    
+
+    @Deprecated
     default void draw(double x, double y, int width, int height) {
         draw(0, 0, x, y, width, height);
     }

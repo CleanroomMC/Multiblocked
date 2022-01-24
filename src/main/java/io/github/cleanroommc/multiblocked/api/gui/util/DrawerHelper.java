@@ -9,11 +9,16 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,6 +29,73 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrawerHelper {
+
+    @SideOnly(Side.CLIENT)
+    public static void drawFluidTexture(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
+        double uMin = textureSprite.getMinU();
+        double uMax = textureSprite.getMaxU();
+        double vMin = textureSprite.getMinV();
+        double vMax = textureSprite.getMaxV();
+        uMax = uMax - maskRight / 16.0 * (uMax - uMin);
+        vMax = vMax - maskTop / 16.0 * (vMax - vMin);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        buffer.pos(xCoord, yCoord + 16, zLevel).tex(uMin, vMax).endVertex();
+        buffer.pos(xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
+        buffer.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
+        buffer.pos(xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
+        tessellator.draw();
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void drawFluidForGui(FluidStack contents, int tankCapacity, int startX, int startY, int widthT, int heightT) {
+        widthT--;
+        heightT--;
+        Fluid fluid = contents.getFluid();
+        ResourceLocation fluidStill = fluid.getStill();
+        TextureAtlasSprite fluidStillSprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fluidStill.toString());
+        int fluidColor = fluid.getColor(contents);
+        int scaledAmount = contents.amount * heightT / tankCapacity;
+        if (contents.amount > 0 && scaledAmount < 1) {
+            scaledAmount = 1;
+        }
+        if (scaledAmount > heightT || contents.amount == tankCapacity) {
+            scaledAmount = heightT;
+        }
+        GlStateManager.enableBlend();
+        Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+        int i = (fluidColor & 0xFF0000) >> 16;
+        int j = (fluidColor & 0xFF00) >> 8;
+        int k = (fluidColor & 0xFF);
+        int opacity = (fluidColor & 0x000000FF);
+        GlStateManager.color(i / 255.0f, j / 255.0f, k / 255.0f, opacity / 255.0f);
+
+        final int xTileCount = widthT / 16;
+        final int xRemainder = widthT - xTileCount * 16;
+        final int yTileCount = scaledAmount / 16;
+        final int yRemainder = scaledAmount - yTileCount * 16;
+
+        final int yStart = startY + heightT;
+
+        for (int xTile = 0; xTile <= xTileCount; xTile++) {
+            for (int yTile = 0; yTile <= yTileCount; yTile++) {
+                int width = xTile == xTileCount ? xRemainder : 16;
+                int height = yTile == yTileCount ? yRemainder : 16;
+                int x = startX + xTile * 16;
+                int y = yStart - (yTile + 1) * 16;
+                if (width > 0 && height > 0) {
+                    int maskTop = 16 - height;
+                    int maskRight = 16 - width;
+
+                    drawFluidTexture(x, y, fluidStillSprite, maskTop, maskRight, 0.0);
+                }
+            }
+        }
+        GlStateManager.disableBlend();
+    }
 
 
     @SideOnly(Side.CLIENT)
@@ -320,33 +392,4 @@ public class DrawerHelper {
         tessellator.draw();
     }
 
-    @SideOnly(Side.CLIENT)
-    public static List<Vec2f> genBezierPoints(Vec2f from, Vec2f to, boolean horizontal, float u) {
-        Vec2f c1;
-        Vec2f c2;
-        if (horizontal) {
-            c1 = new Vec2f((from.x + to.x) / 2, from.y);
-            c2 = new Vec2f((from.x + to.x) / 2, to.y);
-        } else {
-            c1 = new Vec2f(from.x, (from.y + to.y) / 2);
-            c2 = new Vec2f(to.x, (from.y + to.y) / 2);
-        }
-        Vec2f[] controlPoint = new Vec2f[]{from, c1, c2, to};
-        int n = controlPoint.length - 1;
-        int i, r;
-        List<Vec2f> bezierPoints = new ArrayList<>();
-        for (u = 0; u <= 1; u += 0.01) {
-            Vec2f[] p = new Vec2f[n + 1];
-            for (i = 0; i <= n; i++) {
-                p[i] = new Vec2f(controlPoint[i].x, controlPoint[i].y);
-            }
-            for (r = 1; r <= n; r++) {
-                for (i = 0; i <= n - r; i++) {
-                    p[i] = new Vec2f((1 - u) * p[i].x + u * p[i + 1].x, (1 - u) * p[i].y + u * p[i + 1].y);
-                }
-            }
-            bezierPoints.add(p[0]);
-        }
-        return bezierPoints;
-    }
 }

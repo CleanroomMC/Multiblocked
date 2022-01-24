@@ -40,6 +40,15 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         this.isDynamicSized = false;
     }
 
+    @Override
+    public WidgetGroup setClientSideWidget(boolean clientSideWidget) {
+        super.setClientSideWidget(clientSideWidget);
+        for (Widget widget : widgets) {
+            widget.setClientSideWidget(clientSideWidget);
+        }
+        return this;
+    }
+
     public List<Widget> getContainedWidgets(boolean includeHidden) {
         ArrayList<Widget> containedWidgets = new ArrayList<>(widgets.size());
 
@@ -109,6 +118,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         widget.setUiAccess(groupUIAccess);
         widget.setGui(gui);
         widget.setParentPosition(getPosition());
+        widget.setClientSideWidget(isClientSideWidget);
         if (initialized) {
             widget.initWidget();
         }
@@ -130,6 +140,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         widget.setUiAccess(groupUIAccess);
         widget.setGui(gui);
         widget.setParentPosition(getPosition());
+        widget.setClientSideWidget(isClientSideWidget);
         if (initialized) {
             widget.initWidget();
         }

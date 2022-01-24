@@ -231,7 +231,7 @@ public class PatternWidget extends WidgetGroup {
         int height = getSize().height;
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
-        BACKGROUND.draw(x, y, width, height);
+        BACKGROUND.draw(mouseX, mouseY, x, y, width, height);
         super.drawInBackground(mouseX, mouseY, partialTicks);
     }
 

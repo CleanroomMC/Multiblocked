@@ -26,7 +26,7 @@ public abstract class PageWidget extends WidgetGroup {
         int y = getPosition().y;
         int width = getSize().width;
         int height = getSize().height;
-        background.draw(x, y, width, height);
+        background.draw(mouseX, mouseY, x, y, width, height);
         super.drawInBackground(mouseX, mouseY, partialTicks);
     }
 }

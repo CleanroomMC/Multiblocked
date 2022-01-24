@@ -77,7 +77,7 @@ public class SlotWidget extends Widget {
         Position pos = getPosition();
         Size size = getSize();
         if (backgroundTexture != null) {
-            backgroundTexture.draw(pos.x, pos.y, size.width, size.height);
+            backgroundTexture.draw(mouseX, mouseY, pos.x, pos.y, size.width, size.height);
         }
         ItemStack itemStack = slotReference.getStack();
         ModularUIGuiContainer modularUIGui = gui == null ? null : gui.getModularUIGui();

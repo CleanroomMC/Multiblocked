@@ -6,6 +6,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.content.ContentWidg
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 /**
  * Used to detect whether a machine has a certain capability. And provide its capability in proxy {@link CapabilityProxy}.
  *
- * @param <K> recipe info stored.
  */
 @ZenClass("mods.multiblocked.capability.capability")
 @ZenRegister
@@ -58,8 +58,15 @@ public abstract class MultiblockCapability {
     /**
      * Create a Widget of given contents
      */
-    public ContentWidget<?> createContentWidget(@Nonnull IO io, Object object) {
-        return new ContentWidget<>(io, object);
+    public ContentWidget<?> createContentWidget() {
+        return new ContentWidget<Object>() {
+            @Override
+            protected void onContentUpdate() {
+                if (Multiblocked.isClient()) {
+                    setHoverTooltip(I18n.format("multiblocked.content.miss", io, I18n.format(MultiblockCapability.this.getUnlocalizedName()), content.toString()));
+                }
+            }
+        };
     }
 
     /**

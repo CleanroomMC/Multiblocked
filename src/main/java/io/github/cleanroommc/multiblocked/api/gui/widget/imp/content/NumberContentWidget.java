@@ -1,21 +1,13 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp.content;
 
-import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 
-import javax.annotation.Nonnull;
-
 public class NumberContentWidget extends ContentWidget<Number>{
-    protected final boolean isDecimal;
+    protected boolean isDecimal;
     protected IGuiTexture contentTexture;
     protected String unit;
-
-    public NumberContentWidget(@Nonnull IO io, @Nonnull Number object) {
-        super(io, object);
-        isDecimal = object instanceof Float || object instanceof Double;
-    }
 
     public NumberContentWidget setContentTexture(IGuiTexture contentTexture) {
         this.contentTexture = contentTexture;
@@ -25,6 +17,11 @@ public class NumberContentWidget extends ContentWidget<Number>{
     public NumberContentWidget setUnit(String unit) {
         this.unit = unit;
         return this;
+    }
+
+    @Override
+    protected void onContentUpdate() {
+        isDecimal = content instanceof Float || content instanceof Double;
     }
 
     @Override

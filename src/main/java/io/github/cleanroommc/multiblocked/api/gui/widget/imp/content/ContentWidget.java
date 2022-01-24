@@ -9,29 +9,32 @@ import io.github.cleanroommc.multiblocked.util.Size;
 
 import javax.annotation.Nonnull;
 
-public class ContentWidget<T> extends WidgetGroup {
+public abstract class ContentWidget<T> extends WidgetGroup {
     protected T content;
     protected IO io;
     protected IGuiTexture background;
 
-    public ContentWidget(@Nonnull IO io, @Nonnull T object) {
+    public ContentWidget() {
         super(0, 0, 20, 20);
-        this.io = io;
-        this.content = object;
+        setClientSideWidget(true);
     }
 
-    public ContentWidget<?> setSelfPosition(int x, int y) {
+    public ContentWidget<T> setSelfPosition(int x, int y) {
         setSelfPosition(new Position(x, y));
         return this;
     }
 
-    public ContentWidget<?> setContent(@Nonnull IO io, @Nonnull T content) {
+    @SuppressWarnings("unchecked")
+    public final ContentWidget<T> setContent(@Nonnull IO io, @Nonnull Object content) {
         this.io = io;
-        this.content = content;
+        this.content = (T) content;
+        onContentUpdate();
         return this;
     }
 
-    public ContentWidget<?> setBackground(IGuiTexture background) {
+    protected abstract void onContentUpdate();
+
+    public ContentWidget<T> setBackground(IGuiTexture background) {
         this.background = background;
         return this;
     }

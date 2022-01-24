@@ -34,7 +34,7 @@ public class SlotWidget extends Widget {
     public boolean isPlayerInventory;
     public boolean isPlayerHotBar;
 
-    protected IGuiTexture[] backgroundTexture;
+    protected IGuiTexture backgroundTexture;
     protected Runnable changeListener;
     protected BiConsumer<SlotWidget, List<String>> onAddedTooltips;
 
@@ -77,9 +77,7 @@ public class SlotWidget extends Widget {
         Position pos = getPosition();
         Size size = getSize();
         if (backgroundTexture != null) {
-            for (IGuiTexture backgroundTexture : this.backgroundTexture) {
-                backgroundTexture.draw(pos.x, pos.y, size.width, size.height);
-            }
+            backgroundTexture.draw(pos.x, pos.y, size.width, size.height);
         }
         ItemStack itemStack = slotReference.getStack();
         ModularUIGuiContainer modularUIGui = gui == null ? null : gui.getModularUIGui();
@@ -195,11 +193,7 @@ public class SlotWidget extends Widget {
         this(inventory, slotIndex, xPosition, yPosition, true, true);
     }
 
-    /**
-     * Sets array of background textures used by slot
-     * they are drawn on top of each other
-     */
-    public SlotWidget setBackgroundTexture(IGuiTexture... backgroundTexture) {
+    public SlotWidget setBackgroundTexture(IGuiTexture backgroundTexture) {
         this.backgroundTexture = backgroundTexture;
         return this;
     }

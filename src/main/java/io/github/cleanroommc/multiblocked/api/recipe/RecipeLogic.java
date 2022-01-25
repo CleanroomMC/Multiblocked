@@ -53,7 +53,6 @@ public class RecipeLogic {
         } else {
             recipe = this.definition.recipeMap.searchRecipe(this.controller.getCapabilities());
         }
-        lastRecipe = null;
         if (recipe != null) setupRecipe(recipe);
     }
 

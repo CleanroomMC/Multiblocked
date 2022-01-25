@@ -22,6 +22,8 @@ multiblocked.capability.bot_mana=Botaina Mana
 bot_mana.in=Available Botaina Mana Containers
 bot_mana.out=Available Botaina Mana Containers
 
+multiblocked.content.miss=IO: %s Capability: %s miss widget
+
 multiblocked.pattern.error=Expected components (%s) at (%s)
 multiblocked.pattern.error.share=This part cant be shared
 multiblocked.pattern.error.chunk=Chunk unload

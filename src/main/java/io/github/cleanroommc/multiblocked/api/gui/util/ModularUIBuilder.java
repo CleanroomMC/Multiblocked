@@ -48,11 +48,11 @@ public class ModularUIBuilder {
         return widget(new LabelWidget(x, y, ()->text).setTextColor(color));
     }
 
-    public ModularUIBuilder slot(IItemHandlerModifiable itemHandler, int slotIndex, int x, int y, IGuiTexture... overlays) {
+    public ModularUIBuilder slot(IItemHandlerModifiable itemHandler, int slotIndex, int x, int y, IGuiTexture overlays) {
         return widget(new SlotWidget(itemHandler, slotIndex, x, y).setBackgroundTexture(overlays));
     }
 
-    public ModularUIBuilder slot(IItemHandlerModifiable itemHandler, int slotIndex, int x, int y, boolean canTakeItems, boolean canPutItems, IGuiTexture... overlays) {
+    public ModularUIBuilder slot(IItemHandlerModifiable itemHandler, int slotIndex, int x, int y, boolean canTakeItems, boolean canPutItems, IGuiTexture overlays) {
         return widget(new SlotWidget(itemHandler, slotIndex, x, y, canTakeItems, canPutItems).setBackgroundTexture(overlays));
     }
 

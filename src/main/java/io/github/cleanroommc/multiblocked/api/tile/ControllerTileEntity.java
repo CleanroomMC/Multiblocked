@@ -10,6 +10,7 @@ import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDynamicPattern;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeLogic;
@@ -65,7 +66,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     private Map<Long, Map<MultiblockCapability, IO>> settings;
     protected LongOpenHashSet parts;
     @ZenProperty
-    protected RecipeLogic recipeLogic;
+    public RecipeLogic recipeLogic;
 
     public ControllerTileEntity() {
     }
@@ -331,6 +332,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         new StructurePageWidget(this.definition, tabContainer);
         if (isFormed()) {
             new IOPageWidget(this, tabContainer);
+            new RecipePage(this, tabContainer);
         }
         return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
                 .widget(tabContainer)

@@ -2,7 +2,8 @@ package io.github.cleanroommc.multiblocked.api.capability;
 
 import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.content.ContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -66,7 +67,7 @@ public abstract class MultiblockCapability {
                     setHoverTooltip(I18n.format("multiblocked.content.miss", io, I18n.format(MultiblockCapability.this.getUnlocalizedName()), content.toString()));
                 }
             }
-        };
+        }.setBackground(new ColorRectTexture(color));
     }
 
     /**

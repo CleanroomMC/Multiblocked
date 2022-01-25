@@ -118,7 +118,9 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         widget.setUiAccess(groupUIAccess);
         widget.setGui(gui);
         widget.setParentPosition(getPosition());
-        widget.setClientSideWidget(isClientSideWidget);
+        if (isClientSideWidget) {
+            widget.setClientSideWidget(true);
+        }
         if (initialized) {
             widget.initWidget();
         }
@@ -140,7 +142,9 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         widget.setUiAccess(groupUIAccess);
         widget.setGui(gui);
         widget.setParentPosition(getPosition());
-        widget.setClientSideWidget(isClientSideWidget);
+        if (isClientSideWidget) {
+            widget.setClientSideWidget(true);
+        }
         if (initialized) {
             widget.initWidget();
         }
@@ -168,6 +172,19 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         widget.setParentPosition(Position.ORIGIN);
         recomputeSize();
         if (uiAccess != null && !isClientSideWidget) {
+            this.uiAccess.notifyWidgetChange();
+        }
+    }
+
+    public void clearAllWidgets() {
+        this.widgets.forEach(it -> {
+            it.setUiAccess(null);
+            it.setGui(null);
+            it.setParentPosition(Position.ORIGIN);
+        });
+        this.widgets.clear();
+        recomputeSize();
+        if (uiAccess != null) {
             this.uiAccess.notifyWidgetChange();
         }
     }

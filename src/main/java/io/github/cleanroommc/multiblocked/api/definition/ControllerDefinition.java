@@ -5,11 +5,7 @@ import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.item.MCItemStack;
 import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IRecipeFinish;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.ISetupRecipe;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IStructureFormed;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IStructureInvalid;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IUpdateFormed;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.*;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
@@ -36,6 +32,8 @@ public class ControllerDefinition extends ComponentDefinition {
     public BlockPattern basePattern;
     @ZenProperty
     public RecipeMap recipeMap;
+    @ZenProperty
+    public IDynamicPattern dynamicPattern;
     @ZenProperty
     public IStructureFormed structureFormed;
     @ZenProperty

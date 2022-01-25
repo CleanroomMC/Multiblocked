@@ -10,5 +10,8 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenClass("mods.multiblocked.function.ISetupRecipe")
 @ZenRegister
 public interface ISetupRecipe {
-    void apply(RecipeLogic recipeLogic, Recipe recipe);
+    /**
+     * @return true - block the original logic
+     */
+    boolean apply(RecipeLogic recipeLogic, Recipe recipe);
 }

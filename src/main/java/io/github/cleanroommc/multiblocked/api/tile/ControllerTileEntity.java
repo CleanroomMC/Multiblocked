@@ -8,7 +8,9 @@ import crafttweaker.mc1120.world.MCFacing;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDynamicPattern;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
@@ -68,10 +70,18 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public ControllerTileEntity() {
     }
 
+    public BlockPattern getPattern() {
+        if (definition.dynamicPattern != null) {
+            BlockPattern pattern = definition.dynamicPattern.apply(this);
+            return pattern == null ? definition.basePattern : pattern;
+        }
+        return definition.basePattern;
+    }
+
     @ZenMethod
     public boolean checkPattern() {
         if (state == null) return false;
-        return definition.basePattern.checkPatternAt(state, false);
+        return getPattern().checkPatternAt(state, false);
     }
 
     @Override
@@ -82,6 +92,14 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @ZenGetter
     public boolean isFormed() {
         return state != null && state.isFormed();
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        if (isFormed()) {
+            updateFormed();
+        }
     }
 
     public void updateFormed() {

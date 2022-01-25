@@ -8,11 +8,7 @@ import crafttweaker.mc1120.item.MCItemStack;
 import crafttweaker.mc1120.util.MCAxisAlignedBB;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDrops;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IGetOutputRedstoneSignal;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.ILeftClick;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.INeighborChanged;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IRightClick;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.*;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
@@ -67,6 +63,8 @@ public class ComponentDefinition {
     public INeighborChanged onNeighborChanged;
     @ZenProperty
     public IGetOutputRedstoneSignal getOutputRedstoneSignal;
+    @ZenProperty
+    public IUpdateTick updateTick;
 
     protected ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
         this.location = location;
@@ -81,8 +79,8 @@ public class ComponentDefinition {
     public ComponentTileEntity<?> createNewTileEntity(World world){
         try {
             ComponentTileEntity<?> component = clazz.newInstance();
-            component.setDefinition(this);
             component.setWorld(world);
+            component.setDefinition(this);
             return component;
         } catch (InstantiationException | IllegalAccessException e) {
             Multiblocked.LOGGER.error(e);

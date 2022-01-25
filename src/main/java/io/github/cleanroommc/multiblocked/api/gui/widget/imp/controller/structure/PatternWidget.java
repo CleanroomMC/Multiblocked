@@ -147,7 +147,7 @@ public class PatternWidget extends WidgetGroup {
         ControllerTileEntity controllerBase = pattern.controllerBase;
         if (isPressed) {
             controllerBase.state = new MultiblockState(world, controllerBase.getPos());
-            controllerBase.getDefinition().basePattern.checkPatternAt(controllerBase.state, true);
+            controllerBase.getPattern().checkPatternAt(controllerBase.state, true);
             controllerBase.onStructureFormed();
             if (controllerBase.isFormed() && controllerBase.getDefinition().disableOthersRendering) {
                 long controllerLong = controllerBase.getPos().toLong();
@@ -267,7 +267,7 @@ public class PatternWidget extends WidgetGroup {
         Map<BlockPos, TraceabilityPredicate> predicateMap = new HashMap<>();
         if (controllerBase != null) {
             controllerBase.state = new MultiblockState(world, controllerBase.getPos());
-            controllerBase.getDefinition().basePattern.checkPatternAt(controllerBase.state, true);
+            controllerBase.getPattern().checkPatternAt(controllerBase.state, true);
             controllerBase.onStructureFormed();
             if (controllerBase.isFormed() && controllerBase.getDefinition().disableOthersRendering) {
                 long controllerLong = controllerBase.getPos().toLong();

@@ -9,5 +9,8 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenClass("mods.multiblocked.function.IRecipeFinish")
 @ZenRegister
 public interface IRecipeFinish {
-    void apply(RecipeLogic recipeLogic, Recipe recipe);
+    /**
+     * @return true - block the original logic
+     */
+    boolean apply(RecipeLogic recipeLogic, Recipe recipe);
 }

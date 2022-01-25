@@ -17,6 +17,7 @@ import io.github.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
+import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.state.IBlockState;
@@ -72,6 +73,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public final void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
+        if (!isRemote() && definition.updateTick != null) {
+            MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
+        }
     }
 
     @ZenMethod
@@ -112,6 +116,13 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @ZenMethod
     @ZenGetter
     public abstract boolean isFormed();
+
+    @ZenMethod
+    public void update(){
+        if (definition.updateTick != null) {
+            definition.updateTick.apply(this);
+        }
+    }
 
     public List<AxisAlignedBB> getCollisionBoundingBox() {
         return definition.getAABB(isFormed(), frontFacing);

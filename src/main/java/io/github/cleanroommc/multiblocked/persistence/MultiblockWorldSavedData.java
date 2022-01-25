@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.persistence;
 
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
+import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -51,7 +52,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
 
     public final Map<BlockPos, MultiblockState> mapping;
     public final Map<ChunkPos, Set<MultiblockState>> chunkPosMapping;
-    public final Set<ControllerTileEntity> loading;
+    public final Set<ComponentTileEntity<?>> loading;
 
     public MultiblockWorldSavedData(String name) { // Also constructed Reflectively by MapStorage
         super(name);
@@ -68,7 +69,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         return mapping.values();
     }
 
-    public Collection<ControllerTileEntity> getLoadings() {
+    public Collection<ComponentTileEntity<?>> getLoadings() {
         return loading;
     }
 
@@ -89,11 +90,11 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         setDirty(true);
     }
 
-    public void addLoading(ControllerTileEntity state) {
+    public void addLoading(ComponentTileEntity<?> state) {
         loading.add(state);
     }
 
-    public void removeLoading(ControllerTileEntity state) {
+    public void removeLoading(ComponentTileEntity<?> state) {
         loading.remove(state);
     }
 

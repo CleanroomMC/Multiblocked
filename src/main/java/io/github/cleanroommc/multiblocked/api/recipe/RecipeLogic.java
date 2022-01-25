@@ -58,26 +58,30 @@ public class RecipeLogic {
     }
 
     public void setupRecipe(Recipe recipe) {
+        if (definition.setupRecipe != null) {
+            if (definition.setupRecipe.apply(this, recipe)) {
+                return;
+            }
+        }
         lastRecipe = recipe;
         isWorking = true;
         progress = 0;
         duration = recipe.duration;
         recipe.handleInput(this.controller.getCapabilities());
         markDirty();
-        if (definition.setupRecipe != null) {
-            definition.setupRecipe.apply(this, recipe);
-        }
     }
 
     public void onRecipeFinish() {
+        if (definition.recipeFinish != null) {
+            if (definition.recipeFinish.apply(this, lastRecipe)) {
+                return;
+            }
+        }
         isWorking = false;
         progress = 0;
         duration = 0;
         lastRecipe.handleOutput(this.controller.getCapabilities());
         markDirty();
-        if (definition.recipeFinish != null) {
-            definition.recipeFinish.apply(this, lastRecipe);
-        }
     }
 
     @ZenMethod

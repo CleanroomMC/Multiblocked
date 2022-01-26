@@ -35,17 +35,4 @@ public class ChunkMixin {
         });
     }
 
-    //TODO Separate might be better
-//    @Inject(method = "getTileEntity", at = @At("RETURN"), cancellable = true)
-//    private void intercept$getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType creationMode, CallbackInfoReturnable<TileEntity> cir) {
-//        if (cir.getReturnValue() == null) {
-//            for (ControllerTileEntity controller : MultiblockWorldSavedData.getOrCreate(this.world).getInstances()) {
-//                if (controller.getPositions().contains(pos)) {
-//                    cir.setReturnValue(controller.getInternalTileEntity());
-//                    return;
-//                }
-//            }
-//        }
-//    }
-
 }

@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.network;
 
 import io.github.cleanroommc.multiblocked.network.c2s.CPacketUIClientAction;
+import io.github.cleanroommc.multiblocked.network.s2c.SPacketRemoveDisabledRendering;
 import io.github.cleanroommc.multiblocked.network.s2c.SPacketUIOpen;
 import io.github.cleanroommc.multiblocked.network.s2c.SPacketUIWidgetUpdate;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,6 +20,7 @@ public class MultiblockedNetworking {
     public static void init() {
         registerS2C(SPacketUIOpen.class);
         registerS2C(SPacketUIWidgetUpdate.class);
+        registerS2C(SPacketRemoveDisabledRendering.class);
         registerC2S(CPacketUIClientAction.class);
     }
 

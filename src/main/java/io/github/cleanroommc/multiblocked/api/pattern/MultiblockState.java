@@ -1,6 +1,8 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import io.github.cleanroommc.multiblocked.network.s2c.SPacketRemoveDisabledRendering;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.state.IBlockState;
@@ -131,7 +133,15 @@ public class MultiblockState {
 
     public void onBlockStateChanged(BlockPos pos) {
         if (pos.equals(controllerPos)) {
-            if (getController() != null) controller.onStructureInvalid();
+            if (getController() != null) {
+                if (controller.getDefinition().disableOthersRendering) {
+                    MultiblockState state = controller.state;
+                    if (state != null && state.cache != null) {
+                        MultiblockedNetworking.sendToWorld(new SPacketRemoveDisabledRendering(state.cache), controller.getWorld());
+                    }
+                }
+                controller.onStructureInvalid();
+            }
             MultiblockWorldSavedData.getOrCreate(world).removeMapping(this);
         } else if (getController() != null && error != UNLOAD_ERROR) {
             if (!controller.checkPattern()) {

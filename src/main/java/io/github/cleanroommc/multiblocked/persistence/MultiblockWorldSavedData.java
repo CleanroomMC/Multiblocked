@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -99,13 +100,32 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void removeDisableModel(Collection<BlockPos> pos) {
-        modelDisabled.removeAll(pos);
+    public static void removeDisableModel(Collection<BlockPos> poses) {
+        World  world = Minecraft.getMinecraft().world;
+        if (world == null) {
+            modelDisabled.removeAll(poses);
+        } else {
+            for (BlockPos pos : poses) {
+                if (modelDisabled.remove(pos)) {
+                    world.markBlockRangeForRenderUpdate(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
+
+                }
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)
-    public static void addDisableModel(Collection<BlockPos> pos) {
-        modelDisabled.addAll(pos);
+    public static void addDisableModel(Collection<BlockPos> poses) {
+        World  world = Minecraft.getMinecraft().world;
+        if (world == null) {
+            modelDisabled.addAll(poses);
+        } else {
+            for (BlockPos pos : poses) {
+                if (modelDisabled.add(pos)) {
+                    world.markBlockRangeForRenderUpdate(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
+                }
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)

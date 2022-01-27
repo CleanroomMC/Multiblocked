@@ -4,6 +4,8 @@ import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.FluidContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import mekanism.common.base.FluidHandlerWrapper;
 import net.minecraft.tileentity.TileEntity;
@@ -31,6 +33,11 @@ public class FluidMultiblockCapability extends MultiblockCapability {
     @Override
     public FluidCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new FluidCapabilityProxy(tileEntity);
+    }
+
+    @Override
+    public ContentWidget<?> createContentWidget() {
+        return new FluidContentWidget();
     }
 
     public static class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {

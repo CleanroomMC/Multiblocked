@@ -10,7 +10,7 @@ public class FluidContentWidget extends ContentWidget<FluidStack>{
     @Override
     protected void onContentUpdate() {
         if (tankWidget != null) removeWidget(tankWidget);
-        tankWidget = new TankWidget(new FluidTank(content, content.amount), 0, 0, 20, 20, false, false);
+        addWidget(tankWidget = new TankWidget(new FluidTank(content, content.amount), 0, 0, 20, 20, false, false).setAlwaysShowFull(true));
     }
     
 }

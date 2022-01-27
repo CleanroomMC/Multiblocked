@@ -2,6 +2,7 @@ package io.github.cleanroommc.multiblocked.api.recipe;
 
 import com.google.common.collect.Table;
 import crafttweaker.annotations.ZenRegister;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
@@ -15,6 +16,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -23,6 +25,7 @@ import java.util.Set;
 @ZenClass("mods.multiblocked.recipe.RecipeMap")
 @ZenRegister
 public class RecipeMap {
+    public static final Map<String, RecipeMap> RECIPE_MAP_REGISTRY = new HashMap<>();
     @ZenProperty
     public final String name;
     @ZenProperty
@@ -36,6 +39,11 @@ public class RecipeMap {
 
     public RecipeMap(String name) {
         this.name = name;
+        RECIPE_MAP_REGISTRY.put(name, this);
+    }
+
+    public String getUnlocalizedName() {
+        return Multiblocked.MODID + ".recupe_map." + name;
     }
 
     @ZenMethod

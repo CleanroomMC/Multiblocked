@@ -16,6 +16,7 @@ public class RecipeWidget extends WidgetGroup {
     public RecipeWidget(Recipe recipe) {
         super(0, 0, 176, 166);
         this.recipe = recipe;
+        setClientSideWidget();
         DraggableScrollableWidgetGroup inputs = new DraggableScrollableWidgetGroup(5, 30, 70, 70).setBackground(new ColorRectTexture(-1));
         DraggableScrollableWidgetGroup outputs = new DraggableScrollableWidgetGroup(85, 30, 70, 70).setBackground(new ColorRectTexture(-1));
         this.addWidget(inputs);

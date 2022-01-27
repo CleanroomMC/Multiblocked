@@ -2,6 +2,7 @@ package io.github.cleanroommc.multiblocked.jei.multipage;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
@@ -11,7 +12,6 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.recipes.RecipeLayout;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoRec
     public MultiblockInfoCategory(IJeiHelpers helpers) {
         IGuiHelper guiHelper = helpers.getGuiHelper();
         this.background = guiHelper.createBlankDrawable(176, 256);
-        this.icon = guiHelper.drawableBuilder(new ResourceLocation(Multiblocked.MODID, "textures/test/d.png"), 0, 0, 18, 18).setTextureSize(18, 18).build();
+        this.icon = guiHelper.createDrawableIngredient(BlueprintTableTileEntity.tableDefinition.getStackForm());
     }
 
     public static final List<ControllerDefinition> REGISTER = new ArrayList<>();

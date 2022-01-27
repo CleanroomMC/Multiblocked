@@ -49,8 +49,8 @@ public class TankWidget extends Widget implements IIngredientSlot {
     }
 
     @Override
-    public TankWidget setClientSideWidget(boolean clientSideWidget) {
-        super.setClientSideWidget(clientSideWidget);
+    public TankWidget setClientSideWidget() {
+        super.setClientSideWidget();
         this.lastFluidInTank = fluidTank != null ? fluidTank.getFluid() != null ? fluidTank.getFluid().copy() : null : null;
         this.lastTankCapacity = fluidTank != null ? fluidTank.getCapacity() : 0;
         return this;

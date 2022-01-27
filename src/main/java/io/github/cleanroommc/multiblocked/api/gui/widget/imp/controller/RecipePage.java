@@ -54,7 +54,6 @@ public class RecipePage extends PageWidget{
                 removeWidget(recipeWidget);
             }
             this.addWidget(recipeWidget = new RecipeWidget(recipe));
-            recipeWidget.setClientSideWidget(true);
             recipeWidget.setSelfPosition(new Position(0, 30));
         } else {
             if (recipeWidget != null) {

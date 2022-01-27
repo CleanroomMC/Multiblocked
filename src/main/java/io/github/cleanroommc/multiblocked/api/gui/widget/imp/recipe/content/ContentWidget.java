@@ -16,7 +16,7 @@ public abstract class ContentWidget<T> extends WidgetGroup {
 
     public ContentWidget() {
         super(0, 0, 20, 20);
-        setClientSideWidget(true);
+        setClientSideWidget();
     }
 
     public ContentWidget<T> setSelfPosition(int x, int y) {

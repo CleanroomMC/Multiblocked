@@ -40,8 +40,11 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .build(this, entityPlayer);
     }
 
+    public static ControllerDefinition tableDefinition;
+    public static PartDefinition partDefinition;
+
     public static void registerBlueprintTable() {
-        ControllerDefinition tableDefinition = new ControllerDefinition(
+        tableDefinition = new ControllerDefinition(
                 new ResourceLocation(Multiblocked.MODID, "blueprint_table"),
                 new RecipeMap("blueprint_table"),
                 BlueprintTableTileEntity.class);
@@ -54,7 +57,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
         tableDefinition.disableOthersRendering = true;
 
 
-        PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));
+        partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));
         partDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"))
                 .setRenderLayer(BlockRenderLayer.SOLID, true);
         partDefinition.allowRotate = false;

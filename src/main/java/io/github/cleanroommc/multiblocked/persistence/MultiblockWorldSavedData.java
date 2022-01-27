@@ -1,8 +1,8 @@
 package io.github.cleanroommc.multiblocked.persistence;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
-import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -31,7 +31,13 @@ import java.util.Set;
 public class MultiblockWorldSavedData extends WorldSavedData {
 
     @SideOnly(Side.CLIENT)
-    public static Set<BlockPos> modelDisabled = new HashSet<>();
+    public static Set<BlockPos> modelDisabled;
+
+    static {
+        if (Multiblocked.isClient()) {
+            modelDisabled = new HashSet<>();
+        }
+    }
 
     private static WeakReference<World> worldRef;
 

@@ -1,47 +1,27 @@
 package io.github.cleanroommc.multiblocked.jei.multipage;
 
-import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import io.github.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
-import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
-import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
-import io.github.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.PatternWidget;
-import io.github.cleanroommc.multiblocked.jei.JEIModularUIGuiContainer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.gui.recipes.RecipeLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
-public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
-    private final PatternWidget patternWidget;
-    private final ControllerDefinition definition;
-    private final JEIModularUIGuiContainer guiContainer;
+public class MultiblockInfoRecipeWrapper extends ModularWrapper {
+    public final ControllerDefinition definition;
     private static long lastRender;
     private static ItemStack tooltipBlockStack;
 
     public MultiblockInfoRecipeWrapper(ControllerDefinition definition) {
-        patternWidget = PatternWidget.getPatternWidget(definition);
+        super(PatternWidget.getPatternWidget(definition), 176, 256);
         this.definition = definition;
-        ModularUI gui = new ModularUIBuilder(IGuiTexture.EMPTY, 176, 256)
-                .widget(patternWidget)
-                .build(IUIHolder.EMPTY, Minecraft.getMinecraft().player);
-        gui.initWidgets();
-        guiContainer = new JEIModularUIGuiContainer(gui);
-    }
-
-    public void setRecipeLayout(RecipeLayout layout) {
-        guiContainer.setRecipeLayout(layout);
     }
 
     @Override
     public void getIngredients(@Nonnull IIngredients ingredients) {
-        ingredients.setInputs(VanillaTypes.ITEM, patternWidget.allItemStackInputs);
+        ingredients.setInputs(VanillaTypes.ITEM, ((PatternWidget)widget).allItemStackInputs);
         ingredients.setOutput(VanillaTypes.ITEM, definition.getStackForm());
     }
 
@@ -62,11 +42,4 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
         return null;
     }
 
-    public void handleMouseInput() {
-        try {
-            guiContainer.handleMouseInput();
-        } catch (IOException e) {
-            Multiblocked.LOGGER.error(e);
-        }
-    }
 }

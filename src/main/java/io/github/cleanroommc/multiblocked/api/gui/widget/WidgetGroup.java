@@ -41,10 +41,10 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
     }
 
     @Override
-    public WidgetGroup setClientSideWidget(boolean clientSideWidget) {
-        super.setClientSideWidget(clientSideWidget);
+    public WidgetGroup setClientSideWidget() {
+        super.setClientSideWidget();
         for (Widget widget : widgets) {
-            widget.setClientSideWidget(clientSideWidget);
+            widget.setClientSideWidget();
         }
         return this;
     }
@@ -119,7 +119,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         widget.setGui(gui);
         widget.setParentPosition(getPosition());
         if (isClientSideWidget) {
-            widget.setClientSideWidget(true);
+            widget.setClientSideWidget();
         }
         if (initialized) {
             widget.initWidget();
@@ -143,7 +143,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
         widget.setGui(gui);
         widget.setParentPosition(getPosition());
         if (isClientSideWidget) {
-            widget.setClientSideWidget(true);
+            widget.setClientSideWidget();
         }
         if (initialized) {
             widget.initWidget();

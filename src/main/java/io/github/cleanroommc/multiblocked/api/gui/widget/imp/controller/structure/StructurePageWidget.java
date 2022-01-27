@@ -16,7 +16,7 @@ public class StructurePageWidget extends WidgetGroup {
                         .setTexture(page.getSubTexture(176 / 256.0, 216 / 256.0, 20 / 256.0, 20 / 256.0),
                                 page.getSubTexture(176 / 256.0, 236 / 256.0, 20 / 256.0, 20 / 256.0)),
                 this);
-        setClientSideWidget(false);
+        setClientSideWidget();
         if (Multiblocked.isClient()) {
             addWidget(PatternWidget.getPatternWidget(controllerDefinition));
         }

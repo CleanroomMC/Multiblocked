@@ -2,8 +2,9 @@ package io.github.cleanroommc.multiblocked.jei;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiHandler;
-import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
-import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoRecipeFocusShower;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
+import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
+import io.github.cleanroommc.multiblocked.jei.multipage.*;
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
@@ -21,6 +22,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JEIPlugin
 public class JeiPlugin implements IModPlugin {
@@ -51,7 +53,11 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public void registerCategories(@Nonnull IRecipeCategoryRegistration registry) {
-        registry.addRecipeCategories(new MultiblockInfoCategory(registry.getJeiHelpers()));
+        IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+        registry.addRecipeCategories(new MultiblockInfoCategory(jeiHelpers));
+        for (RecipeMap recipeMap : RecipeMap.RECIPE_MAP_REGISTRY.values()) {
+            registry.addRecipeCategories(new RecipeMapCategory(jeiHelpers, recipeMap));
+        }
     }
 
     @Override
@@ -61,7 +67,13 @@ public class JeiPlugin implements IModPlugin {
         registry.addAdvancedGuiHandlers(modularUIGuiHandler);
         registry.addGhostIngredientHandler(modularUIGuiHandler.getGuiContainerClass(), modularUIGuiHandler);
         registry.getRecipeTransferRegistry().addRecipeTransferHandler(modularUIGuiHandler, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
-        
+        for (RecipeMap recipeMap : RecipeMap.RECIPE_MAP_REGISTRY.values()) {
+            registry.addRecipes(recipeMap.recipes.values().stream()
+                            .map(RecipeWidget::new)
+                            .map(RecipeWrapper::new)
+                            .collect(Collectors.toList()),
+                    Multiblocked.MODID + ":" + recipeMap.name);
+        }
         MultiblockInfoCategory.registerRecipes(registry);
     }
 

@@ -56,8 +56,8 @@ public class Widget {
         this(new Position(x, y), new Size(width, height));
     }
 
-    public Widget setClientSideWidget(boolean clientSideWidget) {
-        isClientSideWidget = clientSideWidget;
+    public Widget setClientSideWidget() {
+        isClientSideWidget = true;
         return this;
     }
 

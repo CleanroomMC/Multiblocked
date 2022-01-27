@@ -3,6 +3,8 @@ package io.github.cleanroommc.multiblocked.common.capability;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ItemsContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import net.minecraft.item.ItemStack;
@@ -29,6 +31,11 @@ public class ItemMultiblockCapability extends MultiblockCapability {
     @Override
     public ItemCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new ItemCapabilityProxy(tileEntity);
+    }
+
+    @Override
+    public ContentWidget<?> createContentWidget() {
+        return new ItemsContentWidget();
     }
 
     public static class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {

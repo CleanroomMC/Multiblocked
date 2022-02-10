@@ -8,7 +8,6 @@ import crafttweaker.mc1120.world.MCFacing;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDynamicPattern;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
 import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
@@ -100,6 +99,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         super.update();
         if (isFormed()) {
             updateFormed();
+        } else if (definition.noNeedCatalyst && getTimer() % 20 == 0) {
+            if (state == null) state = new MultiblockState(world, pos);
+            if (checkPattern()) { // formed
+                MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
+                onStructureFormed();
+            }
         }
     }
 
@@ -318,11 +323,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             }
             if (!player.isSneaking()) {
                 if (!world.isRemote && player instanceof EntityPlayerMP) {
-                    return TileEntityUIFactory.INSTANCE.openUI(this, (EntityPlayerMP) player);
+                    TileEntityUIFactory.INSTANCE.openUI(this, (EntityPlayerMP) player);
                 }
             }
         }
-        return false;
+        return true;
     }
 
     @Override

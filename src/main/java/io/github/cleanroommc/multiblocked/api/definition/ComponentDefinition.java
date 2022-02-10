@@ -161,4 +161,9 @@ public class ComponentDefinition {
         }, ()-> new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location))});
         return isController ? result.setCenter() : result;
     }
+
+    public boolean needUpdateTick() {
+        return updateTick != null;
+    }
+    
 }

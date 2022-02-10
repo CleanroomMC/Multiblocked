@@ -42,3 +42,9 @@ multiblocked.structure_page.switch=§6formed§r/§coriginal§r
 
 blueprint_table.name=Multiblocked Blueprint Table
 blueprint_table.description=Help you customize multiblock
+
+multiblocked.fluid.empty=Empty
+multiblocked.fluid.amount=§9Amount: %,d/%,d L
+multiblocked.fluid.temperature=§cTemperature: %,d K
+multiblocked.fluid.state_gas=§aState: Gaseous
+multiblocked.fluid.state_liquid=§aState: Liquid

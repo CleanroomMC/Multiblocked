@@ -5,6 +5,7 @@ import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import io.github.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
+import io.github.cleanroommc.multiblocked.jei.ModularWrapper;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
@@ -136,12 +137,12 @@ public class TankWidget extends Widget implements IIngredientSlot {
             if (lastFluidInTank != null) {
                 Fluid fluid = lastFluidInTank.getFluid();
                 tooltips.add(fluid.getLocalizedName(lastFluidInTank));
-                tooltips.add(I18n.format("gregtech.fluid.amount", lastFluidInTank.amount, lastTankCapacity));
-                tooltips.add(I18n.format("gregtech.fluid.temperature", fluid.getTemperature(lastFluidInTank)));
-                tooltips.add(I18n.format(fluid.isGaseous(lastFluidInTank) ? "gregtech.fluid.state_gas" : "gregtech.fluid.state_liquid"));
+                tooltips.add(I18n.format("multiblocked.fluid.amount", lastFluidInTank.amount, lastTankCapacity));
+                tooltips.add(I18n.format("multiblocked.fluid.temperature", fluid.getTemperature(lastFluidInTank)));
+                tooltips.add(I18n.format(fluid.isGaseous(lastFluidInTank) ? "multiblocked.fluid.state_gas" : "multiblocked.fluid.state_liquid"));
             } else {
-                tooltips.add(I18n.format("gregtech.fluid.empty"));
-                tooltips.add(I18n.format("gregtech.fluid.amount", 0, lastTankCapacity));
+                tooltips.add(I18n.format("multiblocked.fluid.empty"));
+                tooltips.add(I18n.format("multiblocked.fluid.amount", 0, lastTankCapacity));
             }
 
             if (gui != null) {
@@ -149,6 +150,7 @@ public class TankWidget extends Widget implements IIngredientSlot {
             }
 
             GlStateManager.color(1.0f, 1.0f, 1.0f);
+            ModularWrapper.setFocus(lastFluidInTank);
         }
     }
 

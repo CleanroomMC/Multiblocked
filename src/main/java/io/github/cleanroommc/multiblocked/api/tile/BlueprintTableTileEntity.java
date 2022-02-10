@@ -55,6 +55,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .setRenderLayer(BlockRenderLayer.SOLID, true);
         tableDefinition.isOpaqueCube = false;
         tableDefinition.disableOthersRendering = true;
+        tableDefinition.noNeedCatalyst = true;
 
 
         partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));

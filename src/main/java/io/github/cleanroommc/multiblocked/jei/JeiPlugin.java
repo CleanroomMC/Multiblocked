@@ -5,6 +5,8 @@ import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiHandler;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.jei.multipage.*;
+import io.github.cleanroommc.multiblocked.jei.recipeppage.RecipeMapCategory;
+import io.github.cleanroommc.multiblocked.jei.recipeppage.RecipeWrapper;
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;

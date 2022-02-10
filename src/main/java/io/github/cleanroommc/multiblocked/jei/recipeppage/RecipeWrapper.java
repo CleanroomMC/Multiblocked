@@ -1,9 +1,10 @@
-package io.github.cleanroommc.multiblocked.jei.multipage;
+package io.github.cleanroommc.multiblocked.jei.recipeppage;
 
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import io.github.cleanroommc.multiblocked.jei.ModularWrapper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import net.minecraftforge.fluids.FluidStack;
@@ -12,7 +13,7 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class RecipeWrapper extends ModularWrapper{
+public class RecipeWrapper extends ModularWrapper {
 
     public final Recipe recipe;
 

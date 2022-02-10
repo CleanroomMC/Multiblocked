@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked.common.capability;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.NumberContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
@@ -36,7 +37,7 @@ public class FEMultiblockCapability extends MultiblockCapability {
 
     @Override
     public ContentWidget<?> createContentWidget() {
-        return new NumberContentWidget();
+        return new NumberContentWidget().setContentTexture(new ColorRectTexture(this.color)).setUnit("FE");
     }
 
     public static class FECapabilityProxy extends CapabilityProxy<Integer> {

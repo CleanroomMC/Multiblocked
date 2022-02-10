@@ -1,7 +1,8 @@
-package io.github.cleanroommc.multiblocked.jei.multipage;
+package io.github.cleanroommc.multiblocked.jei.recipeppage;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
+import io.github.cleanroommc.multiblocked.jei.ModularWrapper;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.gui.IDrawable;

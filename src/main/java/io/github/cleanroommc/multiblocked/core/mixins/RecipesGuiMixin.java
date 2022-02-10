@@ -1,7 +1,7 @@
 package io.github.cleanroommc.multiblocked.core.mixins;
 
 import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
-import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoRecipeWrapper;
+import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoWrapper;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -27,8 +27,8 @@ public class RecipesGuiMixin {
             boolean find = false;
             for (RecipeLayout layout : recipeLayouts) {
                 IRecipeWrapper wrapper = JeiPlugin.getWrapper(layout);
-                if (wrapper instanceof MultiblockInfoRecipeWrapper) {
-                    ((MultiblockInfoRecipeWrapper)wrapper).handleMouseInput();
+                if (wrapper instanceof MultiblockInfoWrapper) {
+                    ((MultiblockInfoWrapper)wrapper).handleMouseInput();
                     find = true;
                 }
             }

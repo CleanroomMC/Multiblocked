@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoRecipeWrapper> {
+public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoWrapper> {
     private final static String UID = Multiblocked.MODID + ":multiblock_info";
     private final IDrawable background;
     private final IDrawable icon;
@@ -36,7 +36,12 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoRec
     }
 
     public static void registerRecipes(IModRegistry registry) {
-        registry.addRecipes(REGISTER.stream().map(MultiblockInfoRecipeWrapper::new).collect(Collectors.toList()), UID);
+        registry.addRecipes(REGISTER.stream().map(MultiblockInfoWrapper::new).collect(Collectors.toList()), UID);
+        for (ControllerDefinition definition : REGISTER) {
+            if (definition.recipeMap != null) {
+                registry.addRecipeCatalyst(definition.getStackForm(), Multiblocked.MODID + ":" + definition.recipeMap.name);
+            }
+        }
     }
 
     @Nonnull
@@ -69,7 +74,7 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoRec
     }
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayout recipeLayout, MultiblockInfoRecipeWrapper recipeWrapper, @Nonnull IIngredients ingredients) {
+    public void setRecipe(@Nonnull IRecipeLayout recipeLayout, MultiblockInfoWrapper recipeWrapper, @Nonnull IIngredients ingredients) {
         recipeWrapper.setRecipeLayout((RecipeLayout) recipeLayout);
     }
 }

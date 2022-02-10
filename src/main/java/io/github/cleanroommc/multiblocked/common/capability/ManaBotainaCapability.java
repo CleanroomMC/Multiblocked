@@ -3,6 +3,9 @@ package io.github.cleanroommc.multiblocked.common.capability;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.NumberContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import net.minecraft.tileentity.TileEntity;
 import vazkii.botania.api.mana.IManaReceiver;
@@ -27,6 +30,11 @@ public class ManaBotainaCapability extends MultiblockCapability {
     @Override
     public ManaBotainaCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new ManaBotainaCapabilityProxy(tileEntity);
+    }
+
+    @Override
+    public ContentWidget<?> createContentWidget() {
+        return new NumberContentWidget().setContentTexture(new ColorRectTexture(this.color)).setUnit("mana");
     }
 
     public static class ManaBotainaCapabilityProxy extends CapabilityProxy<Integer> {

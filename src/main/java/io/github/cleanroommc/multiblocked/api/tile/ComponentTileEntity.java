@@ -71,9 +71,11 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     private EnumFacing frontFacing = EnumFacing.NORTH; // 0
 
+    private int timer = Multiblocked.RNG.nextInt();
+
     public final void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
-        if (!isRemote() && definition.updateTick != null) {
+        if (!isRemote() && definition.needUpdateTick()) {
             MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
         }
     }
@@ -118,7 +120,14 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public abstract boolean isFormed();
 
     @ZenMethod
+    @ZenGetter("timer")
+    public int getTimer() {
+        return timer;
+    }
+
+    @ZenMethod
     public void update(){
+        timer++;
         if (definition.updateTick != null) {
             definition.updateTick.apply(this);
         }

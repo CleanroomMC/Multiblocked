@@ -3,6 +3,9 @@ package io.github.cleanroommc.multiblocked.common.capability;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.NumberContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import mekanism.api.IHeatTransfer;
 import mekanism.common.capabilities.Capabilities;
@@ -27,6 +30,11 @@ public class HeatMekanismCapability extends MultiblockCapability {
     @Override
     public HeatMekanismCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new HeatMekanismCapabilityProxy(tileEntity);
+    }
+
+    @Override
+    public ContentWidget<?> createContentWidget() {
+        return new NumberContentWidget().setContentTexture(new ColorRectTexture(this.color)).setUnit("Heat");
     }
 
     public static class HeatMekanismCapabilityProxy extends CapabilityProxy<Double> {

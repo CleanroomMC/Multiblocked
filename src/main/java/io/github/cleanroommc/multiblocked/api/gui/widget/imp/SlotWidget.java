@@ -4,6 +4,7 @@ import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiContainer;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
+import io.github.cleanroommc.multiblocked.jei.ModularWrapper;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
@@ -68,7 +69,15 @@ public class SlotWidget extends Widget {
     @Override
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
         super.drawInForeground(mouseX, mouseY, partialTicks);
-        ((ISlotWidget) slotReference).setHover(isMouseOverElement(mouseX, mouseY) && isActive());
+        if (isMouseOverElement(mouseX, mouseY) && isActive()) {
+            ItemStack stack = slotReference.getStack();
+            if (!stack.isEmpty()) {
+                ModularWrapper.setFocus(stack);
+            }
+            ((ISlotWidget) slotReference).setHover(true);
+        } else {
+            ((ISlotWidget) slotReference).setHover(false);
+        }
     }
 
     @Override

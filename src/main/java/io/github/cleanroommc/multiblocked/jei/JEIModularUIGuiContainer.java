@@ -4,7 +4,7 @@ import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiContainer;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
-import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoRecipeWrapper;
+import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoWrapper;
 import io.github.cleanroommc.multiblocked.util.Position;
 import mezz.jei.gui.recipes.RecipeLayout;
 import net.minecraft.client.Minecraft;
@@ -58,6 +58,7 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        ModularWrapper.setFocus(null);
         this.hoveredSlot = null;
         drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
         for (Widget widget : modularUI.getFlatVisibleWidgetCollection()) {
@@ -65,10 +66,6 @@ public class JEIModularUIGuiContainer extends ModularUIGuiContainer {
                 Slot slot = ((SlotWidget) widget).getHandle();
                 if (((SlotWidget.ISlotWidget) slot).isHover()) {
                     setHoveredSlot(slot);
-                    ItemStack stack = slot.getStack();
-                    if (!stack.isEmpty()) {
-                        MultiblockInfoRecipeWrapper.setTooltipBlockStack(stack);
-                    }
                 }
             }
         }

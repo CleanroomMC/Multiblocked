@@ -48,6 +48,8 @@ public class ControllerDefinition extends ComponentDefinition {
     @ZenProperty
     public boolean consumeCatalyst;
     @ZenProperty
+    public boolean noNeedCatalyst; // if true and inValid, checking pattern per second
+    @ZenProperty
     public List<MultiblockShapeInfo> designs;
     @ZenProperty
     public boolean disableOthersRendering; // if true, only render controller, all other blocks of the multi do not render.
@@ -101,5 +103,10 @@ public class ControllerDefinition extends ComponentDefinition {
 
     public String getDescription() {
         return location.getPath() + ".description";
+    }
+
+    @Override
+    public boolean needUpdateTick() {
+        return super.needUpdateTick() || noNeedCatalyst;
     }
 }

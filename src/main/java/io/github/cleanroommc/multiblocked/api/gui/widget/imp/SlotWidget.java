@@ -1,12 +1,16 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp;
 
+import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
+import io.github.cleanroommc.multiblocked.api.gui.ingredient.IIngredientSlot;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiContainer;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
-import io.github.cleanroommc.multiblocked.jei.ModularWrapper;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -16,6 +20,8 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,7 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class SlotWidget extends Widget {
+public class SlotWidget extends Widget implements IIngredientSlot {
 
     protected final Slot slotReference;
     protected final boolean canTakeItems;
@@ -69,15 +75,7 @@ public class SlotWidget extends Widget {
     @Override
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
         super.drawInForeground(mouseX, mouseY, partialTicks);
-        if (isMouseOverElement(mouseX, mouseY) && isActive()) {
-            ItemStack stack = slotReference.getStack();
-            if (!stack.isEmpty()) {
-                ModularWrapper.setFocus(stack);
-            }
-            ((ISlotWidget) slotReference).setHover(true);
-        } else {
-            ((ISlotWidget) slotReference).setHover(false);
-        }
+        ((ISlotWidget) slotReference).setHover(isMouseOverElement(mouseX, mouseY) && isActive());
     }
 
     @Override
@@ -251,6 +249,25 @@ public class SlotWidget extends Widget {
             this.onAddedTooltips.accept(this, list);
         }
         return list;
+    }
+
+    @Override
+    public Object getIngredientOverMouse(int mouseX, int mouseY) {
+        if (isMouseOverElement(mouseX, mouseY)) {
+            ItemStack itemStack = getHandle().getStack();
+            if (itemStack.getItem() instanceof ItemBlock) {
+                Block block = ((ItemBlock) itemStack.getItem()).getBlock();
+                if (block instanceof BlockComponent) {
+                    if (((BlockComponent) block).definition.baseRenderer instanceof CycleBlockStateRenderer) {
+                        CycleBlockStateRenderer renderer = ((CycleBlockStateRenderer) ((BlockComponent) block).definition.baseRenderer);
+                        IBlockState blockState = renderer.states[Math.abs(renderer.index) % renderer.states.length];
+                        itemStack = new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState));
+                    }
+                }
+            }
+            return itemStack;
+        }
+        return null;
     }
 
     public interface ISlotWidget {

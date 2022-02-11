@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class AspectStackWidget extends ContentWidget<AspectStack>{
+public class AspectStackWidget extends ContentWidget<AspectStack> {
     @Override
     protected void onContentUpdate() {
 
@@ -42,4 +42,11 @@ public class AspectStackWidget extends ContentWidget<AspectStack>{
         }
     }
 
+    @Override
+    public Object getIngredientOverMouse(int mouseX, int mouseY) {
+        if (isMouseOverElement(mouseX, mouseY) && content != null) {
+            return content.toAspectList();
+        }
+        return null;
+    }
 }

@@ -5,7 +5,6 @@ import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import io.github.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
-import io.github.cleanroommc.multiblocked.jei.ModularWrapper;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
@@ -150,7 +149,6 @@ public class TankWidget extends Widget implements IIngredientSlot {
             }
 
             GlStateManager.color(1.0f, 1.0f, 1.0f);
-            ModularWrapper.setFocus(lastFluidInTank);
         }
     }
 

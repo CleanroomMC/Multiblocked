@@ -16,8 +16,6 @@ import java.io.IOException;
 public abstract class ModularWrapper implements IRecipeWrapper {
     protected final Widget widget;
     protected final JEIModularUIGuiContainer guiContainer;
-    private static long lastRender;
-    private static Object focus;
 
     public ModularWrapper(Widget widget, int width, int height) {
         ModularUI gui = new ModularUIBuilder(IGuiTexture.EMPTY, width, height)
@@ -34,7 +32,6 @@ public abstract class ModularWrapper implements IRecipeWrapper {
 
     @Override
     public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-        lastRender = System.currentTimeMillis();
         guiContainer.drawInfo(minecraft, mouseX, mouseY);
     }
 
@@ -46,14 +43,4 @@ public abstract class ModularWrapper implements IRecipeWrapper {
         }
     }
 
-    public static void setFocus(Object focus) {
-        ModularWrapper.focus = focus;
-    }
-
-    public static Object getFocus() {
-        if(lastRender > System.currentTimeMillis() - 100) {
-            return focus;
-        }
-        return null;
-    }
 }

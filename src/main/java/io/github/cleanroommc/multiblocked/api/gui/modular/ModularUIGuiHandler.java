@@ -62,9 +62,8 @@ public class ModularUIGuiHandler implements IAdvancedGuiHandler<ModularUIGuiCont
     @Nullable
     @Override
     public Object getIngredientUnderMouse(ModularUIGuiContainer gui, int mouseX, int mouseY) {
-        Collection<Widget> widgets = gui.modularUI.guiWidgets.values();
-        for (Widget widget : widgets) {
-            if (widget instanceof IIngredientSlot) {
+        for (Widget widget : gui.modularUI.guiWidgets.values()) {
+            if (widget instanceof IIngredientSlot && widget.isVisible()) {
                 Object result = ((IIngredientSlot) widget).getIngredientOverMouse(mouseX, mouseY);
                 if (result != null) {
                     return result;

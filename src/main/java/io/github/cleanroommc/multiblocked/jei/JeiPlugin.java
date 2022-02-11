@@ -94,7 +94,7 @@ public class JeiPlugin implements IModPlugin {
             inputHandlerField.setAccessible(true);
             InputHandler inputHandler = (InputHandler) inputHandlerField.get(null);
             List<IShowsRecipeFocuses> showsRecipeFocuses = ObfuscationReflectionHelper.getPrivateValue(InputHandler.class, inputHandler, "showsRecipeFocuses");
-            showsRecipeFocuses.add(new MultiblockInfoRecipeFocusShower());
+            showsRecipeFocuses.add(0, new MultiblockInfoRecipeFocusShower());
         } catch (Exception e) {
             e.printStackTrace();
         }

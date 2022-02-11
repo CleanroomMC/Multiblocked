@@ -7,6 +7,7 @@ import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.FluidContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import mekanism.common.base.FluidHandlerWrapper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -19,7 +20,7 @@ import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 
-public class FluidMultiblockCapability extends MultiblockCapability {
+public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
 
     public FluidMultiblockCapability() {
         super("fluid", new Color(0x3C70EE).getRGB());
@@ -31,19 +32,25 @@ public class FluidMultiblockCapability extends MultiblockCapability {
     }
 
     @Override
+    public FluidStack copyInner(FluidStack content) {
+        return content.copy();
+    }
+
+
+    @Override
     public FluidCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new FluidCapabilityProxy(tileEntity);
     }
 
     @Override
-    public ContentWidget<?> createContentWidget() {
+    public ContentWidget<? super FluidStack> createContentWidget() {
         return new FluidContentWidget();
     }
 
     public static class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {
 
         public FluidCapabilityProxy(TileEntity tileEntity) {
-            super(tileEntity);
+            super(MultiblockCapabilities.FLUID, tileEntity);
         }
 
         public IFluidHandler getCapability() {
@@ -53,11 +60,6 @@ public class FluidMultiblockCapability extends MultiblockCapability {
                 return getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
             }
             return fluidHandler;
-        }
-
-        @Override
-        public FluidStack copyInner(FluidStack content) {
-            return content.copy();
         }
 
         @Override

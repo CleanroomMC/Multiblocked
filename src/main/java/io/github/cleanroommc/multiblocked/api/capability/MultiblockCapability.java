@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @ZenClass("mods.multiblocked.capability.capability")
 @ZenRegister
-public abstract class MultiblockCapability {
+public abstract class MultiblockCapability<T> {
     @SideOnly(Side.CLIENT)
     private EnumMap<IO, IBlockState[]> scannedStates;
     @ZenProperty
@@ -52,14 +52,19 @@ public abstract class MultiblockCapability {
     public abstract boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity);
 
     /**
+     * deep copy of this content. recipe need it for searching and such things
+     */
+    public abstract T copyInner(T content);
+    
+    /**
      * create a proxy of this block.
      */
-    public abstract CapabilityProxy<?> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity);
+    public abstract CapabilityProxy<? extends T> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity);
 
     /**
      * Create a Widget of given contents
      */
-    public ContentWidget<?> createContentWidget() {
+    public ContentWidget<? super T> createContentWidget() {
         return new ContentWidget<Object>() {
             @Override
             protected void onContentUpdate() {

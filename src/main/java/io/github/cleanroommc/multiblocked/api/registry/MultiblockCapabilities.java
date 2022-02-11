@@ -14,15 +14,15 @@ import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapabilit
 import java.util.Map;
 
 public class MultiblockCapabilities {
-    public static MultiblockCapability FE;
+    public static FEMultiblockCapability FE;
 
-    public static MultiblockCapability ITEM;
+    public static ItemMultiblockCapability ITEM;
 
-    public static MultiblockCapability FLUID;
+    public static FluidMultiblockCapability FLUID;
 
-    private static final Map<String, MultiblockCapability> CAPABILITY_REGISTRY = Maps.newHashMap();
+    private static final Map<String, MultiblockCapability<?>> CAPABILITY_REGISTRY = Maps.newHashMap();
 
-    public static void registerCapability(MultiblockCapability capability) {
+    public static void registerCapability(MultiblockCapability<?> capability) {
         CAPABILITY_REGISTRY.put(capability.name, capability);
     }
 
@@ -42,7 +42,7 @@ public class MultiblockCapabilities {
         }
     }
 
-    public static MultiblockCapability get(String s) {
+    public static MultiblockCapability<?> get(String s) {
         return CAPABILITY_REGISTRY.get(s);
     }
 }

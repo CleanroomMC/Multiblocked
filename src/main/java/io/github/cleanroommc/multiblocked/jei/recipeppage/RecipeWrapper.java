@@ -1,10 +1,14 @@
 package io.github.cleanroommc.multiblocked.jei.recipeppage;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
+import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import io.github.cleanroommc.multiblocked.jei.ModularWrapper;
+import io.github.cleanroommc.multiblocked.jei.ingredient.AspectListIngredient;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import net.minecraftforge.fluids.FluidStack;
@@ -47,6 +51,21 @@ public class RecipeWrapper extends ModularWrapper {
             ingredients.setOutputs(VanillaTypes.FLUID, recipe.outputs.get(MultiblockCapabilities.FLUID).stream()
                     .map(FluidStack.class::cast)
                     .collect(Collectors.toList()));
+        }
+
+        if (Multiblocked.isModLoaded("thaumcraft")) {
+            if (recipe.inputs.containsKey(AspectThaumcraftCapability.CAP)) {
+                ingredients.setInputs(AspectListIngredient.INSTANCE, recipe.inputs.get(AspectThaumcraftCapability.CAP).stream()
+                        .map(AspectStack.class::cast)
+                        .map(AspectStack::toAspectList)
+                        .collect(Collectors.toList()));
+            }
+            if (recipe.outputs.containsKey(AspectThaumcraftCapability.CAP)) {
+                ingredients.setInputs(AspectListIngredient.INSTANCE, recipe.outputs.get(AspectThaumcraftCapability.CAP).stream()
+                        .map(AspectStack.class::cast)
+                        .map(AspectStack::toAspectList)
+                        .collect(Collectors.toList()));
+            }
         }
     }
 }

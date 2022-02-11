@@ -15,7 +15,7 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
-public class ManaBotainaCapability extends MultiblockCapability {
+public class ManaBotainaCapability extends MultiblockCapability<Integer> {
     public static final ManaBotainaCapability CAP = new ManaBotainaCapability();
 
     private ManaBotainaCapability() {
@@ -28,19 +28,24 @@ public class ManaBotainaCapability extends MultiblockCapability {
     }
 
     @Override
+    public Integer copyInner(Integer content) {
+        return content;
+    }
+
+    @Override
     public ManaBotainaCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new ManaBotainaCapabilityProxy(tileEntity);
     }
 
     @Override
-    public ContentWidget<?> createContentWidget() {
+    public ContentWidget<? super Integer> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new ColorRectTexture(this.color)).setUnit("mana");
     }
 
     public static class ManaBotainaCapabilityProxy extends CapabilityProxy<Integer> {
 
         public ManaBotainaCapabilityProxy(TileEntity tileEntity) {
-            super(tileEntity);
+            super(ManaBotainaCapability.CAP, tileEntity);
         }
 
         public IManaReceiver getCapability() {
@@ -70,9 +75,5 @@ public class ManaBotainaCapability extends MultiblockCapability {
             return sum <= 0 ? null : Collections.singletonList(sum);
         }
 
-        @Override
-        protected Integer copyInner(Integer content) {
-            return content;
-        }
     }
 }

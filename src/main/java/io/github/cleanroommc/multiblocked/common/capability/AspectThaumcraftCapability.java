@@ -3,6 +3,8 @@ package io.github.cleanroommc.multiblocked.common.capability;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.AspectStackWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import net.minecraft.tileentity.TileEntity;
@@ -15,7 +17,7 @@ import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 
-public class AspectThaumcraftCapability extends MultiblockCapability {
+public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack> {
     public static final AspectThaumcraftCapability CAP = new AspectThaumcraftCapability();
 
     private AspectThaumcraftCapability() {
@@ -32,10 +34,20 @@ public class AspectThaumcraftCapability extends MultiblockCapability {
         return new AspectThaumcraftCapabilityProxy(tileEntity);
     }
 
+    @Override
+    public AspectStack copyInner(AspectStack content) {
+        return content.copy();
+    }
+
+    @Override
+    public ContentWidget<AspectStack> createContentWidget() {
+        return new AspectStackWidget();
+    }
+
     public static class AspectThaumcraftCapabilityProxy extends CapabilityProxy<AspectStack> {
 
         public AspectThaumcraftCapabilityProxy(TileEntity tileEntity) {
-            super(tileEntity);
+            super(AspectThaumcraftCapability.CAP, tileEntity);
         }
 
         public IAspectContainer getCapability() {
@@ -81,9 +93,5 @@ public class AspectThaumcraftCapability extends MultiblockCapability {
             return left.isEmpty() ? null : left;
         }
 
-        @Override
-        protected AspectStack copyInner(AspectStack content) {
-            return content.copy();
-        }
     }
 }

@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.common.recipe.content;
 
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 
 public class AspectStack {
     public Aspect aspect;
@@ -13,5 +14,11 @@ public class AspectStack {
 
     public AspectStack copy() {
         return new AspectStack(aspect, amount);
+    }
+
+    public AspectList toAspectList() {
+        AspectList list = new AspectList();
+        list.add(aspect, amount);
+        return list;
     }
 }

@@ -4,6 +4,7 @@ import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiHandler;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
+import io.github.cleanroommc.multiblocked.jei.ingredient.AspectListIngredient;
 import io.github.cleanroommc.multiblocked.jei.multipage.*;
 import io.github.cleanroommc.multiblocked.jei.recipeppage.RecipeMapCategory;
 import io.github.cleanroommc.multiblocked.jei.recipeppage.RecipeWrapper;
@@ -13,6 +14,7 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
@@ -77,6 +79,13 @@ public class JeiPlugin implements IModPlugin {
                     Multiblocked.MODID + ":" + recipeMap.name);
         }
         MultiblockInfoCategory.registerRecipes(registry);
+    }
+
+    @Override
+    public void registerIngredients(@Nonnull IModIngredientRegistration registry) {
+        if (Multiblocked.isModLoaded("thaumcraft") && !Multiblocked.isModLoaded("thaumicjei")) {
+            AspectListIngredient.INSTANCE.registerIngredients(registry);
+        }
     }
 
     public static void setupInputHandler() {

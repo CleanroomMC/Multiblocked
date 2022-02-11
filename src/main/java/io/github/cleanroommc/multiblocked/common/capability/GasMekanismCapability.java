@@ -15,7 +15,7 @@ import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 
-public class GasMekanismCapability extends MultiblockCapability {
+public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     public static final GasMekanismCapability CAP = new GasMekanismCapability();
 
     private GasMekanismCapability() {
@@ -28,6 +28,11 @@ public class GasMekanismCapability extends MultiblockCapability {
     }
 
     @Override
+    public GasStack copyInner(GasStack content) {
+        return content.copy();
+    }
+
+    @Override
     public GasMekanismCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new GasMekanismCapabilityProxy(tileEntity);
     }
@@ -35,7 +40,7 @@ public class GasMekanismCapability extends MultiblockCapability {
     public static class GasMekanismCapabilityProxy extends CapabilityProxy<GasStack> {
 
         public GasMekanismCapabilityProxy(TileEntity tileEntity) {
-            super(tileEntity);
+            super(GasMekanismCapability.CAP, tileEntity);
         }
 
         public IGasHandler getCapability() {
@@ -79,9 +84,5 @@ public class GasMekanismCapability extends MultiblockCapability {
             return left.isEmpty() ? null : left;
         }
 
-        @Override
-        protected GasStack copyInner(GasStack content) {
-            return content.copy();
-        }
     }
 }

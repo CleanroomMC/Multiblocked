@@ -22,7 +22,7 @@ public class RecipeMapCategory implements IRecipeCategory<ModularWrapper> {
 
     public RecipeMapCategory(IJeiHelpers helpers, RecipeMap recipeMap) {
         IGuiHelper guiHelper = helpers.getGuiHelper();
-        this.background = guiHelper.createBlankDrawable(176, 166);
+        this.background = guiHelper.createBlankDrawable(176, 100);
         this.icon = guiHelper.drawableBuilder(new ResourceLocation(Multiblocked.MODID, "textures/test/d.png"), 0, 0, 18, 18).setTextureSize(18, 18).build();
         this.recipeMap = recipeMap;
     }

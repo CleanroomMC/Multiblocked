@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.util.List;
 
-public class HeatMekanismCapability extends MultiblockCapability {
+public class HeatMekanismCapability extends MultiblockCapability<Double> {
     public static final HeatMekanismCapability CAP = new HeatMekanismCapability();
 
     private HeatMekanismCapability() {
@@ -28,19 +28,24 @@ public class HeatMekanismCapability extends MultiblockCapability {
     }
 
     @Override
+    public Double copyInner(Double content) {
+        return content;
+    }
+
+    @Override
     public HeatMekanismCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new HeatMekanismCapabilityProxy(tileEntity);
     }
 
     @Override
-    public ContentWidget<?> createContentWidget() {
+    public ContentWidget<? super Double> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new ColorRectTexture(this.color)).setUnit("Heat");
     }
 
     public static class HeatMekanismCapabilityProxy extends CapabilityProxy<Double> {
 
         public HeatMekanismCapabilityProxy(TileEntity tileEntity) {
-            super(tileEntity);
+            super(HeatMekanismCapability.CAP, tileEntity);
         }
 
         public IHeatTransfer getCapability() {
@@ -64,9 +69,5 @@ public class HeatMekanismCapability extends MultiblockCapability {
             return null;
         }
 
-        @Override
-        protected Double copyInner(Double content) {
-            return content;
-        }
     }
 }

@@ -10,9 +10,12 @@ import java.util.stream.Collectors;
  * The Proxy of a specific capability that has been detected {@link MultiblockCapability}. Providing I/O and such features to a controller.
  */
 public abstract class CapabilityProxy<K> {
+    public final MultiblockCapability<? super K> capability;
+
     private TileEntity tileEntity;
 
-    public CapabilityProxy(TileEntity tileEntity) {
+    public CapabilityProxy(MultiblockCapability<? super K> capability, TileEntity tileEntity) {
+        this.capability = capability;
         this.tileEntity = tileEntity;
     }
 
@@ -36,15 +39,9 @@ public abstract class CapabilityProxy<K> {
      */
     protected abstract List<K> handleRecipeInner(IO io, Recipe recipe, List<K> left, boolean simulate);
 
-
-    /**
-     * deep copy of this content. recipe need it for searching and such things
-     */
-    protected abstract K copyInner(K content);
-
     @SuppressWarnings("unchecked")
     public final K copyContent(Object content) {
-        return copyInner((K) content);
+        return (K) capability.copyInner((K)content);
     }
 
     public final List<K> searchingRecipe(IO io, Recipe recipe, List<?> left) {

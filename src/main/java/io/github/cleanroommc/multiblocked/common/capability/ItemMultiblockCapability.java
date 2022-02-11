@@ -7,6 +7,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.Cont
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ItemsContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -17,7 +18,7 @@ import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 
-public class ItemMultiblockCapability extends MultiblockCapability {
+public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredient> {
 
     public ItemMultiblockCapability() {
         super("item", new Color(0xD96106).getRGB());
@@ -29,28 +30,28 @@ public class ItemMultiblockCapability extends MultiblockCapability {
     }
 
     @Override
+    public ItemsIngredient copyInner(ItemsIngredient content) {
+        return content.copy();
+    }
+
+    @Override
     public ItemCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new ItemCapabilityProxy(tileEntity);
     }
 
     @Override
-    public ContentWidget<?> createContentWidget() {
+    public ContentWidget<? super ItemsIngredient> createContentWidget() {
         return new ItemsContentWidget();
     }
 
     public static class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {
 
         public ItemCapabilityProxy(TileEntity tileEntity) {
-            super(tileEntity);
+            super(MultiblockCapabilities.ITEM, tileEntity);
         }
 
         public IItemHandler getCapability() {
             return getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-        }
-
-        @Override
-        public ItemsIngredient copyInner(ItemsIngredient content) {
-            return content.copy();
         }
 
         @Override

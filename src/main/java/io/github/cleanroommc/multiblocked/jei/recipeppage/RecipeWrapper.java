@@ -6,9 +6,12 @@ import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
+import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import io.github.cleanroommc.multiblocked.jei.ModularWrapper;
 import io.github.cleanroommc.multiblocked.jei.ingredient.AspectListIngredient;
+import mekanism.api.gas.GasStack;
+import mekanism.client.jei.MekanismJEI;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import net.minecraftforge.fluids.FluidStack;
@@ -22,7 +25,7 @@ public class RecipeWrapper extends ModularWrapper {
     public final Recipe recipe;
 
     public RecipeWrapper(RecipeWidget widget) {
-        super(widget, 176, 166);
+        super(widget, 176, 100);
         recipe = widget.recipe;
     }
 
@@ -61,9 +64,22 @@ public class RecipeWrapper extends ModularWrapper {
                         .collect(Collectors.toList()));
             }
             if (recipe.outputs.containsKey(AspectThaumcraftCapability.CAP)) {
-                ingredients.setInputs(AspectListIngredient.INSTANCE, recipe.outputs.get(AspectThaumcraftCapability.CAP).stream()
+                ingredients.setOutputs(AspectListIngredient.INSTANCE, recipe.outputs.get(AspectThaumcraftCapability.CAP).stream()
                         .map(AspectStack.class::cast)
                         .map(AspectStack::toAspectList)
+                        .collect(Collectors.toList()));
+            }
+        }
+
+        if (Multiblocked.isModLoaded("mekanism")) {
+            if (recipe.inputs.containsKey(GasMekanismCapability.CAP)) {
+                ingredients.setInputs(MekanismJEI.TYPE_GAS, recipe.inputs.get(GasMekanismCapability.CAP).stream()
+                        .map(GasStack.class::cast)
+                        .collect(Collectors.toList()));
+            }
+            if (recipe.outputs.containsKey(GasMekanismCapability.CAP)) {
+                ingredients.setOutputs(MekanismJEI.TYPE_GAS, recipe.outputs.get(GasMekanismCapability.CAP).stream()
+                        .map(GasStack.class::cast)
                         .collect(Collectors.toList()));
             }
         }

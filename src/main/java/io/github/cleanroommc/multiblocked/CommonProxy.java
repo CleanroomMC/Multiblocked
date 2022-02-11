@@ -15,10 +15,14 @@ import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRendere
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
+import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
+import io.github.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import mekanism.api.gas.GasRegistry;
+import mekanism.api.gas.GasStack;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -84,20 +88,28 @@ public class CommonProxy {
                 .outputAspects(new AspectStack(Aspect.AURA, 50))
                 .duration(60) // 60 tick -> 3s
                 .buildAndRegister();
+        recipeMap.start()
+                .inputGas(new GasStack(GasRegistry.getGas(0), 150))
+                .inputAspects(new AspectStack(Aspect.AURA, 50))
+                .outputHeat(100)
+                .duration(60) // 60 tick -> 3s
+                .buildAndRegister();
         // create a controller component.
         ControllerDefinition controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test_block"), recipeMap);
         controllerDefinition.basePattern = FactoryBlockPattern.start()
                 .aisle("TXX", "   ")
-                .aisle("C#A", " P ")
+                .aisle("C#A", "QPW")
                 .aisle("BYD", "   ")
                 .where(' ', any())
                 .where('P', partDefinition.selfPredicate())
                 .where('X', blocks(Blocks.STONE))
                 .where('#', air())
+                .where('Q', anyCapability(IO.IN, GasMekanismCapability.CAP))
+                .where('W', anyCapability(IO.OUT, HeatMekanismCapability.CAP))
                 .where('A', anyCapability(IO.IN, MultiblockCapabilities.ITEM)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('T', anyCapability(IO.IN, MultiblockCapabilities.FLUID)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('B', anyCapability(IO.OUT, ManaBotainaCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
-                .where('D', anyCapability(IO.OUT, AspectThaumcraftCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
+                .where('D', anyCapability(IO.BOTH, AspectThaumcraftCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('C', blocks(Blocks.CHEST)) // tho not define a specific Capability here. it will still be detected according to the recipeMap, so will create a proxy of the BOTH-Item-Capability here. (item in/outputBus)
                 .where('Y', controllerDefinition.selfPredicate(true))
                 .build();

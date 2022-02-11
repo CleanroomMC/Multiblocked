@@ -53,7 +53,7 @@ public class RecipePage extends PageWidget{
             if (recipeWidget != null) {
                 removeWidget(recipeWidget);
             }
-            this.addWidget(recipeWidget = new RecipeWidget(recipe));
+            this.addWidget(recipeWidget = new RecipeWidget(recipe, ()->controller.recipeLogic.progress * 1.0 / controller.recipeLogic.duration, controller.getDefinition().recipeMap.getProgressTexture()));
             recipeWidget.setSelfPosition(new Position(0, 30));
         } else {
             if (recipeWidget != null) {

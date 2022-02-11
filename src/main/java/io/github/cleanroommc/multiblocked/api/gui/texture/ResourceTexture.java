@@ -55,5 +55,23 @@ public class ResourceTexture implements IGuiTexture {
         bufferbuilder.pos(x, y, 0.0D).tex(imageU, imageV).endVertex();
         tessellator.draw();
     }
+    
+    @SideOnly(Side.CLIENT)
+    public void drawSubArea(double x, double y, int width, int height, double drawnU, double drawnV, double drawnWidth, double drawnHeight) {
+        //sub area is just different width and height
+        double imageU = this.offsetX + (this.imageWidth * drawnU);
+        double imageV = this.offsetY + (this.imageHeight * drawnV);
+        double imageWidth = this.imageWidth * drawnWidth;
+        double imageHeight = this.imageHeight * drawnHeight;
+        Minecraft.getMinecraft().renderEngine.bindTexture(imageLocation);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos(x, y + height, 0.0D).tex(imageU, imageV + imageHeight).endVertex();
+        bufferbuilder.pos(x + width, y + height, 0.0D).tex(imageU + imageWidth, imageV + imageHeight).endVertex();
+        bufferbuilder.pos(x + width, y, 0.0D).tex(imageU + imageWidth, imageV).endVertex();
+        bufferbuilder.pos(x, y, 0.0D).tex(imageU, imageV).endVertex();
+        tessellator.draw();
+    }
 
 }

@@ -26,7 +26,7 @@ public class NumberContentWidget extends ContentWidget<Number>{
     @Override
     protected void onContentUpdate() {
         isDecimal = content instanceof Float || content instanceof Double;
-        this.setHoverTooltip(content + unit);
+        this.setHoverTooltip(content + " " + unit);
     }
 
     @Override

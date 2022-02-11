@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import io.github.cleanroommc.multiblocked.util.Position;
@@ -8,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -15,7 +17,9 @@ import java.awt.*;
 public class AspectStackWidget extends ContentWidget<AspectStack> {
     @Override
     protected void onContentUpdate() {
-
+        if (Multiblocked.isClient() && content != null) {
+            this.setHoverTooltip(TextFormatting.AQUA + content.aspect.getLocalizedDescription() + "\nAmount: " + TextFormatting.YELLOW + content.amount);
+        }
     }
 
     @Override

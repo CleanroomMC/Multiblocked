@@ -90,8 +90,8 @@ public class BlockPattern {
         }
         BlockPos centerPos = worldState.getController().getPos();
         EnumFacing facing = worldState.getController().getFrontFacing().getOpposite();
-        Set<MultiblockCapability> inputCapabilities = worldState.getController().getDefinition().recipeMap.inputCapabilities;
-        Set<MultiblockCapability> outputCapabilities = worldState.getController().getDefinition().recipeMap.outputCapabilities;
+        Set<MultiblockCapability<?>> inputCapabilities = worldState.getController().getDefinition().recipeMap.inputCapabilities;
+        Set<MultiblockCapability<?>> outputCapabilities = worldState.getController().getDefinition().recipeMap.outputCapabilities;
         //Checking aisles
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             //Checking repeatable slices
@@ -141,11 +141,11 @@ public class BlockPattern {
                             continue loop;
                         }
                         if (tileEntity != null && predicate != TraceabilityPredicate.ANY) {
-                            Map<Long, EnumMap<IO, Set<MultiblockCapability>>> capabilities = worldState.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
+                            Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilities = worldState.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
                             if (!capabilities.containsKey(worldState.getPos().toLong())) {
                                 // if predicate has no specific capability requirements. we will check abilities of every blocks
-                                Set<MultiblockCapability> bothFound = new HashSet<>();
-                                for (MultiblockCapability capability : inputCapabilities) { // IN
+                                Set<MultiblockCapability<?>> bothFound = new HashSet<>();
+                                for (MultiblockCapability<?> capability : inputCapabilities) { // IN
                                     if (outputCapabilities.contains(capability) && capability.isBlockHasCapability(IO.BOTH, tileEntity)) {
                                         bothFound.add(capability);
                                         capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
@@ -157,7 +157,7 @@ public class BlockPattern {
                                                 .add(capability);
                                     }
                                 }
-                                for (MultiblockCapability capability : outputCapabilities) { // OUT
+                                for (MultiblockCapability<?> capability : outputCapabilities) { // OUT
                                     if (!bothFound.contains(capability) && capability.isBlockHasCapability(IO.OUT, tileEntity)) {
                                         capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
                                                 .computeIfAbsent(IO.OUT, xx->new HashSet<>())

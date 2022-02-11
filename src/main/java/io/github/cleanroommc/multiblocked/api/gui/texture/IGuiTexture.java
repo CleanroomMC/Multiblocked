@@ -12,4 +12,8 @@ public interface IGuiTexture {
     default void updateTick() { }
     
     IGuiTexture EMPTY = (mouseX, mouseY, x, y, width, height) -> {};
+
+    default void drawSubArea(double x, double y, int width, int height, double drawnU, double drawnV, double drawnWidth, double drawnHeight) {
+        draw(x, y, width, height);
+    }
 }

@@ -3,6 +3,8 @@ package io.github.cleanroommc.multiblocked.common.capability;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.GasStackWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import mekanism.api.gas.GasStack;
 import mekanism.api.gas.IGasHandler;
@@ -35,6 +37,11 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     @Override
     public GasMekanismCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new GasMekanismCapabilityProxy(tileEntity);
+    }
+
+    @Override
+    public ContentWidget<? super GasStack> createContentWidget() {
+        return new GasStackWidget();
     }
 
     public static class GasMekanismCapabilityProxy extends CapabilityProxy<GasStack> {

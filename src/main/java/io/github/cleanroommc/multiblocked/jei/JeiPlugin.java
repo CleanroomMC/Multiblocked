@@ -73,7 +73,7 @@ public class JeiPlugin implements IModPlugin {
         registry.getRecipeTransferRegistry().addRecipeTransferHandler(modularUIGuiHandler, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
         for (RecipeMap recipeMap : RecipeMap.RECIPE_MAP_REGISTRY.values()) {
             registry.addRecipes(recipeMap.recipes.values().stream()
-                            .map(RecipeWidget::new)
+                            .map(recipe -> new RecipeWidget(recipe, recipeMap.getProgressTexture()))
                             .map(RecipeWrapper::new)
                             .collect(Collectors.toList()),
                     Multiblocked.MODID + ":" + recipeMap.name);

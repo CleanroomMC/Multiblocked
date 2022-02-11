@@ -20,13 +20,13 @@ import java.util.Map;
 public class Recipe {
     @ZenProperty
     public final String uid;
-    public final ImmutableMap<MultiblockCapability, ImmutableList<Object>> inputs;
-    public final ImmutableMap<MultiblockCapability, ImmutableList<Object>> outputs;
+    public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Object>> inputs;
+    public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Object>> outputs;
     public final int duration;
 
     public Recipe(String uid,
-                  ImmutableMap<MultiblockCapability, ImmutableList<Object>> inputs,
-                  ImmutableMap<MultiblockCapability, ImmutableList<Object>> outputs,
+                  ImmutableMap<MultiblockCapability<?>, ImmutableList<Object>> inputs,
+                  ImmutableMap<MultiblockCapability<?>, ImmutableList<Object>> outputs,
                   int duration) {
         this.uid = uid;
         this.inputs = inputs;
@@ -40,13 +40,13 @@ public class Recipe {
      * @param capabilityProxies proxies
      * @return result
      */
-    public boolean match(Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
+    public boolean match(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
         if (!match(IO.IN, capabilityProxies)) return false;
         return match(IO.OUT, capabilityProxies);
     }
 
-    private boolean match(IO io, Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
-        for (Map.Entry<MultiblockCapability, ImmutableList<Object>> entry : io == IO.IN ? inputs.entrySet() : outputs.entrySet()) {
+    private boolean match(IO io, Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : io == IO.IN ? inputs.entrySet() : outputs.entrySet()) {
             List<?> content = entry.getValue();
             if (capabilityProxies.contains(io, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey()).values()) { // search same io type
@@ -66,8 +66,8 @@ public class Recipe {
         return true;
     }
 
-    public void handleInput(Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
-        for (Map.Entry<MultiblockCapability, ImmutableList<Object>> entry : inputs.entrySet()) {
+    public void handleInput(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : inputs.entrySet()) {
             List<?> content = entry.getValue();
             if (capabilityProxies.contains(IO.IN, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.IN, entry.getKey()).values()) { // search same io type
@@ -85,8 +85,8 @@ public class Recipe {
         }
     }
 
-    public void handleOutput(Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
-        for (Map.Entry<MultiblockCapability, ImmutableList<Object>> entry : outputs.entrySet()) {
+    public void handleOutput(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : outputs.entrySet()) {
             List<?> content = entry.getValue();
             if (capabilityProxies.contains(IO.OUT, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.OUT, entry.getKey()).values()) { // search same io type

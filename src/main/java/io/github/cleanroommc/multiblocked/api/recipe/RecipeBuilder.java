@@ -25,8 +25,8 @@ import java.util.Map;
 public class RecipeBuilder {
 
     private final RecipeMap recipeMap;
-    private final Map<MultiblockCapability, ImmutableList.Builder<Object>> inputBuilder = new HashMap<>();
-    private final Map<MultiblockCapability, ImmutableList.Builder<Object>> outputBuilder = new HashMap<>();
+    private final Map<MultiblockCapability<?>, ImmutableList.Builder<Object>> inputBuilder = new HashMap<>();
+    private final Map<MultiblockCapability<?>, ImmutableList.Builder<Object>> outputBuilder = new HashMap<>();
     int duration;
     private StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name himself.
 
@@ -43,12 +43,12 @@ public class RecipeBuilder {
         return copy;
     }
 
-    public RecipeBuilder input(MultiblockCapability capability, Object... obj) {
+    public RecipeBuilder input(MultiblockCapability<?> capability, Object... obj) {
         inputBuilder.computeIfAbsent(capability, c -> ImmutableList.builder()).add(obj);
         return this;
     }
 
-    public RecipeBuilder output(MultiblockCapability capability, Object... obj) {
+    public RecipeBuilder output(MultiblockCapability<?> capability, Object... obj) {
         outputBuilder.computeIfAbsent(capability, c -> ImmutableList.builder()).add(obj);
         return this;
     }
@@ -161,12 +161,12 @@ public class RecipeBuilder {
     }
 
     public Recipe build() {
-        ImmutableMap.Builder<MultiblockCapability, ImmutableList<Object>> inputBuilder = new ImmutableMap.Builder<>();
-        for (Map.Entry<MultiblockCapability, ImmutableList.Builder<Object>> entry : this.inputBuilder.entrySet()) {
+        ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Object>> inputBuilder = new ImmutableMap.Builder<>();
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Object>> entry : this.inputBuilder.entrySet()) {
             inputBuilder.put(entry.getKey(), entry.getValue().build());
         }
-        ImmutableMap.Builder<MultiblockCapability, ImmutableList<Object>> outputBuilder = new ImmutableMap.Builder<>();
-        for (Map.Entry<MultiblockCapability, ImmutableList.Builder<Object>> entry : this.outputBuilder.entrySet()) {
+        ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Object>> outputBuilder = new ImmutableMap.Builder<>();
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Object>> entry : this.outputBuilder.entrySet()) {
             outputBuilder.put(entry.getKey(), entry.getValue().build());
         }
 

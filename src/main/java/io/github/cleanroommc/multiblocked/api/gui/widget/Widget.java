@@ -184,7 +184,7 @@ public class Widget {
     @SideOnly(Side.CLIENT)
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
         if (tooltipText != null && gui != null && isMouseOverElement(mouseX, mouseY)) {
-            List<String> hoverList = Arrays.asList(I18n.format(tooltipText).split("/n"));
+            List<String> hoverList = Arrays.asList(I18n.format(tooltipText).split("\n"));
             DrawerHelper.drawHoveringText(ItemStack.EMPTY, hoverList, 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
         }
     }

@@ -61,8 +61,8 @@ import java.util.stream.Collectors;
 @ZenRegister
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
     public MultiblockState state;
-    protected Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
-    private Map<Long, Map<MultiblockCapability, IO>> settings;
+    protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
+    private Map<Long, Map<MultiblockCapability<?>, IO>> settings;
     protected LongOpenHashSet parts;
     @ZenProperty
     public RecipeLogic recipeLogic;
@@ -115,7 +115,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         }
     }
 
-    public Table<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
+    public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
         return capabilities;
     }
 
@@ -125,18 +125,18 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public void onStructureFormed() {
         recipeLogic = new RecipeLogic(this);
         // init capabilities
-        Map<Long, EnumMap<IO, Set<MultiblockCapability>>> capabilityMap = state.getMatchContext().get("capabilities");
+        Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap = state.getMatchContext().get("capabilities");
         if (capabilityMap != null) {
             capabilities = Tables.newCustomTable(new EnumMap<>(IO.class), Object2ObjectOpenHashMap::new);
-            for (Map.Entry<Long, EnumMap<IO, Set<MultiblockCapability>>> entry : capabilityMap.entrySet()) {
+            for (Map.Entry<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> entry : capabilityMap.entrySet()) {
                 TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(entry.getKey()));
                 if (tileEntity != null) {
                     if (settings != null) {
-                        Map<MultiblockCapability, IO> caps = settings.get(entry.getKey());
+                        Map<MultiblockCapability<?>, IO> caps = settings.get(entry.getKey());
                         if (caps != null) {
-                            for (Map.Entry<MultiblockCapability, IO> ioEntry : caps.entrySet()) {
+                            for (Map.Entry<MultiblockCapability<?>, IO> ioEntry : caps.entrySet()) {
                                 IO io = ioEntry.getValue();
-                                MultiblockCapability capability = ioEntry.getKey();
+                                MultiblockCapability<?> capability = ioEntry.getKey();
                                 if (io == null) continue;
                                 if (!capabilities.contains(io, capability)) {
                                     capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
@@ -146,7 +146,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                         }
                     } else {
                         entry.getValue().forEach((io,set)->{
-                            for (MultiblockCapability capability : set) {
+                            for (MultiblockCapability<?> capability : set) {
                                 if (capability.isBlockHasCapability(io, tileEntity)) {
                                     if (!capabilities.contains(io, capability)) {
                                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
@@ -279,9 +279,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (recipeLogic != null) compound.setTag("recipeLogic", recipeLogic.writeToNBT(new NBTTagCompound()));
         if (capabilities != null) {
             NBTTagList tagList = new NBTTagList();
-            for (Table.Cell<IO, MultiblockCapability, Long2ObjectOpenHashMap<CapabilityProxy<?>>> cell : capabilities.cellSet()) {
+            for (Table.Cell<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> cell : capabilities.cellSet()) {
                 IO io = cell.getRowKey();
-                MultiblockCapability cap = cell.getColumnKey();
+                MultiblockCapability<?> cap = cell.getColumnKey();
                 Long2ObjectOpenHashMap<CapabilityProxy<?>> value = cell.getValue();
                 if (io != null && cap != null && value != null) {
                     for (long posLong : value.keySet()) {

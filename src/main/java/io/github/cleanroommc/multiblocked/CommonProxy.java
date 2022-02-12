@@ -5,6 +5,7 @@ import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
@@ -76,7 +77,6 @@ public class CommonProxy {
         partDefinition.baseRenderer = new BlockStateRenderer(Blocks.BEDROCK.getDefaultState());
         partDefinition.isOpaqueCube = false;
         partDefinition.allowRotate = false;
-        MultiblockComponents.registerComponent(partDefinition);
 
         // create a recipeMap.
         RecipeMap recipeMap = new RecipeMap("test_recipe_map");
@@ -118,15 +118,14 @@ public class CommonProxy {
         controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"))
                 .setRenderLayer(BlockRenderLayer.CUTOUT_MIPPED, true);
         controllerDefinition.isOpaqueCube = false;
-//        controllerDefinition.disableOthersRendering = true;
-        MultiblockComponents.registerComponent(controllerDefinition);
+        recipeMap.categoryTexture = new ItemStackTexture(controllerDefinition.getStackForm());
 
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        IForgeRegistry<Block> registry = event.getRegistry();
         registerComponents();
+        IForgeRegistry<Block> registry = event.getRegistry();
         MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.values().forEach(registry::register);
         MultiblockComponents.registerTileEntity();
     }
@@ -134,17 +133,7 @@ public class CommonProxy {
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
-        for (BlockComponent block : MultiblockComponents.COMPONENT_BLOCKS_REGISTRY
-                .values()) {
-            registry.register(createItemBlock(block, ItemComponent::new));
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private static <T extends Block> ItemBlock createItemBlock(T block, Function<T, ItemBlock> producer) {
-        ItemBlock itemBlock = producer.apply(block);
-        itemBlock.setRegistryName(block.getRegistryName());
-        return itemBlock;
+        MultiblockComponents.COMPONENT_ITEMS_REGISTRY.values().forEach(registry::register);
     }
 
 }

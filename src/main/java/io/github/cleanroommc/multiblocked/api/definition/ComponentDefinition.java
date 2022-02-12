@@ -74,6 +74,7 @@ public class ComponentDefinition {
         this.allowRotate = true;
         baseAABB = new EnumMap<>(EnumFacing.class);
         formedAABB = new EnumMap<>(EnumFacing.class);
+        MultiblockComponents.registerComponent(this);
     }
 
     public ComponentTileEntity<?> createNewTileEntity(World world){
@@ -100,7 +101,7 @@ public class ComponentDefinition {
     }
 
     public ItemStack getStackForm() {
-        return new ItemStack(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location), 1);
+        return new ItemStack(MultiblockComponents.COMPONENT_ITEMS_REGISTRY.get(location), 1);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_CT)

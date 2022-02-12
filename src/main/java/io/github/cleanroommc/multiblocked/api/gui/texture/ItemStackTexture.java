@@ -12,17 +12,14 @@ public class ItemStackTexture implements IGuiTexture{
     private int index = 0;
     private int ticks = 0;
 
-    public ItemStackTexture(ItemStack stack, ItemStack... itemStack) {
-        this.itemStack = new ItemStack[itemStack.length + 1];
-        this.itemStack[0] = stack;
-        System.arraycopy(itemStack, 0, this.itemStack, 1, itemStack.length);
+    public ItemStackTexture(ItemStack... itemStacks) {
+        this.itemStack = itemStacks;
     }
 
-    public ItemStackTexture(Item item, Item... items) {
-        this.itemStack = new ItemStack[items.length + 1];
-        this.itemStack[0] = new ItemStack(item);
+    public ItemStackTexture(Item... items) {
+        this.itemStack = new ItemStack[items.length];
         for(int i = 0; i < items.length; i++) {
-            itemStack[i+1] = new ItemStack(items[i]);
+            itemStack[i] = new ItemStack(items[i]);
         }
     }
 

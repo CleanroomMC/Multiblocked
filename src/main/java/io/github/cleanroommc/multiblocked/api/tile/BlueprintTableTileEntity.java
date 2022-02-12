@@ -11,6 +11,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structur
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.Predicates;
+import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
@@ -46,7 +47,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
     public static void registerBlueprintTable() {
         tableDefinition = new ControllerDefinition(
                 new ResourceLocation(Multiblocked.MODID, "blueprint_table"),
-                new RecipeMap("blueprint_table"),
+                RecipeMap.EMPTY,
                 BlueprintTableTileEntity.class);
         tableDefinition.recipeMap.inputCapabilities.add(MultiblockCapabilities.ITEM);
         tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"))
@@ -72,8 +73,5 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .where('P', partDefinition.selfPredicate())
                 .where('C', Predicates.anyCapability(IO.IN, MultiblockCapabilities.ITEM))
                 .build();
-
-        MultiblockComponents.registerComponent(tableDefinition);
-        MultiblockComponents.registerComponent(partDefinition);
     }
 }

@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked;
 
+import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.command.CommandReloadDefinitions;
 import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
 import net.minecraft.creativetab.CreativeTabs;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -42,8 +44,9 @@ public class Multiblocked {
 
     public static final CreativeTabs CREATIVE_TAB = new CreativeTabs("example_tab") {
         @Override
+        @Nonnull
         public ItemStack createIcon() {
-            return new ItemStack(Items.DIAMOND);
+            return BlueprintTableTileEntity.tableDefinition.getStackForm();
         }
     };
 

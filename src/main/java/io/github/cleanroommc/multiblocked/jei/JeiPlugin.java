@@ -14,6 +14,7 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -73,7 +74,7 @@ public class JeiPlugin implements IModPlugin {
         registry.getRecipeTransferRegistry().addRecipeTransferHandler(modularUIGuiHandler, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
         for (RecipeMap recipeMap : RecipeMap.RECIPE_MAP_REGISTRY.values()) {
             registry.addRecipes(recipeMap.recipes.values().stream()
-                            .map(recipe -> new RecipeWidget(recipe, recipeMap.getProgressTexture()))
+                            .map(recipe -> new RecipeWidget(recipe, recipeMap.progressTexture))
                             .map(RecipeWrapper::new)
                             .collect(Collectors.toList()),
                     Multiblocked.MODID + ":" + recipeMap.name);

@@ -6,6 +6,7 @@ import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
+import io.github.cleanroommc.multiblocked.api.item.ItemBlueprint;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
@@ -134,6 +135,7 @@ public class CommonProxy {
     public static void registerItems(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
         MultiblockComponents.COMPONENT_ITEMS_REGISTRY.values().forEach(registry::register);
+        registry.register(new ItemBlueprint("blueprint"));
     }
 
 }

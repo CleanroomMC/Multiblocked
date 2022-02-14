@@ -29,7 +29,7 @@ public class RecipeWidget extends WidgetGroup {
         this.addWidget(inputs);
         this.addWidget(outputs);
         this.addWidget(new ProgressWidget(doubleSupplier, 78, 27, 20, 20, progress));
-        this.addWidget(new LabelWidget(5, 73, () -> "Duration: " + this.recipe.duration + " tick"));
+        this.addWidget(new LabelWidget(5, 73, () -> "Duration: " + this.recipe.duration / 20. + " s"));
         int index = 0;
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : recipe.inputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();

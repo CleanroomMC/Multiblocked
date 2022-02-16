@@ -3,11 +3,13 @@ package io.github.cleanroommc.multiblocked.client;
 import io.github.cleanroommc.multiblocked.CommonProxy;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.client.model.emissivemodel.MetadataSectionEmissive;
 import io.github.cleanroommc.multiblocked.client.renderer.BlueprintRegionRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import lach_01298.qmd.multiblock.Multiblocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.data.MetadataSerializer;
@@ -41,6 +43,7 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event) {
         MultiblockComponents.registerModels();
+        MultiblockedItems.registerModels();
     }
 
     @SubscribeEvent

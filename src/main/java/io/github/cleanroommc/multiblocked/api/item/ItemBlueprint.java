@@ -17,10 +17,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class ItemBlueprint extends Item {
 
-    public ItemBlueprint(String registryName) {
-        setRegistryName(Multiblocked.MODID, registryName);
+    public ItemBlueprint() {
+        setRegistryName(Multiblocked.MODID, "blueprint");
         setCreativeTab(Multiblocked.CREATIVE_TAB);
-        setTranslationKey(Multiblocked.MODID + registryName);
+        setTranslationKey(Multiblocked.MODID + ".blueprint");
     }
 
     public static BlockPos[] getPos(ItemStack stack) {

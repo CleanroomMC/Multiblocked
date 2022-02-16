@@ -1,17 +1,15 @@
 package io.github.cleanroommc.multiblocked;
 
-import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
-import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
-import io.github.cleanroommc.multiblocked.api.item.ItemBlueprint;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
@@ -29,7 +27,6 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
@@ -43,12 +40,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import thaumcraft.api.aspects.Aspect;
 
-import java.util.function.Function;
-
-import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.air;
-import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.any;
-import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.anyCapability;
-import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.blocks;
+import static io.github.cleanroommc.multiblocked.api.pattern.Predicates.*;
 
 @Mod.EventBusSubscriber(modid = Multiblocked.MODID)
 public class CommonProxy {
@@ -135,7 +127,7 @@ public class CommonProxy {
     public static void registerItems(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
         MultiblockComponents.COMPONENT_ITEMS_REGISTRY.values().forEach(registry::register);
-        registry.register(new ItemBlueprint("blueprint"));
+        MultiblockedItems.registerItems(registry);
     }
 
 }

@@ -48,3 +48,5 @@ multiblocked.fluid.amount=§9Amount: %,d/%,d L
 multiblocked.fluid.temperature=§cTemperature: %,d K
 multiblocked.fluid.state_gas=§aState: Gaseous
 multiblocked.fluid.state_liquid=§aState: Liquid
+
+item.multiblocked.blueprint.name=Blueprint

@@ -6,18 +6,28 @@ import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.apache.commons.lang3.ArrayUtils;
 import stanhebben.zenscript.annotations.ZenClass;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -200,179 +210,177 @@ public class BlockPattern {
         return true;
     }
 
-//    public void autoBuild(EntityPlayer player, MultiblockControllerBase controllerBase) {
-//        World world = player.world;
-//        BlockWorldState worldState = new BlockWorldState();
-//        int minZ = -centerOffset[4];
-//        EnumFacing facing = controllerBase.getFrontFacing().getOpposite();
-//        BlockPos centerPos = controllerBase.getPos();
-//        Map<TraceabilityPredicate.SimplePredicate, BlockInfo[]> cacheInfos = new HashMap<>();
-//        Map<TraceabilityPredicate.SimplePredicate, Integer> cacheGlobal = new HashMap<>();
-//        Map<BlockPos, Object> blocks = new HashMap<>();
-//        blocks.put(controllerBase.getPos(), controllerBase);
-//        for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
-//            for (r = 0; r < aisleRepetitions[c][0]; r++) {
-//                Map<TraceabilityPredicate.SimplePredicate, Integer> cacheLayer = new HashMap<>();
-//                for (int b = 0, y = -centerOffset[1]; b < this.thumbLength; b++, y++) {
-//                    for (int a = 0, x = -centerOffset[0]; a < this.palmLength; a++, x++) {
-//                        TraceabilityPredicate predicate = this.blockMatches[c][b][a];
-//                        BlockPos pos = setActualRelativeOffset(x, y, z, facing).add(centerPos.getX(), centerPos.getY(), centerPos.getZ());
-//                        worldState.update(world, pos, matchContext, globalCount, layerCount, predicate);
-//                        if (!world.isAirBlock(pos)) {
-//                            blocks.put(pos, world.getBlockState(pos));
-//                            for (TraceabilityPredicate.SimplePredicate limit : predicate.limited) {
-//                                limit.testLimited(worldState);
-//                            }
-//                        } else {
-//                            boolean find = false;
-//                            BlockInfo[] infos = new BlockInfo[0];
-//                            for (TraceabilityPredicate.SimplePredicate limit : predicate.limited) {
-//                                if (limit.minLayerCount > 0) {
-//                                    if (!cacheLayer.containsKey(limit)) {
-//                                        cacheLayer.put(limit, 1);
-//                                    } else if (cacheLayer.get(limit) < limit.minLayerCount && (limit.maxLayerCount == -1 || cacheLayer.get(limit) < limit.maxLayerCount)) {
-//                                        cacheLayer.put(limit, cacheLayer.get(limit) + 1);
-//                                    } else {
-//                                        continue;
-//                                    }
-//                                } else {
-//                                    continue;
-//                                }
-//                                if (!cacheInfos.containsKey(limit)) {
-//                                    cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-//                                }
-//                                infos = cacheInfos.get(limit);
-//                                find = true;
-//                                break;
-//                            }
-//                            if (!find) {
-//                                for (TraceabilityPredicate.SimplePredicate limit : predicate.limited) {
-//                                    if (limit.minGlobalCount > 0) {
-//                                        if (!cacheGlobal.containsKey(limit)) {
-//                                            cacheGlobal.put(limit, 1);
-//                                        } else if (cacheGlobal.get(limit) < limit.minGlobalCount && (limit.maxGlobalCount == -1 || cacheGlobal.get(limit) < limit.maxGlobalCount)) {
-//                                            cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
-//                                        } else {
-//                                            continue;
-//                                        }
-//                                    } else {
-//                                        continue;
-//                                    }
-//                                    if (!cacheInfos.containsKey(limit)) {
-//                                        cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-//                                    }
-//                                    infos = cacheInfos.get(limit);
-//                                    find = true;
-//                                    break;
-//                                }
-//                            }
-//                            if (!find) { // no limited
-//                                for (TraceabilityPredicate.SimplePredicate limit : predicate.limited) {
-//                                    if (limit.maxLayerCount != -1 && cacheLayer.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxLayerCount)
-//                                        continue;
-//                                    if (limit.maxGlobalCount != -1 && cacheGlobal.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxGlobalCount)
-//                                        continue;
-//                                    if (!cacheInfos.containsKey(limit)) {
-//                                        cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-//                                    }
-//                                    if (cacheLayer.containsKey(limit)) {
-//                                        cacheLayer.put(limit, cacheLayer.get(limit) + 1);
-//                                    } else {
-//                                        cacheLayer.put(limit, 1);
-//                                    }
-//                                    if (cacheGlobal.containsKey(limit)) {
-//                                        cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
-//                                    } else {
-//                                        cacheGlobal.put(limit, 1);
-//                                    }
-//                                    infos = ArrayUtils.addAll(infos, cacheInfos.get(limit));
-//                                }
-//                                for (TraceabilityPredicate.SimplePredicate common : predicate.common) {
-//                                    if (!cacheInfos.containsKey(common)) {
-//                                        cacheInfos.put(common, common.candidates == null ? null : common.candidates.get());
-//                                    }
-//                                    infos = ArrayUtils.addAll(infos, cacheInfos.get(common));
-//                                }
-//                            }
-//
-//                            List<ItemStack> candidates = Arrays.stream(infos).filter(info -> info.getBlockState().getBlock() != Blocks.AIR).map(info -> {
-//                                IBlockState blockState = info.getBlockState();
-//                                MetaTileEntity metaTileEntity = info.getTileEntity() instanceof MetaTileEntityHolder ? ((MetaTileEntityHolder) info.getTileEntity()).getMetaTileEntity() : null;
-//                                if (metaTileEntity != null) {
-//                                    return metaTileEntity.getStackForm();
-//                                } else {
-//                                    return new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState));
-//                                }
-//                            }).collect(Collectors.toList());
-//                            if (candidates.isEmpty()) continue;
-//                            // check inventory
-//                            ItemStack found = null;
-//                            if (!player.isCreative()) {
-//                                for (ItemStack itemStack : player.inventory.mainInventory) {
-//                                    if (candidates.stream().anyMatch(candidate -> candidate.isItemEqual(itemStack)) && !itemStack.isEmpty() && itemStack.getItem() instanceof ItemBlock) {
-//                                        found = itemStack.copy();
-//                                        itemStack.setCount(itemStack.getCount() - 1);
-//                                        break;
-//                                    }
-//                                }
-//                                if (found == null) continue;
-//                            } else {
-//                                for (int i = candidates.size() - 1; i >= 0; i--) {
-//                                    found = candidates.get(i).copy();
-//                                    if (!found.isEmpty() && found.getItem() instanceof ItemBlock) {
-//                                        break;
-//                                    }
-//                                    found = null;
-//                                }
-//                                if (found == null) continue;
-//                            }
-//                            ItemBlock itemBlock = (ItemBlock) found.getItem();
-//                            IBlockState state = itemBlock.getBlock().getStateFromMeta(itemBlock.getMetadata(found.getMetadata()));
-//                            blocks.put(pos, state);
-//                            world.setBlockState(pos, state);
-//                            TileEntity holder = world.getTileEntity(pos);
-//                            if (holder instanceof MetaTileEntityHolder) {
-//                                MetaTileEntity sampleMetaTileEntity = GregTechAPI.MTE_REGISTRY.getObjectById(found.getItemDamage());
-//                                if (sampleMetaTileEntity != null) {
-//                                    MetaTileEntity metaTileEntity = ((MetaTileEntityHolder) holder).setMetaTileEntity(sampleMetaTileEntity);
-//                                    blocks.put(pos, metaTileEntity);
-//                                    if (found.hasTagCompound()) {
-//                                        metaTileEntity.initFromItemStackData(found.getTagCompound());
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                z++;
-//            }
-//        }
-//        EnumFacing[] facings = ArrayUtils.addAll(new EnumFacing[]{controllerBase.getFrontFacing()}, FACINGS); // follow controller first
-//        blocks.forEach((pos, block) -> { // adjust facing
-//            if (block instanceof MetaTileEntity) {
-//                MetaTileEntity metaTileEntity = (MetaTileEntity) block;
-//                boolean find = false;
-//                for (EnumFacing enumFacing : facings) {
-//                    if (metaTileEntity.isValidFrontFacing(enumFacing)) {
-//                        if (!blocks.containsKey(pos.offset(enumFacing))) {
-//                            metaTileEntity.setFrontFacing(enumFacing);
-//                            find = true;
-//                            break;
-//                        }
-//                    }
-//                }
-//                if (!find) {
-//                    for (EnumFacing enumFacing : FACINGS) {
-//                        if (world.isAirBlock(pos.offset(enumFacing)) && metaTileEntity.isValidFrontFacing(enumFacing)) {
-//                            metaTileEntity.setFrontFacing(enumFacing);
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//    }
-//
+    public void autoBuild(EntityPlayer player, MultiblockState worldState) {
+        World world = player.world;
+        int minZ = -centerOffset[4];
+        worldState.clean();
+        BlockPos centerPos = worldState.getController().getPos();
+        EnumFacing facing = worldState.getController().getFrontFacing().getOpposite();
+        Map<TraceabilityPredicate.SimplePredicate, BlockInfo[]> cacheInfos = new HashMap<>();
+        Map<TraceabilityPredicate.SimplePredicate, Integer> cacheGlobal = worldState.globalCount;
+        Map<BlockPos, Object> blocks = new HashMap<>();
+        blocks.put(centerPos, worldState.getController());
+        for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
+            for (r = 0; r < aisleRepetitions[c][0]; r++) {
+                Map<TraceabilityPredicate.SimplePredicate, Integer> cacheLayer = new HashMap<>();
+                for (int b = 0, y = -centerOffset[1]; b < this.thumbLength; b++, y++) {
+                    for (int a = 0, x = -centerOffset[0]; a < this.palmLength; a++, x++) {
+                        TraceabilityPredicate predicate = this.blockMatches[c][b][a];
+                        BlockPos pos = setActualRelativeOffset(x, y, z, facing).add(centerPos.getX(), centerPos.getY(), centerPos.getZ());
+                        worldState.update(pos, predicate);
+                        if (!world.isAirBlock(pos)) {
+                            blocks.put(pos, world.getBlockState(pos));
+                            for (TraceabilityPredicate.SimplePredicate limit : predicate.limited) {
+                                limit.testLimited(worldState);
+                            }
+                        } else {
+                            boolean find = false;
+                            BlockInfo[] infos = new BlockInfo[0];
+                            for (TraceabilityPredicate.SimplePredicate limit : predicate.limited) {
+                                if (limit.minLayerCount > 0) {
+                                    if (!cacheLayer.containsKey(limit)) {
+                                        cacheLayer.put(limit, 1);
+                                    } else if (cacheLayer.get(limit) < limit.minLayerCount && (limit.maxLayerCount == -1 || cacheLayer.get(limit) < limit.maxLayerCount)) {
+                                        cacheLayer.put(limit, cacheLayer.get(limit) + 1);
+                                    } else {
+                                        continue;
+                                    }
+                                } else {
+                                    continue;
+                                }
+                                if (!cacheInfos.containsKey(limit)) {
+                                    cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
+                                }
+                                infos = cacheInfos.get(limit);
+                                find = true;
+                                break;
+                            }
+                            if (!find) {
+                                for (TraceabilityPredicate.SimplePredicate limit : predicate.limited) {
+                                    if (limit.minGlobalCount > 0) {
+                                        if (!cacheGlobal.containsKey(limit)) {
+                                            cacheGlobal.put(limit, 1);
+                                        } else if (cacheGlobal.get(limit) < limit.minGlobalCount && (limit.maxGlobalCount == -1 || cacheGlobal.get(limit) < limit.maxGlobalCount)) {
+                                            cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
+                                        } else {
+                                            continue;
+                                        }
+                                    } else {
+                                        continue;
+                                    }
+                                    if (!cacheInfos.containsKey(limit)) {
+                                        cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
+                                    }
+                                    infos = cacheInfos.get(limit);
+                                    find = true;
+                                    break;
+                                }
+                            }
+                            if (!find) { // no limited
+                                for (TraceabilityPredicate.SimplePredicate limit : predicate.limited) {
+                                    if (limit.maxLayerCount != -1 && cacheLayer.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxLayerCount)
+                                        continue;
+                                    if (limit.maxGlobalCount != -1 && cacheGlobal.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxGlobalCount)
+                                        continue;
+                                    if (!cacheInfos.containsKey(limit)) {
+                                        cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
+                                    }
+                                    if (cacheLayer.containsKey(limit)) {
+                                        cacheLayer.put(limit, cacheLayer.get(limit) + 1);
+                                    } else {
+                                        cacheLayer.put(limit, 1);
+                                    }
+                                    if (cacheGlobal.containsKey(limit)) {
+                                        cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
+                                    } else {
+                                        cacheGlobal.put(limit, 1);
+                                    }
+                                    infos = ArrayUtils.addAll(infos, cacheInfos.get(limit));
+                                }
+                                for (TraceabilityPredicate.SimplePredicate common : predicate.common) {
+                                    if (!cacheInfos.containsKey(common)) {
+                                        cacheInfos.put(common, common.candidates == null ? null : common.candidates.get());
+                                    }
+                                    infos = ArrayUtils.addAll(infos, cacheInfos.get(common));
+                                }
+                            }
+
+                            List<ItemStack> candidates = new ArrayList<>();
+                            for (BlockInfo info : infos) {
+                                if (info.getBlockState().getBlock() != Blocks.AIR) {
+                                    IBlockState blockState = info.getBlockState();
+                                    if (blockState.getBlock() instanceof BlockComponent && ((BlockComponent) blockState.getBlock()).definition.baseRenderer instanceof CycleBlockStateRenderer) {
+                                        CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((BlockComponent) blockState.getBlock()).definition.baseRenderer;
+                                        for (IBlockState state : renderer.states) {
+                                            candidates.add(new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, blockState.getBlock().damageDropped(state)));
+                                        }
+                                    } else {
+                                        candidates.add(new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState)));
+                                    }
+                                }
+                            }
+
+                            // check inventory
+                            ItemStack found = null;
+                            if (!player.isCreative()) {
+                                for (ItemStack itemStack : player.inventory.mainInventory) {
+                                    if (candidates.stream().anyMatch(candidate -> candidate.isItemEqual(itemStack)) && !itemStack.isEmpty() && itemStack.getItem() instanceof ItemBlock) {
+                                        found = itemStack.copy();
+                                        itemStack.setCount(itemStack.getCount() - 1);
+                                        break;
+                                    }
+                                }
+                                if (found == null) continue;
+                            } else {
+                                for (int i = candidates.size() - 1; i >= 0; i--) {
+                                    found = candidates.get(i).copy();
+                                    if (!found.isEmpty() && found.getItem() instanceof ItemBlock) {
+                                        break;
+                                    }
+                                    found = null;
+                                }
+                                if (found == null) continue;
+                            }
+                            ItemBlock itemBlock = (ItemBlock) found.getItem();
+                            IBlockState state = itemBlock.getBlock().getStateFromMeta(itemBlock.getMetadata(found.getMetadata()));
+                            blocks.put(pos, state);
+                            world.setBlockState(pos, state);
+                            TileEntity tileEntity = world.getTileEntity(pos);
+                            if (tileEntity instanceof ComponentTileEntity) {
+                                blocks.put(pos, tileEntity);
+                            }
+                        }
+                    }
+                }
+                z++;
+            }
+        }
+        EnumFacing[] facings = ArrayUtils.addAll(new EnumFacing[]{facing}, FACINGS); // follow controller first
+        blocks.forEach((pos, block) -> { // adjust facing
+            if (block instanceof ComponentTileEntity) {
+                ComponentTileEntity<?> componentTileEntity = (ComponentTileEntity<?>) block;
+                boolean find = false;
+                for (EnumFacing enumFacing : facings) {
+                    if (componentTileEntity.isValidFrontFacing(enumFacing)) {
+                        if (!blocks.containsKey(pos.offset(enumFacing))) {
+                            componentTileEntity.setFrontFacing(enumFacing);
+                            find = true;
+                            break;
+                        }
+                    }
+                }
+                if (!find) {
+                    for (EnumFacing enumFacing : FACINGS) {
+                        if (world.isAirBlock(pos.offset(enumFacing)) && componentTileEntity.isValidFrontFacing(enumFacing)) {
+                            componentTileEntity.setFrontFacing(enumFacing);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     public BlockInfo[][][] getPreview(int[] repetition) {
         Map<TraceabilityPredicate.SimplePredicate, BlockInfo[]> cacheInfos = new HashMap<>();
         Map<TraceabilityPredicate.SimplePredicate, Integer> cacheGlobal = new HashMap<>();

@@ -14,12 +14,12 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -31,11 +31,14 @@ import java.util.stream.Collectors;
 
 @JEIPlugin
 public class JeiPlugin implements IModPlugin {
-    public static Field fieldRecipeLayout;
+    public static Field fieldRecipeWrapper;
+    public static Field fieldRecipeLayouts;
     static {
         try {
-            fieldRecipeLayout = RecipeLayout.class.getDeclaredField("recipeWrapper");
-            fieldRecipeLayout.setAccessible(true);
+            fieldRecipeWrapper = RecipeLayout.class.getDeclaredField("recipeWrapper");
+            fieldRecipeWrapper.setAccessible(true);
+            fieldRecipeLayouts = RecipesGui.class.getDeclaredField("recipeLayouts");
+            fieldRecipeLayouts.setAccessible(true);
         } catch (NoSuchFieldException e) {
             Multiblocked.LOGGER.error(e);
         }
@@ -44,7 +47,16 @@ public class JeiPlugin implements IModPlugin {
 
     public static IRecipeWrapper getWrapper(RecipeLayout layout) {
         try {
-            return (IRecipeWrapper)fieldRecipeLayout.get(layout);
+            return (IRecipeWrapper) fieldRecipeWrapper.get(layout);
+        } catch (IllegalAccessException e) {
+            Multiblocked.LOGGER.error(e);
+        }
+        return null;
+    }
+
+    public static List<RecipeLayout> getRecipeLayouts(RecipesGui recipesGui) {
+        try {
+            return (List<RecipeLayout>) fieldRecipeLayouts.get(recipesGui);
         } catch (IllegalAccessException e) {
             Multiblocked.LOGGER.error(e);
         }

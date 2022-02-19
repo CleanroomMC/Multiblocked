@@ -2,10 +2,14 @@ package io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content;
 
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
@@ -67,5 +71,17 @@ public abstract class ContentWidget<T> extends WidgetGroup {
             background.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
         }
         super.drawInBackground(mouseX, mouseY, partialTicks);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void drawHoverOverlay(int mouseX, int mouseY) {
+        if (isMouseOverElement(mouseX, mouseY)) {
+            GlStateManager.disableDepth();
+            GlStateManager.colorMask(true, true, true, false);
+            DrawerHelper.drawSolidRect(getPosition().x + 1, getPosition().y + 1, 18, 18, -2130706433);
+            GlStateManager.colorMask(true, true, true, true);
+            GlStateManager.enableDepth();
+            GlStateManager.enableBlend();
+        }
     }
 }

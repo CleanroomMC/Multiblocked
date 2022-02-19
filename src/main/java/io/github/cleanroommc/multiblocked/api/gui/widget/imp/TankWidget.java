@@ -41,8 +41,8 @@ public class TankWidget extends Widget implements IIngredientSlot {
     protected FluidStack lastFluidInTank;
     protected int lastTankCapacity;
 
-    public TankWidget(IFluidTank fluidTank, int x, int y, int width, int height, boolean allowClickContainerFilling, boolean allowClickContainerEmptying) {
-        super(new Position(x, y), new Size(width, height));
+    public TankWidget(IFluidTank fluidTank, int x, int y, boolean allowClickContainerFilling, boolean allowClickContainerEmptying) {
+        super(new Position(x, y), new Size(18, 18));
         this.fluidTank = fluidTank;
         this.allowClickFilling = allowClickContainerFilling;
         this.allowClickEmptying = allowClickContainerEmptying;
@@ -123,6 +123,14 @@ public class TankWidget extends Widget implements IIngredientSlot {
 
             GlStateManager.enableBlend();
             GlStateManager.color(1, 1, 1, 1);
+        }
+        if (isMouseOverElement(mouseX, mouseY)) {
+            GlStateManager.disableDepth();
+            GlStateManager.colorMask(true, true, true, false);
+            DrawerHelper.drawSolidRect(pos.x + 1, pos.y + 1, 16, 16, -2130706433);
+            GlStateManager.colorMask(true, true, true, true);
+            GlStateManager.enableDepth();
+            GlStateManager.enableBlend();
         }
         if (overlay != null) {
             overlay.draw(mouseX, mouseY, pos.x, pos.y, size.width, size.height);

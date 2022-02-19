@@ -99,7 +99,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         super.update();
         if (isFormed()) {
             updateFormed();
-        } else if (definition.noNeedCatalyst && getTimer() % 20 == 0) {
+        } else if (definition.catalyst == null && getTimer() % 20 == 0) {
             if (state == null) state = new MultiblockState(world, pos);
             if (checkPattern()) { // formed
                 MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
@@ -303,16 +303,16 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (definition.onRightClick != null) {
             if (definition.onRightClick.apply(this, new MCPlayer(player), new MCFacing(facing), hitX, hitY, hitZ)) return true;
         }
-        if (!world.isRemote) {
+        if (!world.isRemote && definition.catalyst != null) {
             if (!isFormed()) {
                 if (state == null) state = new MultiblockState(world, pos);
                 ItemStack held = player.getHeldItem(hand);
-                if (definition.catalyst == null || held.isItemEqual(definition.catalyst)) {
+                if (definition.catalyst.isEmpty() || held.isItemEqual(definition.catalyst)) {
                     if (checkPattern()) { // formed
                         player.swingArm(hand);
                         ITextComponent formedMsg = new TextComponentTranslation(getUnlocalizedName()).appendSibling(new TextComponentTranslation("multiblocked.multiblock.formed"));
                         player.sendStatusMessage(formedMsg, true);
-                        if (!player.isCreative() && definition.consumeCatalyst) {
+                        if (!player.isCreative() && !definition.catalyst.isEmpty()) {
                             held.shrink(1);
                         }
                         MultiblockWorldSavedData.getOrCreate(world).addMapping(state);

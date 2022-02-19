@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class AspectStackWidget extends ContentWidget<AspectStack> {
     @Override
@@ -44,6 +44,7 @@ public class AspectStackWidget extends ContentWidget<AspectStack> {
             }
             GlStateManager.popMatrix();
         }
+        drawHoverOverlay(mouseX, mouseY);
     }
 
     @Override

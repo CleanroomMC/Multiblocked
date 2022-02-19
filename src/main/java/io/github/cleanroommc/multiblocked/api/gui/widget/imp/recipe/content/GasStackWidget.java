@@ -35,13 +35,14 @@ public class GasStackWidget extends ContentWidget<GasStack> {
             Minecraft minecraft = Minecraft.getMinecraft();
             GlStateManager.pushMatrix();
             GlStateManager.enableBlend();
-            drawGas(minecraft, pos.x + 1, pos.y + 1, content);
+            drawGas(minecraft, pos.x + 2, pos.y + 2, content);
             GlStateManager.scale(0.5, 0.5, 1);
             String s = TextFormattingUtil.formatLongToCompactString(content.amount, 4);
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
             fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 21, (pos.y + (size.height / 3f) + 6) * 2, 0xFFFFFF);
             GlStateManager.popMatrix();
         }
+        drawHoverOverlay(mouseX, mouseY);
     }
 
     private void drawGas(Minecraft minecraft, final int xPosition, final int yPosition, @Nullable GasStack gasStack) {

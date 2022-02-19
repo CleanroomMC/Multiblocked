@@ -51,5 +51,6 @@ public class NumberContentWidget extends ContentWidget<Number>{
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         fontRenderer.drawStringWithShadow(s, (position.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 21, (position.y + (size.height / 3f) + 6) * 2, 0xFFFFFF);
         GlStateManager.popMatrix();
+        drawHoverOverlay(mouseX, mouseY);
     }
 }

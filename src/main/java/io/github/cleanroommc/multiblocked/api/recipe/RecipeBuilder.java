@@ -9,7 +9,9 @@ import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapa
 import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
+import io.github.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
+import lach_01298.qmd.particle.ParticleStack;
 import mekanism.api.gas.GasStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -158,6 +160,28 @@ public class RecipeBuilder {
             keyBuilder.append(output.getGas().getID());
         }
         return output(GasMekanismCapability.CAP, (Object[]) outputs);
+    }
+
+    public RecipeBuilder inputParticles(ParticleStack... inputs) {
+        keyBuilder.append(ParticleQMDCapability.CAP.name);
+        for (ParticleStack input : inputs) {
+            keyBuilder.append(input.getAmount());
+            keyBuilder.append(input.getParticle().getName());
+            keyBuilder.append(input.getMeanEnergy());
+            keyBuilder.append(input.getFocus());
+        }
+        return input(ParticleQMDCapability.CAP, (Object[]) inputs);
+    }
+
+    public RecipeBuilder outputParticles(ParticleStack... outputs) {
+        keyBuilder.append(ParticleQMDCapability.CAP.name);
+        for (ParticleStack output : outputs) {
+            keyBuilder.append(output.getAmount());
+            keyBuilder.append(output.getParticle().getName());
+            keyBuilder.append(output.getMeanEnergy());
+            keyBuilder.append(output.getFocus());
+        }
+        return output(ParticleQMDCapability.CAP, (Object[]) outputs);
     }
 
     public Recipe build() {

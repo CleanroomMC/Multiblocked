@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
 import crafttweaker.annotations.ZenRegister;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
@@ -332,8 +333,8 @@ public class BlockPattern {
                                 }
                                 if (found == null) continue;
                             } else {
-                                for (int i = candidates.size() - 1; i >= 0; i--) {
-                                    found = candidates.get(i).copy();
+                                for (ItemStack candidate : candidates) {
+                                    found = candidate.copy();
                                     if (!found.isEmpty() && found.getItem() instanceof ItemBlock) {
                                         break;
                                     }

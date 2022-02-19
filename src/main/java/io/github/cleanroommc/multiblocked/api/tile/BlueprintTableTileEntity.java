@@ -11,10 +11,8 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structur
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.Predicates;
-import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
-import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
@@ -56,7 +54,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .setRenderLayer(BlockRenderLayer.SOLID, true);
         tableDefinition.isOpaqueCube = false;
         tableDefinition.disableOthersRendering = true;
-        tableDefinition.noNeedCatalyst = true;
+        tableDefinition.catalyst = null;
 
 
         partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));

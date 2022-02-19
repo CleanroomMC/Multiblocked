@@ -18,9 +18,12 @@ import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapa
 import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
+import io.github.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import io.github.cleanroommc.multiblocked.events.Listeners;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import lach_01298.qmd.particle.ParticleStack;
+import lach_01298.qmd.particle.Particles;
 import mekanism.api.gas.GasRegistry;
 import mekanism.api.gas.GasStack;
 import net.minecraft.block.Block;
@@ -87,16 +90,23 @@ public class CommonProxy {
                 .outputHeat(100)
                 .duration(60) // 60 tick -> 3s
                 .buildAndRegister();
+        recipeMap.start()
+                .inputAspects(new AspectStack(Aspect.AIR, 50))
+                .outputParticles(new ParticleStack(Particles.antialpha, 32, 132, 123),
+                        new ParticleStack(Particles.charm, 11, 21, 222))
+                .duration(60) // 60 tick -> 3s
+                .buildAndRegister();
         // create a controller component.
         ControllerDefinition controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test_block"), recipeMap);
         controllerDefinition.basePattern = FactoryBlockPattern.start()
-                .aisle("TXX", "   ")
+                .aisle("TXX", " E ")
                 .aisle("C#A", "QPW")
                 .aisle("BYD", "   ")
                 .where(' ', any())
                 .where('P', partDefinition.selfPredicate())
                 .where('X', blocks(Blocks.STONE))
                 .where('#', air())
+                .where('E', anyCapability(IO.OUT, ParticleQMDCapability.CAP))
                 .where('Q', anyCapability(IO.IN, GasMekanismCapability.CAP))
                 .where('W', anyCapability(IO.OUT, HeatMekanismCapability.CAP))
                 .where('A', anyCapability(IO.IN, MultiblockCapabilities.ITEM)) // if and only if available IN-Item-Capability here. (item inputBus)

@@ -44,11 +44,9 @@ public class ControllerDefinition extends ComponentDefinition {
     public ISetupRecipe setupRecipe;
     @ZenProperty
     public IRecipeFinish recipeFinish;
-    public ItemStack catalyst;
+    public ItemStack catalyst = ItemStack.EMPTY; // if null, checking pattern per second
     @ZenProperty
     public boolean consumeCatalyst;
-    @ZenProperty
-    public boolean noNeedCatalyst; // if true and inValid, checking pattern per second
     @ZenProperty
     public List<MultiblockShapeInfo> designs;
     @ZenProperty
@@ -107,6 +105,6 @@ public class ControllerDefinition extends ComponentDefinition {
 
     @Override
     public boolean needUpdateTick() {
-        return super.needUpdateTick() || noNeedCatalyst;
+        return super.needUpdateTick() || catalyst == null;
     }
 }

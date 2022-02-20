@@ -36,6 +36,7 @@ public class ItemStackTexture implements IGuiTexture{
         GlStateManager.disableDepth();
         RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.pushMatrix();
+        GlStateManager.enableDepth();
         GlStateManager.scale(width / 16f, height / 16f, 0.0001);
         GlStateManager.translate(x * 16 / width, y * 16 / height, 0);
         RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();

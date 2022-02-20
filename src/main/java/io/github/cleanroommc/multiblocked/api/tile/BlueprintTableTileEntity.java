@@ -7,6 +7,7 @@ import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.BlueprintTableWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.IOPageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
@@ -35,7 +36,8 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
         if (isFormed()) {
-            return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
+            return new ModularUIBuilder(IGuiTexture.EMPTY, 330, 256)
+                    .widget(new BlueprintTableWidget(this))
                     .build(this, entityPlayer);
         } else {
             TabContainer tabContainer = new TabContainer(0, 0, 200, 232);

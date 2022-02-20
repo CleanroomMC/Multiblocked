@@ -9,10 +9,16 @@ import java.util.Optional;
 public class TabContainer extends WidgetGroup {
 
     protected final BiMap<TabButton, WidgetGroup> tabs = HashBiMap.create();
+    protected final WidgetGroup buttonGroup;
+    protected final WidgetGroup containerGroup;
     protected WidgetGroup focus;
 
     public TabContainer(int x, int y, int width, int height) {
         super(x, y, width, height);
+        buttonGroup = new WidgetGroup(x, y, width, height);
+        containerGroup = new WidgetGroup(x, y, width, height);
+        this.addWidget(containerGroup);
+        this.addWidget(buttonGroup);
     }
 
     public void switchTag(WidgetGroup tabWidget) {
@@ -30,17 +36,16 @@ public class TabContainer extends WidgetGroup {
         });
     }
 
-    public WidgetGroup addTab(TabButton tabButton, WidgetGroup tabWidget) {
+    public void addTab(TabButton tabButton, WidgetGroup tabWidget) {
         tabButton.setContainer(this);
         tabs.put(tabButton, tabWidget);
-        addWidget(tabButton);
-        addWidget(tabWidget);
+        containerGroup.addWidget(tabWidget);
+        buttonGroup.addWidget(tabButton);
         if (focus == null) {
             focus = tabWidget;
         }
         tabButton.setPressed(focus == tabWidget);
         tabWidget.setVisible(focus == tabWidget);
         tabWidget.setActive(focus == tabWidget);
-        return tabWidget;
     }
 }

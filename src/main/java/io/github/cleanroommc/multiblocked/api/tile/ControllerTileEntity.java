@@ -318,8 +318,8 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (definition.onRightClick != null) {
             if (definition.onRightClick.apply(this, new MCPlayer(player), new MCFacing(facing), hitX, hitY, hitZ)) return true;
         }
-        if (!world.isRemote && definition.catalyst != null) {
-            if (!isFormed()) {
+        if (!world.isRemote) {
+            if (!isFormed() && definition.catalyst != null) {
                 if (state == null) state = new MultiblockState(world, pos);
                 ItemStack held = player.getHeldItem(hand);
                 if (definition.catalyst.isEmpty() || held.isItemEqual(definition.catalyst)) {

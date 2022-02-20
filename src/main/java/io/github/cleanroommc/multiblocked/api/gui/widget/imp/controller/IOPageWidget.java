@@ -120,9 +120,9 @@ public class IOPageWidget extends PageWidget {
             MultiblockCapability<?> capability = null;
             if (i < values.size()) {
                 capability = values.get(i);
-                labels[i - index].updateText(capability.getUnlocalizedName());
+                labels[i - index].setBackgroundColor(capability.color).updateText(capability.getUnlocalizedName());
             } else {
-                labels[i - index].updateText("Empty");
+                labels[i - index].setBackgroundColor(0).updateText("Empty");
             }
             lines[0][i - index].setImage(LINE_0_MAP.get(capabilitySettings.get(capability)));
             lines[1][i - index].setImage(LINE_1_MAP.get(capabilitySettings.get(capability)));

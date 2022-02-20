@@ -51,8 +51,6 @@ public class DrawerHelper {
 
     @SideOnly(Side.CLIENT)
     public static void drawFluidForGui(FluidStack contents, int tankCapacity, int startX, int startY, int widthT, int heightT) {
-        widthT--;
-        heightT--;
         Fluid fluid = contents.getFluid();
         ResourceLocation fluidStill = fluid.getStill();
         TextureAtlasSprite fluidStillSprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fluidStill.toString());

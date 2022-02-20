@@ -14,6 +14,7 @@ import java.util.List;
 public class TextTexture implements IGuiTexture{
     public String text;
     public int color;
+    public int backgroundColor;
     public int width;
     public boolean dropShadow;
     public TextType type;
@@ -35,6 +36,11 @@ public class TextTexture implements IGuiTexture{
             texts = Collections.singletonList(this.text);
             setWidth(this.width);
         }
+    }
+
+    public TextTexture setBackgroundColor(int color) {
+        this.backgroundColor = color;
+        return this;
     }
 
     public TextTexture setColor(int color) {
@@ -66,6 +72,9 @@ public class TextTexture implements IGuiTexture{
 
     @Override
     public void draw(int mouseX, int mouseY, double x, double y, int width, int height) {
+        if (backgroundColor != 0) {
+            new ColorRectTexture(backgroundColor).draw(mouseX, mouseY, x, y, width, height);
+        }
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         int textH = fontRenderer.FONT_HEIGHT;
         if (type == TextType.NORMAL) {

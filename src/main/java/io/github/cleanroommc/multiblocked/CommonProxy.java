@@ -82,19 +82,19 @@ public class CommonProxy {
                 .inputFluids(new FluidStack(FluidRegistry.LAVA, 2000))
                 .outputMana(100)
                 .outputAspects(new AspectStack(Aspect.AURA, 50))
-                .duration(60) // 60 tick -> 3s
+                .duration(2000) // 60 tick -> 3s
                 .buildAndRegister();
         recipeMap.start()
                 .inputGas(new GasStack(GasRegistry.getGas(0), 150))
                 .inputAspects(new AspectStack(Aspect.AURA, 50))
                 .outputHeat(100)
-                .duration(60) // 60 tick -> 3s
+                .duration(200) // 60 tick -> 3s
                 .buildAndRegister();
         recipeMap.start()
                 .inputAspects(new AspectStack(Aspect.AIR, 50))
                 .outputParticles(new ParticleStack(Particles.antialpha, 32, 132, 123),
                         new ParticleStack(Particles.charm, 11, 21, 222))
-                .duration(60) // 60 tick -> 3s
+                .duration(200) // 60 tick -> 3s
                 .buildAndRegister();
         // create a controller component.
         ControllerDefinition controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test_block"), recipeMap);

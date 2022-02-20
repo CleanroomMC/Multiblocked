@@ -28,7 +28,7 @@ public class RecipeWrapper extends ModularWrapper {
     public final Recipe recipe;
 
     public RecipeWrapper(RecipeWidget widget) {
-        super(widget, 176, 100);
+        super(widget, widget.getSize().width, widget.getSize().height);
         recipe = widget.recipe;
     }
 

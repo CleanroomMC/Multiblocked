@@ -9,6 +9,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
+import net.minecraft.client.resources.I18n;
 
 import java.util.Map;
 import java.util.function.DoubleSupplier;
@@ -21,7 +22,7 @@ public class RecipeWidget extends WidgetGroup {
     }
 
     public RecipeWidget(Recipe recipe, DoubleSupplier doubleSupplier, ResourceTexture progress) {
-        super(0, 0, 176, 100);
+        super(0, 0, 176, 84);
         this.recipe = recipe;
         setClientSideWidget();
         DraggableScrollableWidgetGroup inputs = new DraggableScrollableWidgetGroup(5, 5, 64, 64).setBackground(new ColorRectTexture(0x1f000000));
@@ -29,7 +30,7 @@ public class RecipeWidget extends WidgetGroup {
         this.addWidget(inputs);
         this.addWidget(outputs);
         this.addWidget(new ProgressWidget(doubleSupplier, 78, 27, 20, 20, progress));
-        this.addWidget(new LabelWidget(5, 73, () -> "Duration: " + this.recipe.duration / 20. + " s"));
+        this.addWidget(new LabelWidget(5, 73, () -> I18n.format("multiblocked.recipe.duration", this.recipe.duration / 20.)));
         int index = 0;
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Object>> entry : recipe.inputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();

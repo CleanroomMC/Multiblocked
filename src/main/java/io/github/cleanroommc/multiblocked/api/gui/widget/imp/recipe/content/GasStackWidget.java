@@ -35,7 +35,7 @@ public class GasStackWidget extends ContentWidget<GasStack> {
             Minecraft minecraft = Minecraft.getMinecraft();
             GlStateManager.pushMatrix();
             GlStateManager.enableBlend();
-            drawGas(minecraft, pos.x + 2, pos.y + 2, content);
+            drawGas(minecraft, pos.x + 1, pos.y + 1, content);
             GlStateManager.scale(0.5, 0.5, 1);
             String s = TextFormattingUtil.formatLongToCompactString(content.amount, 4);
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
@@ -52,18 +52,15 @@ public class GasStackWidget extends ContentWidget<GasStack> {
         }
         int widthT = 18;
         int heightT = 18;
-        widthT--;
-        heightT--;
         TextureAtlasSprite fluidStillSprite = getStillGasSprite(minecraft, gas);
-        int scaledAmount = heightT;
         GlStateManager.enableBlend();
         Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         MekanismRenderer.color(gas);
 
         final int xTileCount = widthT / 16;
         final int xRemainder = widthT - xTileCount * 16;
-        final int yTileCount = scaledAmount / 16;
-        final int yRemainder = scaledAmount - yTileCount * 16;
+        final int yTileCount = heightT / 16;
+        final int yRemainder = heightT - yTileCount * 16;
 
         final int yStart = yPosition + heightT;
 

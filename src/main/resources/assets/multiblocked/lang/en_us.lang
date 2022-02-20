@@ -50,3 +50,6 @@ multiblocked.fluid.state_gas=§aState: Gaseous
 multiblocked.fluid.state_liquid=§aState: Liquid
 
 item.multiblocked.blueprint.name=Blueprint
+
+multiblocked.recipe.duration=Duration: %ds
+

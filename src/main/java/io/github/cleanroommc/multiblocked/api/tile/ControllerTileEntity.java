@@ -134,7 +134,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
      * Called when its formed, server side only.
      */
     public void onStructureFormed() {
-        recipeLogic = new RecipeLogic(this);
+        if (recipeLogic == null) {
+            recipeLogic = new RecipeLogic(this);
+        }
         // init capabilities
         Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap = state.getMatchContext().get("capabilities");
         if (capabilityMap != null) {
@@ -149,10 +151,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                 IO io = ioEntry.getValue();
                                 MultiblockCapability<?> capability = ioEntry.getKey();
                                 if (io == null) continue;
-                                if (!capabilities.contains(io, capability)) {
-                                    capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
+                                if (capability.isBlockHasCapability(io, tileEntity)) {
+                                    if (!capabilities.contains(io, capability)) {
+                                        capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
+                                    }
+                                    capabilities.get(io, capability).put(entry.getKey().longValue(), capability.createProxy(io, tileEntity));
                                 }
-                                capabilities.get(io, capability).put(entry.getKey().longValue(), capability.createProxy(io, tileEntity));
                             }
                         }
                     } else {
@@ -344,10 +348,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
         TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
-        new StructurePageWidget(this.definition, tabContainer);
         if (isFormed()) {
-            new IOPageWidget(this, tabContainer);
             new RecipePage(this, tabContainer);
+            new IOPageWidget(this, tabContainer);
+        } else {
+            new StructurePageWidget(this.definition, tabContainer);
         }
         return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
                 .widget(tabContainer)

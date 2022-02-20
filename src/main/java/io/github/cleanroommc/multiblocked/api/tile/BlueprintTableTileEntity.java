@@ -7,6 +7,8 @@ import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.IOPageWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
@@ -32,11 +34,16 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
 
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
-        TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
-        new StructurePageWidget(definition, tabContainer);
-        return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
-                .widget(tabContainer)
-                .build(this, entityPlayer);
+        if (isFormed()) {
+            return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
+                    .build(this, entityPlayer);
+        } else {
+            TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
+            new StructurePageWidget(this.definition, tabContainer);
+            return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
+                    .widget(tabContainer)
+                    .build(this, entityPlayer);
+        }
     }
 
     public static ControllerDefinition tableDefinition;

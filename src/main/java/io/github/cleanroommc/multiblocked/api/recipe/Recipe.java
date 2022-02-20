@@ -7,7 +7,6 @@ import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;

@@ -25,6 +25,11 @@ public class ProgressWidget extends Widget {
         this.filledBarArea = fullImage.getSubTexture(0.0, 0.5, 1.0, 0.5);
     }
 
+    public ProgressWidget(DoubleSupplier progressSupplier, int x, int y, int width, int height) {
+        super(new Position(x, y), new Size(width, height));
+        this.progressSupplier = progressSupplier;
+    }
+
     public ProgressWidget setProgressBar(IGuiTexture emptyBarArea, IGuiTexture filledBarArea) {
         this.emptyBarArea = emptyBarArea;
         this.filledBarArea = filledBarArea;

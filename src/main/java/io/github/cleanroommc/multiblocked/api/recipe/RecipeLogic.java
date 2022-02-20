@@ -53,6 +53,7 @@ public class RecipeLogic {
         } else {
             recipe = this.definition.recipeMap.searchRecipe(this.controller.getCapabilities());
         }
+        lastRecipe = null;
         if (recipe != null) setupRecipe(recipe);
     }
 
@@ -89,7 +90,7 @@ public class RecipeLogic {
     }
 
     public void readFromNBT(NBTTagCompound compound) {
-        lastRecipe = compound.hasKey("recipe") ? definition.recipeMap.recipes.get(compound.getInteger("recipe")) : null;
+        lastRecipe = compound.hasKey("recipe") ? definition.recipeMap.recipes.get(compound.getString("recipe")) : null;
         if (lastRecipe != null) {
             isWorking = true;
             duration = lastRecipe.duration;

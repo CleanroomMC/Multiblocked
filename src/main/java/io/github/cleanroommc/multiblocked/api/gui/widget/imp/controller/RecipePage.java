@@ -3,8 +3,9 @@ package io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
-import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
@@ -15,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -22,17 +24,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class RecipePage extends PageWidget{
     public static ResourceTexture resourceTexture = new ResourceTexture("multiblocked:textures/gui/recipe_page.png");
     public final ControllerTileEntity controller;
+    public final DraggableScrollableWidgetGroup tips;
     private Recipe recipe;
     @SideOnly(Side.CLIENT)
     private RecipeWidget recipeWidget;
     private boolean isWorking;
     private int progress;
     
-    
     public RecipePage(ControllerTileEntity controller, TabContainer tabContainer) {
         super(resourceTexture, tabContainer);
         this.controller = controller;
-        this.addWidget(new WidgetGroup(8, 34, 160, 112));
+        this.addWidget(tips = new DraggableScrollableWidgetGroup(8, 34, 160, 112));
+        tips.addWidget(new LabelWidget(5, 5, () -> isWorking ? I18n.format("multiblocked.recipe.status.true" ) : I18n.format("multiblocked.recipe.status.false")).setTextColor(-1));
+        tips.addWidget(new LabelWidget(5, 20, () -> I18n.format("multiblocked.recipe.remaining", recipe == null ? 0 : (recipe.duration - progress) / 20)).setTextColor(-1));
         this.addWidget(new ImageWidget(7, 7, 162, 16,
                 new TextTexture(controller.getUnlocalizedName(), -1)
                         .setType(TextTexture.TextType.ROLL)
@@ -139,7 +143,7 @@ public class RecipePage extends PageWidget{
             if (recipeWidget != null) {
                 removeWidget(recipeWidget);
             }
-            this.addWidget(recipeWidget = new RecipeWidget(recipe, controller.getDefinition().recipeMap.progressTexture));
+            this.addWidget(recipeWidget = new RecipeWidget(recipe, controller.getDefinition().recipeMap.progressTexture, null));
             recipeWidget.setSelfPosition(new Position(0, 167));
         } else {
             if (recipeWidget != null) {

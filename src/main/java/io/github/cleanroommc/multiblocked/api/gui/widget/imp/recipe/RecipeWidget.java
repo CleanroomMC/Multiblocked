@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
@@ -17,16 +18,20 @@ import java.util.function.DoubleSupplier;
 public class RecipeWidget extends WidgetGroup {
     public final Recipe recipe;
 
-    public RecipeWidget(Recipe recipe, ResourceTexture progress) {
-        this(recipe, ProgressWidget.JEIProgress, progress);
+    public RecipeWidget(Recipe recipe, ResourceTexture progress, IGuiTexture background) {
+        this(recipe, ProgressWidget.JEIProgress, progress, background);
     }
 
-    public RecipeWidget(Recipe recipe, DoubleSupplier doubleSupplier, ResourceTexture progress) {
+    public RecipeWidget(Recipe recipe, ResourceTexture progress) {
+        this(recipe, ProgressWidget.JEIProgress, progress, new ColorRectTexture(0x1f000000));
+    }
+
+    public RecipeWidget(Recipe recipe, DoubleSupplier doubleSupplier, ResourceTexture progress, IGuiTexture background) {
         super(0, 0, 176, 84);
         this.recipe = recipe;
         setClientSideWidget();
-        DraggableScrollableWidgetGroup inputs = new DraggableScrollableWidgetGroup(5, 5, 64, 64).setBackground(new ColorRectTexture(0x1f000000));
-        DraggableScrollableWidgetGroup outputs = new DraggableScrollableWidgetGroup(176 - 64 - 5, 5, 64, 64).setBackground(new ColorRectTexture(0x1f000000));
+        DraggableScrollableWidgetGroup inputs = new DraggableScrollableWidgetGroup(5, 5, 64, 64).setBackground(background);
+        DraggableScrollableWidgetGroup outputs = new DraggableScrollableWidgetGroup(176 - 64 - 5, 5, 64, 64).setBackground(background);
         this.addWidget(inputs);
         this.addWidget(outputs);
         this.addWidget(new ProgressWidget(doubleSupplier, 78, 27, 20, 20, progress));

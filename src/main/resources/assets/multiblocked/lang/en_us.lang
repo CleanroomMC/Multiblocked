@@ -21,6 +21,9 @@ item.out=Available Item Containers
 multiblocked.capability.bot_mana=Botaina Mana
 bot_mana.in=Available Botaina Mana Containers
 bot_mana.out=Available Botaina Mana Containers
+multiblocked.capability.qmd_particle=QMD Particle
+qmd_particle.in=Available QMD Particle Storages
+qmd_particle.out=Available QMD Particle Storages
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 
@@ -52,4 +55,7 @@ multiblocked.fluid.state_liquid=§aState: Liquid
 item.multiblocked.blueprint.name=Blueprint
 
 multiblocked.recipe.duration=Duration: %ds
+multiblocked.recipe.status.true=status: §cworking§r
+multiblocked.recipe.status.false=status: §aidle§r
+multiblocked.recipe.remaining=remaining time: %ds
 

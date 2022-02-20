@@ -20,7 +20,7 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
     public static final ParticleQMDCapability CAP = new ParticleQMDCapability();
 
     private ParticleQMDCapability() {
-        super("tc6_aspect", new Color(0xCDD59DBC, true).getRGB());
+        super("qmd_particle", new Color(0xCDD59DBC, true).getRGB());
     }
 
     @Override

@@ -95,7 +95,7 @@ public class PatternWidget extends WidgetGroup {
         this.controllerDefinition = controllerDefinition;
         HashSet<ItemStackKey> drops = new HashSet<>();
         drops.add(new ItemStackKey(this.controllerDefinition.getStackForm()));
-        this.patterns = controllerDefinition.getDesigns().stream()
+        this.patterns = controllerDefinition.getDesigns(world).stream()
                 .map(it -> initializePattern(it, drops))
                 .toArray(MBPattern[]::new);
         drops.forEach(it -> allItemStackInputs.add(it.getItemStack()));

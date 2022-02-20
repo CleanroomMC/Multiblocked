@@ -22,6 +22,7 @@ import io.github.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.IOPageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -72,8 +73,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     public BlockPattern getPattern() {
         if (definition.dynamicPattern != null) {
-            BlockPattern pattern = definition.dynamicPattern.apply(this);
-            return pattern == null ? definition.basePattern : pattern;
+            return definition.dynamicPattern.apply(this);
         }
         return definition.basePattern;
     }
@@ -113,6 +113,17 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (definition.updateFormed != null) {
             definition.updateFormed.apply(this);
         }
+    }
+
+    @Override
+    public IRenderer getRenderer() {
+        if (definition.dynamicRenderer != null) {
+            return definition.dynamicRenderer.apply(this);
+        }
+        if (definition.workingRenderer != null && recipeLogic != null && recipeLogic.isWorking && isFormed()) {
+            return definition.workingRenderer;
+        }
+        return super.getRenderer();
     }
 
     public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {

@@ -1,11 +1,11 @@
 package io.github.cleanroommc.multiblocked.api.tile.part;
 
 import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.world.IBlockPos;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -42,6 +42,19 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
             }
         }
         return false;
+    }
+
+    @Override
+    public IRenderer getRenderer() {
+        if (definition.dynamicRenderer != null) {
+            return definition.dynamicRenderer.apply(this);
+        }
+        for (ControllerTileEntity controller : getControllers()) {
+            if (definition.workingRenderer != null && controller.recipeLogic != null && controller.recipeLogic.isWorking && controller.isFormed()) {
+                return definition.workingRenderer;
+            }
+        }
+        return super.getRenderer();
     }
 
     public boolean canShared() {

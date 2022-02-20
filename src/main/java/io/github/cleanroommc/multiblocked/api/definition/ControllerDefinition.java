@@ -10,15 +10,20 @@ import io.github.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenProperty;
 import stanhebben.zenscript.annotations.ZenSetter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -63,10 +68,15 @@ public class ControllerDefinition extends ComponentDefinition {
         this.recipeMap = recipeMap;
     }
 
-    public List<MultiblockShapeInfo> getDesigns() {
+    public List<MultiblockShapeInfo> getDesigns(World world) {
         if (designs != null) return designs;
         // auto gen
-        return autoGenDFS(basePattern, new ArrayList<>(), new Stack<>());
+        if (basePattern != null) {
+            return autoGenDFS(basePattern, new ArrayList<>(), new Stack<>());
+        } else if (dynamicPattern != null) {
+            return autoGenDFS(dynamicPattern.apply((ControllerTileEntity) createNewTileEntity(world)), new ArrayList<>(), new Stack<>());
+        }
+        return Collections.emptyList();
     }
 
     private List<MultiblockShapeInfo> autoGenDFS(BlockPattern structurePattern, List<MultiblockShapeInfo> pages, Stack<Integer> repetitionStack) {

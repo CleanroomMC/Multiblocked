@@ -177,6 +177,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @ZenMethod
     public IRenderer getRenderer() {
+        if (definition.dynamicRenderer != null) {
+            return definition.dynamicRenderer.apply(this);
+        }
         if (isFormed()) {
             return definition.formedRenderer == null ? definition.baseRenderer : definition.formedRenderer;
         }

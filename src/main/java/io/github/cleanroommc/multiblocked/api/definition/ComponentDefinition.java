@@ -52,7 +52,11 @@ public class ComponentDefinition {
     @ZenProperty
     public IRenderer formedRenderer;
     @ZenProperty
+    public IRenderer workingRenderer;
+    @ZenProperty
     public boolean isOpaqueCube;
+    @ZenProperty
+    public IDynamicRenderer dynamicRenderer;
     @ZenProperty
     public IDrops onDrops;
     @ZenProperty

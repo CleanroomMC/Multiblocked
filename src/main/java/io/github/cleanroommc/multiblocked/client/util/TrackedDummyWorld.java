@@ -31,7 +31,7 @@ public class TrackedDummyWorld extends DummyWorld {
     public final Set<BlockPos> renderedBlocks = new HashSet<>();
     private Predicate<BlockPos> renderFilter;
     private Function<TileEntity, TileEntity> teHook;
-    private final World proxyWorld;
+    public final World proxyWorld;
 
     private final Vector3f minPos = new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
     private final Vector3f maxPos = new Vector3f(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);

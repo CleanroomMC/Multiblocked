@@ -43,7 +43,7 @@ public class SceneWidget extends WidgetGroup {
     private int currentMouseY;
     private Vector3f center;
     private float rotationYaw = 45;
-    private float rotationPitch;
+    private float rotationPitch = 45;
     private float zoom = 5;
     private BlockPosFace clickPosFace;
     private BlockPosFace hoverPosFace;
@@ -117,6 +117,7 @@ public class SceneWidget extends WidgetGroup {
             }
             center = new Vector3f((minX + maxX) / 2f + 0.5F, (minY + maxY) / 2f + 0.5F, (minZ + maxZ) / 2f + 0.5F);
             renderer.addRenderedBlocks(core, renderHook);
+            this.zoom = (float) (3.5 * Math.sqrt(Math.max(Math.max(Math.max(maxX - minX + 1, maxY - minY + 1), maxZ - minZ + 1), 1)));
             renderer.setCameraLookAt(center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
         }
         return this;

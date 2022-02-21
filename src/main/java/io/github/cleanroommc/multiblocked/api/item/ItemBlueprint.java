@@ -23,6 +23,10 @@ public class ItemBlueprint extends Item {
         setTranslationKey(Multiblocked.MODID + ".blueprint");
     }
 
+    public static boolean isItemBlueprint(ItemStack stack) {
+        return !stack.isEmpty() && stack.getItem() instanceof ItemBlueprint;
+    }
+
     public static BlockPos[] getPos(ItemStack stack) {
         NBTTagCompound tag = stack.getOrCreateSubCompound("blueprint");
         if (!tag.hasKey("minX")) return null;
@@ -65,6 +69,14 @@ public class ItemBlueprint extends Item {
         tag.removeTag("maxY");
         tag.removeTag("minZ");
         tag.removeTag("maxZ");
+    }
+
+    public static boolean isRaw(ItemStack stack) {
+        return stack.getMetadata() == 0;
+    }
+
+    public static void setRaw(ItemStack stack) {
+        stack.setItemDamage(0);
     }
 
     @Override

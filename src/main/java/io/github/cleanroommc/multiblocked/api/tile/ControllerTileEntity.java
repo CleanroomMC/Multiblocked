@@ -150,7 +150,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                             for (Map.Entry<MultiblockCapability<?>, IO> ioEntry : caps.entrySet()) {
                                 IO io = ioEntry.getValue();
                                 MultiblockCapability<?> capability = ioEntry.getKey();
-                                if (io == null) continue;
+                                if (io == null || capability == null) continue;
                                 if (capability.isBlockHasCapability(io, tileEntity)) {
                                     if (!capabilities.contains(io, capability)) {
                                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());

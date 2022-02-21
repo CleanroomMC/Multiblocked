@@ -1,5 +1,7 @@
 package io.github.cleanroommc.multiblocked.client.renderer.scene;
 
+import io.github.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.PositionedRect;
 import io.github.cleanroommc.multiblocked.util.Size;
@@ -232,6 +234,7 @@ public abstract class WorldSceneRenderer {
         GlStateManager.enableTexture2D();
         GlStateManager.enableAlpha();
 
+        boolean checkDisabledModel = world == mc.world || (world instanceof TrackedDummyWorld && ((TrackedDummyWorld) world).proxyWorld == mc.world);
         try { // render block in each layer
             for (BlockRenderLayer layer : BlockRenderLayer.values()) {
                 ForgeHooksClient.setRenderLayer(layer);
@@ -249,6 +252,9 @@ public abstract class WorldSceneRenderer {
                     BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
 
                     for (BlockPos pos : renderedBlocks) {
+                        if (checkDisabledModel && MultiblockWorldSavedData.isModelDisabled(pos)) {
+                            continue;
+                        }
                         IBlockState state = world.getBlockState(pos);
                         Block block = state.getBlock();
                         if (block == Blocks.AIR) continue;
@@ -280,6 +286,9 @@ public abstract class WorldSceneRenderer {
                     setDefaultPassRenderState(finalPass);
                 }
                 for (BlockPos pos : renderedBlocks) {
+                    if (checkDisabledModel && MultiblockWorldSavedData.isModelDisabled(pos)) {
+                        continue;
+                    }
                     TileEntity tile = world.getTileEntity(pos);
                     if (tile != null) {
                         if (tile.shouldRenderInPass(finalPass)) {

@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public class TabContainer extends WidgetGroup {
 
-    protected final BiMap<TabButton, WidgetGroup> tabs = HashBiMap.create();
-    protected final WidgetGroup buttonGroup;
-    protected final WidgetGroup containerGroup;
-    protected WidgetGroup focus;
+    public final BiMap<TabButton, WidgetGroup> tabs = HashBiMap.create();
+    public final WidgetGroup buttonGroup;
+    public final WidgetGroup containerGroup;
+    public WidgetGroup focus;
 
     public TabContainer(int x, int y, int width, int height) {
         super(x, y, width, height);

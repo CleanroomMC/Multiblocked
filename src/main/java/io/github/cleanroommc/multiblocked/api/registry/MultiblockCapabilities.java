@@ -10,6 +10,7 @@ import io.github.cleanroommc.multiblocked.common.capability.GasMekanismCapabilit
 import io.github.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ItemMultiblockCapability;
 import io.github.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
+import io.github.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
 
 import java.util.Map;
 
@@ -39,6 +40,9 @@ public class MultiblockCapabilities {
         if (Multiblocked.isModLoaded("mekanism")) {
             registerCapability(HeatMekanismCapability.CAP);
             registerCapability(GasMekanismCapability.CAP);
+        }
+        if (Multiblocked.isModLoaded("qmd")) {
+            registerCapability(ParticleQMDCapability.CAP);
         }
     }
 

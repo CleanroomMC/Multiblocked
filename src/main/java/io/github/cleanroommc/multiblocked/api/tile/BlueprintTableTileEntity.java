@@ -36,7 +36,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
         if (isFormed()) {
-            return new ModularUIBuilder(IGuiTexture.EMPTY, 330, 256)
+            return new ModularUIBuilder(IGuiTexture.EMPTY, 384, 256)
                     .widget(new BlueprintTableWidget(this))
                     .build(this, entityPlayer);
         } else {
@@ -78,7 +78,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .where(' ', Predicates.any())
                 .where('T', tableDefinition.selfPredicate(true))
                 .where('P', partDefinition.selfPredicate())
-                .where('C', Predicates.anyCapability(IO.IN, MultiblockCapabilities.ITEM))
+                .where('C', Predicates.anyCapability(IO.BOTH, MultiblockCapabilities.ITEM))
                 .build();
     }
 }

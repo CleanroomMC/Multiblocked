@@ -1,11 +1,16 @@
 package io.github.cleanroommc.multiblocked;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.github.cleanroommc.multiblocked.api.json.IBlockStateAdapterFactory;
+import io.github.cleanroommc.multiblocked.api.json.IRendererAdapterFactory;
+import io.github.cleanroommc.multiblocked.api.json.ItemStackTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.command.CommandReloadDefinitions;
 import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -38,6 +43,13 @@ public class Multiblocked {
     public static final String VERSION = "1.0";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
+    public static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapterFactory(IBlockStateAdapterFactory.INSTANCE)
+            .registerTypeAdapterFactory(IRendererAdapterFactory.INSTANCE)
+            .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
+            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+            .setLenient()
+            .create();
 
     @SidedProxy(modId = MODID, clientSide = "io.github.cleanroommc.multiblocked.client.ClientProxy", serverSide = "io.github.cleanroommc.multiblocked.CommonProxy")
     public static CommonProxy proxy;

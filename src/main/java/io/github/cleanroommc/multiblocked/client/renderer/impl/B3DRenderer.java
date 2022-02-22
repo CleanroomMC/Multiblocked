@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class B3DRenderer extends IModelRenderer {
     @SideOnly(Side.CLIENT)
-    private IModel model;
+    private transient IModel model;
 
     public B3DRenderer(ResourceLocation modelLocation) {
         super(modelLocation);

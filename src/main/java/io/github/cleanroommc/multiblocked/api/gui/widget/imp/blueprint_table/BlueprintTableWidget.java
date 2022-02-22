@@ -1,9 +1,12 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
+import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import io.github.cleanroommc.multiblocked.api.gui.util.ClickData;
 import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
@@ -11,6 +14,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.item.ItemBlueprint;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -28,6 +32,7 @@ import java.util.Set;
 
 public class BlueprintTableWidget extends TabContainer {
     public final BlueprintTableTileEntity table;
+    public final ButtonWidget templateButton;
     public SceneWidget sceneWidget;
     public Group selected;
 
@@ -38,7 +43,19 @@ public class BlueprintTableWidget extends TabContainer {
         this.addWidget(new LabelWidget(134, 34, this::status).setTextColor(-1).setDrop(true));
         this.addWidget(new LabelWidget(134, 49, this::size).setTextColor(-1).setDrop(true));
         this.addWidget(new LabelWidget(134, 64, this::description).setTextColor(-1).setDrop(true));
+        this.addWidget(templateButton = new ButtonWidget(36, 132, 20, 20, new ItemStackTexture(MultiblockedItems.BUILDER), this::onBuildTemplate));
+        templateButton.setHoverTooltip("Create template for multiblock builder");
+        templateButton.setVisible(false);
+    }
 
+    private void onBuildTemplate(ClickData clickData) {
+        if (selected != null && ItemBlueprint.isItemBlueprint(selected.slotWidget.getHandle().getStack())) {
+            for (Widget widget : widgets) {
+                widget.setActive(false);
+                widget.setVisible(false);
+            }
+            this.addWidget(0, new TemplateWidget(selected.slotWidget.getHandle().getStack()));
+        }
     }
 
     @Override
@@ -79,14 +96,14 @@ public class BlueprintTableWidget extends TabContainer {
     }
 
     private String size() {
-        if (sceneWidget != null) {
-            int size = 0;
-            for (Collection<BlockPos> collection : sceneWidget.getRenderer().renderedBlocksMap.keySet()) {
-                size += collection.size();
+        String result = "size: ";
+        if (selected != null) {
+            BlockPos[] poses = ItemBlueprint.getPos(selected.slotWidget.getHandle().getStack());
+            if (poses != null) {
+                result += String.format("(%dX%dX%d)", poses[1].getX() - poses[0].getX() + 1,  poses[1].getY() - poses[0].getY() + 1,  poses[1].getZ() - poses[0].getZ() + 1);
             }
-            return "size: " + size;
         }
-        return "size:";
+        return result;
     }
 
     private String description() {
@@ -110,6 +127,7 @@ public class BlueprintTableWidget extends TabContainer {
         if (this.selected != selected) {
             this.selected = selected;
             if (selected != null && isRemote()) {
+                templateButton.setVisible(true);
                 if (sceneWidget != null) {
                     removeWidget(sceneWidget);
                 }

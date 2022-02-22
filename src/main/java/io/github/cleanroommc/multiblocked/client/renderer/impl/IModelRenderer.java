@@ -37,10 +37,10 @@ public class IModelRenderer implements IRenderer {
 
     public final ResourceLocation modelLocation;
     @SideOnly(Side.CLIENT)
-    protected IBakedModel itemModel;
+    protected transient IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
-    protected Map<EnumFacing, IBakedModel> blockModels;
-    protected EnumMap<BlockRenderLayer, Boolean> renderLayer;
+    protected transient Map<EnumFacing, IBakedModel> blockModels;
+    protected transient EnumMap<BlockRenderLayer, Boolean> renderLayer;
 
     public IModelRenderer(ResourceLocation modelLocation) {
         this.modelLocation = modelLocation;

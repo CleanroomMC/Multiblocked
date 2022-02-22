@@ -17,9 +17,14 @@ public class PartDefinition extends ComponentDefinition {
     @ZenProperty
     public boolean canShared = true;
     @ZenProperty
-    public IPartAddedToMulti partAddedToMulti;
+    public transient IPartAddedToMulti partAddedToMulti;
     @ZenProperty
-    public IPartRemovedFromMulti partRemovedFromMulti;
+    public transient IPartRemovedFromMulti partRemovedFromMulti;
+
+    // used for Gson
+    public PartDefinition() {
+        super(null, PartTileEntity.PartSimpleTileEntity.class);
+    }
 
     public PartDefinition(ResourceLocation location, Class<? extends PartTileEntity<?>> clazz) {
         super(location, clazz);

@@ -22,7 +22,7 @@ public class BlockStateRenderer implements IRenderer {
 
     public final IBlockState state;
     @SideOnly(Side.CLIENT)
-    private IBakedModel itemModel;
+    private transient IBakedModel itemModel;
 
     public BlockStateRenderer(IBlockState state) {
         this.state = state;

@@ -97,7 +97,8 @@ public class CommonProxy {
                 .duration(200) // 60 tick -> 3s
                 .buildAndRegister();
         // create a controller component.
-        ControllerDefinition controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test_block"), recipeMap);
+        ControllerDefinition controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test_block"));
+        controllerDefinition.recipeMap = recipeMap;
         controllerDefinition.basePattern = FactoryBlockPattern.start()
                 .aisle("TXX", " E ")
                 .aisle("C#A", "QPW")
@@ -123,6 +124,9 @@ public class CommonProxy {
         controllerDefinition.isOpaqueCube = false;
         recipeMap.categoryTexture = new ItemStackTexture(controllerDefinition.getStackForm());
 
+        String result = Multiblocked.GSON.toJson(controllerDefinition);
+        ControllerDefinition gen = Multiblocked.GSON.fromJson(result, ControllerDefinition.class);
+        controllerDefinition = gen;
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

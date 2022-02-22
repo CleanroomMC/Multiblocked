@@ -52,10 +52,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
     public static PartDefinition partDefinition;
 
     public static void registerBlueprintTable() {
-        tableDefinition = new ControllerDefinition(
-                new ResourceLocation(Multiblocked.MODID, "blueprint_table"),
-                RecipeMap.EMPTY,
-                BlueprintTableTileEntity.class);
+        tableDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table"), BlueprintTableTileEntity.class);
         tableDefinition.recipeMap.inputCapabilities.add(MultiblockCapabilities.ITEM);
         tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"))
                 .setRenderLayer(BlockRenderLayer.SOLID, true);

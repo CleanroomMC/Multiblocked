@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class OBJRenderer extends IModelRenderer {
     @SideOnly(Side.CLIENT)
-    private IModel model;
+    private transient IModel model;
 
     public OBJRenderer(ResourceLocation modelLocation) {
         super(modelLocation);

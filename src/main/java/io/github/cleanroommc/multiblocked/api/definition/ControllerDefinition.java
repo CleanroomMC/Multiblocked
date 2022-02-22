@@ -34,38 +34,41 @@ import java.util.Stack;
 @ZenRegister
 public class ControllerDefinition extends ComponentDefinition {
     @ZenProperty
-    public BlockPattern basePattern;
+    public transient BlockPattern basePattern;
     @ZenProperty
-    public RecipeMap recipeMap;
+    public transient RecipeMap recipeMap;
     @ZenProperty
-    public IDynamicPattern dynamicPattern;
+    public transient IDynamicPattern dynamicPattern;
     @ZenProperty
-    public IStructureFormed structureFormed;
+    public transient IStructureFormed structureFormed;
     @ZenProperty
-    public IStructureInvalid structureInvalid;
+    public transient IStructureInvalid structureInvalid;
     @ZenProperty
-    public IUpdateFormed updateFormed;
+    public transient IUpdateFormed updateFormed;
     @ZenProperty
-    public ISetupRecipe setupRecipe;
+    public transient ISetupRecipe setupRecipe;
     @ZenProperty
-    public IRecipeFinish recipeFinish;
+    public transient IRecipeFinish recipeFinish;
     public ItemStack catalyst = ItemStack.EMPTY; // if null, checking pattern per second
     @ZenProperty
     public boolean consumeCatalyst;
     @ZenProperty
-    public List<MultiblockShapeInfo> designs;
+    public transient List<MultiblockShapeInfo> designs;
     @ZenProperty
     public boolean disableOthersRendering; // if true, only render controller, all other blocks of the multi do not render.
 
-
-    public ControllerDefinition(ResourceLocation location, RecipeMap recipeMap) {
-        super(location, ControllerTileEntity.class);
-        this.recipeMap = recipeMap;
+    // used for Gson
+    public ControllerDefinition() {
+        this(null, ControllerTileEntity.class);
     }
 
-    public ControllerDefinition(ResourceLocation location, RecipeMap recipeMap, Class<? extends ControllerTileEntity> clazz) {
+    public ControllerDefinition(ResourceLocation location) {
+        this(location, ControllerTileEntity.class);
+    }
+
+    public ControllerDefinition(ResourceLocation location, Class<? extends ControllerTileEntity> clazz) {
         super(location, clazz);
-        this.recipeMap = recipeMap;
+        this.recipeMap = RecipeMap.EMPTY;
     }
 
     public List<MultiblockShapeInfo> getDesigns(World world) {

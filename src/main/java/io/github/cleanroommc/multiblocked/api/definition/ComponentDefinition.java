@@ -42,9 +42,9 @@ import java.util.stream.Collectors;
 @ZenRegister
 public class ComponentDefinition {
     public final ResourceLocation location;
-    public final Class<? extends ComponentTileEntity<?>> clazz;
-    public final EnumMap<EnumFacing, List<AxisAlignedBB>> baseAABB;
-    public final EnumMap<EnumFacing, List<AxisAlignedBB>> formedAABB;
+    public transient final Class<? extends ComponentTileEntity<?>> clazz;
+    public transient final EnumMap<EnumFacing, List<AxisAlignedBB>> baseAABB;
+    public transient final EnumMap<EnumFacing, List<AxisAlignedBB>> formedAABB;
     @ZenProperty
     public boolean allowRotate;
     @ZenProperty
@@ -56,19 +56,19 @@ public class ComponentDefinition {
     @ZenProperty
     public boolean isOpaqueCube;
     @ZenProperty
-    public IDynamicRenderer dynamicRenderer;
+    public transient IDynamicRenderer dynamicRenderer;
     @ZenProperty
-    public IDrops onDrops;
+    public transient IDrops onDrops;
     @ZenProperty
-    public ILeftClick onLeftClick;
+    public transient ILeftClick onLeftClick;
     @ZenProperty
-    public IRightClick onRightClick;
+    public transient IRightClick onRightClick;
     @ZenProperty
-    public INeighborChanged onNeighborChanged;
+    public transient INeighborChanged onNeighborChanged;
     @ZenProperty
-    public IGetOutputRedstoneSignal getOutputRedstoneSignal;
+    public transient IGetOutputRedstoneSignal getOutputRedstoneSignal;
     @ZenProperty
-    public IUpdateTick updateTick;
+    public transient IUpdateTick updateTick;
 
     protected ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
         this.location = location;
@@ -78,7 +78,9 @@ public class ComponentDefinition {
         this.allowRotate = true;
         baseAABB = new EnumMap<>(EnumFacing.class);
         formedAABB = new EnumMap<>(EnumFacing.class);
-        MultiblockComponents.registerComponent(this);
+        if (location != null) {
+            MultiblockComponents.registerComponent(this);
+        }
     }
 
     public ComponentTileEntity<?> createNewTileEntity(World world){

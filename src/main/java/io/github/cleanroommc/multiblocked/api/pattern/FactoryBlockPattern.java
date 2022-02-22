@@ -14,14 +14,18 @@ import java.util.Map.Entry;
 public class FactoryBlockPattern {
 
     private static final Joiner COMMA_JOIN = Joiner.on(",");
-    private final List<String[]> depth = new ArrayList<>();
-    private final List<int[]> aisleRepetitions = new ArrayList<>();
-    private final Map<Character, TraceabilityPredicate> symbolMap = new HashMap<>();
+    private final List<String[]> depth;
+    private final List<int[]> aisleRepetitions;
+    private final Map<Character, TraceabilityPredicate> symbolMap;
+    private final RelativeDirection[] structureDir;
     private int aisleHeight;
     private int rowWidth;
-    private final RelativeDirection[] structureDir = new RelativeDirection[3];
 
     private FactoryBlockPattern(RelativeDirection charDir, RelativeDirection stringDir, RelativeDirection aisleDir) {
+        depth = new ArrayList<>();
+        aisleRepetitions = new ArrayList<>();
+        symbolMap = new HashMap<>();
+        structureDir = new RelativeDirection[3];
         structureDir[0] = charDir;
         structureDir[1] = stringDir;
         structureDir[2] = aisleDir;
@@ -43,7 +47,7 @@ public class FactoryBlockPattern {
             }
         }
         if (flags != 0x7) throw new IllegalArgumentException("Must have 3 different axes!");
-        this.symbolMap.put(' ', TraceabilityPredicate.ANY);
+        this.symbolMap.put(' ', Predicates.any());
     }
 
     /**

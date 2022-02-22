@@ -8,6 +8,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.Cont
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.NumberContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -44,6 +45,11 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new ColorRectTexture(this.color)).setUnit("FE");
+    }
+
+    @Override
+    public IBlockState[] getCandidates(IO io) {
+        return scanForCandidates(io);
     }
 
     public static class FECapabilityProxy extends CapabilityProxy<Integer> {

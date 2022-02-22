@@ -8,13 +8,10 @@ import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.BlueprintTableWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.IOPageWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.Predicates;
-import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -73,8 +70,8 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .aisle("PPP", "C  ")
                 .aisle("PTP", "   ")
                 .where(' ', Predicates.any())
-                .where('T', tableDefinition.selfPredicate(true))
-                .where('P', partDefinition.selfPredicate())
+                .where('T', Predicates.component(tableDefinition))
+                .where('P', Predicates.component(partDefinition))
                 .where('C', Predicates.anyCapability(IO.BOTH, MultiblockCapabilities.ITEM))
                 .build();
     }

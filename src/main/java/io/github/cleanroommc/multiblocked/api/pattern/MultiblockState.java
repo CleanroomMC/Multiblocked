@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import io.github.cleanroommc.multiblocked.network.s2c.SPacketRemoveDisabledRendering;
@@ -27,8 +28,8 @@ public class MultiblockState {
     protected TileEntity tileEntity;
     protected boolean tileEntityInitialized;
     protected PatternMatchContext matchContext;
-    protected Map<TraceabilityPredicate.SimplePredicate, Integer> globalCount;
-    protected Map<TraceabilityPredicate.SimplePredicate, Integer> layerCount;
+    public Map<SimplePredicate, Integer> globalCount;
+    public Map<SimplePredicate, Integer> layerCount;
     protected TraceabilityPredicate predicate;
     protected PatternError error;
     protected ControllerTileEntity controller;

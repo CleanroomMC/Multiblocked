@@ -12,8 +12,9 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 
-public class IBlockStateAdapterFactory implements TypeAdapterFactory {
-    public static final IRendererAdapterFactory INSTANCE = new IRendererAdapterFactory();
+public class IBlockStateTypeAdapterFactory implements TypeAdapterFactory {
+    public static final IRendererTypeAdapterFactory
+            INSTANCE = new IRendererTypeAdapterFactory();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -45,6 +46,7 @@ public class IBlockStateAdapterFactory implements TypeAdapterFactory {
         @Override
         public IBlockState read(final JsonReader in) {
             final JsonElement jsonElement = gson.fromJson(in, JsonElement.class);
+            if (jsonElement.isJsonNull()) return null;
             final Block block = Block.getBlockFromName(jsonElement.getAsJsonObject().get("id").getAsString());
             if (block == null) return null;
             if (jsonElement.getAsJsonObject().has("meta")) {

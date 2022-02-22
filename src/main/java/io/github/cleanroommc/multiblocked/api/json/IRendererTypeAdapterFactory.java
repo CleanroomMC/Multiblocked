@@ -2,7 +2,6 @@ package io.github.cleanroommc.multiblocked.api.json;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
@@ -14,8 +13,9 @@ import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRendere
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 
-public class IRendererAdapterFactory implements TypeAdapterFactory {
-    public static final IBlockStateAdapterFactory INSTANCE = new IBlockStateAdapterFactory();
+public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
+    public static final IBlockStateTypeAdapterFactory
+            INSTANCE = new IBlockStateTypeAdapterFactory();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -50,6 +50,7 @@ public class IRendererAdapterFactory implements TypeAdapterFactory {
         @Override
         public IRenderer read(final JsonReader in) {
             final JsonElement jsonElement = gson.fromJson(in, JsonElement.class);
+            if (jsonElement.isJsonNull()) return null;
             final String className = jsonElement.getAsJsonObject().get("type").getAsString();
             switch ( className ) {
                 case "B3D":

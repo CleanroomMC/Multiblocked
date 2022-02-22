@@ -1,9 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
-import net.minecraft.block.state.IBlockState;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,11 +22,11 @@ public class TraceabilityPredicate {
     // Allow the air block.
     public static TraceabilityPredicate AIR = new TraceabilityPredicate(blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()));
 
-    public final List<SimplePredicate> common = new ArrayList<>();
-    public final List<SimplePredicate> limited = new ArrayList<>();
-    protected boolean isCenter;
-    protected boolean hasAir = false;
-    protected boolean isSingle = true;
+    public List<SimplePredicate> common = new ArrayList<>();
+    public List<SimplePredicate> limited = new ArrayList<>();
+    public boolean isCenter;
+    public boolean hasAir = false;
+    public boolean isSingle = true;
 
     public TraceabilityPredicate() {}
 
@@ -48,12 +46,12 @@ public class TraceabilityPredicate {
         this(predicate, null);
     }
 
-    public boolean isHasAir() {
-        return hasAir;
-    }
-
-    public boolean isSingle() {
-        return isSingle;
+    public TraceabilityPredicate(SimplePredicate simplePredicate) {
+        if (simplePredicate.minGlobalCount != -1 || simplePredicate.maxGlobalCount != -1|| simplePredicate.minLayerCount != -1|| simplePredicate.maxLayerCount != -1) {
+            limited.add(simplePredicate);
+        } else {
+            common.add(simplePredicate);
+        }
     }
 
     /**
@@ -198,97 +196,6 @@ public class TraceabilityPredicate {
             return newPredicate;
         }
         return this;
-    }
-
-    public static class SimplePredicate{
-        public final Supplier<BlockInfo[]> candidates;
-
-        public final Predicate<MultiblockState> predicate;
-
-        private List<String> toolTips;
-
-        public int minGlobalCount = -1;
-        public int maxGlobalCount = -1;
-        public int minLayerCount = -1;
-        public int maxLayerCount = -1;
-
-        public int previewCount = -1;
-
-        public SimplePredicate(Predicate<MultiblockState> predicate, Supplier<BlockInfo[]> candidates) {
-            this.predicate = predicate;
-            this.candidates = candidates;
-        }
-
-        @SideOnly(Side.CLIENT)
-        public List<String> getToolTips(TraceabilityPredicate predicates) {
-            List<String> result = new ArrayList<>();
-            if (toolTips != null) {
-                toolTips.forEach(tip->result.add(I18n.format(tip)));
-            }
-            if (minGlobalCount == maxGlobalCount && maxGlobalCount != -1) {
-                result.add(I18n.format("multiblocked.pattern.limited_exact", minGlobalCount));
-            } else if (minGlobalCount != maxGlobalCount && minGlobalCount != -1 && maxGlobalCount != -1) {
-                result.add(I18n.format("multiblocked.pattern.limited_within", minGlobalCount, maxGlobalCount));
-            } else {
-                if (minGlobalCount != -1) {
-                    result.add(I18n.format("multiblocked.pattern.error.limited.1", minGlobalCount));
-                }
-                if (maxGlobalCount != -1) {
-                    result.add(I18n.format("multiblocked.pattern.error.limited.0", maxGlobalCount));
-                }
-            }
-            if (minLayerCount != -1) {
-                result.add(I18n.format("multiblocked.pattern.error.limited.3", minLayerCount));
-            }
-            if (maxLayerCount != -1) {
-                result.add(I18n.format("multiblocked.pattern.error.limited.2", maxLayerCount));
-            }
-            if (predicates == null) return result;
-            if (predicates.isSingle) {
-                result.add(I18n.format("multiblocked.pattern.single"));
-            }
-            if (predicates.hasAir) {
-                result.add(I18n.format("multiblocked.pattern.replaceable_air"));
-            }
-            return result;
-        }
-
-        public boolean test(MultiblockState blockWorldState) {
-            return predicate.test(blockWorldState);
-        }
-
-        public boolean testLimited(MultiblockState blockWorldState) {
-            return testGlobal(blockWorldState) && testLayer(blockWorldState);
-        }
-
-        public boolean testGlobal(MultiblockState blockWorldState) {
-            if (minGlobalCount == -1 && maxGlobalCount == -1) return true;
-            Integer count = blockWorldState.globalCount.get(this);
-            boolean base = predicate.test(blockWorldState);
-            count = (count == null ? 0 : count) + (base ? 1 : 0);
-            blockWorldState.globalCount.put(this, count);
-            if (maxGlobalCount == -1 || count <= maxGlobalCount) return base;
-            blockWorldState.setError(new SinglePredicateError(this, 0));
-            return false;
-        }
-
-        public boolean testLayer(MultiblockState blockWorldState) {
-            if (minLayerCount == -1 && maxLayerCount == -1) return true;
-            Integer count = blockWorldState.layerCount.get(this);
-            boolean base = predicate.test(blockWorldState);
-            count = (count == null ? 0 : count) + (base ? 1 : 0);
-            blockWorldState.layerCount.put(this, count);
-            if (maxLayerCount == -1 || count <= maxLayerCount) return base;
-            blockWorldState.setError(new SinglePredicateError(this, 2));
-            return false;
-        }
-
-        public List<ItemStack> getCandidates() {
-            return candidates == null ? Collections.emptyList() : Arrays.stream(this.candidates.get()).filter(info -> info.getBlockState().getBlock() != Blocks.AIR).map(info->{
-                IBlockState blockState = info.getBlockState();
-                return new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState));
-            }).collect(Collectors.toList());
-        }
     }
 
     public static class SinglePredicateError extends PatternError {

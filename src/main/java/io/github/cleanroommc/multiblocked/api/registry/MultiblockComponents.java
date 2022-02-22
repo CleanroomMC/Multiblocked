@@ -5,12 +5,8 @@ import com.google.common.collect.HashBiMap;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.block.ItemComponent;
-import io.github.cleanroommc.multiblocked.api.capability.IO;
-import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
-import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -52,16 +48,5 @@ public class MultiblockComponents {
     public static void registerModels() {
         COMPONENT_BLOCKS_REGISTRY.values().forEach(BlockComponent::onModelRegister);
     }
-
-    public static BlockComponent getOrRegisterAnyCapabilityBlock(IO io, MultiblockCapability<?> capability) {
-        ResourceLocation location = new ResourceLocation(Multiblocked.MODID, capability.name + "." + io.name());
-        if (!DEFINITION_REGISTRY.containsKey(location)) {
-            ComponentDefinition definition = new PartDefinition(location);
-            definition.baseRenderer = new CycleBlockStateRenderer(capability.getCandidates(io));
-            definition.isOpaqueCube = false;
-            definition.allowRotate = false;
-            COMPONENT_BLOCKS_REGISTRY.get(location).setCreativeTab(null);
-        }
-        return COMPONENT_BLOCKS_REGISTRY.get(location);
-    }
+    
 }

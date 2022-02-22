@@ -7,10 +7,13 @@ import crafttweaker.api.util.IAxisAlignedBB;
 import crafttweaker.mc1120.item.MCItemStack;
 import crafttweaker.mc1120.util.MCAxisAlignedBB;
 import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
-import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.*;
-import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
-import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDrops;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IDynamicRenderer;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IGetOutputRedstoneSignal;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.ILeftClick;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.INeighborChanged;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IRightClick;
+import io.github.cleanroommc.multiblocked.api.crafttweaker.functions.IUpdateTick;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
@@ -153,20 +156,6 @@ public class ComponentDefinition {
     @ZenSetter("formedAABB")
     public void setFormedAABB(IAxisAlignedBB[] formedAABB) {
         setAABB(true, Arrays.stream(formedAABB).map(CraftTweakerMC::getAxisAlignedBB).toArray(AxisAlignedBB[]::new));
-    }
-
-    @ZenMethod
-    public TraceabilityPredicate selfPredicate() {
-        return this.selfPredicate(false);
-    }
-
-    @ZenMethod
-    public TraceabilityPredicate selfPredicate(boolean isController) {
-        TraceabilityPredicate result = new TraceabilityPredicate(state -> {
-            Block block = state.getBlockState().getBlock();
-            return block instanceof BlockComponent && ((BlockComponent) block).definition == this;
-        }, ()-> new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location))});
-        return isController ? result.setCenter() : result;
     }
 
     public boolean needUpdateTick() {

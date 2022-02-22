@@ -2,12 +2,16 @@ package io.github.cleanroommc.multiblocked;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.cleanroommc.multiblocked.api.json.IBlockStateAdapterFactory;
-import io.github.cleanroommc.multiblocked.api.json.IRendererAdapterFactory;
+import io.github.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
+import io.github.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
+import io.github.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
 import io.github.cleanroommc.multiblocked.api.json.ItemStackTypeAdapter;
+import io.github.cleanroommc.multiblocked.api.json.SimplePredicateTypeAdapter;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.command.CommandReloadDefinitions;
 import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
+import jdk.nashorn.internal.ir.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -44,9 +48,11 @@ public class Multiblocked {
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapterFactory(IBlockStateAdapterFactory.INSTANCE)
-            .registerTypeAdapterFactory(IRendererAdapterFactory.INSTANCE)
+            .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
+            .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
+            .registerTypeAdapterFactory(BlockTypeAdapterFactory.INSTANCE)
             .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
+            .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
             .setLenient()
             .create();

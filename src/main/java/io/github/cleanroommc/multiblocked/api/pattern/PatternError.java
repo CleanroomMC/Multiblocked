@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -29,10 +30,10 @@ public class PatternError {
     public List<List<ItemStack>> getCandidates() {
         TraceabilityPredicate predicate = worldState.predicate;
         List<List<ItemStack>> candidates = new ArrayList<>();
-        for (TraceabilityPredicate.SimplePredicate common : predicate.common) {
+        for (SimplePredicate common : predicate.common) {
             candidates.add(common.getCandidates());
         }
-        for (TraceabilityPredicate.SimplePredicate limited : predicate.limited) {
+        for (SimplePredicate limited : predicate.limited) {
             candidates.add(limited.getCandidates());
         }
         return candidates;

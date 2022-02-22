@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * It will toggles the rendered block each second, mainly for rendering of the Any Capability. {@link io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability#getCandidates(IO)}
+ * It will toggles the rendered block each second, mainly for rendering of the Any Capability. {@link io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability#getCandidates(IO)} (IO)}
  *
  * Because you did not schedule the chunk compiling. So please don't use it in the world. Just for JEI or such dynamic rendering.
  */

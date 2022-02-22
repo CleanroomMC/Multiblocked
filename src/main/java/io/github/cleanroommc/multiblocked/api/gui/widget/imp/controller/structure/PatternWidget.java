@@ -16,6 +16,7 @@ import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
@@ -78,7 +79,7 @@ public class PatternWidget extends WidgetGroup {
     public final ControllerDefinition controllerDefinition;
     public final MBPattern[] patterns;
     public final List<ItemStack> allItemStackInputs;
-    private final List<TraceabilityPredicate.SimplePredicate> predicates;
+    private final List<SimplePredicate> predicates;
     private int index;
     private SlotWidget[] slotWidgets;
     private SlotWidget[] candidates;
@@ -181,7 +182,7 @@ public class PatternWidget extends WidgetGroup {
             }
             List<List<ItemStack>> candidateStacks = new ArrayList<>();
             List<List<String>> predicateTips = new ArrayList<>();
-            for (TraceabilityPredicate.SimplePredicate simplePredicate : predicates) {
+            for (SimplePredicate simplePredicate : predicates) {
                 List<ItemStack> itemStacks = simplePredicate.getCandidates();
                 if (!itemStacks.isEmpty()) {
                     candidateStacks.add(itemStacks);

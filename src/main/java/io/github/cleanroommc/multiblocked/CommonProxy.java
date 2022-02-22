@@ -63,6 +63,8 @@ public class CommonProxy {
     }
 
     public static void registerComponents(){
+        // register any capability block
+        MultiblockCapabilities.registerAnyCapabilityBlocks();
         // register blueprint table
         BlueprintTableTileEntity.registerBlueprintTable();
         
@@ -99,12 +101,12 @@ public class CommonProxy {
         // create a controller component.
         ControllerDefinition controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test_block"));
         controllerDefinition.recipeMap = recipeMap;
-        controllerDefinition.basePattern = FactoryBlockPattern.start()
+        FactoryBlockPattern factory = FactoryBlockPattern.start()
                 .aisle("TXX", " E ")
                 .aisle("C#A", "QPW")
                 .aisle("BYD", "   ")
                 .where(' ', any())
-                .where('P', partDefinition.selfPredicate())
+                .where('P', component(partDefinition))
                 .where('X', blocks(Blocks.STONE))
                 .where('#', air())
                 .where('E', anyCapability(IO.OUT, ParticleQMDCapability.CAP))
@@ -115,8 +117,8 @@ public class CommonProxy {
                 .where('B', anyCapability(IO.OUT, ManaBotainaCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('D', anyCapability(IO.BOTH, AspectThaumcraftCapability.CAP)) // if and only if available IN-Item-Capability here. (item inputBus)
                 .where('C', blocks(Blocks.CHEST)) // tho not define a specific Capability here. it will still be detected according to the recipeMap, so will create a proxy of the BOTH-Item-Capability here. (item in/outputBus)
-                .where('Y', controllerDefinition.selfPredicate(true))
-                .build();
+                .where('Y', component(controllerDefinition));
+        controllerDefinition.basePattern = factory.build();
         controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"))
                 .setRenderLayer(BlockRenderLayer.SOLID, true);
         controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"))
@@ -124,9 +126,9 @@ public class CommonProxy {
         controllerDefinition.isOpaqueCube = false;
         recipeMap.categoryTexture = new ItemStackTexture(controllerDefinition.getStackForm());
 
-        String result = Multiblocked.GSON.toJson(controllerDefinition);
-        ControllerDefinition gen = Multiblocked.GSON.fromJson(result, ControllerDefinition.class);
-        controllerDefinition = gen;
+//        String result = Multiblocked.GSON.toJson(factory);
+//        factory = Multiblocked.GSON.fromJson(result, FactoryBlockPattern.class);
+//        System.out.println();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

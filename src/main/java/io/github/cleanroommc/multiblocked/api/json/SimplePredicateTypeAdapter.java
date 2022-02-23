@@ -40,6 +40,10 @@ public class SimplePredicateTypeAdapter implements JsonDeserializer<SimplePredic
         if (JsonUtils.hasField(jsonObj, "type")) {
             String type = JsonUtils.getString(jsonObj, "type");
             switch (type) {
+                case "any":
+                    return SimplePredicate.ANY;
+                case "air":
+                    return SimplePredicate.AIR;
                 case "states":
                     return GSON.fromJson(jsonObj, PredicateStates.class).buildObjectFromJson();
                 case "blocks":
@@ -59,7 +63,11 @@ public class SimplePredicateTypeAdapter implements JsonDeserializer<SimplePredic
             return JsonNull.INSTANCE;
         }
         final JsonElement jsonElement = GSON.toJsonTree(src);
-        if (src instanceof PredicateStates) {
+        if (src == SimplePredicate.ANY) {
+            jsonElement.getAsJsonObject().addProperty("type", "any");
+        } else if (src == SimplePredicate.AIR) {
+            jsonElement.getAsJsonObject().addProperty("type", "air");
+        } else if (src instanceof PredicateStates) {
             jsonElement.getAsJsonObject().addProperty("type", "states");
         } else if (src instanceof PredicateBlocks) {
             jsonElement.getAsJsonObject().addProperty("type", "blocks");

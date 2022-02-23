@@ -1,5 +1,7 @@
-package io.github.cleanroommc.multiblocked.api.pattern;
+package io.github.cleanroommc.multiblocked.api.pattern.error;
 
+import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
+import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;

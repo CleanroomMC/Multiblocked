@@ -81,9 +81,6 @@ public class ComponentDefinition {
         this.allowRotate = true;
         baseAABB = new EnumMap<>(EnumFacing.class);
         formedAABB = new EnumMap<>(EnumFacing.class);
-        if (location != null) {
-            MultiblockComponents.registerComponent(this);
-        }
     }
 
     public ComponentTileEntity<?> createNewTileEntity(World world){

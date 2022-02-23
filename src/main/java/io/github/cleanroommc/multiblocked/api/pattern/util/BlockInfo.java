@@ -1,4 +1,4 @@
-package io.github.cleanroommc.multiblocked.api.pattern;
+package io.github.cleanroommc.multiblocked.api.pattern.util;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.block.Block;

@@ -58,12 +58,12 @@ public class MultiblockCapabilities {
     public static void registerAnyCapabilityBlocks() {
         for (MultiblockCapability<?> capability : MultiblockCapabilities.CAPABILITY_REGISTRY.values()) {
             for (IO io : IO.values()) {
-                ResourceLocation location = new ResourceLocation(Multiblocked.MODID, capability.name + "." + io.name());
-                ComponentDefinition definition = new PartDefinition(location);
+                ComponentDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, capability.name + "." + io.name()));
                 definition.baseRenderer = new CycleBlockStateRenderer(capability.getCandidates(io));
                 definition.isOpaqueCube = false;
                 definition.allowRotate = false;
-                MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location).setCreativeTab(null);
+                MultiblockComponents.registerComponent(definition);
+                MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).setCreativeTab(null);
             }
         }
     }

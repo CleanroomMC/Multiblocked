@@ -1,14 +1,10 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -195,29 +191,4 @@ public class TraceabilityPredicate {
         return this.common.contains(SimplePredicate.AIR);
     }
 
-    public static class SinglePredicateError extends PatternError {
-        public final SimplePredicate predicate;
-        public final int type;
-
-        public SinglePredicateError(SimplePredicate predicate, int type) {
-            this.predicate = predicate;
-            this.type = type;
-        }
-
-        @Override
-        public List<List<ItemStack>> getCandidates() {
-            return Collections.singletonList(predicate.getCandidates());
-        }
-
-        @SideOnly(Side.CLIENT)
-        @Override
-        public String getErrorInfo() {
-            int number = -1;
-            if (type == 0) number = predicate.maxGlobalCount;
-            if (type == 1) number = predicate.minGlobalCount;
-            if (type == 2) number = predicate.maxLayerCount;
-            if (type == 3) number = predicate.minLayerCount;
-            return I18n.format("multiblocked.pattern.error.limited." + type, number);
-        }
-    }
 }

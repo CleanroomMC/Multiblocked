@@ -70,6 +70,7 @@ public class CommonProxy {
         
         // create a part component.
         PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "test_part"));
+        MultiblockComponents.registerComponent(partDefinition);
         partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"))
                 .setRenderLayer(BlockRenderLayer.CUTOUT_MIPPED, true);
         partDefinition.baseRenderer = new BlockStateRenderer(Blocks.BEDROCK.getDefaultState());
@@ -100,6 +101,7 @@ public class CommonProxy {
                 .buildAndRegister();
         // create a controller component.
         ControllerDefinition controllerDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID,"test_block"));
+        MultiblockComponents.registerComponent(controllerDefinition);
         controllerDefinition.recipeMap = recipeMap;
         FactoryBlockPattern factory = FactoryBlockPattern.start()
                 .aisle("TXX", " E ")
@@ -126,9 +128,9 @@ public class CommonProxy {
         controllerDefinition.isOpaqueCube = false;
         recipeMap.categoryTexture = new ItemStackTexture(controllerDefinition.getStackForm());
 
-        String result = Multiblocked.GSON.toJson(controllerDefinition);
-        controllerDefinition = Multiblocked.GSON.fromJson(result, ControllerDefinition.class);
-        System.out.println();
+//        String result = Multiblocked.GSON.toJson(controllerDefinition);
+//        controllerDefinition = Multiblocked.GSON.fromJson(result, ControllerDefinition.class);
+//        System.out.println();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

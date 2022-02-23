@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

@@ -12,7 +12,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
-import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
+import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;

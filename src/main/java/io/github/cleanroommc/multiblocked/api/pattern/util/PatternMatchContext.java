@@ -1,4 +1,4 @@
-package io.github.cleanroommc.multiblocked.api.pattern;
+package io.github.cleanroommc.multiblocked.api.pattern.util;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,8 @@
 package io.github.cleanroommc.multiblocked.api.pattern.predicates;
 
-import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
+import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
+import io.github.cleanroommc.multiblocked.api.pattern.error.SinglePredicateError;
 import io.github.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
@@ -97,7 +98,7 @@ public class SimplePredicate {
         count = (count == null ? 0 : count) + (base ? 1 : 0);
         blockWorldState.globalCount.put(this, count);
         if (maxGlobalCount == -1 || count <= maxGlobalCount) return base;
-        blockWorldState.setError(new TraceabilityPredicate.SinglePredicateError(this, 0));
+        blockWorldState.setError(new SinglePredicateError(this, 0));
         return false;
     }
 
@@ -108,7 +109,7 @@ public class SimplePredicate {
         count = (count == null ? 0 : count) + (base ? 1 : 0);
         blockWorldState.layerCount.put(this, count);
         if (maxLayerCount == -1 || count <= maxLayerCount) return base;
-        blockWorldState.setError(new TraceabilityPredicate.SinglePredicateError(this, 2));
+        blockWorldState.setError(new SinglePredicateError(this, 2));
         return false;
     }
 

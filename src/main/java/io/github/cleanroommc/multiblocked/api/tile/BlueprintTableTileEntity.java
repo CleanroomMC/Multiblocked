@@ -13,6 +13,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.Predicates;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
@@ -74,5 +75,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .where('P', Predicates.component(partDefinition))
                 .where('C', Predicates.anyCapability(IO.BOTH, MultiblockCapabilities.ITEM))
                 .build();
+        MultiblockComponents.registerComponent(tableDefinition);
+        MultiblockComponents.registerComponent(partDefinition);
     }
 }

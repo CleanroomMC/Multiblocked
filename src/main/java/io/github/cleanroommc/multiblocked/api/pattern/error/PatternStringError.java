@@ -1,4 +1,4 @@
-package io.github.cleanroommc.multiblocked.api.pattern;
+package io.github.cleanroommc.multiblocked.api.pattern.error;
 
 import net.minecraft.client.resources.I18n;
 

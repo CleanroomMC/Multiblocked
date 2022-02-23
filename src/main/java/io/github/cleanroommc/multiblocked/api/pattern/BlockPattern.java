@@ -1,11 +1,16 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
 import crafttweaker.annotations.ZenRegister;
-import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.pattern.error.PatternError;
+import io.github.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
+import io.github.cleanroommc.multiblocked.api.pattern.error.SinglePredicateError;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
+import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import io.github.cleanroommc.multiblocked.api.pattern.util.PatternMatchContext;
+import io.github.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
@@ -45,11 +50,9 @@ public class BlockPattern {
     protected final int fingerLength; //z size
     protected final int thumbLength; //y size
     protected final int palmLength; //x size
+    protected final int[] centerOffset; // x, y, z, minZ, maxZ
 
-    // x, y, z, minZ, maxZ
-    private int[] centerOffset = null;
-
-    public BlockPattern(TraceabilityPredicate[][][] predicatesIn, RelativeDirection[] structureDir, int[][] aisleRepetitions) {
+    public BlockPattern(TraceabilityPredicate[][][] predicatesIn, RelativeDirection[] structureDir, int[][] aisleRepetitions, int[] centerOffset) {
         this.blockMatches = predicatesIn;
         this.fingerLength = predicatesIn.length;
         this.structureDir = structureDir;
@@ -67,26 +70,8 @@ public class BlockPattern {
             this.thumbLength = 0;
             this.palmLength = 0;
         }
-
-        initializeCenterOffsets();
-    }
-
-    private void initializeCenterOffsets() {
-        loop:
-        for (int x = 0; x < this.palmLength; x++) {
-            for (int y = 0; y < this.thumbLength; y++) {
-                for (int z = 0, minZ = 0, maxZ = 0; z < this.fingerLength; minZ += aisleRepetitions[z][0], maxZ += aisleRepetitions[z][1], z++) {
-                    TraceabilityPredicate predicate = this.blockMatches[z][y][x];
-                    if (predicate.isCenter) {
-                        centerOffset = new int[]{x, y, z, minZ, maxZ};
-                        break loop;
-                    }
-                }
-            }
-        }
-        if (centerOffset == null) {
-            throw new IllegalArgumentException("Didn't found center predicate");
-        }
+        
+        this.centerOffset = centerOffset;
     }
 
     public boolean checkPatternAt(MultiblockState worldState, boolean savePredicate) {
@@ -101,7 +86,7 @@ public class BlockPattern {
             return false;
         }
         BlockPos centerPos = worldState.getController().getPos();
-        EnumFacing facing = worldState.getController().getFrontFacing().getOpposite();
+        EnumFacing facing = worldState.getController().getFrontFacing();
         Set<MultiblockCapability<?>> inputCapabilities = worldState.getController().getDefinition().recipeMap.inputCapabilities;
         Set<MultiblockCapability<?>> outputCapabilities = worldState.getController().getDefinition().recipeMap.outputCapabilities;
         //Checking aisles
@@ -186,7 +171,7 @@ public class BlockPattern {
                 //Check layer-local matcher predicate
                 for (Map.Entry<SimplePredicate, Integer> entry : layerCount.entrySet()) {
                     if (entry.getValue() < entry.getKey().minLayerCount) {
-                        worldState.setError(new TraceabilityPredicate.SinglePredicateError(entry.getKey(), 3));
+                        worldState.setError(new SinglePredicateError(entry.getKey(), 3));
                         return false;
                     }
                 }
@@ -203,7 +188,7 @@ public class BlockPattern {
         //Check count matches amount
         for (Map.Entry<SimplePredicate, Integer> entry : globalCount.entrySet()) {
             if (entry.getValue() < entry.getKey().minGlobalCount) {
-                worldState.setError(new TraceabilityPredicate.SinglePredicateError(entry.getKey(), 1));
+                worldState.setError(new SinglePredicateError(entry.getKey(), 1));
                 return false;
             }
         }
@@ -217,7 +202,7 @@ public class BlockPattern {
         int minZ = -centerOffset[4];
         worldState.clean();
         BlockPos centerPos = worldState.getController().getPos();
-        EnumFacing facing = worldState.getController().getFrontFacing().getOpposite();
+        EnumFacing facing = worldState.getController().getFrontFacing();
         Map<SimplePredicate, BlockInfo[]> cacheInfos = new HashMap<>();
         Map<SimplePredicate, Integer> cacheGlobal = worldState.globalCount;
         Map<BlockPos, Object> blocks = new HashMap<>();

@@ -1,6 +1,9 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import io.github.cleanroommc.multiblocked.api.pattern.error.PatternError;
+import io.github.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
+import io.github.cleanroommc.multiblocked.api.pattern.util.PatternMatchContext;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import io.github.cleanroommc.multiblocked.network.s2c.SPacketRemoveDisabledRendering;
@@ -23,16 +26,16 @@ import java.util.stream.Collectors;
 public class MultiblockState {
     public final static PatternError UNLOAD_ERROR = new PatternStringError("multiblocked.pattern.error.chunk");
 
-    protected BlockPos pos;
-    protected IBlockState state;
-    protected TileEntity tileEntity;
-    protected boolean tileEntityInitialized;
-    protected PatternMatchContext matchContext;
+    public BlockPos pos;
+    public IBlockState state;
+    public TileEntity tileEntity;
+    public boolean tileEntityInitialized;
+    public PatternMatchContext matchContext;
     public Map<SimplePredicate, Integer> globalCount;
     public Map<SimplePredicate, Integer> layerCount;
-    protected TraceabilityPredicate predicate;
-    protected PatternError error;
-    protected ControllerTileEntity controller;
+    public TraceabilityPredicate predicate;
+    public PatternError error;
+    public ControllerTileEntity controller;
     public final World world;
     public final BlockPos controllerPos;
 

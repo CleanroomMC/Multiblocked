@@ -1,6 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.pattern.predicates;
 
-import io.github.cleanroommc.multiblocked.api.pattern.BlockInfo;
+import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import net.minecraft.block.state.IBlockState;
 import org.apache.commons.lang3.ArrayUtils;
 

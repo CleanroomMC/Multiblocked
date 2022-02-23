@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
 import com.google.common.base.Joiner;
+import io.github.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -111,7 +112,7 @@ public class FactoryBlockPattern {
     }
 
     public static FactoryBlockPattern start() {
-        return new FactoryBlockPattern(RelativeDirection.RIGHT, RelativeDirection.UP, RelativeDirection.BACK);
+        return new FactoryBlockPattern(RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.FRONT);
     }
 
     public static FactoryBlockPattern start(RelativeDirection charDir, RelativeDirection stringDir, RelativeDirection aisleDir) {
@@ -128,7 +129,23 @@ public class FactoryBlockPattern {
     }
 
     public BlockPattern build() {
-        return new BlockPattern(makePredicateArray(), structureDir, aisleRepetitions.toArray(new int[aisleRepetitions.size()][]));
+        this.checkMissingPredicates();
+        int[] centerOffset = new int[5];
+        int[][] aisleRepetitions = this.aisleRepetitions.toArray(new int[this.aisleRepetitions.size()][]);
+        TraceabilityPredicate[][][] predicate = (TraceabilityPredicate[][][]) Array.newInstance(TraceabilityPredicate.class, this.depth.size(), this.aisleHeight, this.rowWidth);
+
+        for (int i = 0, minZ = 0, maxZ = 0; i < this.depth.size(); minZ += aisleRepetitions[i][0], maxZ += aisleRepetitions[i][1], i++) {
+            for (int j = 0; j < this.aisleHeight; j++) {
+                for (int k = 0; k < this.rowWidth; k++) {
+                    predicate[i][j][k] = this.symbolMap.get(this.depth.get(i)[j].charAt(k));
+                    if (predicate[i][j][k].isCenter) {
+                        centerOffset = new int[]{k, j, i, minZ, maxZ};
+                    }
+                }
+            }
+        }
+
+        return new BlockPattern(predicate, structureDir, aisleRepetitions, centerOffset);
     }
 
     private TraceabilityPredicate[][][] makePredicateArray() {

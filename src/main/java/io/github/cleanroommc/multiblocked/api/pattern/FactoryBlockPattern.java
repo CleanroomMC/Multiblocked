@@ -119,7 +119,7 @@ public class FactoryBlockPattern {
     }
 
     public FactoryBlockPattern where(char symbol, TraceabilityPredicate blockMatcher) {
-        if (blockMatcher == TraceabilityPredicate.ANY || blockMatcher == TraceabilityPredicate.AIR) {
+        if (blockMatcher.isAny()|| blockMatcher.isAir()) {
             this.symbolMap.put(symbol, blockMatcher);
         } else {
             this.symbolMap.put(symbol, new TraceabilityPredicate(blockMatcher).sort());

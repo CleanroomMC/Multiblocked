@@ -118,7 +118,7 @@ public class BlockPattern {
                         TraceabilityPredicate predicate = this.blockMatches[c][b][a];
                         BlockPos pos = setActualRelativeOffset(x, y, z, facing).add(centerPos.getX(), centerPos.getY(), centerPos.getZ());
                         worldState.update(pos, predicate);
-                        if (predicate != TraceabilityPredicate.ANY) {
+                        if (!predicate.isAny()) {
                             worldState.addPosCache(pos);
                             if (savePredicate) {
                                 worldState.getMatchContext().getOrCreate("predicates", (Supplier<HashMap<BlockPos, TraceabilityPredicate>>) HashMap::new).put(pos, predicate);
@@ -127,7 +127,7 @@ public class BlockPattern {
                         boolean canPartShared = true;
                         TileEntity tileEntity = worldState.getTileEntity();
                         if (tileEntity instanceof PartTileEntity) { // add detected parts
-                            if (predicate != TraceabilityPredicate.ANY) {
+                            if (!predicate.isAny()) {
                                 PartTileEntity<?> partTileEntity = (PartTileEntity<?>) tileEntity;
                                 if (partTileEntity.isFormed() && !partTileEntity.canShared()) { // check part can be shared
                                     canPartShared = false;
@@ -152,7 +152,7 @@ public class BlockPattern {
                             }
                             continue loop;
                         }
-                        if (tileEntity != null && predicate != TraceabilityPredicate.ANY) {
+                        if (tileEntity != null && !predicate.isAny()) {
                             Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilities = worldState.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
                             if (!capabilities.containsKey(worldState.getPos().toLong())) {
                                 // if predicate has no specific capability requirements. we will check abilities of every blocks

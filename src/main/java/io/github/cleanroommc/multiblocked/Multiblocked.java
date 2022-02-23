@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
+import io.github.cleanroommc.multiblocked.api.json.EnumMapTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
 import io.github.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
 import io.github.cleanroommc.multiblocked.api.json.ItemStackTypeAdapter;
@@ -11,9 +12,9 @@ import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.command.CommandReloadDefinitions;
 import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
@@ -51,6 +52,7 @@ public class Multiblocked {
             .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
             .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
             .registerTypeAdapterFactory(BlockTypeAdapterFactory.INSTANCE)
+            .registerTypeAdapter(EnumMapTypeAdapter.BlockRenderLayerBooleanType, EnumMapTypeAdapter.BlockRenderLayerBooleanCreator)
             .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
             .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())

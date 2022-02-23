@@ -126,9 +126,9 @@ public class CommonProxy {
         controllerDefinition.isOpaqueCube = false;
         recipeMap.categoryTexture = new ItemStackTexture(controllerDefinition.getStackForm());
 
-//        String result = Multiblocked.GSON.toJson(factory);
-//        factory = Multiblocked.GSON.fromJson(result, FactoryBlockPattern.class);
-//        System.out.println();
+        String result = Multiblocked.GSON.toJson(controllerDefinition);
+        controllerDefinition = Multiblocked.GSON.fromJson(result, ControllerDefinition.class);
+        System.out.println();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

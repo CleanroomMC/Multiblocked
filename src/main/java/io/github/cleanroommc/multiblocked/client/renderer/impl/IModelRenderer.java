@@ -40,7 +40,7 @@ public class IModelRenderer implements IRenderer {
     protected transient IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
     protected transient Map<EnumFacing, IBakedModel> blockModels;
-    protected transient EnumMap<BlockRenderLayer, Boolean> renderLayer;
+    protected EnumMap<BlockRenderLayer, Boolean> renderLayer;
 
     public IModelRenderer(ResourceLocation modelLocation) {
         this.modelLocation = modelLocation;

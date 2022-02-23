@@ -17,16 +17,9 @@ import java.util.stream.Collectors;
 
 public class TraceabilityPredicate {
 
-    // Allow any block.
-    public static TraceabilityPredicate ANY =new TraceabilityPredicate((state)->true);
-    // Allow the air block.
-    public static TraceabilityPredicate AIR = new TraceabilityPredicate(blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()));
-
     public List<SimplePredicate> common = new ArrayList<>();
     public List<SimplePredicate> limited = new ArrayList<>();
     public boolean isCenter;
-    public boolean hasAir = false;
-    public boolean isSingle = true;
 
     public TraceabilityPredicate() {}
 
@@ -34,16 +27,10 @@ public class TraceabilityPredicate {
         common.addAll(predicate.common);
         limited.addAll(predicate.limited);
         isCenter = predicate.isCenter;
-        hasAir = predicate.hasAir;
-        isSingle = predicate.isSingle;
     }
 
     public TraceabilityPredicate(Predicate<MultiblockState> predicate, Supplier<BlockInfo[]> candidates) {
         common.add(new SimplePredicate(predicate, candidates));
-    }
-
-    public TraceabilityPredicate(Predicate<MultiblockState> predicate) {
-        this(predicate, null);
     }
 
     public TraceabilityPredicate(SimplePredicate simplePredicate) {
@@ -185,17 +172,27 @@ public class TraceabilityPredicate {
     public TraceabilityPredicate or(TraceabilityPredicate other) {
         if (other != null) {
             TraceabilityPredicate newPredicate = new TraceabilityPredicate(this);
-            if (this != AIR && other != AIR) {
-                newPredicate.isSingle = false;
-            } else {
-                newPredicate.isSingle = this.isSingle && other.isSingle;
-            }
-            newPredicate.hasAir = newPredicate.hasAir || this == AIR || other == AIR;
             newPredicate.common.addAll(other.common);
             newPredicate.limited.addAll(other.limited);
             return newPredicate;
         }
         return this;
+    }
+
+    public boolean isAny() {
+        return this.common.size() == 1 && this.limited.isEmpty() && this.common.get(0) == SimplePredicate.ANY;
+    }
+
+    public boolean isAir() {
+        return this.common.size() == 1 && this.limited.isEmpty() && this.common.get(0) == SimplePredicate.AIR;
+    }
+
+    public boolean isSingle() {
+        return !isAny() && !isAir() && this.common.size() + this.limited.size() == 1;
+    }
+
+    public boolean hasAir() {
+        return this.common.contains(SimplePredicate.AIR);
     }
 
     public static class SinglePredicateError extends PatternError {

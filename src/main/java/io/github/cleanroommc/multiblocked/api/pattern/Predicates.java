@@ -8,6 +8,7 @@ import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateAnyCap
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateBlocks;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateStates;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 
@@ -30,17 +31,15 @@ public class Predicates {
 
     public static TraceabilityPredicate component(ComponentDefinition definition) {
         TraceabilityPredicate predicate = new TraceabilityPredicate(new PredicateComponent(definition));
-        if (definition instanceof ControllerDefinition) {
-            predicate.setCenter();
-        }
-        return predicate;
+        return definition instanceof ControllerDefinition ? predicate.setCenter() : predicate;
     }
 
     public static TraceabilityPredicate any() {
-        return TraceabilityPredicate.ANY;
+        return new TraceabilityPredicate(SimplePredicate.ANY);
     }
 
     public static TraceabilityPredicate air() {
-        return TraceabilityPredicate.AIR;
+        return new TraceabilityPredicate(SimplePredicate.AIR);
+
     }
 }

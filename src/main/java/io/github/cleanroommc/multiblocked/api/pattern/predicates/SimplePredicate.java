@@ -20,6 +20,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SimplePredicate {
+    public static SimplePredicate ANY = new SimplePredicate(x -> true, null);
+    public static SimplePredicate AIR = new SimplePredicate(blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()), null);
     public transient Supplier<BlockInfo[]> candidates;
 
     public transient Predicate<MultiblockState> predicate;
@@ -71,10 +73,10 @@ public class SimplePredicate {
             result.add(I18n.format("multiblocked.pattern.error.limited.2", maxLayerCount));
         }
         if (predicates == null) return result;
-        if (predicates.isSingle) {
+        if (predicates.isSingle()) {
             result.add(I18n.format("multiblocked.pattern.single"));
         }
-        if (predicates.hasAir) {
+        if (predicates.hasAir()) {
             result.add(I18n.format("multiblocked.pattern.replaceable_air"));
         }
         return result;

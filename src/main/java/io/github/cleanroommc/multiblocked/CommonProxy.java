@@ -6,7 +6,6 @@ import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.blockpattern.JsonBlockPatternWidget;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
-import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
@@ -14,6 +13,7 @@ import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
@@ -125,10 +125,10 @@ public class CommonProxy {
                 .where('C', blocks(Blocks.CHEST)) // tho not define a specific Capability here. it will still be detected according to the recipeMap, so will create a proxy of the BOTH-Item-Capability here. (item in/outputBus)
                 .where('Y', component(controllerDefinition));
         controllerDefinition.basePattern = factory.build();
-        controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"))
-                .setRenderLayer(BlockRenderLayer.SOLID, true);
-        controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"))
-                .setRenderLayer(BlockRenderLayer.CUTOUT_MIPPED, true);
+//        controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"))
+//                .setRenderLayer(BlockRenderLayer.SOLID, true);
+        controllerDefinition.formedRenderer = new GeoComponentRenderer("botarium");
+        controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model")).setRenderLayer(BlockRenderLayer.CUTOUT_MIPPED, true);
         controllerDefinition.isOpaqueCube = false;
         recipeMap.categoryTexture = new ItemStackTexture(controllerDefinition.getStackForm());
 

@@ -12,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
@@ -33,11 +35,13 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         this.tileEntities = new TileEntity[states.length];
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     protected IBakedModel getItemModel(ItemStack renderItem) {
         return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(renderItem, null, null);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     protected IBlockState getState() {
         long time = System.currentTimeMillis();
@@ -48,17 +52,20 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         return states[Math.abs(index) % states.length];
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public boolean hasTESR() {
         return true;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public boolean shouldRenderInPass(World world, BlockPos pos, int pass) {
         TileEntity tileEntity = getTileEntity(world, pos);
         return tileEntity != null && tileEntity.shouldRenderInPass(pass);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         TileEntity tileEntity = getTileEntity(te.getWorld(), te.getPos());
@@ -68,6 +75,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public boolean isGlobalRenderer(@Nonnull TileEntity te) {
         return true;

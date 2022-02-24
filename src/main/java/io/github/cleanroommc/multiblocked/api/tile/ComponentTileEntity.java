@@ -17,6 +17,7 @@ import io.github.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -45,6 +46,13 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional.Method;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -228,13 +236,15 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Override
     public boolean shouldRenderInPass(int pass) {
-        IRenderer renderer = getRenderer();
-        return renderer != null && renderer.shouldRenderInPass(world, pos, pass);
+        return pass == 0;
+//        IRenderer renderer = getRenderer();
+//        return renderer != null && renderer.shouldRenderInPass(world, pos, pass);
     }
 
     public boolean hasTESRRenderer() {
-        IRenderer renderer = getRenderer();
-        return renderer != null && renderer.hasTESR();
+        return true;
+//        IRenderer renderer = getRenderer();
+//        return renderer != null && renderer.hasTESR();
     }
 
 
@@ -418,4 +428,22 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         receiveInitialSyncData(new PacketBuffer(backedBuffer));
     }
 
+    //************* geo *************//
+
+    private Object factory;
+
+    @Method(modid = "geckolib3")
+    @SideOnly(Side.CLIENT)
+    public GeoComponentRenderer.ComponentFactory getFactory(GeoComponentRenderer renderer) {
+        if (factory == null) {
+            return (GeoComponentRenderer.ComponentFactory) (factory = new GeoComponentRenderer.ComponentFactory(this, renderer));
+        } else {
+            GeoComponentRenderer.ComponentFactory cf = (GeoComponentRenderer.ComponentFactory) factory;
+            if (cf.renderer == getRenderer()) {
+                return cf;
+            } else {
+                return (GeoComponentRenderer.ComponentFactory) (factory = new GeoComponentRenderer.ComponentFactory(this, renderer));
+            }
+        }
+    }
 }

@@ -7,11 +7,15 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
+
+import javax.annotation.Nonnull;
 
 @ZenClass("mods.multiblocked.client.IRenderer")
 @ZenRegister
@@ -37,4 +41,26 @@ public interface IRenderer {
     default TextureAtlasSprite getParticleTexture() {
         return Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
     }
+
+    //************* TESR *************//
+
+    @SideOnly(Side.CLIENT)
+    default boolean shouldRenderInPass(World world, BlockPos pos, int pass) {
+        return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    default boolean hasTESR() {
+        return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    default void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+    }
+
+    @SideOnly(Side.CLIENT)
+    default boolean isGlobalRenderer(@Nonnull TileEntity te) {
+        return false;
+    }
+
 }

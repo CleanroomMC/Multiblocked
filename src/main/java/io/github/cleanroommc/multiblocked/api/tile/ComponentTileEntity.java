@@ -224,6 +224,20 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         super.markDirty();
     }
 
+    //************* TESR *************//
+
+    @Override
+    public boolean shouldRenderInPass(int pass) {
+        IRenderer renderer = getRenderer();
+        return renderer != null && renderer.shouldRenderInPass(world, pos, pass);
+    }
+
+    public boolean hasTESRRenderer() {
+        IRenderer renderer = getRenderer();
+        return renderer != null && renderer.hasTESR();
+    }
+
+
     //************* events *************//
 
     public void onDrops(NonNullList<ItemStack> drops, EntityPlayer player) {

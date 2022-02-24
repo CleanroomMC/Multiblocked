@@ -165,7 +165,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
 
         @Override
         public boolean shouldRenderInPass(int pass) { // why i do render here!!
-            if (pass == 0) {
+            if (widget.container.focus == widget.patternTab && pass == 0) {
                 int color = getColor();
                 float a = ((color & 0xFF000000) >> 24) / 255f;
                 float r = ((color & 0xFF0000) >> 16) / 255f;
@@ -189,7 +189,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
 
                 GlStateManager.color(1, 1, 1, 1);
             }
-            return false;
+            return super.shouldRenderInPass(pass);
         }
     }
 }

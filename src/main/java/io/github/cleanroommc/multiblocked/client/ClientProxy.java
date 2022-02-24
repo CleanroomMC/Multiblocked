@@ -4,9 +4,11 @@ import io.github.cleanroommc.multiblocked.CommonProxy;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
+import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.emissivemodel.MetadataSectionEmissive;
 import io.github.cleanroommc.multiblocked.client.renderer.BlueprintRegionRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
+import io.github.cleanroommc.multiblocked.client.renderer.ComponentTESR;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import lach_01298.qmd.multiblock.Multiblocks;
@@ -18,6 +20,7 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -44,6 +47,7 @@ public class ClientProxy extends CommonProxy {
     public static void registerModels(ModelRegistryEvent event) {
         MultiblockComponents.registerModels();
         MultiblockedItems.registerModels();
+        ClientRegistry.bindTileEntitySpecialRenderer(ComponentTileEntity.class, new ComponentTESR());
     }
 
     @SubscribeEvent

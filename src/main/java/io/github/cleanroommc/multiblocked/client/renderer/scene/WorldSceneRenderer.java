@@ -1,8 +1,5 @@
 package io.github.cleanroommc.multiblocked.client.renderer.scene;
 
-import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
-import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
-import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import io.github.cleanroommc.multiblocked.util.Position;
@@ -303,12 +300,6 @@ public abstract class WorldSceneRenderer {
                     continue;
                 }
                 TileEntity tile = world.getTileEntity(pos);
-                if (tile instanceof ComponentTileEntity<?>) {
-                    IRenderer renderer = ((ComponentTileEntity<?>) tile).getRenderer();
-                    if (renderer instanceof CycleBlockStateRenderer) {
-                        tile = ((CycleBlockStateRenderer) renderer).getTileEntity(world, pos);
-                    }
-                }
                 if (tile != null) {
                     if (tile.shouldRenderInPass(pass)) {
                         TileEntityRendererDispatcher.instance.render(tile, pos.getX(), pos.getY(), pos.getZ(), particle);

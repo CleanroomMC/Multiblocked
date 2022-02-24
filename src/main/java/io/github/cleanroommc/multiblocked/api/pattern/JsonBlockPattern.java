@@ -67,10 +67,10 @@ public class JsonBlockPattern {
 
         char c = 'A'; // auto
 
-        for (int x = minX; x < maxX; x++) {
-            for (int y = minY; y < maxY; y++) {
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
                 StringBuilder builder = new StringBuilder();
-                for (int z = minZ; z < maxZ; z++) {
+                for (int z = minZ; z <= maxZ; z++) {
                     BlockPos pos = new BlockPos(x, y, z);
                     if (controllerPos.equals(pos)) {
                         builder.append('@'); // controller
@@ -92,6 +92,7 @@ public class JsonBlockPattern {
     }
 
     public void changeDir (RelativeDirection charDir, RelativeDirection stringDir, RelativeDirection aisleDir) {
+        if (charDir.isSameAxis(stringDir) || stringDir.isSameAxis(aisleDir) || aisleDir.isSameAxis(charDir)) return;
         char[][][] newPattern = new char
                 [structureDir[0].isSameAxis(aisleDir) ? pattern[0][0].length() : structureDir[1].isSameAxis(aisleDir) ? pattern[0].length : pattern.length]
                 [structureDir[0].isSameAxis(stringDir) ? pattern[0][0].length() : structureDir[1].isSameAxis(stringDir) ? pattern[0].length : pattern.length]
@@ -211,6 +212,8 @@ public class JsonBlockPattern {
             aisleRepetition[0] = 1;
             aisleRepetition[1] = 1;
         }
+
+        structureDir = new RelativeDirection[]{charDir, stringDir, aisleDir};
     }
 
     public BlockPattern build() {
@@ -238,7 +241,7 @@ public class JsonBlockPattern {
         return new BlockPattern(predicate, structureDir, aisleRepetitions, centerOffset);
     }
 
-    private int[] getActualRelativeOffset(int x, int y, int z, EnumFacing facing) {
+    public BlockPos getActualRelativeOffset(int x, int y, int z, EnumFacing facing) {
         int[] c0 = new int[]{x, y, z}, c1 = new int[3];
         for (int i = 0; i < 3; i++) {
             switch (structureDir[i].getActualFacing(facing)) {
@@ -262,7 +265,7 @@ public class JsonBlockPattern {
                     break;
             }
         }
-        return c1;
+        return new BlockPos(c1[0], c1[1], c1[2]);
     }
 
 }

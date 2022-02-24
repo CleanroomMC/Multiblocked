@@ -4,7 +4,9 @@ import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.blockpattern.JsonBlockPatternWidget;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
+import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
@@ -67,6 +69,8 @@ public class CommonProxy {
         MultiblockCapabilities.registerAnyCapabilityBlocks();
         // register blueprint table
         BlueprintTableTileEntity.registerBlueprintTable();
+        // register JsonBlock
+        JsonBlockPatternWidget.registerBlock();
         
         // create a part component.
         PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "test_part"));

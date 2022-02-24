@@ -12,10 +12,13 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.blockpattern.JsonBlockPatternWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.item.ItemBlueprint;
+import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
+import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -26,13 +29,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 public class BlueprintTableWidget extends TabContainer {
     public final BlueprintTableTileEntity table;
     public final ButtonWidget templateButton;
+    public Widget opened;
     public SceneWidget sceneWidget;
     public Group selected;
 
@@ -50,11 +53,38 @@ public class BlueprintTableWidget extends TabContainer {
 
     private void onBuildTemplate(ClickData clickData) {
         if (selected != null && ItemBlueprint.isItemBlueprint(selected.slotWidget.getHandle().getStack())) {
-            for (Widget widget : widgets) {
-                widget.setActive(false);
-                widget.setVisible(false);
+            ItemStack itemStack = selected.slotWidget.getHandle().getStack();
+            if (ItemBlueprint.isRaw(itemStack)) {
+                for (Widget widget : widgets) {
+                    widget.setActive(false);
+                    widget.setVisible(false);
+                }
+                BlockPos[] poses = ItemBlueprint.getPos(itemStack);
+                World world = table.getWorld();
+                if (poses != null && world.isAreaLoaded(poses[0], poses[1])) {
+                    ControllerTileEntity controller = null;
+                    for (int x = poses[0].getX(); x <= poses[1].getX(); x++) {
+                        for (int y = poses[0].getY(); y <= poses[1].getY(); y++) {
+                            for (int z = poses[0].getZ(); z <= poses[1].getZ(); z++) {
+                                TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
+                                if (te instanceof ControllerTileEntity) {
+                                    controller = (ControllerTileEntity) te;
+                                }
+                            }
+                        }
+                    }
+                    if (controller != null) {
+                        this.addWidget(0, opened = new JsonBlockPatternWidget(
+                                new JsonBlockPattern(table.getWorld(), controller.getLocation(), controller.getPos(), controller.getFrontFacing(),
+                                        poses[0].getX(), poses[0].getY(), poses[0].getZ(),
+                                        poses[1].getX(), poses[1].getY(), poses[1].getZ())));
+                    } else {
+                        // TODO tips dialog
+                    }
+                } else {
+                    // TODO tips dialog
+                }
             }
-            this.addWidget(0, new TemplateWidget(selected.slotWidget.getHandle().getStack()));
         }
     }
 

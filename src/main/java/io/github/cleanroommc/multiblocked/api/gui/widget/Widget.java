@@ -9,6 +9,8 @@ import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -184,6 +186,7 @@ public class Widget {
     @SideOnly(Side.CLIENT)
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
         if (tooltipText != null && gui != null && isMouseOverElement(mouseX, mouseY)) {
+            GlStateManager.enableDepth();
             List<String> hoverList = Arrays.asList(I18n.format(tooltipText).split("\n"));
             DrawerHelper.drawHoveringText(ItemStack.EMPTY, hoverList, 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
         }

@@ -1,5 +1,8 @@
 package io.github.cleanroommc.multiblocked.client.renderer.scene;
 
+import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import io.github.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import io.github.cleanroommc.multiblocked.util.Position;
@@ -237,9 +240,11 @@ public abstract class WorldSceneRenderer {
         boolean checkDisabledModel = world == mc.world || (world instanceof TrackedDummyWorld && ((TrackedDummyWorld) world).proxyWorld == mc.world);
         try { // render block in each layer
             for (BlockRenderLayer layer : BlockRenderLayer.values()) {
-                ForgeHooksClient.setRenderLayer(layer);
                 int pass = layer == BlockRenderLayer.TRANSLUCENT ? 1 : 0;
-
+                ForgeHooksClient.setRenderLayer(layer);
+                if (pass == 1) {
+                    renderTESR(0, mc.getRenderPartialTicks(), checkDisabledModel);
+                }
                 renderedBlocksMap.forEach((renderedBlocks, hook)->{
                     if (hook != null) {
                         hook.apply(false, pass, layer);
@@ -271,34 +276,9 @@ public abstract class WorldSceneRenderer {
         } finally {
             ForgeHooksClient.setRenderLayer(oldRenderLayer);
         }
-
+        renderTESR(1, mc.getRenderPartialTicks(), checkDisabledModel);
+        GlStateManager.shadeModel(7425);
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.enableLighting();
-
-        // render TESR
-        for (int pass = 0; pass < 2; pass++) {
-            ForgeHooksClient.setRenderPass(pass);
-            int finalPass = pass;
-            renderedBlocksMap.forEach((renderedBlocks, hook)->{
-                if (hook != null) {
-                    hook.apply(true, finalPass, null);
-                } else {
-                    setDefaultPassRenderState(finalPass);
-                }
-                for (BlockPos pos : renderedBlocks) {
-                    if (checkDisabledModel && MultiblockWorldSavedData.isModelDisabled(pos)) {
-                        continue;
-                    }
-                    TileEntity tile = world.getTileEntity(pos);
-                    if (tile != null) {
-                        if (tile.shouldRenderInPass(finalPass)) {
-                            TileEntityRendererDispatcher.instance.render(tile, pos.getX(), pos.getY(), pos.getZ(), 0);
-                        }
-                    }
-                }
-            });
-        }
-        ForgeHooksClient.setRenderPass(-1);
         GlStateManager.enableDepth();
         GlStateManager.disableBlend();
         GlStateManager.depthMask(true);
@@ -308,16 +288,55 @@ public abstract class WorldSceneRenderer {
         }
     }
 
+    private void renderTESR(final int pass, float particle, boolean checkDisabledModel) {
+        // render TESR
+        RenderHelper.enableStandardItemLighting();
+        ForgeHooksClient.setRenderPass(pass);
+        renderedBlocksMap.forEach((renderedBlocks, hook)->{
+            if (hook != null) {
+                hook.apply(true, pass, null);
+            } else {
+                setDefaultPassRenderState(pass);
+            }
+            for (BlockPos pos : renderedBlocks) {
+                if (checkDisabledModel && MultiblockWorldSavedData.isModelDisabled(pos)) {
+                    continue;
+                }
+                TileEntity tile = world.getTileEntity(pos);
+                if (tile instanceof ComponentTileEntity<?>) {
+                    IRenderer renderer = ((ComponentTileEntity<?>) tile).getRenderer();
+                    if (renderer instanceof CycleBlockStateRenderer) {
+                        tile = ((CycleBlockStateRenderer) renderer).getTileEntity(world, pos);
+                    }
+                }
+                if (tile != null) {
+                    if (tile.shouldRenderInPass(pass)) {
+                        TileEntityRendererDispatcher.instance.render(tile, pos.getX(), pos.getY(), pos.getZ(), particle);
+                    }
+                }
+            }
+        });
+        ForgeHooksClient.setRenderPass(-1);
+        RenderHelper.disableStandardItemLighting();
+
+    }
+
     public static void setDefaultPassRenderState(int pass) {
         GlStateManager.color(1, 1, 1, 1);
         if (pass == 0) { // SOLID
             GlStateManager.enableDepth();
             GlStateManager.disableBlend();
             GlStateManager.depthMask(true);
+            GlStateManager.shadeModel(7424);
         } else { // TRANSLUCENT
+            GlStateManager.disableBlend();
+            GlStateManager.enableCull();
+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            GlStateManager.alphaFunc(516, 0.1F);
             GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GlStateManager.depthMask(false);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            GlStateManager.shadeModel(7425);
         }
     }
 

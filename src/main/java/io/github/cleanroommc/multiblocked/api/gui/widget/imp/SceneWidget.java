@@ -32,24 +32,24 @@ import java.util.function.BiConsumer;
 
 public class SceneWidget extends WidgetGroup {
     @SideOnly(Side.CLIENT)
-    private WorldSceneRenderer renderer;
+    protected WorldSceneRenderer renderer;
     @SideOnly(Side.CLIENT)
-    private TrackedDummyWorld dummyWorld;
-    private boolean dragging;
-    private boolean renderFacing = true;
-    private int lastMouseX;
-    private int lastMouseY;
-    private int currentMouseX;
-    private int currentMouseY;
-    private Vector3f center;
-    private float rotationYaw = 45;
-    private float rotationPitch = 45;
-    private float zoom = 5;
-    private BlockPosFace clickPosFace;
-    private BlockPosFace hoverPosFace;
-    private BlockPosFace selectedPosFace;
-    private BiConsumer<BlockPos, EnumFacing> onSelected;
-    private Set<BlockPos> core;
+    protected TrackedDummyWorld dummyWorld;
+    protected boolean dragging;
+    protected boolean renderFacing = true;
+    protected int lastMouseX;
+    protected int lastMouseY;
+    protected int currentMouseX;
+    protected int currentMouseY;
+    protected Vector3f center;
+    protected float rotationYaw = 45;
+    protected float rotationPitch = 45;
+    protected float zoom = 5;
+    protected BlockPosFace clickPosFace;
+    protected BlockPosFace hoverPosFace;
+    protected BlockPosFace selectedPosFace;
+    protected BiConsumer<BlockPos, EnumFacing> onSelected;
+    protected Set<BlockPos> core;
 
     public SceneWidget(int x, int y, int width, int height, World world) {
         super(x, y, width, height);
@@ -59,7 +59,7 @@ public class SceneWidget extends WidgetGroup {
     }
 
     @SideOnly(Side.CLIENT)
-    private void createScene(World world) {
+    protected void createScene(World world) {
         core = new HashSet<>();
         dummyWorld = new TrackedDummyWorld(world);
         dummyWorld.setRenderFilter(pos -> renderer.renderedBlocksMap.keySet().stream().anyMatch(c -> c.contains(pos)));
@@ -124,7 +124,7 @@ public class SceneWidget extends WidgetGroup {
     }
 
     @SideOnly(Side.CLIENT)
-    private void renderBlockOverLay(WorldSceneRenderer renderer) {
+    public void renderBlockOverLay(WorldSceneRenderer renderer) {
         hoverPosFace = null;
         if (isMouseOverElement(currentMouseX, currentMouseY)) {
             RayTraceResult hit = renderer.getLastTraceResult();
@@ -171,7 +171,7 @@ public class SceneWidget extends WidgetGroup {
             GlStateManager.popMatrix();
         }
         if (selectedPosFace == null) return;
-        RenderUtils.renderBlockOverLay(selectedPosFace.pos, 0, 0, 0.6f);
+        RenderUtils.renderBlockOverLay(selectedPosFace.pos, 0, 0, 0.6f, 1.01f);
     }
 
     private void drawFacingBorder(BlockPosFace posFace, int color) {

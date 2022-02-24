@@ -97,12 +97,12 @@ public class RenderUtils {
         GL11.glScissor(x * s, translatedY * s, w * s, h * s);
     }
 
-    public static void renderBlockOverLay(BlockPos pos, float r, float g, float b) {
+    public static void renderBlockOverLay(BlockPos pos, float r, float g, float b, float scale) {
         if (pos == null) return;
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         GlStateManager.translate((pos.getX() + 0.5), (pos.getY() + 0.5), (pos.getZ() + 0.5));
-        GlStateManager.scale(1.01, 1.01, 1.01);
+        GlStateManager.scale(scale, scale, scale);
 
         Tessellator tessellator = Tessellator.getInstance();
         GlStateManager.disableTexture2D();
@@ -111,7 +111,7 @@ public class RenderUtils {
         RenderUtils.renderCubeFace(buffer, -0.5f, -0.5f, -0.5f, 0.5, 0.5, 0.5, r, g, b, 1);
         tessellator.draw();
 
-        GlStateManager.scale(1 / 1.01, 1 / 1.01, 1 / 1.01);
+        GlStateManager.scale(1 / scale, 1 / scale, 1 / scale);
         GlStateManager.translate(-(pos.getX() + 0.5), -(pos.getY() + 0.5), -(pos.getZ() + 0.5));
         GlStateManager.enableTexture2D();
 

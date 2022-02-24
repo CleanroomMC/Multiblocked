@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -93,9 +94,11 @@ public class IModelRenderer implements IRenderer {
     }
 
     protected IBakedModel getBlockBakedModel(BlockPos pos, IBlockAccess blockAccess) {
-        ComponentTileEntity<?> component = (ComponentTileEntity<?>) blockAccess.getTileEntity(pos);
-        assert component != null;
-        EnumFacing frontFacing = component.getFrontFacing();
+        TileEntity tileEntity = blockAccess.getTileEntity(pos);
+        EnumFacing frontFacing = EnumFacing.NORTH;
+        if (tileEntity instanceof  ComponentTileEntity<?>) {
+            frontFacing = ((ComponentTileEntity<?>) tileEntity).getFrontFacing();
+        }
         return blockModels.computeIfAbsent(frontFacing, facing -> new EmissiveBakedModel(getModel().bake(
                 TRSRTransformation.from(facing),
                 DefaultVertexFormats.BLOCK,

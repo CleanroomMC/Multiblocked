@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class TabContainer extends WidgetGroup {
 
@@ -12,6 +13,7 @@ public class TabContainer extends WidgetGroup {
     public final WidgetGroup buttonGroup;
     public final WidgetGroup containerGroup;
     public WidgetGroup focus;
+    public BiConsumer<WidgetGroup, WidgetGroup> onChanged;
 
     public TabContainer(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -21,12 +23,20 @@ public class TabContainer extends WidgetGroup {
         this.addWidget(buttonGroup);
     }
 
+    public TabContainer setOnChanged(BiConsumer<WidgetGroup, WidgetGroup> onChanged) {
+        this.onChanged = onChanged;
+        return this;
+    }
+
     public void switchTag(WidgetGroup tabWidget) {
         if (focus == tabWidget) return;
         if (focus != null) {
             tabs.inverse().get(focus).setPressed(false);
             focus.setVisible(false);
             focus.setActive(false);
+        }
+        if (onChanged != null) {
+            onChanged.accept(focus, tabWidget);
         }
         focus= tabWidget;
         Optional.ofNullable(tabs.inverse().get(tabWidget)).ifPresent(tab -> {

@@ -51,15 +51,6 @@ import java.util.Set;
 public class PatternWidget extends WidgetGroup {
     private static final TrackedDummyWorld world = new TrackedDummyWorld();
     private static BlockPos LAST_POS = new BlockPos(50, 50, 50);
-    static {
-        world.setTEHook(te->{
-            if (te instanceof ComponentTileEntity && ((ComponentTileEntity<?>) te).getRenderer() instanceof CycleBlockStateRenderer) {
-                CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((ComponentTileEntity<?>) te).getRenderer();
-                return renderer.getTileEntity(te.getWorld(), te.getPos());
-            }
-            return te;
-        });
-    }
 
     private static final ResourceTexture PAGE = new ResourceTexture("multiblocked:textures/gui/structure_page.png");
     private static final Map<ControllerDefinition, PatternWidget> CACHE = new HashMap<>();

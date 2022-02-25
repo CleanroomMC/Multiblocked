@@ -32,6 +32,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class IOPageWidget extends PageWidget {
@@ -88,6 +89,7 @@ public class IOPageWidget extends PageWidget {
         addWidget(new SceneWidget(6, 6, 164, 143, Multiblocked.isClient() ? Minecraft.getMinecraft().world : null)
                 .setRenderedCore(controller.state.getCache(), null)
                 .setOnSelected(this::onPosSelected)
+                .setRenderFacing(false)
                 .setRenderFacing(false));
         addWidget(new ButtonWidget(4, 156, 5, 17, LEFT_BUTTON, this::onLeftClick).setHoverTexture(LEFT_BUTTON_HOVER));
         addWidget(new ButtonWidget(167, 156, 5, 17, RIGHT_BUTTON, this::onRightClick).setHoverTexture(RIGHT_BUTTON_HOVER));
@@ -195,6 +197,7 @@ public class IOPageWidget extends PageWidget {
     }
 
     private void onPosSelected(BlockPos pos, EnumFacing facing) {
+        if (Objects.equals(pos, this.pos)) return;
         this.pos = pos;
         if (!isRemote()) {
             if (!capabilityMap.containsKey(pos.toLong()) || controller.getCapabilities() == null) return;

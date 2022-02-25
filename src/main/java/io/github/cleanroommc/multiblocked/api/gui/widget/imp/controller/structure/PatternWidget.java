@@ -83,6 +83,7 @@ public class PatternWidget extends WidgetGroup {
         predicates = new ArrayList<>();
         addWidget(sceneWidget = new SceneWidget(6, 51, 164, 143, world)
                 .setOnSelected(this::onPosSelected)
+                .setRenderFacing(false)
                 .setRenderFacing(false));
         this.controllerDefinition = controllerDefinition;
         HashSet<ItemStackKey> drops = new HashSet<>();

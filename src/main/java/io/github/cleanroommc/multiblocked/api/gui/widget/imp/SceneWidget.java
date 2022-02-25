@@ -68,6 +68,9 @@ public class SceneWidget extends WidgetGroup {
         renderer.setOnLookingAt(ray -> {});
         renderer.setAfterWorldRender(this::renderBlockOverLay);
         renderer.setCameraLookAt(center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
+        clickPosFace = null;
+        hoverPosFace = null;
+        selectedPosFace = null;
     }
 
     @SideOnly(Side.CLIENT)
@@ -174,7 +177,7 @@ public class SceneWidget extends WidgetGroup {
         RenderUtils.renderBlockOverLay(selectedPosFace.pos, 0, 0, 0.6f, 1.01f);
     }
 
-    private void drawFacingBorder(BlockPosFace posFace, int color) {
+    protected void drawFacingBorder(BlockPosFace posFace, int color) {
         if (!renderFacing) return;
         GlStateManager.pushMatrix();
         RenderUtils.moveToFace(posFace.pos.getX(), posFace.pos.getY(), posFace.pos.getZ(), posFace.facing);
@@ -244,7 +247,7 @@ public class SceneWidget extends WidgetGroup {
     @Override
     public Widget mouseReleased(int mouseX, int mouseY, int button) {
         dragging = false;
-        if (hoverPosFace != null && hoverPosFace.equals(clickPosFace) && !hoverPosFace.equals(selectedPosFace)) {
+        if (hoverPosFace != null && hoverPosFace.equals(clickPosFace)) {
             selectedPosFace = hoverPosFace;
             writeClientAction(-1, buffer -> {
                 buffer.writeBlockPos(selectedPosFace.pos);

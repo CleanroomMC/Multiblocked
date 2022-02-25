@@ -12,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +88,20 @@ public class JsonBlockPattern {
                 pattern[x - minX][y - minY] = builder.toString();
             }
         }
+        switch (facing) {
+            case SOUTH:
+                structureDir = new RelativeDirection[] {RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.FRONT};
+                break;
+            case NORTH:
+                structureDir = new RelativeDirection[] {RelativeDirection.RIGHT, RelativeDirection.UP, RelativeDirection.BACK};
+                break;
+            case EAST:
+                structureDir = new RelativeDirection[] {RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT};
+                break;
+            case WEST:
+                structureDir = new RelativeDirection[] {RelativeDirection.BACK, RelativeDirection.UP, RelativeDirection.LEFT};
+                break;
+        }
     }
 
     public void changeDir (RelativeDirection charDir, RelativeDirection stringDir, RelativeDirection aisleDir) {
@@ -97,9 +110,6 @@ public class JsonBlockPattern {
                 [structureDir[0].isSameAxis(aisleDir) ? pattern[0][0].length() : structureDir[1].isSameAxis(aisleDir) ? pattern[0].length : pattern.length]
                 [structureDir[0].isSameAxis(stringDir) ? pattern[0][0].length() : structureDir[1].isSameAxis(stringDir) ? pattern[0].length : pattern.length]
                 [structureDir[0].isSameAxis(charDir) ? pattern[0][0].length() : structureDir[1].isSameAxis(charDir) ? pattern[0].length : pattern.length];
-        RelativeDirection d1 = Arrays.stream(new RelativeDirection[] {charDir, stringDir, aisleDir}).filter(dir->dir.axis== EnumFacing.Axis.Z).findFirst().get();
-        RelativeDirection d2 = Arrays.stream(structureDir).filter(dir->dir.axis== EnumFacing.Axis.Z).findFirst().get();
-        boolean revert = d1 != d2;
         for (int i = 0; i < pattern.length; i++) {
             for (int j = 0; j < pattern[0].length; j++) {
                 for (int k = 0; k < pattern[0][0].length(); k++) {
@@ -111,26 +121,17 @@ public class JsonBlockPattern {
                         } else {
                             x = pattern.length - i - 1;
                         }
-                        if (revert && aisleDir.axis == EnumFacing.Axis.X) {
-                            x = pattern.length - 1 - x;
-                        }
                     } else if (structureDir[2].isSameAxis(stringDir)) {
                         if (structureDir[2] == stringDir) {
                             y = i;
                         } else {
                             y = pattern.length - i - 1;
                         }
-                        if (revert && stringDir.axis == EnumFacing.Axis.X) {
-                            y = pattern.length - 1 - y;
-                        }
                     } else if (structureDir[2].isSameAxis(charDir)) {
                         if (structureDir[2] == charDir) {
                             z = i;
                         } else {
                             z = pattern.length - i - 1;
-                        }
-                        if (revert && charDir.axis == EnumFacing.Axis.X) {
-                            z = pattern.length - 1 - z;
                         }
                     }
 
@@ -140,26 +141,17 @@ public class JsonBlockPattern {
                         } else {
                             x = pattern[0].length - j - 1;
                         }
-                        if (revert && aisleDir.axis == EnumFacing.Axis.X) {
-                            x = pattern[0].length - 1 - x;
-                        }
                     } else if (structureDir[1].isSameAxis(stringDir)) {
                         if (structureDir[1] == stringDir) {
                             y = j;
                         } else {
                             y = pattern[0].length - j - 1;
                         }
-                        if (revert && stringDir.axis == EnumFacing.Axis.X) {
-                            y = pattern[0].length - 1 - y;
-                        }
                     } else if (structureDir[1].isSameAxis(charDir)) {
                         if (structureDir[1] == charDir) {
                             z = j;
                         } else {
                             z = pattern[0].length - j - 1;
-                        }
-                        if (revert && charDir.axis == EnumFacing.Axis.X) {
-                            z = pattern[0].length - 1 - z;
                         }
                     }
 
@@ -169,26 +161,17 @@ public class JsonBlockPattern {
                         } else {
                             x = pattern[0][0].length() - k - 1;
                         }
-                        if (revert && aisleDir.axis == EnumFacing.Axis.X) {
-                            x = pattern[0][0].length() - 1 - x;
-                        }
                     } else if (structureDir[0].isSameAxis(stringDir)) {
                         if (structureDir[0] == stringDir) {
                             y = k;
                         } else {
                             y = pattern[0][0].length() - k - 1;
                         }
-                        if (revert && stringDir.axis == EnumFacing.Axis.X) {
-                            x = pattern[0][0].length() - 1 - x;
-                        }
                     } else if (structureDir[0].isSameAxis(charDir)) {
                         if (structureDir[0] == charDir) {
                             z = k;
                         } else {
                             z = pattern[0][0].length() - k - 1;
-                        }
-                        if (revert && charDir.axis == EnumFacing.Axis.X) {
-                            z = pattern[0][0].length() - 1 - z;
                         }
                     }
                     newPattern[x][y][z] = c;
@@ -241,8 +224,19 @@ public class JsonBlockPattern {
         return new BlockPattern(predicate, structureDir, aisleRepetitions, centerOffset);
     }
 
-    public BlockPos getActualRelativeOffset(int x, int y, int z, EnumFacing facing) {
+    public BlockPos getActualPosOffset(int x, int y, int z, EnumFacing facing) {
         int[] c0 = new int[]{x, y, z}, c1 = new int[3];
+        remapping(c0, c1, facing);
+        return new BlockPos(c1[0], c1[1], c1[2]);
+    }
+
+    public int[] getActualPatternOffset(BlockPos pos, EnumFacing facing) {
+        int[] c0 = new int[]{pos.getX(), pos.getY(), pos.getZ()}, c1 = new int[3];
+        remapping(c0, c1, facing);
+        return c1;
+    }
+
+    public void remapping(int[] c0, int[] c1, EnumFacing facing){
         for (int i = 0; i < 3; i++) {
             switch (structureDir[i].getActualFacing(facing)) {
                 case UP:
@@ -265,7 +259,6 @@ public class JsonBlockPattern {
                     break;
             }
         }
-        return new BlockPos(c1[0], c1[1], c1[2]);
     }
 
 }

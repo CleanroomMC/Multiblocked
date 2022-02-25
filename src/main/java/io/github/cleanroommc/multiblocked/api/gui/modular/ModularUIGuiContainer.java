@@ -220,10 +220,11 @@ public class ModularUIGuiContainer extends GuiContainer {
     }
 
     public void switchFocus(Widget widget) {
+        if (widget == null) return;
         if (focus == widget) return;
         if (focus != null) focus.setFocus(false);
         focus = widget;
-        if (focus != null) focus.setFocus(true);
+        focus.setFocus(true);
     }
 
     @Override

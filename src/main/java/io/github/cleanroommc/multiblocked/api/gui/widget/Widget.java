@@ -240,9 +240,12 @@ public class Widget {
         return null;
     }
 
-    @SideOnly(Side.CLIENT)
     public void setFocus(boolean focus) {
-        isFocus = false;
+        isFocus = focus;
+    }
+
+    public boolean isFocus() {
+        return isFocus;
     }
 
     /**

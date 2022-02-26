@@ -6,12 +6,11 @@ import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import io.github.cleanroommc.multiblocked.api.gui.util.ClickData;
+import io.github.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
+import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
@@ -26,6 +25,9 @@ import io.github.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRender
 import io.github.cleanroommc.multiblocked.client.util.RenderBufferUtils;
 import io.github.cleanroommc.multiblocked.client.util.RenderUtils;
 import io.github.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import io.github.cleanroommc.multiblocked.util.BlockPosFace;
+import io.github.cleanroommc.multiblocked.util.Position;
+import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -37,15 +39,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.DyeUtils;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class JsonBlockPatternWidget extends WidgetGroup {
@@ -56,6 +53,8 @@ public class JsonBlockPatternWidget extends WidgetGroup {
     public WidgetGroup predicateTab;
     public BlockPatternSceneWidget sceneWidget;
     public SelectorWidget[] selectors;
+    public TextFieldWidget[] repeats;
+    public DraggableScrollableWidgetGroup symbolSelector;
 
     public JsonBlockPatternWidget(JsonBlockPattern pattern) {
         super(0, 0, 384, 256);
@@ -66,6 +65,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
             this.addWidget(sceneWidget = new BlockPatternSceneWidget());
             this.addWidget(container = new TabContainer(0, 0, 384, 256));
 
+            // patternTab
             ResourceTexture tabPattern = new ResourceTexture("multiblocked:textures/gui/tab_pattern.png");
             container.addTab((TabButton)new TabButton(171, 29, 20, 20)
                             .setTexture(tabPattern.getSubTexture(0, 0, 1, 0.5),
@@ -73,14 +73,40 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                             .setHoverTooltip("Pattern Settings"),
                     patternTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
             List<String> candidates = Arrays.stream(RelativeDirection.values()).map(Enum::name).collect(Collectors.toList());
-            patternTab.addWidget(new LabelWidget(35, 168, () -> "Char Direction").setTextColor(-1).setDrop(true));
-            patternTab.addWidget(new LabelWidget(140, 168, () -> "String Direction").setTextColor(-1).setDrop(true));
-            patternTab.addWidget(new LabelWidget(245, 168, () -> "Aisle Direction").setTextColor(-1).setDrop(true));
-            selectors = new SelectorWidget[3];
-            patternTab.addWidget(selectors[0] = new SelectorWidget(35, 180, 100, 15, candidates, -1).setOnChanged(s->this.onDirChange(0, s)).setButtonBackground(new ColorRectTexture(0xff111111)).setValue(pattern.structureDir[0].name()));
-            patternTab.addWidget(selectors[1] = new SelectorWidget(140, 180, 100, 15, candidates, -1).setOnChanged(s->this.onDirChange(1, s)).setButtonBackground(new ColorRectTexture(0xff111111)).setValue(pattern.structureDir[1].name()));
-            patternTab.addWidget(selectors[2] = new SelectorWidget(245, 180, 100, 15, candidates, -1).setOnChanged(s->this.onDirChange(2, s)).setButtonBackground(new ColorRectTexture(0xff111111)).setValue(pattern.structureDir[2].name()));
+            patternTab.addWidget(new LabelWidget(174, 70, () -> "Dir:").setTextColor(-1).setDrop(true));
+            patternTab.addWidget(new ImageWidget(215, 57, 40, 10, new TextTexture("Char", -1).setDropShadow(true)));
+            patternTab.addWidget(new ImageWidget(260, 57, 40, 10, new TextTexture("String", -1).setDropShadow(true)));
+            patternTab.addWidget(new ImageWidget(305, 57, 40, 10, new TextTexture("Aisle", -1).setDropShadow(true)));
 
+            selectors = new SelectorWidget[3];
+            patternTab.addWidget(selectors[0] = new SelectorWidget(215, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(0, s)).setButtonBackground(new ColorRectTexture(0xff333333)).setValue(pattern.structureDir[0].name()));
+            patternTab.addWidget(selectors[1] = new SelectorWidget(260, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(1, s)).setButtonBackground(new ColorRectTexture(0xff333333)).setValue(pattern.structureDir[1].name()));
+            patternTab.addWidget(selectors[2] = new SelectorWidget(305, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(2, s)).setButtonBackground(new ColorRectTexture(0xff333333)).setValue(pattern.structureDir[2].name()));
+            patternTab.addWidget(new LabelWidget(174, 92, () -> "Repeat:").setTextColor(-1).setDrop(true));
+
+            repeats = new TextFieldWidget[2];
+            patternTab.addWidget(repeats[0] = new TextFieldWidget(215, 92, 40, 10, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][0] + "", s -> {
+                if (sceneWidget.selected != null && s != null && !s.isEmpty()) {
+                    pattern.aisleRepetitions[sceneWidget.selected.a][0] = Integer.parseInt(s);
+                }
+            }).setNumbersOnly(1, Integer.MAX_VALUE).setMaxLength(3).setBackground(new ColorRectTexture(0xff333333)));
+            patternTab.addWidget(repeats[1] = new TextFieldWidget(305, 92, 40, 10, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][1] + "", s -> {
+                if (sceneWidget.selected != null && s != null && !s.isEmpty()) {
+                    pattern.aisleRepetitions[sceneWidget.selected.a][1] = Integer.parseInt(s);
+                }
+            }).setNumbersOnly(1, Integer.MAX_VALUE).setMaxLength(3).setBackground(new ColorRectTexture(0xff333333)));
+            repeats[0].setActive(false); repeats[1].setActive(false);
+
+            patternTab.addWidget(symbolSelector = new DraggableScrollableWidgetGroup(215, 105, 130, 45));
+
+            patternTab.addWidget(new ButtonWidget(174, 105, 40, 20, null, (cd) -> {
+                char next = (char) (pattern.symbolMap.keySet().stream().max(Comparator.comparingInt(a -> a)).get() + 1);
+                pattern.symbolMap.put(next, new ArrayList<>());
+                updateSymbolButton();
+            }).setButtonTexture(new ColorRectTexture(0xff454545), new TextTexture("Add Symbol", -1)));
+            updateSymbolButton();
+
+            //predicateTab
             ResourceTexture tabPredicate = new ResourceTexture("multiblocked:textures/gui/tab_predicate.png");
             container.addTab((TabButton)new TabButton(171 + 25, 29, 20, 20)
                             .setTexture(tabPredicate.getSubTexture(0, 0, 1, 0.5),
@@ -88,7 +114,45 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                             .setHoverTooltip("Predicate Settings"),
                     predicateTab = new WidgetGroup(171, 29, 20, 20));
 
-            container.setOnChanged(this::onTabChanged);
+            //information
+            addWidget(new LabelWidget(31, 166, () -> "Symbol Character: " + (sceneWidget.selected == null ? "" : ("'" + sceneWidget.selected.symbol + "'"))).setTextColor(-1));
+            addWidget(new LabelWidget(31, 178, () -> {
+                if (sceneWidget.selected == null) return "Aisle Repetition: ";
+                return String.format("Aisle Index: %d", sceneWidget.selected.a);
+            }).setTextColor(-1));
+            addWidget(new LabelWidget(31, 190, () -> {
+                if (sceneWidget.selected == null) return "Aisle Repetition: ";
+                int[] repeat = pattern.aisleRepetitions[sceneWidget.selected.a];
+                return String.format("Aisle Repetition: (%d, %d)", repeat[0], repeat[1]);
+            }).setTextColor(-1));
+        }
+    }
+
+    public static int getColor(char symbol) {
+        switch (symbol) {
+            case '@' : return 0xff0000ff;
+            case ' ' : return 0xff4EEDF7;
+            case '-' : return 0xff1E2DF7;
+            default: {
+                return EnumDyeColor.values()[(symbol - 'A') % EnumDyeColor.values().length].colorValue | 0xff000000;
+            }
+        }
+    }
+
+    private void updateSymbolButton() {
+        symbolSelector.clearAllWidgets();
+        int i = 0;
+        for (final char c : pattern.symbolMap.keySet().stream().sorted().collect(Collectors.toList())) {
+            symbolSelector.addWidget(new SymbolButton(13 * (i % 9) + 4, 13 * (i / 8) + 4, 10, 10, c, sceneWidget, cd -> {
+                if (sceneWidget.selected != null) {
+                    sceneWidget.selected.symbol = c;
+                    String old = pattern.pattern[sceneWidget.selected.a][sceneWidget.selected.b];
+                    String newString = old.substring(0, sceneWidget.selected.c) + c + old.substring(sceneWidget.selected.c + 1);
+                    pattern.pattern[sceneWidget.selected.a][sceneWidget.selected.b] = newString;
+                    sceneWidget.updateCharacterView();
+                }
+            }));
+            i++;
         }
     }
 
@@ -115,12 +179,6 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         symbolBlock = MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location);
     }
 
-    private void onTabChanged(WidgetGroup oldTab, WidgetGroup newTab) {
-        if (newTab == predicateTab) {
-            sceneWidget.tiles.values().forEach(SymbolTileEntity::updateRenderer);
-        }
-    }
-
     public class BlockPatternSceneWidget extends SceneWidget {
         public Map<BlockPos, SymbolTileEntity> tiles = new HashMap<>();
         public Set<SymbolTileEntity> sameSymbol = new HashSet<>();
@@ -130,19 +188,59 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         public int offset;
         public TextTexture texture;
         public int aisleRender = -1;
+        public int viewMode;
+        public DraggableScrollableWidgetGroup characterView;
+        public WidgetGroup layerSwitch;
 
         @SideOnly(Side.CLIENT)
         TrackedDummyWorld world;
         public BlockPatternSceneWidget() {
             super(31, 31, 125, 125, null);
+            texture = new TextTexture("", -1).setWidth(125).setType(TextTexture.TextType.ROLL);
+            addWidget(characterView = new DraggableScrollableWidgetGroup(0, 0, 125, 125));
             reloadBlocks();
-            addWidget(new ImageWidget(0, 0, 125, 20, texture = new TextTexture("", -1).setWidth(125).setType(TextTexture.TextType.ROLL)));
-            addWidget(new ButtonWidget(0, 50, 10, 10, new ColorRectTexture(-1), cd -> addAisle(1)));
-            addWidget(new LabelWidget(0, 60, ()->{
-                if (aisleRender == -1) return "all";
-                return aisleRender + "";
-            }).setTextColor(-1));
-            addWidget(new ButtonWidget(0, 70, 10, 10, new ColorRectTexture(-1), cd -> addAisle(-1)));
+            addWidget(layerSwitch = new WidgetGroup(0, 0, 125, 125));
+            layerSwitch.addWidget(new ImageWidget(5, 0, 125, 20, texture));
+            layerSwitch.addWidget(new ButtonWidget(5, 50, 10, 10, new ColorRectTexture(-1), cd -> addAisle(1)).setHoverTooltip("next aisle"));
+            layerSwitch. addWidget(new LabelWidget(5, 60, () -> aisleRender == -1 ? "all" : aisleRender + "").setTextColor(-1));
+            layerSwitch.addWidget(new ButtonWidget(5, 70, 10, 10, new ColorRectTexture(-1), cd -> addAisle(-1)).setHoverTooltip("last aisle"));
+
+            addWidget(new ButtonWidget(110, 110, 10, 10, new ColorRectTexture(0xffff0000), this::switchPatternView)
+                    .setHoverTooltip("switch view"));
+        }
+
+        public void updateCharacterView () {
+            characterView.clearAllWidgets();
+            int x = 5, y = 5;
+            for (int i = 0; i < pattern.pattern.length; i++) {
+                for (int j = 0; j < pattern.pattern[0].length; j++) {
+                    for (int k = 0; k < pattern.pattern[0][0].length(); k++) {
+                        char c = pattern.pattern[i][j].charAt(k);
+                        BlockPos pos = pattern.getActualPosOffset(k - centerOffset[2], j - centerOffset[1], i - centerOffset[0], EnumFacing.NORTH).add(offset, offset, offset);
+                        characterView.addWidget(new SymbolButton(x, y, 10, 10, c, this, cd -> onSelected(pos, EnumFacing.NORTH)));
+                        x += 13;
+                    }
+                    x += 5;
+                }
+                y += 13;
+                x = 5;
+            }
+            characterView.setVisible(viewMode == 2);
+        }
+
+        private void switchPatternView(ClickData clickData) {
+            viewMode = (viewMode + 1) % 3;
+            if (viewMode == 2) {
+                characterView.setVisible(true);
+                characterView.setActive(true);
+                layerSwitch.setVisible(false);
+                layerSwitch.setActive(false);
+            } else {
+                characterView.setVisible(false);
+                characterView.setActive(false);
+                layerSwitch.setVisible(true);
+                layerSwitch.setActive(true);
+            }
         }
 
         private void addAisle(int add) {
@@ -195,12 +293,19 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                         tileEntity.validate();
                         posSet.add(pos);
                         tiles.put(pos, tileEntity);
+                        tileEntity.updateRenderer();
                     }
                 }
             }
             setRenderedCore(posSet, null);
             setOnSelected(this::onSelected);
             setRenderFacing(false);
+            updateCharacterView();
+        }
+
+        @Override
+        public Widget mouseClicked(int mouseX, int mouseY, int button) {
+            return super.mouseClicked(mouseX, mouseY, button);
         }
 
         @Override
@@ -209,12 +314,11 @@ public class JsonBlockPatternWidget extends WidgetGroup {
             BufferBuilder buffer = tessellator.getBuffer();
             GlStateManager.enableBlend();
             GlStateManager.disableTexture2D();
-            GlStateManager.disableTexture2D();
 
-            if (JsonBlockPatternWidget.this.container.focus == JsonBlockPatternWidget.this.patternTab) { // render pattern style
+            if (viewMode == 0) { // render pattern style
                 if (selected != null) {
                     for (SymbolTileEntity tile : sameSymbol) {
-                        drawSymbolTE(tessellator, buffer, tile, tile.getColor(), 1);
+                        drawSymbolTE(tessellator, buffer, tile, getColor(tile.symbol), 1);
                     }
                 }
 
@@ -225,7 +329,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                     if (aisleRender > -1 && tile.a != aisleRender) continue;
                     if (sameSymbol.contains(tile)) continue;
                     float dd = Math.abs(System.currentTimeMillis() % 3000);
-                    drawSymbolTE(tessellator, buffer, tile, tile.getColor(), selected == null ? 1 : ((((dd > 1500) ? (3000 - dd) : dd) / 1500f) * 0.3f));
+                    drawSymbolTE(tessellator, buffer, tile, getColor(tile.symbol), selected == null ? 1 : ((((dd > 1500) ? (3000 - dd) : dd) / 1500f) * 0.3f));
                 }
                 if (selected != null) {
                     GlStateManager.depthMask(true);
@@ -234,8 +338,10 @@ public class JsonBlockPatternWidget extends WidgetGroup {
 
             super.renderBlockOverLay(renderer);
 
+            GlStateManager.enableBlend();
+            GlStateManager.disableTexture2D();
+
             if (selected != null) {
-                RenderUtils.renderBlockOverLay(selected.getPos(), 1, 0, 0, 1.01f);
                 int[] minPos = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE};
                 int[] maxPos = new int[]{Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
                 for (SymbolTileEntity symbol : sameAisle) {
@@ -283,7 +389,9 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                 sameSymbol.clear();
                 sameAisle.clear();
                 updateTips("");
+                repeats[0].setActive(false); repeats[1].setActive(false);
             } else {
+                this.selectedPosFace = new BlockPosFace(pos, facing);
                 selected = tiles.get(pos);
                 sameSymbol.clear();
                 sameAisle.clear();
@@ -295,11 +403,47 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                         sameAisle.add(symbol);
                     }
                 }
-                int[] repetition = pattern.aisleRepetitions[selected.a];
-                updateTips(String.format("repeat(%d, %d)", repetition[0], repetition[1]));
+                repeats[0].setActive(true); repeats[1].setActive(true);
             }
         }
 
+        @Override
+        public Widget mouseReleased(int mouseX, int mouseY, int button) {
+            if (viewMode == 2) {
+                clickPosFace = null;
+                dragging = false;
+                return null;
+            }
+            Widget widget = null;
+            if (button != 1) {
+                widget=super.mouseReleased(mouseX, mouseY, button);
+            }
+            if (widget == null && isMouseOverElement(mouseX, mouseY) && hoverPosFace == null && selectedPosFace != null && button == 0) {
+                onSelected(selectedPosFace.pos, selectedPosFace.facing);
+                return this;
+            }
+            return widget;
+        }
+    }
+
+    public static class SymbolButton extends ButtonWidget{
+
+        private final BlockPatternSceneWidget sceneWidget;
+        private final char c;
+
+        public SymbolButton(int xPosition, int yPosition, int width, int height, char c, BlockPatternSceneWidget sceneWidget, Consumer<ClickData> onPressed) {
+            super(xPosition, yPosition, width, height, new TextTexture(c + "", getColor(c)), onPressed);
+            this.c = c;
+            this.sceneWidget = sceneWidget;
+        }
+
+        @Override
+        public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
+            Position position = getPosition();
+            Size size = getSize();
+            DrawerHelper.drawBorder(position.x, position.y, size.width, size.height, sceneWidget.selected != null && sceneWidget.selected.symbol == c ? 0xff00ff00 : -1, 1);
+            super.drawInBackground(mouseX, mouseY, partialTicks);
+        }
     }
 
     public static class SymbolTileEntity extends PartTileEntity<PartDefinition> {
@@ -342,17 +486,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
 
         @Override
         public IRenderer getRenderer() {
-            return widget == null ? null : widget.container.focus == widget.patternTab ? null : renderer;
-        }
-
-        public int getColor() {
-            switch (symbol) {
-                case '@' : return 0xff0000ff;
-                case ' ' : return 0xff4EEDF7;
-                default: {
-                    return EnumDyeColor.values()[(symbol - 'A') % EnumDyeColor.values().length].colorValue | 0xff000000;
-                }
-            }
+            return widget == null ? null : widget.sceneWidget.viewMode == 0 ? null : renderer;
         }
 
         @Override

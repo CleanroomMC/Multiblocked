@@ -55,15 +55,16 @@ public class SwitchWidget extends Widget {
         return isPressed;
     }
 
-    public void setPressed(boolean isPressed) {
-        if (this.isPressed == isPressed) return;
+    public SwitchWidget setPressed(boolean isPressed) {
+        if (this.isPressed == isPressed) return this;
         this.isPressed = isPressed;
-        if (gui == null) return;
+        if (gui == null) return this;
         if (isRemote()) {
             writeClientAction(2, buffer -> buffer.writeBoolean(isPressed));
         } else {
             writeUpdateInfo(2, buffer -> buffer.writeBoolean(isPressed));
         }
+        return this;
     }
 
     @Override

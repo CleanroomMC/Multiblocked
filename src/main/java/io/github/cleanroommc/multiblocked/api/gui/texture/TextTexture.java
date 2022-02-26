@@ -10,6 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class TextTexture implements IGuiTexture{
     public String text;
@@ -18,6 +19,7 @@ public class TextTexture implements IGuiTexture{
     public int width;
     public boolean dropShadow;
     public TextType type;
+    public Supplier<String> supplier;
     @SideOnly(Side.CLIENT)
     private List<String> texts;
 
@@ -27,6 +29,18 @@ public class TextTexture implements IGuiTexture{
         if (FMLCommonHandler.instance().getSide().isClient()) {
             this.text = I18n.format(text);
             texts = Collections.singletonList(this.text);
+        }
+    }
+
+    public TextTexture setSupplier(Supplier<String> supplier) {
+        this.supplier = supplier;
+        return this;
+    }
+
+    @Override
+    public void updateTick() {
+        if (supplier != null) {
+            updateText(supplier.get());
         }
     }
 

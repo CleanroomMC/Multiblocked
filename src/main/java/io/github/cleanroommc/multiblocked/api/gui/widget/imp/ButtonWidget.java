@@ -12,22 +12,22 @@ import java.util.function.Consumer;
 
 public class ButtonWidget extends Widget {
 
-    protected IGuiTexture buttonTexture;
-    protected IGuiTexture hoverTexture;
+    protected IGuiTexture[] buttonTexture;
+    protected IGuiTexture[] hoverTexture;
     protected final Consumer<ClickData> onPressCallback;
 
     public ButtonWidget(int xPosition, int yPosition, int width, int height, IGuiTexture buttonTexture, Consumer<ClickData> onPressed) {
         super(xPosition, yPosition, width, height);
         this.onPressCallback = onPressed;
-        this.buttonTexture = buttonTexture;
+        this.buttonTexture = new IGuiTexture[]{buttonTexture};
     }
 
-    public ButtonWidget setButtonTexture(IGuiTexture buttonTexture) {
+    public ButtonWidget setButtonTexture(IGuiTexture... buttonTexture) {
         this.buttonTexture = buttonTexture;
         return this;
     }
 
-    public ButtonWidget setHoverTexture(IGuiTexture hoverTexture) {
+    public ButtonWidget setHoverTexture(IGuiTexture... hoverTexture) {
         this.hoverTexture = hoverTexture;
         return this;
     }
@@ -35,10 +35,14 @@ public class ButtonWidget extends Widget {
     @Override
     public void updateScreen() {
         if (buttonTexture != null) {
-            buttonTexture.updateTick();
+            for (IGuiTexture texture : buttonTexture) {
+                texture.updateTick();
+            }
         }
         if (hoverTexture != null) {
-            hoverTexture.updateTick();
+            for (IGuiTexture texture : hoverTexture) {
+                texture.updateTick();
+            }
         }
     }
 
@@ -47,9 +51,13 @@ public class ButtonWidget extends Widget {
         Position position = getPosition();
         Size size = getSize();
         if (isMouseOverElement(mouseX, mouseY) && hoverTexture != null) {
-            hoverTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            for (IGuiTexture texture : hoverTexture) {
+                texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            }
         } else if (buttonTexture != null) {
-            buttonTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            for (IGuiTexture texture : buttonTexture) {
+                texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            }
         }
     }
 

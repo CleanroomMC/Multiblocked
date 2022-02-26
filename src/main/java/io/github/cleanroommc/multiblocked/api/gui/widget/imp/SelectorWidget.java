@@ -27,8 +27,7 @@ public class SelectorWidget extends WidgetGroup {
 
     public SelectorWidget(int x, int y, int width, int height, List<String> candidates, int fontColor) {
         super(new Position(x, y), new Size(width, height));
-        this.button = new ButtonWidget(0,0,width, height, null,
-                d -> isShow = !isShow);
+        this.button = new ButtonWidget(0,0,width, height, null, d -> isShow = !isShow);
         this.candidates = candidates;
         this.fontColor = fontColor;
         this.addWidget(button);
@@ -54,7 +53,7 @@ public class SelectorWidget extends WidgetGroup {
         return this;
     }
 
-    public SelectorWidget setButtonBackground(IGuiTexture guiTexture) {
+    public SelectorWidget setButtonBackground(IGuiTexture... guiTexture) {
         button.setButtonTexture(guiTexture);
         return this;
     }

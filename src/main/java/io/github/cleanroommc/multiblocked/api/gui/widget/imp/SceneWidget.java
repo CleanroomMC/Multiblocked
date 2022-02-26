@@ -174,7 +174,7 @@ public class SceneWidget extends WidgetGroup {
             GlStateManager.popMatrix();
         }
         if (selectedPosFace == null) return;
-        RenderUtils.renderBlockOverLay(selectedPosFace.pos, 0, 0, 0.6f, 1.01f);
+        RenderUtils.renderBlockOverLay(selectedPosFace.pos, 0.6f, 0, 0, 1.01f);
     }
 
     protected void drawFacingBorder(BlockPosFace posFace, int color) {
@@ -256,6 +256,8 @@ public class SceneWidget extends WidgetGroup {
             if (onSelected != null) {
                 onSelected.accept(selectedPosFace.pos, selectedPosFace.facing);
             }
+            clickPosFace = null;
+            return this;
         }
         clickPosFace = null;
         return super.mouseReleased(mouseX, mouseY, button);

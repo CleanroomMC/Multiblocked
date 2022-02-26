@@ -36,19 +36,14 @@ public class JsonBlockPattern {
     public JsonBlockPattern(World world, ResourceLocation location, BlockPos controllerPos, EnumFacing facing, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         this();
         pattern = new String[1 + maxX - minX][ 1 + maxY - minY];
-        switch (facing) {
-            case SOUTH:
-                structureDir = new RelativeDirection[] {RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.FRONT};
-                break;
-            case NORTH:
-                structureDir = new RelativeDirection[] {RelativeDirection.RIGHT, RelativeDirection.UP, RelativeDirection.BACK};
-                break;
-            case EAST:
-                structureDir = new RelativeDirection[] {RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT};
-                break;
-            case WEST:
-                structureDir = new RelativeDirection[] {RelativeDirection.BACK, RelativeDirection.UP, RelativeDirection.LEFT};
-                break;
+        if (facing == EnumFacing.WEST) {
+            structureDir = new RelativeDirection[] {RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.BACK};
+        } else if (facing == EnumFacing.EAST) {
+            structureDir = new RelativeDirection[] {RelativeDirection.RIGHT, RelativeDirection.UP, RelativeDirection.FRONT};
+        } else if (facing == EnumFacing.NORTH) {
+            structureDir = new RelativeDirection[] {RelativeDirection.BACK, RelativeDirection.UP, RelativeDirection.RIGHT};
+        } else if (facing == EnumFacing.SOUTH) {
+            structureDir = new RelativeDirection[] {RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.LEFT};
         }
         aisleRepetitions = new int[pattern.length][2];
         for (int[] aisleRepetition : aisleRepetitions) {
@@ -87,20 +82,6 @@ public class JsonBlockPattern {
                 }
                 pattern[x - minX][y - minY] = builder.toString();
             }
-        }
-        switch (facing) {
-            case SOUTH:
-                structureDir = new RelativeDirection[] {RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.FRONT};
-                break;
-            case NORTH:
-                structureDir = new RelativeDirection[] {RelativeDirection.RIGHT, RelativeDirection.UP, RelativeDirection.BACK};
-                break;
-            case EAST:
-                structureDir = new RelativeDirection[] {RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT};
-                break;
-            case WEST:
-                structureDir = new RelativeDirection[] {RelativeDirection.BACK, RelativeDirection.UP, RelativeDirection.LEFT};
-                break;
         }
     }
 
@@ -238,25 +219,19 @@ public class JsonBlockPattern {
 
     public void remapping(int[] c0, int[] c1, EnumFacing facing){
         for (int i = 0; i < 3; i++) {
-            switch (structureDir[i].getActualFacing(facing)) {
-                case UP:
-                    c1[1] = c0[i];
-                    break;
-                case DOWN:
-                    c1[1] = -c0[i];
-                    break;
-                case WEST:
-                    c1[0] = -c0[i];
-                    break;
-                case EAST:
-                    c1[0] = c0[i];
-                    break;
-                case NORTH:
-                    c1[2] = -c0[i];
-                    break;
-                case SOUTH:
-                    c1[2] = c0[i];
-                    break;
+            EnumFacing realFacing = structureDir[i].getActualFacing(facing);
+            if (realFacing == EnumFacing.UP) {
+                c1[1] = c0[i];
+            } else if (realFacing == EnumFacing.DOWN) {
+                c1[1] = -c0[i];
+            } else if (realFacing == EnumFacing.WEST) {
+                c1[0] = -c0[i];
+            } else if (realFacing == EnumFacing.EAST) {
+                c1[0] = c0[i];
+            } else if (realFacing == EnumFacing.NORTH) {
+                c1[2] = -c0[i];
+            } else if (realFacing == EnumFacing.SOUTH) {
+                c1[2] = c0[i];
             }
         }
     }

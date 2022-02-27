@@ -14,8 +14,7 @@ public class TabButton extends SwitchWidget {
 
     @Override
     public TabButton setTexture(IGuiTexture baseTexture, IGuiTexture pressedTexture) {
-        this.baseTexture = baseTexture;
-        this.pressedTexture = pressedTexture;
+        super.setTexture(baseTexture, pressedTexture);
         return this;
     }
 

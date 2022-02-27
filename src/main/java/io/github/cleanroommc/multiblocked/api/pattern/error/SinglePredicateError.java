@@ -33,12 +33,6 @@ public class SinglePredicateError extends PatternError {
         if (type == 1) {
             number = predicate.minGlobalCount;
         }
-        if (type == 2) {
-            number = predicate.maxLayerCount;
-        }
-        if (type == 3) {
-            number = predicate.minLayerCount;
-        }
         return I18n.format("multiblocked.pattern.error.limited." + type,
                 number);
     }

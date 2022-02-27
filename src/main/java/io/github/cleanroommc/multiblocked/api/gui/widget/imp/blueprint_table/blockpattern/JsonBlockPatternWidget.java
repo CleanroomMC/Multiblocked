@@ -508,8 +508,8 @@ public class JsonBlockPatternWidget extends WidgetGroup {
             CycleItemStackHandler itemHandler = new CycleItemStackHandler(Collections.singletonList(predicate.getCandidates()));
             addWidget(new ImageWidget(0, 0, 179, 20, new ColorRectTexture(0xafffffff)));
             addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false));
-            addWidget(new LabelWidget(20, 5, () -> String.format("%s|%s|%d-%d|%d-%d|%d",
-                    predicate.type, name, predicate.minLayerCount, predicate.maxGlobalCount, predicate.minLayerCount, predicate.maxLayerCount, predicate.previewCount)));
+            addWidget(new LabelWidget(20, 5, () -> String.format("%s|%s|%d-%d|%d",
+                    predicate.type, name, predicate.minGlobalCount, predicate.maxGlobalCount, predicate.previewCount)));
 
             if (name.equals("controller") || name.equals("air") || name.equals("any")) return;
             addWidget(new ButtonWidget(136, 1, 18, 18, new ColorRectTexture(0xff00ff00), null));

@@ -46,11 +46,11 @@ public class JsonBlockPattern {
             aisleRepetition[0] = 1;
             aisleRepetition[1] = 1;
         }
-        symbolMap.put(' ', Collections.singleton("any")); // 0-any
-        symbolMap.put('-', Collections.singleton("air")); // 1-air
+        symbolMap.computeIfAbsent(' ', key -> new HashSet<>()).add("any"); // any
+        symbolMap.computeIfAbsent('-', key -> new HashSet<>()).add("air"); // air
+        symbolMap.computeIfAbsent('@', key -> new HashSet<>()).add("controller"); // controller
 
-        predicates.put("controller", new PredicateComponent(location)); // 2-controller
-        symbolMap.put('@', Collections.singleton("controller"));
+        predicates.put("controller", new PredicateComponent(location)); // controller
 
         Map<Block, Character> map = new HashMap<>();
         map.put(Blocks.AIR, ' ');
@@ -70,7 +70,7 @@ public class JsonBlockPattern {
                             map.put(block, c);
                             String name = Objects.requireNonNull(block.getRegistryName()).toString();
                             predicates.put(name, new PredicateBlocks(block));
-                            symbolMap.put(c, Collections.singleton(name));
+                            symbolMap.computeIfAbsent(c, key -> new HashSet<>()).add(name); // any
                             c++;
                         }
                         builder.append(map.get(block));

@@ -32,7 +32,6 @@ public class MultiblockState {
     public boolean tileEntityInitialized;
     public PatternMatchContext matchContext;
     public Map<SimplePredicate, Integer> globalCount;
-    public Map<SimplePredicate, Integer> layerCount;
     public TraceabilityPredicate predicate;
     public PatternError error;
     public ControllerTileEntity controller;
@@ -50,7 +49,6 @@ public class MultiblockState {
     public void clean() {
         this.matchContext = new PatternMatchContext();
         this.globalCount = new HashMap<>();
-        this.layerCount = new HashMap<>();
         cache = new LongOpenHashSet();
     }
 

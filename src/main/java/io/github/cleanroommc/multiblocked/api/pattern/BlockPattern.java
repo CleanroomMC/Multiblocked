@@ -80,7 +80,6 @@ public class BlockPattern {
         worldState.clean();
         PatternMatchContext matchContext = worldState.matchContext;
         Map<SimplePredicate, Integer> globalCount = worldState.globalCount;
-        Map<SimplePredicate, Integer> layerCount = worldState.layerCount;
         if (worldState.getController() == null) {
             worldState.setError(new PatternStringError("no controller found"));
             return false;
@@ -95,7 +94,6 @@ public class BlockPattern {
             loop:
             for (r = 0; (findFirstAisle ? r < aisleRepetitions[c][1] : z <= -centerOffset[3]); r++) {
                 //Checking single slice
-                layerCount.clear();
 
                 for (int b = 0, y = -centerOffset[1]; b < this.thumbLength; b++, y++) {
                     for (int a = 0, x = -centerOffset[0]; a < this.palmLength; a++, x++) {
@@ -167,14 +165,6 @@ public class BlockPattern {
                 }
                 findFirstAisle = true;
                 z++;
-
-                //Check layer-local matcher predicate
-                for (Map.Entry<SimplePredicate, Integer> entry : layerCount.entrySet()) {
-                    if (entry.getValue() < entry.getKey().minLayerCount) {
-                        worldState.setError(new SinglePredicateError(entry.getKey(), 3));
-                        return false;
-                    }
-                }
             }
             //Repetitions out of range
             if (r < aisleRepetitions[c][0] || !worldState.isFormed()) {
@@ -209,7 +199,6 @@ public class BlockPattern {
         blocks.put(centerPos, worldState.getController());
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             for (r = 0; r < aisleRepetitions[c][0]; r++) {
-                Map<SimplePredicate, Integer> cacheLayer = new HashMap<>();
                 for (int b = 0, y = -centerOffset[1]; b < this.thumbLength; b++, y++) {
                     for (int a = 0, x = -centerOffset[0]; a < this.palmLength; a++, x++) {
                         TraceabilityPredicate predicate = this.blockMatches[c][b][a];
@@ -223,25 +212,6 @@ public class BlockPattern {
                         } else {
                             boolean find = false;
                             BlockInfo[] infos = new BlockInfo[0];
-                            for (SimplePredicate limit : predicate.limited) {
-                                if (limit.minLayerCount > 0) {
-                                    if (!cacheLayer.containsKey(limit)) {
-                                        cacheLayer.put(limit, 1);
-                                    } else if (cacheLayer.get(limit) < limit.minLayerCount && (limit.maxLayerCount == -1 || cacheLayer.get(limit) < limit.maxLayerCount)) {
-                                        cacheLayer.put(limit, cacheLayer.get(limit) + 1);
-                                    } else {
-                                        continue;
-                                    }
-                                } else {
-                                    continue;
-                                }
-                                if (!cacheInfos.containsKey(limit)) {
-                                    cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-                                }
-                                infos = cacheInfos.get(limit);
-                                find = true;
-                                break;
-                            }
                             if (!find) {
                                 for (SimplePredicate limit : predicate.limited) {
                                     if (limit.minGlobalCount > 0) {
@@ -265,17 +235,10 @@ public class BlockPattern {
                             }
                             if (!find) { // no limited
                                 for (SimplePredicate limit : predicate.limited) {
-                                    if (limit.maxLayerCount != -1 && cacheLayer.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxLayerCount)
-                                        continue;
                                     if (limit.maxGlobalCount != -1 && cacheGlobal.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxGlobalCount)
                                         continue;
                                     if (!cacheInfos.containsKey(limit)) {
                                         cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-                                    }
-                                    if (cacheLayer.containsKey(limit)) {
-                                        cacheLayer.put(limit, cacheLayer.get(limit) + 1);
-                                    } else {
-                                        cacheLayer.put(limit, 1);
                                     }
                                     if (cacheGlobal.containsKey(limit)) {
                                         cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
@@ -381,40 +344,11 @@ public class BlockPattern {
         for (int l = 0, x = 0; l < this.fingerLength; l++) {
             for (int r = 0; r < repetition[l]; r++) {
                 //Checking single slice
-                Map<SimplePredicate, Integer> cacheLayer = new HashMap<>();
                 for (int y = 0; y < this.thumbLength; y++) {
                     for (int z = 0; z < this.palmLength; z++) {
                         TraceabilityPredicate predicate = this.blockMatches[l][y][z];
                         boolean find = false;
                         BlockInfo[] infos = null;
-                        for (SimplePredicate limit : predicate.limited) { // check layer and previewCount
-                            if (limit.minLayerCount > 0) {
-                                if (!cacheLayer.containsKey(limit)) {
-                                    cacheLayer.put(limit, 1);
-                                } else if (cacheLayer.get(limit) < limit.minLayerCount) {
-                                    cacheLayer.put(limit, cacheLayer.get(limit) + 1);
-                                } else {
-                                    continue;
-                                }
-                                if (cacheGlobal.getOrDefault(limit, 0) < limit.previewCount) {
-                                    if (!cacheGlobal.containsKey(limit)) {
-                                        cacheGlobal.put(limit, 1);
-                                    } else if (cacheGlobal.get(limit) < limit.previewCount) {
-                                        cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
-                                    } else {
-                                        continue;
-                                    }
-                                }
-                            } else {
-                                continue;
-                            }
-                            if (!cacheInfos.containsKey(limit)) {
-                                cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-                            }
-                            infos = cacheInfos.get(limit);
-                            find = true;
-                            break;
-                        }
                         if (!find) { // check global and previewCount
                             for (SimplePredicate limit : predicate.limited) {
                                 if (limit.minGlobalCount == -1 && limit.previewCount == -1) continue;
@@ -482,18 +416,12 @@ public class BlockPattern {
                             for (SimplePredicate limit : predicate.limited) {
                                 if (limit.previewCount != -1) {
                                     continue;
-                                } else if (limit.maxGlobalCount != -1 || limit.maxLayerCount != -1) {
+                                } else if (limit.maxGlobalCount != -1) {
                                     if (cacheGlobal.getOrDefault(limit, 0) < limit.maxGlobalCount) {
                                         if (!cacheGlobal.containsKey(limit)) {
                                             cacheGlobal.put(limit, 1);
                                         } else {
                                             cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
-                                        }
-                                    } else if (cacheLayer.getOrDefault(limit, 0) < limit.maxLayerCount) {
-                                        if (!cacheLayer.containsKey(limit)) {
-                                            cacheLayer.put(limit, 1);
-                                        } else {
-                                            cacheLayer.put(limit, cacheLayer.get(limit) + 1);
                                         }
                                     } else {
                                         continue;

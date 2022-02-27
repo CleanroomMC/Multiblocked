@@ -1,5 +1,10 @@
 package io.github.cleanroommc.multiblocked.api.pattern.predicates;
 
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import io.github.cleanroommc.multiblocked.api.pattern.error.SinglePredicateError;
@@ -31,8 +36,6 @@ public class SimplePredicate {
 
     public int minGlobalCount = -1;
     public int maxGlobalCount = -1;
-    public int minLayerCount = -1;
-    public int maxLayerCount = -1;
 
     public int previewCount = -1;
     public final String type;
@@ -79,12 +82,6 @@ public class SimplePredicate {
                 result.add(I18n.format("multiblocked.pattern.error.limited.0", maxGlobalCount));
             }
         }
-        if (minLayerCount != -1) {
-            result.add(I18n.format("multiblocked.pattern.error.limited.3", minLayerCount));
-        }
-        if (maxLayerCount != -1) {
-            result.add(I18n.format("multiblocked.pattern.error.limited.2", maxLayerCount));
-        }
         if (predicates == null) return result;
         if (predicates.isSingle()) {
             result.add(I18n.format("multiblocked.pattern.single"));
@@ -100,7 +97,7 @@ public class SimplePredicate {
     }
 
     public boolean testLimited(MultiblockState blockWorldState) {
-        return testGlobal(blockWorldState) && testLayer(blockWorldState);
+        return testGlobal(blockWorldState);
     }
 
     public boolean testGlobal(MultiblockState blockWorldState) {
@@ -114,21 +111,19 @@ public class SimplePredicate {
         return false;
     }
 
-    public boolean testLayer(MultiblockState blockWorldState) {
-        if (minLayerCount == -1 && maxLayerCount == -1) return true;
-        Integer count = blockWorldState.layerCount.get(this);
-        boolean base = predicate.test(blockWorldState);
-        count = (count == null ? 0 : count) + (base ? 1 : 0);
-        blockWorldState.layerCount.put(this, count);
-        if (maxLayerCount == -1 || count <= maxLayerCount) return base;
-        blockWorldState.setError(new SinglePredicateError(this, 2));
-        return false;
-    }
-
     public List<ItemStack> getCandidates() {
         return candidates == null ? Collections.emptyList() : Arrays.stream(this.candidates.get()).filter(info -> info.getBlockState().getBlock() != Blocks.AIR).map(info->{
             IBlockState blockState = info.getBlockState();
             return new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState));
         }).collect(Collectors.toList());
+    }
+
+    public WidgetGroup getConfigWidget() {
+        WidgetGroup group = new WidgetGroup(0, 3, 200, 60);
+        group.addWidget(new LabelWidget(0, 0, () -> "Type: " + type));
+        group.addWidget(new SwitchWidget(0, 15, 40, 15, (cd, r)->{
+
+        }).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("count", -1)));
+        return group;
     }
 }

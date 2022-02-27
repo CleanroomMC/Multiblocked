@@ -34,7 +34,6 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -118,7 +117,33 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                             .setTexture(tabPredicate.getSubTexture(0, 0, 1, 0.5),
                                     tabPredicate.getSubTexture(0, 0.5, 1, 0.5))
                             .setHoverTooltip("Predicate Settings"),
-                    predicateTab = new WidgetGroup(171, 29, 20, 20));
+                    predicateTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
+            DraggableScrollableWidgetGroup predicatesContainer = new DraggableScrollableWidgetGroup(171, 52, 179, 136 - 52)
+                    .setBackground(new ColorRectTexture(bgColor))
+                    .setYScrollBarWidth(4)
+                    .setYBarStyle(null, new ColorRectTexture(-1));
+            predicateTab.addWidget(predicatesContainer);
+            Consumer<String> remove = name -> {
+                if (sceneWidget.selected != null) {
+                    pattern.symbolMap.get(sceneWidget.selected.symbol).remove(name);
+                }
+                pattern.symbolMap.values().forEach(set->set.remove(name));
+                pattern.predicates.remove(name);
+                needUpdatePredicateSelector = true;
+                boolean found = false;
+                for (Widget widget : predicatesContainer.widgets) {
+                    if (found) {
+                        widget.addSelfPosition(0, -21);
+                    } else if (((PredicateWidget)widget).name.equals(name)) {
+                        predicatesContainer.waitToRemoved(widget);
+                        found = true;
+                    }
+                }
+                for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
+                    tile.updateRenderer();
+                }
+            };
+            pattern.predicates.forEach((predicateName, predicate) -> predicatesContainer.addWidget(new PredicateWidget(0, predicatesContainer.widgets.size() * 21, predicate, predicateName, remove)));
 
             //information
             addWidget(new LabelWidget(31, 166, () -> "Symbol Character: " + (sceneWidget.selected == null ? "" : ("'" + sceneWidget.selected.symbol + "'"))).setTextColor(-1));
@@ -131,7 +156,10 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                 int[] repeat = pattern.aisleRepetitions[sceneWidget.selected.a];
                 return String.format("Aisle Repetition: (%d, %d)", repeat[0], repeat[1]);
             }).setTextColor(-1));
-            addWidget(predicateGroup = new DraggableScrollableWidgetGroup(168, 166, 185, 58).setBackground(new ColorRectTexture(bgColor)));
+            addWidget(predicateGroup = new DraggableScrollableWidgetGroup(171, 166, 179, 58)
+                    .setBackground(new ColorRectTexture(bgColor))
+                    .setYScrollBarWidth(4)
+                    .setYBarStyle(null, new ColorRectTexture(-1)));
             updatePredicateSelector();
         }
     }
@@ -153,13 +181,16 @@ public class JsonBlockPatternWidget extends WidgetGroup {
             for (String predicateName : pattern.symbolMap.get(sceneWidget.selected.symbol)) {
                 SimplePredicate predicate =  pattern.predicates.get(predicateName);
                 if (predicate != null) {
-                    predicateGroup.addWidget(new PredicateWidget(0, predicateGroup.widgets.size() * 20, predicate, predicateName, name -> {
+                    predicateGroup.addWidget(new PredicateWidget(0, predicateGroup.widgets.size() * 21, predicate, predicateName, name -> {
                         if (sceneWidget.selected != null) {
                             pattern.symbolMap.get(sceneWidget.selected.symbol).remove(name);
                             needUpdatePredicateSelector = true;
                         }
                     }));
                 }
+            }
+            for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
+                tile.updateRenderer();
             }
         }
     }
@@ -179,6 +210,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
             symbolSelector.addWidget(new SymbolButton(13 * (i % 9) + 8, 13 * (i / 9) + 6, 10, 10, c, sceneWidget, cd -> {
                 if (sceneWidget.selected != null && c != '@' && sceneWidget.selected.symbol != '@') {
                     sceneWidget.selected.symbol = c;
+                    sceneWidget.selected.updateRenderer();
                     String old = pattern.pattern[sceneWidget.selected.a][sceneWidget.selected.b];
                     String newString = old.substring(0, sceneWidget.selected.c) + c + old.substring(sceneWidget.selected.c + 1);
                     pattern.pattern[sceneWidget.selected.a][sceneWidget.selected.b] = newString;
@@ -351,7 +383,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
             GlStateManager.enableBlend();
             GlStateManager.disableTexture2D();
 
-            if (viewMode == 0) { // render pattern style
+            if (viewMode == 1) { // render pattern style
                 if (selected != null) {
                     for (SymbolTileEntity tile : sameSymbol) {
                         drawSymbolTE(tessellator, buffer, tile, getColor(tile.symbol), 1);
@@ -393,7 +425,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                 GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 
                 buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-                RenderUtils.renderCubeFace(buffer, minPos[0], minPos[1], minPos[2], maxPos[0] + 1, maxPos[1] + 1, maxPos[2] + 1, 0.3f, 0.5f, 0.7f, 1);
+                RenderUtils.renderCubeFace(buffer, minPos[0] - 0.01, minPos[1] - 0.01, minPos[2] - 0.01, maxPos[0] + 1.01, maxPos[1] + 1.01, maxPos[2] + 1.01, 0.3f, 0.5f, 0.7f, 1);
                 tessellator.draw();
 
                 GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -468,16 +500,20 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         public String name;
 
         public PredicateWidget(int x, int y, SimplePredicate predicate, String name, Consumer<String> closeCallBack) {
-            super(x, y, 185, 20);
+            super(x, y, 175, 20);
             setClientSideWidget();
             this.predicate = predicate;
             this.name = name;
+
             CycleItemStackHandler itemHandler = new CycleItemStackHandler(Collections.singletonList(predicate.getCandidates()));
+            addWidget(new ImageWidget(0, 0, 179, 20, new ColorRectTexture(0xafffffff)));
             addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false));
             addWidget(new LabelWidget(20, 5, () -> String.format("%s|%s|%d-%d|%d-%d|%d",
                     predicate.type, name, predicate.minLayerCount, predicate.maxGlobalCount, predicate.minLayerCount, predicate.maxLayerCount, predicate.previewCount)));
-            addWidget(new ButtonWidget(146, 1, 18, 18, new ColorRectTexture(0xff00ff00), null));
-            addWidget(new ButtonWidget(166, 1, 18, 18, new ColorRectTexture(0xffff0000), clickData -> {if(closeCallBack != null) closeCallBack.accept(name);}));
+
+            if (name.equals("controller") || name.equals("air") || name.equals("any")) return;
+            addWidget(new ButtonWidget(136, 1, 18, 18, new ColorRectTexture(0xff00ff00), null));
+            addWidget(new ButtonWidget(156, 1, 18, 18, new ColorRectTexture(0xffff0000), clickData -> {if(closeCallBack != null) closeCallBack.accept(name);}));
         }
     }
 
@@ -541,7 +577,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
 
         @Override
         public IRenderer getRenderer() {
-            return widget == null ? null : widget.sceneWidget.viewMode == 0 ? null : renderer;
+            return widget == null ? null : widget.sceneWidget.viewMode == 1 ? null : renderer;
         }
 
         @Override

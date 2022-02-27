@@ -12,9 +12,9 @@ import java.util.function.BiConsumer;
 
 public class SwitchWidget extends Widget {
 
-    protected IGuiTexture baseTexture;
-    protected IGuiTexture pressedTexture;
-    protected IGuiTexture hoverTexture;
+    protected IGuiTexture[] baseTexture;
+    protected IGuiTexture[] pressedTexture;
+    protected IGuiTexture[] hoverTexture;
     protected boolean isPressed;
     protected BiConsumer<ClickData, Boolean> onPressCallback;
 
@@ -28,12 +28,22 @@ public class SwitchWidget extends Widget {
     }
 
     public SwitchWidget setTexture(IGuiTexture baseTexture, IGuiTexture pressedTexture) {
+        setBaseTexture(baseTexture);
+        setPressedTexture(pressedTexture);
+        return this;
+    }
+
+    public SwitchWidget setBaseTexture(IGuiTexture... baseTexture) {
         this.baseTexture = baseTexture;
+        return this;
+    }
+
+    public SwitchWidget setPressedTexture(IGuiTexture... pressedTexture) {
         this.pressedTexture = pressedTexture;
         return this;
     }
 
-    public SwitchWidget setHoverTexture(IGuiTexture hoverTexture) {
+    public SwitchWidget setHoverTexture(IGuiTexture... hoverTexture) {
         this.hoverTexture = hoverTexture;
         return this;
     }
@@ -41,13 +51,19 @@ public class SwitchWidget extends Widget {
     @Override
     public void updateScreen() {
         if (baseTexture != null) {
-            baseTexture.updateTick();
+            for (IGuiTexture texture : baseTexture) {
+                texture.updateTick();
+            }
         }
         if (pressedTexture != null) {
-            pressedTexture.updateTick();
+            for (IGuiTexture texture : pressedTexture) {
+                texture.updateTick();
+            }
         }
         if (hoverTexture != null) {
-            hoverTexture.updateTick();
+            for (IGuiTexture texture : hoverTexture) {
+                texture.updateTick();
+            }
         }
     }
 
@@ -72,11 +88,17 @@ public class SwitchWidget extends Widget {
         Position position = getPosition();
         Size size = getSize();
         if (isMouseOverElement(mouseX, mouseY) && hoverTexture != null) {
-            hoverTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            for (IGuiTexture texture : hoverTexture) {
+                texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            }
         } else if (baseTexture != null && !isPressed) {
-            baseTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            for (IGuiTexture texture : baseTexture) {
+                texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            }
         } else if (pressedTexture != null && isPressed) {
-            pressedTexture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            for (IGuiTexture texture : pressedTexture) {
+                texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            }
         }
     }
 

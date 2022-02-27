@@ -30,7 +30,7 @@ public class TraceabilityPredicate {
     }
 
     public TraceabilityPredicate(SimplePredicate simplePredicate) {
-        if (simplePredicate.minGlobalCount != -1 || simplePredicate.maxGlobalCount != -1|| simplePredicate.minLayerCount != -1|| simplePredicate.maxLayerCount != -1) {
+        if (simplePredicate.minGlobalCount != -1 || simplePredicate.maxGlobalCount != -1) {
             limited.add(simplePredicate);
         } else {
             common.add(simplePredicate);
@@ -46,7 +46,7 @@ public class TraceabilityPredicate {
     }
 
     public TraceabilityPredicate sort() {
-        limited.sort(Comparator.comparingInt(a -> ((a.minLayerCount + 1) * 100 + a.minGlobalCount)));
+        limited.sort(Comparator.comparingInt(a -> a.minGlobalCount));
         return this;
     }
 
@@ -104,38 +104,6 @@ public class TraceabilityPredicate {
 
     public TraceabilityPredicate setMaxGlobalLimited(int max, int previewCount) {
         return this.setMaxGlobalLimited(max).setPreviewCount(previewCount);
-    }
-
-    /**
-     * Set the minimum number of candidate blocks for each aisle layer.
-     */
-    public TraceabilityPredicate setMinLayerLimited(int min) {
-        limited.addAll(common);
-        common.clear();
-        for (SimplePredicate predicate : limited) {
-            predicate.minLayerCount = min;
-        }
-        return this;
-    }
-
-    public TraceabilityPredicate setMinLayerLimited(int min, int previewCount) {
-        return this.setMinLayerLimited(min).setPreviewCount(previewCount);
-    }
-
-    /**
-     * Set the maximum number of candidate blocks for each aisle layer.
-     */
-    public TraceabilityPredicate setMaxLayerLimited(int max) {
-        limited.addAll(common);
-        common.clear();
-        for (SimplePredicate predicate : limited) {
-            predicate.maxLayerCount = max;
-        }
-        return this;
-    }
-
-    public TraceabilityPredicate setMaxLayerLimited(int max, int previewCount) {
-        return this.setMaxLayerLimited(max).setPreviewCount(previewCount);
     }
 
     /**

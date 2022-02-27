@@ -125,6 +125,7 @@ public class TextFieldWidget extends Widget {
         if (background != null) {
             background.draw(mouseX, mouseY, getPosition().x, getPosition().y, getSize().width, getSize().height);
         }
+        if (!isActive()) return;
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         int y = getPosition().y;
         int textX = getTextX();

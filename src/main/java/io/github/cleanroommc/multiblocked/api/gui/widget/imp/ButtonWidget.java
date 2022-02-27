@@ -66,7 +66,9 @@ public class ButtonWidget extends Widget {
         if (isMouseOverElement(mouseX, mouseY)) {
             ClickData clickData = new ClickData();
             writeClientAction(1, clickData::writeToBuf);
-            onPressCallback.accept(clickData);
+            if (onPressCallback != null) {
+                onPressCallback.accept(clickData);
+            }
             playButtonClickSound();
             return this;
         }
@@ -78,7 +80,9 @@ public class ButtonWidget extends Widget {
         super.handleClientAction(id, buffer);
         if (id == 1) {
             ClickData clickData = ClickData.readFromBuf(buffer);
-            onPressCallback.accept(clickData);
+            if (onPressCallback != null) {
+                onPressCallback.accept(clickData);
+            }
         }
     }
 }

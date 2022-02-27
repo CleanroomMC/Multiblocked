@@ -83,11 +83,21 @@ public class JsonBlockPatternWidget extends WidgetGroup {
             patternTab.addWidget(repeats[0] = new TextFieldWidget(215, 87, 40, 15, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][0] + "", s -> {
                 if (sceneWidget.selected != null && s != null && !s.isEmpty() && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
                     pattern.aisleRepetitions[sceneWidget.selected.a][0] = Integer.parseInt(s);
+                    if (pattern.aisleRepetitions[sceneWidget.selected.a][0] > pattern.aisleRepetitions[sceneWidget.selected.a][1]) {
+                        int a = pattern.aisleRepetitions[sceneWidget.selected.a][1];
+                        pattern.aisleRepetitions[sceneWidget.selected.a][1] = pattern.aisleRepetitions[sceneWidget.selected.a][0];
+                        pattern.aisleRepetitions[sceneWidget.selected.a][0] = a;
+                    }
                 }
             }).setNumbersOnly(1, Integer.MAX_VALUE).setMaxLength(3).setBackground(new ColorRectTexture(bgColor)));
             patternTab.addWidget(repeats[1] = new TextFieldWidget(305, 87, 40, 15, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][1] + "", s -> {
                 if (sceneWidget.selected != null && s != null && !s.isEmpty() && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
                     pattern.aisleRepetitions[sceneWidget.selected.a][1] = Integer.parseInt(s);
+                    if (pattern.aisleRepetitions[sceneWidget.selected.a][0] > pattern.aisleRepetitions[sceneWidget.selected.a][1]) {
+                        int a = pattern.aisleRepetitions[sceneWidget.selected.a][1];
+                        pattern.aisleRepetitions[sceneWidget.selected.a][1] = pattern.aisleRepetitions[sceneWidget.selected.a][0];
+                        pattern.aisleRepetitions[sceneWidget.selected.a][0] = a;
+                    }
                 }
             }).setNumbersOnly(1, Integer.MAX_VALUE).setMaxLength(3).setBackground(new ColorRectTexture(bgColor)));
             repeats[0].setActive(false); repeats[1].setActive(false); repeats[0].setHoverTooltip("min"); repeats[1].setHoverTooltip("max");

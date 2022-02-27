@@ -22,6 +22,11 @@ public class ButtonWidget extends Widget {
         this.buttonTexture = new IGuiTexture[]{buttonTexture};
     }
 
+    public ButtonWidget(int xPosition, int yPosition, int width, int height, Consumer<ClickData> onPressed) {
+        super(xPosition, yPosition, width, height);
+        this.onPressCallback = onPressed;
+    }
+
     public ButtonWidget setButtonTexture(IGuiTexture... buttonTexture) {
         this.buttonTexture = buttonTexture;
         return this;

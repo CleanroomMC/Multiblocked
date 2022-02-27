@@ -21,8 +21,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SimplePredicate {
-    public static SimplePredicate ANY = new SimplePredicate(x -> true, null);
-    public static SimplePredicate AIR = new SimplePredicate(blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()), null);
+    public static SimplePredicate ANY = new SimplePredicate("any", x -> true, null);
+    public static SimplePredicate AIR = new SimplePredicate("air", blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()), null);
     public transient Supplier<BlockInfo[]> candidates;
 
     public transient Predicate<MultiblockState> predicate;
@@ -35,12 +35,24 @@ public class SimplePredicate {
     public int maxLayerCount = -1;
 
     public int previewCount = -1;
-    
+    public final String type;
+
     public SimplePredicate() {
-        
+        this("unknown");
+    }
+    
+    public SimplePredicate(String type) {
+        this.type = type;
     }
 
     public SimplePredicate(Predicate<MultiblockState> predicate, Supplier<BlockInfo[]> candidates) {
+        this();
+        this.predicate = predicate;
+        this.candidates = candidates;
+    }
+
+    public SimplePredicate(String type, Predicate<MultiblockState> predicate, Supplier<BlockInfo[]> candidates) {
+        this(type);
         this.predicate = predicate;
         this.candidates = candidates;
     }

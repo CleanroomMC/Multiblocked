@@ -128,8 +128,10 @@ public class TextFieldWidget extends Widget {
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         int y = getPosition().y;
         int textX = getTextX();
+        float heightOffset = (getSize().height - fontRenderer.FONT_HEIGHT) / 2f;
         GlStateManager.disableBlend();
         GlStateManager.pushMatrix();
+        GlStateManager.translate(0, heightOffset, 0);
         GlStateManager.scale(scale, scale, 0);
         float scaleFactor = 1 / scale;
         y *= scaleFactor;

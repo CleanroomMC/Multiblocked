@@ -12,18 +12,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Array;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class JsonBlockPattern {
     public RelativeDirection[] structureDir;
     public String[][] pattern;
     public int[][] aisleRepetitions;
     public Map<String, SimplePredicate> predicates; // 0-any, 1-air, 2-controller
-    public Map<Character, List<String>> symbolMap;
+    public Map<Character, Set<String>> symbolMap;
 
     public JsonBlockPattern() {
         predicates = new HashMap<>();
@@ -50,11 +46,11 @@ public class JsonBlockPattern {
             aisleRepetition[0] = 1;
             aisleRepetition[1] = 1;
         }
-        symbolMap.put(' ', Collections.singletonList("any")); // 0-any
-        symbolMap.put('-', Collections.singletonList("air")); // 1-air
+        symbolMap.put(' ', Collections.singleton("any")); // 0-any
+        symbolMap.put('-', Collections.singleton("air")); // 1-air
 
         predicates.put("controller", new PredicateComponent(location)); // 2-controller
-        symbolMap.put('@', Collections.singletonList("controller"));
+        symbolMap.put('@', Collections.singleton("controller"));
 
         Map<Block, Character> map = new HashMap<>();
         map.put(Blocks.AIR, ' ');
@@ -74,7 +70,7 @@ public class JsonBlockPattern {
                             map.put(block, c);
                             String name = Objects.requireNonNull(block.getRegistryName()).toString();
                             predicates.put(name, new PredicateBlocks(block));
-                            symbolMap.put(c, Collections.singletonList(name));
+                            symbolMap.put(c, Collections.singleton(name));
                             c++;
                         }
                         builder.append(map.get(block));
@@ -186,7 +182,7 @@ public class JsonBlockPattern {
         for (int i = 0, minZ = 0, maxZ = 0; i < this.pattern.length; minZ += aisleRepetitions[i][0], maxZ += aisleRepetitions[i][1], i++) {
             for (int j = 0; j < this.pattern[0].length; j++) {
                 for (int k = 0; k < this.pattern[0][0].length(); k++) {
-                    List<String> saves = symbolMap.get(this.pattern[i][j].charAt(k));
+                    Set<String> saves = symbolMap.get(this.pattern[i][j].charAt(k));
                     if (saves == null || saves.isEmpty()) {
                         predicate[i][j][k] = Predicates.any();
                     } else {

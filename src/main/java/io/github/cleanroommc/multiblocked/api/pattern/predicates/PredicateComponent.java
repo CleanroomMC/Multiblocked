@@ -9,16 +9,18 @@ import net.minecraft.util.ResourceLocation;
 public class PredicateComponent extends SimplePredicate {
     public ResourceLocation location;
 
-    public PredicateComponent() {}
+    public PredicateComponent() {
+        super("component");
+    }
 
     public PredicateComponent(ComponentDefinition definition) {
         this(definition.location);
     }
 
     public PredicateComponent(ResourceLocation location) {
-        super(state -> state.getBlockState().getBlock() instanceof BlockComponent && ((BlockComponent) state.getBlockState().getBlock()).definition.location.equals(location),
-                () -> new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location))});
+        this();
         this.location = location;
+        buildObjectFromJson();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package io.github.cleanroommc.multiblocked.core.mixins;
 
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import io.github.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -15,9 +17,13 @@ public class TileEntityRendererDispatcherMixin {
     @Shadow public static TileEntityRendererDispatcher instance;
 
     @Inject(method = "getRenderer(Lnet/minecraft/tileentity/TileEntity;)Lnet/minecraft/client/renderer/tileentity/TileEntitySpecialRenderer;", at = @At(value = "HEAD"), cancellable = true)
-    private void getRenderer(TileEntity tileEntityIn, CallbackInfoReturnable<TileEntitySpecialRenderer<?>> cir) {
-        if (tileEntityIn instanceof ComponentTileEntity && !((ComponentTileEntity<?>) tileEntityIn).hasTESRRenderer()) {
-            cir.setReturnValue(null);
+    private <T extends TileEntity> void injectGetRenderer(TileEntity tileEntityIn, CallbackInfoReturnable<TileEntitySpecialRenderer<T>> cir) {
+        if (tileEntityIn != null) {
+            if (tileEntityIn.getWorld() == Minecraft.getMinecraft().world && MultiblockWorldSavedData.isModelDisabled(tileEntityIn.getPos())) {
+                cir.setReturnValue(null);
+            } else if (tileEntityIn instanceof ComponentTileEntity && !((ComponentTileEntity<?>) tileEntityIn).hasTESRRenderer()) {
+                cir.setReturnValue(null);
+            }
         }
     }
 }

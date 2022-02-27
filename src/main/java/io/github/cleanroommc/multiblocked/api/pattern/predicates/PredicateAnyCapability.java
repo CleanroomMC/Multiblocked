@@ -20,13 +20,15 @@ public class PredicateAnyCapability extends SimplePredicate {
     public IO io;
     public String capability;
 
-    public PredicateAnyCapability() { }
+    public PredicateAnyCapability() {
+        super("capability");
+    }
     
     public PredicateAnyCapability(IO io, MultiblockCapability<?> capability) {
-        super(state -> state.getBlockState().getBlock() == capability.getAnyBlock(io) || checkCapability(io, capability, state),
-                ()-> new BlockInfo[]{new BlockInfo(capability.getAnyBlock(io))});
+        this();
         this.io = io;
         this.capability = capability.name;
+        buildObjectFromJson();
     }
 
     @Override

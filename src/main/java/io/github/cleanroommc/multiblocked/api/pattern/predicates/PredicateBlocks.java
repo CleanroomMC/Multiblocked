@@ -9,12 +9,14 @@ import java.util.Arrays;
 public class PredicateBlocks extends SimplePredicate {
     public Block[] blocks;
     
-    public PredicateBlocks() {}
+    public PredicateBlocks() {
+        super("blocks");
+    }
     
     public PredicateBlocks(Block... blocks) {
-        super(state -> ArrayUtils.contains(blocks, state.getBlockState().getBlock()),
-                () -> Arrays.stream(blocks).map(block -> new BlockInfo(block.getDefaultState(), null)).toArray(BlockInfo[]::new));
+        this();
         this.blocks = blocks;
+        buildObjectFromJson();
     }
 
     @Override

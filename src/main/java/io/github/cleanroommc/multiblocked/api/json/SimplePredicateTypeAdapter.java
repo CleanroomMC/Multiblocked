@@ -62,20 +62,6 @@ public class SimplePredicateTypeAdapter implements JsonDeserializer<SimplePredic
         if (src == null) {
             return JsonNull.INSTANCE;
         }
-        final JsonElement jsonElement = GSON.toJsonTree(src);
-        if (src == SimplePredicate.ANY) {
-            jsonElement.getAsJsonObject().addProperty("type", "any");
-        } else if (src == SimplePredicate.AIR) {
-            jsonElement.getAsJsonObject().addProperty("type", "air");
-        } else if (src instanceof PredicateStates) {
-            jsonElement.getAsJsonObject().addProperty("type", "states");
-        } else if (src instanceof PredicateBlocks) {
-            jsonElement.getAsJsonObject().addProperty("type", "blocks");
-        } else if (src instanceof PredicateAnyCapability) {
-            jsonElement.getAsJsonObject().addProperty("type", "capability");
-        } else if (src instanceof PredicateComponent) {
-            jsonElement.getAsJsonObject().addProperty("type", "component");
-        }
-        return jsonElement;
+        return GSON.toJsonTree(src);
     }
 }

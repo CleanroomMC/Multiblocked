@@ -31,7 +31,8 @@ public class CycleItemStackHandler implements IItemHandler {
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int i) {
-        return stacks.get(i).get(indexes[i]);
+        List<ItemStack> stackList = stacks.get(i);
+        return stackList == null || stackList.isEmpty() ? ItemStack.EMPTY : stackList.get(indexes[i]);
     }
 
     @Nonnull

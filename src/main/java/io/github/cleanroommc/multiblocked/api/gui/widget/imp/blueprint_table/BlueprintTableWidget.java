@@ -77,7 +77,9 @@ public class BlueprintTableWidget extends TabContainer {
                         this.addWidget(0, opened = new JsonBlockPatternWidget(
                                 new JsonBlockPattern(table.getWorld(), controller.getLocation(), controller.getPos(), controller.getFrontFacing(),
                                         poses[0].getX(), poses[0].getY(), poses[0].getZ(),
-                                        poses[1].getX(), poses[1].getY(), poses[1].getZ())));
+                                        poses[1].getX(), poses[1].getY(), poses[1].getZ()), widget -> {
+                                    
+                        }));
                     } else {
                         // TODO tips dialog
                     }

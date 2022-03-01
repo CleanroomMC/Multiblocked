@@ -27,6 +27,5 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if (itemHandler != null && Minecraft.getMinecraft().player.ticksExisted % 20 == 0) itemHandler.update();
     }
 }

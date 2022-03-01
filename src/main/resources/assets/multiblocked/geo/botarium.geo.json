@@ -143,8 +143,13 @@
 					]
 				},
 				{
-					"name": "glass",
+					"name": "translucent",
 					"parent": "Machine",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "glass",
+					"parent": "translucent",
 					"pivot": [0, 8, 0],
 					"cubes": [
 						{

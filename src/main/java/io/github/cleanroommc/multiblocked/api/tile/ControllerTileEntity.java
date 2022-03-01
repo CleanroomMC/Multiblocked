@@ -65,6 +65,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
     private Map<Long, Map<MultiblockCapability<?>, IO>> settings;
     protected LongOpenHashSet parts;
+    private boolean isWorking;
     @ZenProperty
     public RecipeLogic recipeLogic;
 
@@ -94,6 +95,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return state != null && state.isFormed();
     }
 
+    @ZenGetter
+    public boolean isWorking() {
+        return isWorking;
+    }
+
     @Override
     public void update() {
         super.update();
@@ -109,7 +115,13 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     }
 
     public void updateFormed() {
-        if (recipeLogic != null) recipeLogic.update();
+        if (recipeLogic != null) {
+            recipeLogic.update();
+            if (isWorking != recipeLogic.isWorking) {
+                isWorking = !isWorking;
+                writeCustomData(-2, buffer -> buffer.writeBoolean(isWorking));
+            }
+        }
         if (definition.updateFormed != null) {
             definition.updateFormed.apply(this);
         }
@@ -219,6 +231,8 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (dataId == -1) {
             readState(buf);
             scheduleChunkForRenderUpdate();
+        } else if (dataId == -2) {
+            isWorking = buf.readBoolean();
         } else {
             super.receiveCustomData(dataId, buf);
         }
@@ -228,12 +242,14 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public void writeInitialSyncData(PacketBuffer buf) {
         super.writeInitialSyncData(buf);
         writeState(buf);
+        buf.writeBoolean(isWorking);
     }
 
     @Override
     public void receiveInitialSyncData(PacketBuffer buf) {
         super.receiveInitialSyncData(buf);
         readState(buf);
+        isWorking = buf.readBoolean();
         scheduleChunkForRenderUpdate();
     }
 

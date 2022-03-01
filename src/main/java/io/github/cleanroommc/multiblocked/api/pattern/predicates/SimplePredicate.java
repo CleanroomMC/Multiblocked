@@ -61,7 +61,7 @@ public class SimplePredicate {
         this.candidates = candidates;
     }
 
-    public SimplePredicate buildObjectFromJson() {
+    public SimplePredicate buildPredicate() {
         return this;
     }
 
@@ -119,40 +119,44 @@ public class SimplePredicate {
         }).collect(Collectors.toList());
     }
 
-    public void getConfigWidget(List<WidgetGroup> groups) {
-        WidgetGroup group = new WidgetGroup(0, 0, 120, 50);
+    public List<WidgetGroup> getConfigWidget(List<WidgetGroup> groups) {
+        WidgetGroup group = new WidgetGroup(0, 0, 120, 70);
         groups.add(group);
         group.setClientSideWidget();
         group.addWidget(new LabelWidget(0, 0, () -> "Type: " + type));
         TextFieldWidget min, max, preview;
-        group.addWidget(min = new TextFieldWidget(55, 15, 30, 15, () -> minGlobalCount + "", s -> {
-            minGlobalCount = s != null && !s.isEmpty() ? Integer.parseInt(s) : minGlobalCount;
+
+        group.addWidget(min = new TextFieldWidget(55, 15, 30, 15, true, () -> minGlobalCount + "", s -> {
+            minGlobalCount = Integer.parseInt(s);
             if (minGlobalCount > maxGlobalCount) {
-                int tmp = maxGlobalCount;
                 maxGlobalCount = minGlobalCount;
-                minGlobalCount = tmp;
             }
-        }).setNumbersOnly(0, Integer.MAX_VALUE).setMaxLength(4));
+        }).setNumbersOnly(0, Integer.MAX_VALUE));
         min.setHoverTooltip("min").setActive(minGlobalCount != -1);
-        group.addWidget(max = new TextFieldWidget(90, 15, 30, 15, () -> maxGlobalCount + "", s -> {
-            maxGlobalCount = s != null && !s.isEmpty() ? Integer.parseInt(s) : maxGlobalCount;
-            if (minGlobalCount > maxGlobalCount) {
-                int tmp = maxGlobalCount;
-                maxGlobalCount = minGlobalCount;
-                minGlobalCount = tmp;
-            }
-        }).setNumbersOnly(0, Integer.MAX_VALUE).setMaxLength(4));
-        max.setHoverTooltip("max").setActive(maxGlobalCount != -1);
-        group.addWidget(preview = (TextFieldWidget) new TextFieldWidget(55, 33, 30, 15, () -> previewCount + "", s -> previewCount = s != null && !s.isEmpty() ? Integer.parseInt(s) : previewCount).setNumbersOnly(0, Integer.MAX_VALUE).setMaxLength(4).setHoverTooltip("preview"));
         group.addWidget(new SwitchWidget(0, 15, 50, 15, (cd, r)->{
             min.setActive(r);
-            max.setActive(r);
             minGlobalCount = r ? 0 : -1;
-            maxGlobalCount = r ? 0 : -1;
-        }).setPressed(minGlobalCount != -1 || maxGlobalCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("count", -1)));
+        }).setPressed(minGlobalCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("min", -1)));
+
+        group.addWidget(max = new TextFieldWidget(55, 33, 30, 15, true, () -> maxGlobalCount + "", s -> {
+            maxGlobalCount = Integer.parseInt(s);
+            if (minGlobalCount > maxGlobalCount) {
+                minGlobalCount = maxGlobalCount;
+            }
+        }).setNumbersOnly(0, Integer.MAX_VALUE));
+        max.setHoverTooltip("max").setActive(maxGlobalCount != -1);
         group.addWidget(new SwitchWidget(0, 33, 50, 15, (cd, r)->{
+            max.setActive(r);
+            maxGlobalCount = r ? 0 : -1;
+        }).setPressed(maxGlobalCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("max", -1)));
+
+
+        group.addWidget(preview = (TextFieldWidget) new TextFieldWidget(55, 51 , 30, 15, true, () -> previewCount + "", s -> previewCount = Integer.parseInt(s)).setNumbersOnly(0, Integer.MAX_VALUE).setHoverTooltip("preview"));
+        group.addWidget(new SwitchWidget(0, 51, 50, 15, (cd, r)->{
             preview.setActive(r);
             previewCount = r ? 0 : -1;
         }).setPressed(previewCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("count", -1)));
+
+        return groups;
     }
 }

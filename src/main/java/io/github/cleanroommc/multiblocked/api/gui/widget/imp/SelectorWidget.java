@@ -9,6 +9,7 @@ import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 
@@ -27,7 +28,7 @@ public class SelectorWidget extends WidgetGroup {
 
     public SelectorWidget(int x, int y, int width, int height, List<String> candidates, int fontColor) {
         super(new Position(x, y), new Size(width, height));
-        this.button = new ButtonWidget(0,0,width, height, null, d -> isShow = !isShow);
+        this.button = new ButtonWidget(0,0,width, height, d -> isShow = !isShow);
         this.candidates = candidates;
         this.fontColor = fontColor;
         this.addWidget(button);
@@ -44,7 +45,7 @@ public class SelectorWidget extends WidgetGroup {
         return this;
     }
 
-    private String getValue() {
+    public String getValue() {
         return textTexture.text;
     }
 
@@ -75,6 +76,9 @@ public class SelectorWidget extends WidgetGroup {
     public void drawInForeground(int mouseX, int mouseY, float particleTicks) {
         super.drawInForeground(mouseX, mouseY, particleTicks);
         if(isShow) {
+            GlStateManager.disableDepth();
+            GlStateManager.translate(0, 0, 200);
+
             int x = getPosition().x;
             int width = getSize().width;
             int height = getSize().height;
@@ -96,6 +100,9 @@ public class SelectorWidget extends WidgetGroup {
                 }
                 y += height;
             }
+
+            GlStateManager.translate(0, 0, -200);
+            GlStateManager.enableDepth();
         }
     }
 

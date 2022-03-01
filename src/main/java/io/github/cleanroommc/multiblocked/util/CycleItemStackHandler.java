@@ -8,19 +8,15 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class CycleItemStackHandler implements IItemHandler {
-    private final List<List<ItemStack>> stacks;
-    private final int[] indexes;
+    private List<List<ItemStack>> stacks;
 
 
     public CycleItemStackHandler(List<List<ItemStack>> stacks) {
-        this.stacks = stacks;
-        this.indexes = new int[stacks.size()];
+        updateStacks(stacks);
     }
 
-    public void update() {
-        for (int i = 0; i < indexes.length; i++) {
-            indexes[i] = Math.abs(indexes[i] + 1) % stacks.get(i).size();
-        }
+    public void updateStacks(List<List<ItemStack>> stacks) {
+        this.stacks = stacks;
     }
 
     @Override
@@ -32,7 +28,7 @@ public class CycleItemStackHandler implements IItemHandler {
     @Override
     public ItemStack getStackInSlot(int i) {
         List<ItemStack> stackList = stacks.get(i);
-        return stackList == null || stackList.isEmpty() ? ItemStack.EMPTY : stackList.get(indexes[i]);
+        return stackList == null || stackList.isEmpty() ? ItemStack.EMPTY : stackList.get(Math.abs((int)(System.currentTimeMillis() / 1000) % stackList.size()));
     }
 
     @Nonnull

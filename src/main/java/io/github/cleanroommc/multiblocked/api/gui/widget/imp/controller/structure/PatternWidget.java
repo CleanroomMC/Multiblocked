@@ -74,7 +74,6 @@ public class PatternWidget extends WidgetGroup {
     private int index;
     private SlotWidget[] slotWidgets;
     private SlotWidget[] candidates;
-    private CycleItemStackHandler itemHandler;
 
     private PatternWidget(ControllerDefinition controllerDefinition) {
         super(0, 0, 176, 256);
@@ -182,7 +181,8 @@ public class PatternWidget extends WidgetGroup {
                 }
             }
             candidates = new SlotWidget[candidateStacks.size()];
-            itemHandler = new CycleItemStackHandler(candidateStacks);
+            CycleItemStackHandler itemHandler =
+                    new CycleItemStackHandler(candidateStacks);
             for (int i = 0; i < candidateStacks.size(); i++) {
                 int finalI = i;
                 candidates[i] = new SlotWidget(itemHandler, i, 8 + (i / 6) * 18, 55 + (i % 6) * 18, false, false)
@@ -211,9 +211,6 @@ public class PatternWidget extends WidgetGroup {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if (itemHandler != null && Minecraft.getMinecraft().player.ticksExisted % 20 ==0) {
-            itemHandler.update();
-        }
     }
 
     @Override

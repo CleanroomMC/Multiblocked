@@ -2,18 +2,23 @@ package io.github.cleanroommc.multiblocked.client.renderer.impl;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -25,13 +30,17 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.core.util.Color;
+import software.bernie.geckolib3.geo.render.built.GeoBone;
+import software.bernie.geckolib3.geo.render.built.GeoCube;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 import javax.annotation.Nonnull;
+import java.util.EnumMap;
+
+import static io.github.cleanroommc.multiblocked.client.ClientProxy.registerNeeds;
 
 @SuppressWarnings("unchecked")
 public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.ComponentFactory> implements IRenderer, IGeoRenderer<GeoComponentRenderer.ComponentFactory> {
@@ -48,21 +57,53 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     }
 
     public final String modelName;
+    @SideOnly(Side.CLIENT)
+    private ComponentFactory itemFactory;
+    @SideOnly(Side.CLIENT)
+    private TextureAtlasSprite particleTexture;
 
     public GeoComponentRenderer(String modelName) {
         this.modelName = modelName;
+        if (Multiblocked.isClient()) {
+            registerNeeds.add(this);
+        }
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public void renderItem(ItemStack stack) {
-
+        if (itemFactory == null) {
+            itemFactory = new ComponentFactory(null, this);
+        }
+        GeoModel model = this.getModel(this.getModelLocation(itemFactory));
+        this.setLivingAnimations(itemFactory, this.getUniqueID(itemFactory));
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0.01f, 0);
+        GlStateManager.translate(0.5, 0, 0.5);
+        Minecraft.getMinecraft().renderEngine.bindTexture(getTextureLocation(itemFactory));
+        render(model, itemFactory, Minecraft.getMinecraft().getRenderPartialTicks(), 1, 1, 1, 1);
+        GlStateManager.popMatrix();
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         return false;
+    }
+
+    @Override
+    public boolean shouldRenderInPass(World world, BlockPos pos, int pass) {
+        return true;
+    }
+
+    @Override
+    public void register(TextureMap map) {
+        particleTexture = map.registerSprite(new ResourceLocation(Multiblocked.MODID, modelName));
+    }
+
+    @Override
+    public TextureAtlasSprite getParticleTexture() {
+        return particleTexture == null ? IRenderer.super.getParticleTexture() : particleTexture;
     }
 
     @SideOnly(Side.CLIENT)
@@ -96,10 +137,76 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
             rotateBlock(controller.getFrontFacing());
 
             Minecraft.getMinecraft().renderEngine.bindTexture(getTextureLocation(factory));
-            Color renderColor = getRenderColor(factory, partialTicks);
-            render(model, factory, partialTicks, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+            render(model, factory, partialTicks, 1, 1, 1, 1);
             GlStateManager.popMatrix();
         }
+    }
+
+    @Override
+    public void renderRecursively(BufferBuilder builder, GeoBone bone, float red, float green, float blue, float alpha) {
+        int pass = MinecraftForgeClient.getRenderPass();
+        if (pass < 0) {
+            rawRenderRecursively(builder, bone, red, green, blue, alpha);
+        }
+        boolean isTranslucent = bone.name.equals("translucent");
+        if (pass == 1 && isTranslucent) {
+            rawRenderRecursively(builder, bone, red, green, blue, alpha);
+        } else if (pass == 0 && !isTranslucent) {
+            MATRIX_STACK.push();
+            MATRIX_STACK.translate(bone);
+            MATRIX_STACK.moveToPivot(bone);
+            MATRIX_STACK.rotate(bone);
+            MATRIX_STACK.scale(bone);
+            MATRIX_STACK.moveBackFromPivot(bone);
+            if (!bone.isHidden) {
+                for (GeoCube cube : bone.childCubes) {
+                    MATRIX_STACK.push();
+                    GlStateManager.pushMatrix();
+                    renderCube(builder, cube, red, green, blue, alpha);
+                    GlStateManager.popMatrix();
+                    MATRIX_STACK.pop();
+                }
+                for (GeoBone childBone : bone.childBones) {
+                    renderRecursively(builder, childBone, red, green, blue, alpha);
+                }
+            }
+            MATRIX_STACK.pop();
+        } else if (pass == 1) {
+            MATRIX_STACK.push();
+            MATRIX_STACK.translate(bone);
+            MATRIX_STACK.moveToPivot(bone);
+            MATRIX_STACK.rotate(bone);
+            MATRIX_STACK.scale(bone);
+            MATRIX_STACK.moveBackFromPivot(bone);
+            if (!bone.isHidden) {
+                for (GeoBone childBone : bone.childBones) {
+                    renderRecursively(builder, childBone, red, green, blue, alpha);
+                }
+            }
+            MATRIX_STACK.pop();
+        }
+    }
+
+    private void rawRenderRecursively(BufferBuilder builder, GeoBone bone, float red, float green, float blue, float alpha) {
+        MATRIX_STACK.push();
+        MATRIX_STACK.translate(bone);
+        MATRIX_STACK.moveToPivot(bone);
+        MATRIX_STACK.rotate(bone);
+        MATRIX_STACK.scale(bone);
+        MATRIX_STACK.moveBackFromPivot(bone);
+        if (!bone.isHidden) {
+            for (GeoCube cube : bone.childCubes) {
+                MATRIX_STACK.push();
+                GlStateManager.pushMatrix();
+                renderCube(builder, cube, red, green, blue, alpha);
+                GlStateManager.popMatrix();
+                MATRIX_STACK.pop();
+            }
+            for (GeoBone childBone : bone.childBones) {
+                rawRenderRecursively(builder, childBone, red, green, blue, alpha);
+            }
+        }
+        MATRIX_STACK.pop();
     }
 
     protected void rotateBlock(EnumFacing facing) {
@@ -158,9 +265,15 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
 
         private PlayState predicate(AnimationEvent<ComponentFactory> event) {
             AnimationController<ComponentFactory> controller = event.getController();
-            controller.transitionLengthTicks = 0;
-            //TODO set animation name + custom animation calling
-            controller.setAnimation(new AnimationBuilder().addAnimation("Botarium.anim.deploy", true));
+            if (component instanceof ControllerTileEntity) {
+                if (((ControllerTileEntity)component).isWorking()) {
+                    controller.setAnimation(new AnimationBuilder().addAnimation("working"));
+                } else {
+                    controller.setAnimation(new AnimationBuilder().addAnimation("idle"));
+                }
+            } else {
+                controller.setAnimation(new AnimationBuilder().addAnimation("idle"));
+            }
             return PlayState.CONTINUE;
         }
 

@@ -14,6 +14,10 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateAnyCapability;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateBlocks;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateStates;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
@@ -32,6 +36,7 @@ import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.EnumDyeColor;
@@ -43,6 +48,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -50,13 +56,13 @@ public class JsonBlockPatternWidget extends WidgetGroup {
     public static BlockComponent symbolBlock;
     public JsonBlockPattern pattern;
     public TabContainer container;
-    public WidgetGroup patternTab;
-    public WidgetGroup predicateTab;
     public BlockPatternSceneWidget sceneWidget;
     public SelectorWidget[] selectors;
     public TextFieldWidget[] repeats;
     public DraggableScrollableWidgetGroup symbolSelector;
     public DraggableScrollableWidgetGroup predicateGroup;
+    public DraggableScrollableWidgetGroup tfGroup;
+    public TextBoxWidget textBox;
     public boolean needUpdatePredicateSelector;
 
     public JsonBlockPatternWidget(JsonBlockPattern pattern) {
@@ -70,6 +76,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
 
             // patternTab
             ResourceTexture tabPattern = new ResourceTexture("multiblocked:textures/gui/tab_pattern.png");
+            WidgetGroup patternTab;
             container.addTab((TabButton)new TabButton(171, 29, 20, 20)
                             .setTexture(tabPattern.getSubTexture(0, 0, 1, 0.5),
                                     tabPattern.getSubTexture(0, 0.5, 1, 0.5))
@@ -80,26 +87,23 @@ public class JsonBlockPatternWidget extends WidgetGroup {
 
             patternTab.addWidget(new LabelWidget(174, 92, () -> "Repeat:").setTextColor(-1).setDrop(true));
             repeats = new TextFieldWidget[2];
-            patternTab.addWidget(repeats[0] = new TextFieldWidget(215, 87, 40, 15, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][0] + "", s -> {
-                if (sceneWidget.selected != null && s != null && !s.isEmpty() && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
+            patternTab.addWidget(repeats[0] = new TextFieldWidget(215, 87, 40, 15, true, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][0] + "", s -> {
+                if (sceneWidget.selected != null && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
                     pattern.aisleRepetitions[sceneWidget.selected.a][0] = Integer.parseInt(s);
                     if (pattern.aisleRepetitions[sceneWidget.selected.a][0] > pattern.aisleRepetitions[sceneWidget.selected.a][1]) {
-                        int a = pattern.aisleRepetitions[sceneWidget.selected.a][1];
                         pattern.aisleRepetitions[sceneWidget.selected.a][1] = pattern.aisleRepetitions[sceneWidget.selected.a][0];
-                        pattern.aisleRepetitions[sceneWidget.selected.a][0] = a;
                     }
                 }
-            }).setNumbersOnly(1, Integer.MAX_VALUE).setMaxLength(3).setBackground(new ColorRectTexture(bgColor)));
-            patternTab.addWidget(repeats[1] = new TextFieldWidget(305, 87, 40, 15, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][1] + "", s -> {
-                if (sceneWidget.selected != null && s != null && !s.isEmpty() && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
+            }).setNumbersOnly(1, Integer.MAX_VALUE));
+
+            patternTab.addWidget(repeats[1] = new TextFieldWidget(305, 87, 40, 15, true, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][1] + "", s -> {
+                if (sceneWidget.selected != null && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
                     pattern.aisleRepetitions[sceneWidget.selected.a][1] = Integer.parseInt(s);
                     if (pattern.aisleRepetitions[sceneWidget.selected.a][0] > pattern.aisleRepetitions[sceneWidget.selected.a][1]) {
-                        int a = pattern.aisleRepetitions[sceneWidget.selected.a][1];
-                        pattern.aisleRepetitions[sceneWidget.selected.a][1] = pattern.aisleRepetitions[sceneWidget.selected.a][0];
-                        pattern.aisleRepetitions[sceneWidget.selected.a][0] = a;
+                        pattern.aisleRepetitions[sceneWidget.selected.a][0] = pattern.aisleRepetitions[sceneWidget.selected.a][1];
                     }
                 }
-            }).setNumbersOnly(1, Integer.MAX_VALUE).setMaxLength(3).setBackground(new ColorRectTexture(bgColor)));
+            }).setNumbersOnly(0, Integer.MAX_VALUE));
             repeats[0].setActive(false); repeats[1].setActive(false); repeats[0].setHoverTooltip("min"); repeats[1].setHoverTooltip("max");
 
             patternTab.addWidget(symbolSelector = new DraggableScrollableWidgetGroup(215, 105, 130, 35).setBackground(new ColorRectTexture(bgColor)));
@@ -109,7 +113,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                 updateSymbolButton();
             }).setButtonTexture(new ColorRectTexture(0xff454545), new TextTexture("Add Symbol", -1)));
             updateSymbolButton();
-            patternTab.addWidget(new LabelWidget(174, 142, ()->"tips: you cant modify controller").setTextColor(-1));
+            patternTab.addWidget(new LabelWidget(174, 143, ()->"tips: you cant modify controller").setTextColor(-1));
 
             List<String> candidates = Arrays.stream(RelativeDirection.values()).map(Enum::name).collect(Collectors.toList());
             patternTab.addWidget(new LabelWidget(174, 70, () -> "Dir:").setTextColor(-1).setDrop(true));
@@ -123,6 +127,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
 
             //predicateTab
             ResourceTexture tabPredicate = new ResourceTexture("multiblocked:textures/gui/tab_predicate.png");
+            WidgetGroup predicateTab;
             container.addTab((TabButton)new TabButton(171 + 25, 29, 20, 20)
                             .setTexture(tabPredicate.getSubTexture(0, 0, 1, 0.5),
                                     tabPredicate.getSubTexture(0, 0.5, 1, 0.5))
@@ -133,7 +138,46 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                     .setYScrollBarWidth(4)
                     .setYBarStyle(null, new ColorRectTexture(-1));
             predicateTab.addWidget(predicatesContainer);
-            Consumer<String> remove = name -> {
+            AtomicReference<PredicateWidget> selectedPredicate = new AtomicReference<>();
+            SelectorWidget sw;
+            TextFieldWidget fw;
+            predicateTab.addWidget(sw = new SelectorWidget(171, 136, 50, 20, Arrays.asList("capability", "blocks", "states", "component"), -1)
+                    .setButtonBackground(new ColorRectTexture(bgColor)).setValue("blocks"));
+            predicateTab.addWidget(fw = new TextFieldWidget(222, 136, 50, 20, true, null, null));
+            predicateTab.addWidget(new ButtonWidget(275, 136, 20, 20, cd -> {
+                if (sw.getValue() == null) return;
+                SimplePredicate predicate = null;
+                switch (sw.getValue()) {
+                    case "capability":
+                        predicate = new PredicateAnyCapability();
+                        break;
+                    case "blocks":
+                        predicate = new PredicateBlocks();
+                        break;
+                    case "states":
+                        predicate = new PredicateStates();
+                        break;
+                    case "component":
+                        predicate = new PredicateComponent();
+                        break;
+                }
+                String predicateName = fw.getCurrentString();
+                if (predicate != null && !pattern.predicates.containsKey(predicateName)) {
+                    pattern.predicates.put(fw.getCurrentString(), predicate);
+                    predicatesContainer.addWidget(new PredicateWidget(0, predicatesContainer.widgets.size() * 21, predicate, predicateName, selectedPredicate));
+                }
+            }).setButtonTexture(new ColorRectTexture(0xff0d00d0), new TextTexture("create predicate", -1)).setHoverTooltip("create predicate"));
+            predicateTab.addWidget(new ButtonWidget(350 - 45, 136, 20, 20, cd -> {
+                if (selectedPredicate.get() == null) return;
+                String name = selectedPredicate.get().name;
+                if (sceneWidget.selected != null && !name.equals("controller")) {
+                    pattern.symbolMap.get(sceneWidget.selected.symbol).add(name);
+                    needUpdatePredicateSelector = true;
+                }
+            }).setButtonTexture(new ColorRectTexture(0xff000000), new TextTexture("add", -1)).setHoverTooltip("add"));
+            predicateTab.addWidget(new ButtonWidget(350 - 24, 136, 20, 20, cd -> {
+                if (selectedPredicate.get() == null) return;
+                String name = selectedPredicate.get().name;
                 if (sceneWidget.selected != null) {
                     pattern.symbolMap.get(sceneWidget.selected.symbol).remove(name);
                 }
@@ -144,7 +188,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                 for (Widget widget : predicatesContainer.widgets) {
                     if (found) {
                         widget.addSelfPosition(0, -21);
-                    } else if (((PredicateWidget)widget).name.equals(name)) {
+                    } else if (widget == selectedPredicate.get()) {
                         predicatesContainer.waitToRemoved(widget);
                         found = true;
                     }
@@ -152,8 +196,27 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                 for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
                     tile.updateRenderer();
                 }
-            };
-            pattern.predicates.forEach((predicateName, predicate) -> predicatesContainer.addWidget(new PredicateWidget(0, predicatesContainer.widgets.size() * 21, predicate, predicateName, remove)));
+            }).setButtonTexture(new ColorRectTexture(0xff000000), new TextTexture("remove", -1)).setHoverTooltip("remove"));
+            pattern.predicates.forEach((predicateName, predicate) -> {
+                if (predicateName.equals("controller")) return;
+                predicatesContainer.addWidget(new PredicateWidget(0, predicatesContainer.widgets.size() * 21, predicate, predicateName, selectedPredicate));
+            });
+
+            //textFieldTab
+            ResourceTexture tabTextField = new ResourceTexture("multiblocked:textures/gui/tab_predicate.png");
+            WidgetGroup textFieldTab;
+            container.addTab((TabButton)new TabButton(171 + 50, 29, 20, 20)
+                            .setTexture(tabTextField.getSubTexture(0, 0, 1, 0.5),
+                                    tabTextField.getSubTexture(0, 0.5, 1, 0.5))
+                            .setHoverTooltip("Predicate Settings"),
+                    textFieldTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
+            textFieldTab.addWidget(tfGroup = new DraggableScrollableWidgetGroup(171, 52, 179, 104));
+            tfGroup.addWidget(textBox = new TextBoxWidget(0, 0, 179, Collections.singletonList(getPatternJson())));
+            container.setOnChanged((a, b)->{
+                if (b == textFieldTab) {
+                    updatePatternJson();
+                }
+            });
 
             //information
             addWidget(new LabelWidget(31, 166, () -> "Symbol Character: " + (sceneWidget.selected == null ? "" : ("'" + sceneWidget.selected.symbol + "'"))).setTextColor(-1));
@@ -172,6 +235,15 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                     .setYBarStyle(null, new ColorRectTexture(-1)));
             updatePredicateSelector();
         }
+    }
+
+    public void updatePatternJson() {
+        textBox.setContent(Collections.singletonList(getPatternJson()));
+        tfGroup.computeMax();
+    }
+
+    public String getPatternJson() {
+        return Multiblocked.GSON.toJson(pattern);
     }
 
     public static int getColor(char symbol) {
@@ -210,6 +282,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         super.updateScreen();
         if (needUpdatePredicateSelector) {
             updatePredicateSelector();
+            needUpdatePredicateSelector = false;
         }
     }
 
@@ -394,6 +467,11 @@ public class JsonBlockPatternWidget extends WidgetGroup {
             GlStateManager.disableTexture2D();
 
             if (viewMode == 1) { // render pattern style
+                net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+                float lastBrightnessX = OpenGlHelper.lastBrightnessX;
+                float lastBrightnessY = OpenGlHelper.lastBrightnessY;
+                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+
                 if (selected != null) {
                     for (SymbolTileEntity tile : sameSymbol) {
                         drawSymbolTE(tessellator, buffer, tile, getColor(tile.symbol), 1);
@@ -412,6 +490,9 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                 if (selected != null) {
                     GlStateManager.depthMask(true);
                 }
+
+                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastBrightnessX, lastBrightnessY);
+                net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
             }
 
             super.renderBlockOverLay(renderer);
@@ -505,25 +586,76 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         }
     }
 
-    public static class PredicateWidget extends WidgetGroup {
+    public class PredicateWidget extends WidgetGroup {
         public SimplePredicate predicate;
+        public CycleItemStackHandler itemHandler;
         public String name;
+        public boolean isSelected;
+        public AtomicReference<PredicateWidget> atomicReference;
 
-        public PredicateWidget(int x, int y, SimplePredicate predicate, String name, Consumer<String> closeCallBack) {
+        public PredicateWidget(int x, int y, SimplePredicate predicate, String name, int xC) {
             super(x, y, 175, 20);
             setClientSideWidget();
             this.predicate = predicate;
             this.name = name;
 
-            CycleItemStackHandler itemHandler = new CycleItemStackHandler(Collections.singletonList(predicate.getCandidates()));
+            itemHandler = new CycleItemStackHandler(Collections.singletonList(predicate.getCandidates()));
             addWidget(new ImageWidget(0, 0, 179, 20, new ColorRectTexture(0xafffffff)));
             addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false));
-            addWidget(new LabelWidget(20, 5, () -> String.format("%s|%s|%d-%d|%d",
-                    predicate.type, name, predicate.minGlobalCount, predicate.maxGlobalCount, predicate.previewCount)));
-
+            addWidget(new LabelWidget(20, 5, () -> String.format("%s|%s|%d-%d|%d", predicate.type, name, predicate.minGlobalCount, predicate.maxGlobalCount, predicate.previewCount)));
             if (name.equals("controller") || name.equals("air") || name.equals("any")) return;
-            addWidget(new ButtonWidget(136, 1, 18, 18, new ColorRectTexture(0xff00ff00), null));
-            addWidget(new ButtonWidget(156, 1, 18, 18, new ColorRectTexture(0xffff0000), clickData -> {if(closeCallBack != null) closeCallBack.accept(name);}));
+            addWidget(new ButtonWidget(xC, 1, 18, 18, new ColorRectTexture(0xff00ff00), cd -> {
+                DialogWidget dialogWidget = new DialogWidget(JsonBlockPatternWidget.this, true).setOnClosed(() -> JsonBlockPatternWidget.this.sceneWidget.tiles.values().forEach(SymbolTileEntity::updateRenderer));
+                dialogWidget.addWidget(new ImageWidget(0, 0, 384, 256, new ColorRectTexture(0xaf333333)));
+                int yOffset = 10;
+                for (WidgetGroup widget : predicate.getConfigWidget(new ArrayList<>())) {
+                    widget.addSelfPosition(0, yOffset);
+                    dialogWidget.addWidget(widget);
+                    yOffset += widget.getSize().height + 5;
+                }
+            }));
+        }
+
+        public PredicateWidget(int x, int y, SimplePredicate predicate, String name, Consumer<String> closeCallBack) {
+            this(x, y, predicate, name, 136);
+            if (name.equals("controller")) return;
+            addWidget(new ButtonWidget(156, 1, 18, 18, new ColorRectTexture(0xffff0000), cd -> {if(closeCallBack != null) closeCallBack.accept(name);}));
+        }
+
+        public PredicateWidget(int x, int y, SimplePredicate predicate, String name, AtomicReference<PredicateWidget> atomicReference) {
+            this(x, y, predicate, name, 156);
+            this.atomicReference = atomicReference;
+        }
+
+        @Override
+        public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
+            super.drawInBackground(mouseX, mouseY, partialTicks);
+            if (isSelected) {
+                DrawerHelper.drawBorder(getPosition().x + 1, getPosition().y + 1, getSize().width - 2, getSize().height - 2, 0xff00aa00, 1);
+            }
+        }
+
+        @Override
+        public Widget mouseClicked(int mouseX, int mouseY, int button) {
+            if (isMouseOverElement(mouseX, mouseY) && atomicReference != null) {
+                if (atomicReference.get() == this) {
+                    atomicReference.set(null);
+                    this.isSelected = false;
+                } else {
+                    if (atomicReference.get() != null) {
+                        atomicReference.get().isSelected = false;
+                    }
+                    atomicReference.set(this);
+                    this.isSelected = true;
+                }
+            }
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        @Override
+        public void updateScreen() {
+            super.updateScreen();
+            itemHandler.updateStacks(Collections.singletonList(predicate.getCandidates()));
         }
     }
 

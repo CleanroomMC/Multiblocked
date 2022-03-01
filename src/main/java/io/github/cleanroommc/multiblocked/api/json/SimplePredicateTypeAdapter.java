@@ -45,13 +45,13 @@ public class SimplePredicateTypeAdapter implements JsonDeserializer<SimplePredic
                 case "air":
                     return SimplePredicate.AIR;
                 case "states":
-                    return GSON.fromJson(jsonObj, PredicateStates.class).buildObjectFromJson();
+                    return GSON.fromJson(jsonObj, PredicateStates.class).buildPredicate();
                 case "blocks":
-                    return GSON.fromJson(jsonObj, PredicateBlocks.class).buildObjectFromJson();
+                    return GSON.fromJson(jsonObj, PredicateBlocks.class).buildPredicate();
                 case "capability":
-                    return GSON.fromJson(jsonObj, PredicateAnyCapability.class).buildObjectFromJson();
+                    return GSON.fromJson(jsonObj, PredicateAnyCapability.class).buildPredicate();
                 case "component":
-                    return GSON.fromJson(jsonObj, PredicateComponent.class).buildObjectFromJson();
+                    return GSON.fromJson(jsonObj, PredicateComponent.class).buildPredicate();
             }
         }
         return new SimplePredicate();

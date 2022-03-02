@@ -1,5 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.google.gson.JsonObject;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
@@ -47,5 +49,11 @@ public class PredicateComponent extends SimplePredicate {
             }
         }).setCurrentString(location.toString()));
         return groups;
+    }
+
+    @Override
+    public JsonObject toJson(JsonObject jsonObject) {
+        jsonObject.add("location", Multiblocked.GSON.toJsonTree(location));
+        return super.toJson(jsonObject);
     }
 }

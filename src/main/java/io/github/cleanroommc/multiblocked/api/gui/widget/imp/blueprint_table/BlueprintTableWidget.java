@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.ClickData;
@@ -52,13 +53,10 @@ public class BlueprintTableWidget extends TabContainer {
     }
 
     private void onBuildTemplate(ClickData clickData) {
-        if (selected != null && ItemBlueprint.isItemBlueprint(selected.slotWidget.getHandle().getStack())) {
+        if (selected != null && isRemote() && ItemBlueprint.isItemBlueprint(selected.slotWidget.getHandle().getStack())) {
             ItemStack itemStack = selected.slotWidget.getHandle().getStack();
+            JsonBlockPattern pattern = null;
             if (ItemBlueprint.isRaw(itemStack)) {
-                for (Widget widget : widgets) {
-                    widget.setActive(false);
-                    widget.setVisible(false);
-                }
                 BlockPos[] poses = ItemBlueprint.getPos(itemStack);
                 World world = table.getWorld();
                 if (poses != null && world.isAreaLoaded(poses[0], poses[1])) {
@@ -74,19 +72,63 @@ public class BlueprintTableWidget extends TabContainer {
                         }
                     }
                     if (controller != null) {
-                        this.addWidget(0, opened = new JsonBlockPatternWidget(
-                                new JsonBlockPattern(table.getWorld(), controller.getLocation(), controller.getPos(), controller.getFrontFacing(),
-                                        poses[0].getX(), poses[0].getY(), poses[0].getZ(),
-                                        poses[1].getX(), poses[1].getY(), poses[1].getZ()), widget -> {
-                                    
-                        }));
+                        pattern = new JsonBlockPattern(table.getWorld(), controller.getLocation(), controller.getPos(), controller.getFrontFacing(),
+                                poses[0].getX(), poses[0].getY(), poses[0].getZ(),
+                                poses[1].getX(), poses[1].getY(), poses[1].getZ());
+
                     } else {
                         // TODO tips dialog
                     }
                 } else {
                     // TODO tips dialog
                 }
+            } else if (itemStack.getSubCompound("pattern") != null){
+                String json = itemStack.getSubCompound("pattern").getString("json");
+                pattern = Multiblocked.GSON.fromJson(json, JsonBlockPattern.class);
             }
+            if (pattern != null) {
+                for (Widget widget : widgets) {
+                    widget.setActive(false);
+                    widget.setVisible(false);
+                }
+                this.addWidget(0, opened = new JsonBlockPatternWidget(pattern, widget -> {
+                    if (ItemBlueprint.setPattern(itemStack)) {
+                        widget.pattern.cleanUp();
+                        String json = widget.pattern.toJson();
+                        itemStack.getOrCreateSubCompound("pattern").setString("json", json);
+                        writeClientAction(-1, buffer -> {
+                            buffer.writeVarInt(selected.slotWidget.getHandle().getSlotIndex());
+                            buffer.writeString(json);
+                        });
+                    }
+                    for (Widget w : widgets) {
+                        w.setActive(true);
+                        w.setVisible(true);
+                    }
+                    this.waitToRemoved(widget);
+                }));
+            }
+        }
+    }
+
+    @Override
+    public void handleClientAction(int id, PacketBuffer buffer) {
+        if (id == -1) {
+            int slotIndex = buffer.readVarInt();
+            String json = buffer.readString(Short.MAX_VALUE);
+            TileEntity tileEntity = table.getWorld().getTileEntity(table.getPos().offset(EnumFacing.UP).offset(table.getFrontFacing().getOpposite()).offset(table.getFrontFacing().rotateY()));
+            if (tileEntity != null && tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+                IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                if (handler != null && handler.getSlots() > slotIndex) {
+                    ItemStack itemStack = handler.getStackInSlot(slotIndex);
+                    if (ItemBlueprint.isItemBlueprint(itemStack)) {
+                        ItemBlueprint.setPattern(itemStack);
+                        itemStack.getOrCreateSubCompound("pattern").setString("json", json);
+                    }
+                }
+            }
+        } else {
+            super.handleClientAction(id, buffer);
         }
     }
 
@@ -152,7 +194,7 @@ public class BlueprintTableWidget extends TabContainer {
 
     private String status() {
         return "status: " + (selected == null ? "" : ItemBlueprint.isRaw(selected.slotWidget.getHandle().getStack()) ?
-                TextFormatting.YELLOW + "raw" : TextFormatting.GREEN + "template");
+                TextFormatting.YELLOW + "raw" : TextFormatting.GREEN + "pattern");
     }
 
     public void onSelected(Group selected) {

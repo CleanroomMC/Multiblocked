@@ -62,6 +62,6 @@ public class SimplePredicateTypeAdapter implements JsonDeserializer<SimplePredic
         if (src == null) {
             return JsonNull.INSTANCE;
         }
-        return GSON.toJsonTree(src);
+        return src.toJson(new JsonObject());
     }
 }

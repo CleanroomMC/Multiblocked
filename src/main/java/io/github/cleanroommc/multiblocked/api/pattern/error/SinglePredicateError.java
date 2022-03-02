@@ -28,10 +28,10 @@ public class SinglePredicateError extends PatternError {
     public String getErrorInfo() {
         int number = -1;
         if (type == 0) {
-            number = predicate.maxGlobalCount;
+            number = predicate.maxCount;
         }
         if (type == 1) {
-            number = predicate.minGlobalCount;
+            number = predicate.minCount;
         }
         return I18n.format("multiblocked.pattern.error.limited." + type,
                 number);

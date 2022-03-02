@@ -1,5 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
@@ -83,5 +85,12 @@ public class PredicateAnyCapability extends SimplePredicate {
                 })
                 .setHoverTooltip("Capability"));
         return groups;
+    }
+
+    @Override
+    public JsonObject toJson(JsonObject jsonObject) {
+        jsonObject.add("io", new JsonPrimitive(io.name()));
+        jsonObject.add("capability", new JsonPrimitive(capability));
+        return super.toJson(jsonObject);
     }
 }

@@ -2,6 +2,7 @@ package io.github.cleanroommc.multiblocked;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import io.github.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
 import io.github.cleanroommc.multiblocked.api.json.EnumMapTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
@@ -14,7 +15,6 @@ import io.github.cleanroommc.multiblocked.command.CommandReloadDefinitions;
 import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
@@ -48,6 +48,7 @@ public class Multiblocked {
     public static final String VERSION = "1.0";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
+    public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
             .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
@@ -75,6 +76,10 @@ public class Multiblocked {
     public static boolean isClient() {
         if (isClient == null) isClient = FMLCommonHandler.instance().getSide().isClient();
         return isClient;
+    }
+
+    public static String prettyJson(String uglyJson) {
+        return GSON_PRETTY.toJson(new JsonParser().parse(uglyJson));
     }
 
     private static final ConcurrentMap<String, Boolean> loadedCache = new ConcurrentHashMap<>();

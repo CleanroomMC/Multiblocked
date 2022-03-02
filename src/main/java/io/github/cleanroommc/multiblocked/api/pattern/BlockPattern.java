@@ -177,7 +177,7 @@ public class BlockPattern {
 
         //Check count matches amount
         for (Map.Entry<SimplePredicate, Integer> entry : globalCount.entrySet()) {
-            if (entry.getValue() < entry.getKey().minGlobalCount) {
+            if (entry.getValue() < entry.getKey().minCount) {
                 worldState.setError(new SinglePredicateError(entry.getKey(), 1));
                 return false;
             }
@@ -213,10 +213,10 @@ public class BlockPattern {
                             boolean find = false;
                             BlockInfo[] infos = new BlockInfo[0];
                             for (SimplePredicate limit : predicate.limited) {
-                                if (limit.minGlobalCount > 0) {
+                                if (limit.minCount > 0) {
                                     if (!cacheGlobal.containsKey(limit)) {
                                         cacheGlobal.put(limit, 1);
-                                    } else if (cacheGlobal.get(limit) < limit.minGlobalCount && (limit.maxGlobalCount == -1 || cacheGlobal.get(limit) < limit.maxGlobalCount)) {
+                                    } else if (cacheGlobal.get(limit) < limit.minCount && (limit.maxCount == -1 || cacheGlobal.get(limit) < limit.maxCount)) {
                                         cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
                                     } else {
                                         continue;
@@ -233,7 +233,7 @@ public class BlockPattern {
                             }
                             if (!find) { // no limited
                                 for (SimplePredicate limit : predicate.limited) {
-                                    if (limit.maxGlobalCount != -1 && cacheGlobal.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxGlobalCount)
+                                    if (limit.maxCount != -1 && cacheGlobal.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxCount)
                                         continue;
                                     if (!cacheInfos.containsKey(limit)) {
                                         cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
@@ -349,7 +349,7 @@ public class BlockPattern {
                         BlockInfo[] infos = null;
                         // check global and previewCount
                         for (SimplePredicate limit : predicate.limited) {
-                            if (limit.minGlobalCount == -1 && limit.previewCount == -1) continue;
+                            if (limit.minCount == -1 && limit.previewCount == -1) continue;
                             if (cacheGlobal.getOrDefault(limit, 0) < limit.previewCount) {
                                 if (!cacheGlobal.containsKey(limit)) {
                                     cacheGlobal.put(limit, 1);
@@ -358,10 +358,10 @@ public class BlockPattern {
                                 } else {
                                     continue;
                                 }
-                            } else if (limit.minGlobalCount > 0) {
+                            } else if (limit.minCount > 0) {
                                 if (!cacheGlobal.containsKey(limit)) {
                                     cacheGlobal.put(limit, 1);
-                                } else if (cacheGlobal.get(limit) < limit.minGlobalCount) {
+                                } else if (cacheGlobal.get(limit) < limit.minCount) {
                                     cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
                                 } else {
                                     continue;
@@ -413,8 +413,8 @@ public class BlockPattern {
                             for (SimplePredicate limit : predicate.limited) {
                                 if (limit.previewCount != -1) {
                                     continue;
-                                } else if (limit.maxGlobalCount != -1) {
-                                    if (cacheGlobal.getOrDefault(limit, 0) < limit.maxGlobalCount) {
+                                } else if (limit.maxCount != -1) {
+                                    if (cacheGlobal.getOrDefault(limit, 0) < limit.maxCount) {
                                         if (!cacheGlobal.containsKey(limit)) {
                                             cacheGlobal.put(limit, 1);
                                         } else {

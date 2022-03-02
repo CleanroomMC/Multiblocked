@@ -51,6 +51,8 @@ public class ComponentDefinition {
     @ZenProperty
     public boolean allowRotate;
     @ZenProperty
+    public boolean showInJei;
+    @ZenProperty
     public IRenderer baseRenderer;
     @ZenProperty
     public IRenderer formedRenderer;
@@ -79,6 +81,7 @@ public class ComponentDefinition {
         this.baseRenderer = null;
         this.isOpaqueCube = true;
         this.allowRotate = true;
+        this.showInJei = true;
         baseAABB = new EnumMap<>(EnumFacing.class);
         formedAABB = new EnumMap<>(EnumFacing.class);
     }

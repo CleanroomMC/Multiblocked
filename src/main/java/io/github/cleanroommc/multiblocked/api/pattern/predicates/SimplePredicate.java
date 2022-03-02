@@ -1,5 +1,8 @@
 package io.github.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
@@ -29,16 +32,16 @@ import java.util.stream.Collectors;
 public class SimplePredicate {
     public static SimplePredicate ANY = new SimplePredicate("any", x -> true, null);
     public static SimplePredicate AIR = new SimplePredicate("air", blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()), null);
-    public transient Supplier<BlockInfo[]> candidates;
-
-    public transient Predicate<MultiblockState> predicate;
+    
+    public Supplier<BlockInfo[]> candidates;
+    public Predicate<MultiblockState> predicate;
 
     public List<String> toolTips;
 
-    public int minGlobalCount = -1;
-    public int maxGlobalCount = -1;
-
+    public int minCount = -1;
+    public int maxCount = -1;
     public int previewCount = -1;
+    
     public final String type;
 
     public SimplePredicate() {
@@ -71,16 +74,20 @@ public class SimplePredicate {
         if (toolTips != null) {
             toolTips.forEach(tip->result.add(I18n.format(tip)));
         }
-        if (minGlobalCount == maxGlobalCount && maxGlobalCount != -1) {
-            result.add(I18n.format("multiblocked.pattern.limited_exact", minGlobalCount));
-        } else if (minGlobalCount != maxGlobalCount && minGlobalCount != -1 && maxGlobalCount != -1) {
-            result.add(I18n.format("multiblocked.pattern.limited_within", minGlobalCount, maxGlobalCount));
+        if (minCount == maxCount && maxCount != -1) {
+            result.add(I18n.format("multiblocked.pattern.limited_exact",
+                    minCount));
+        } else if (minCount != maxCount && minCount != -1 && maxCount != -1) {
+            result.add(I18n.format("multiblocked.pattern.limited_within",
+                    minCount, maxCount));
         } else {
-            if (minGlobalCount != -1) {
-                result.add(I18n.format("multiblocked.pattern.error.limited.1", minGlobalCount));
+            if (minCount != -1) {
+                result.add(I18n.format("multiblocked.pattern.error.limited.1",
+                        minCount));
             }
-            if (maxGlobalCount != -1) {
-                result.add(I18n.format("multiblocked.pattern.error.limited.0", maxGlobalCount));
+            if (maxCount != -1) {
+                result.add(I18n.format("multiblocked.pattern.error.limited.0",
+                        maxCount));
             }
         }
         if (predicates == null) return result;
@@ -102,12 +109,12 @@ public class SimplePredicate {
     }
 
     public boolean testGlobal(MultiblockState blockWorldState) {
-        if (minGlobalCount == -1 && maxGlobalCount == -1) return true;
+        if (minCount == -1 && maxCount == -1) return true;
         Integer count = blockWorldState.globalCount.get(this);
         boolean base = predicate.test(blockWorldState);
         count = (count == null ? 0 : count) + (base ? 1 : 0);
         blockWorldState.globalCount.put(this, count);
-        if (maxGlobalCount == -1 || count <= maxGlobalCount) return base;
+        if (maxCount == -1 || count <= maxCount) return base;
         blockWorldState.setError(new SinglePredicateError(this, 0));
         return false;
     }
@@ -126,29 +133,29 @@ public class SimplePredicate {
         group.addWidget(new LabelWidget(0, 0, () -> "Type: " + type));
         TextFieldWidget min, max, preview;
 
-        group.addWidget(min = new TextFieldWidget(55, 15, 30, 15, true, () -> minGlobalCount + "", s -> {
-            minGlobalCount = Integer.parseInt(s);
-            if (minGlobalCount > maxGlobalCount) {
-                maxGlobalCount = minGlobalCount;
+        group.addWidget(min = new TextFieldWidget(55, 15, 30, 15, true, () -> minCount + "", s -> {
+            minCount = Integer.parseInt(s);
+            if (minCount > maxCount) {
+                maxCount = minCount;
             }
         }).setNumbersOnly(0, Integer.MAX_VALUE));
-        min.setHoverTooltip("min").setActive(minGlobalCount != -1);
+        min.setHoverTooltip("min").setActive(minCount != -1);
         group.addWidget(new SwitchWidget(0, 15, 50, 15, (cd, r)->{
             min.setActive(r);
-            minGlobalCount = r ? 0 : -1;
-        }).setPressed(minGlobalCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("min", -1)));
+            minCount = r ? 0 : -1;
+        }).setPressed(minCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("min", -1)));
 
-        group.addWidget(max = new TextFieldWidget(55, 33, 30, 15, true, () -> maxGlobalCount + "", s -> {
-            maxGlobalCount = Integer.parseInt(s);
-            if (minGlobalCount > maxGlobalCount) {
-                minGlobalCount = maxGlobalCount;
+        group.addWidget(max = new TextFieldWidget(55, 33, 30, 15, true, () -> maxCount + "", s -> {
+            maxCount = Integer.parseInt(s);
+            if (minCount > maxCount) {
+                minCount = maxCount;
             }
         }).setNumbersOnly(0, Integer.MAX_VALUE));
-        max.setHoverTooltip("max").setActive(maxGlobalCount != -1);
+        max.setHoverTooltip("max").setActive(maxCount != -1);
         group.addWidget(new SwitchWidget(0, 33, 50, 15, (cd, r)->{
             max.setActive(r);
-            maxGlobalCount = r ? 0 : -1;
-        }).setPressed(maxGlobalCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("max", -1)));
+            maxCount = r ? 0 : -1;
+        }).setPressed(maxCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("max", -1)));
 
 
         group.addWidget(preview = (TextFieldWidget) new TextFieldWidget(55, 51 , 30, 15, true, () -> previewCount + "", s -> previewCount = Integer.parseInt(s)).setNumbersOnly(0, Integer.MAX_VALUE).setHoverTooltip("preview"));
@@ -159,4 +166,20 @@ public class SimplePredicate {
 
         return groups;
     }
+
+    public JsonObject toJson(JsonObject jsonObject) {
+        jsonObject.add("type", new JsonPrimitive(type));
+        jsonObject.add("toolTips", Multiblocked.GSON.toJsonTree(toolTips));
+        if (minCount > -1) {
+            jsonObject.add("minCount", new JsonPrimitive(minCount));
+        }
+        if (maxCount > -1) {
+            jsonObject.add("maxCount", new JsonPrimitive(maxCount));
+        }
+        if (previewCount > -1) {
+            jsonObject.add("previewCount", new JsonPrimitive(previewCount));
+        }
+        return jsonObject;
+    }
+    
 }

@@ -1,11 +1,13 @@
 package io.github.cleanroommc.multiblocked.jei;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
+import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiHandler;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.RecipeMap;
+import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.jei.ingredient.AspectListIngredient;
-import io.github.cleanroommc.multiblocked.jei.multipage.*;
+import io.github.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
 import io.github.cleanroommc.multiblocked.jei.recipeppage.RecipeMapCategory;
 import io.github.cleanroommc.multiblocked.jei.recipeppage.RecipeWrapper;
 import mezz.jei.Internal;
@@ -14,7 +16,9 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
@@ -22,10 +26,12 @@ import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +39,8 @@ import java.util.stream.Collectors;
 public class JeiPlugin implements IModPlugin {
     public static Field fieldRecipeWrapper;
     public static Field fieldRecipeLayouts;
+    private static IIngredientRegistry itemRegistry;
+
     static {
         try {
             fieldRecipeWrapper = RecipeLayout.class.getDeclaredField("recipeWrapper");
@@ -66,6 +74,13 @@ public class JeiPlugin implements IModPlugin {
     @Override
     public void onRuntimeAvailable(@Nonnull IJeiRuntime jeiRuntime) {
         JeiPlugin.jeiRuntime = jeiRuntime;
+        List<ItemStack> removed = new ArrayList<>();
+        for (ComponentDefinition definition : MultiblockComponents.DEFINITION_REGISTRY.values()) {
+            if (!definition.showInJei) {
+                removed.add(definition.getStackForm());
+            }
+        }
+        JeiPlugin.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, removed);
     }
 
     @Override
@@ -92,6 +107,7 @@ public class JeiPlugin implements IModPlugin {
                     Multiblocked.MODID + ":" + recipeMap.name);
         }
         MultiblockInfoCategory.registerRecipes(registry);
+        itemRegistry = registry.getIngredientRegistry();
     }
 
     @Override

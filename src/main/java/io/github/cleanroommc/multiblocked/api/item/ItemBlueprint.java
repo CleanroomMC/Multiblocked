@@ -75,8 +75,20 @@ public class ItemBlueprint extends Item {
         return stack.getMetadata() == 0;
     }
 
-    public static void setRaw(ItemStack stack) {
-        stack.setItemDamage(0);
+    public static boolean setRaw(ItemStack stack) {
+        if (isItemBlueprint(stack)) {
+            stack.setItemDamage(0);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean setPattern(ItemStack stack) {
+        if (isItemBlueprint(stack)) {
+            stack.setItemDamage(1);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -88,6 +100,7 @@ public class ItemBlueprint extends Item {
             addPos(stack, pos);
         } else {
             removePos(stack);
+            setRaw(stack);
         }
         return EnumActionResult.SUCCESS;
     }

@@ -62,6 +62,7 @@ public class MultiblockCapabilities {
                 definition.baseRenderer = new CycleBlockStateRenderer(capability.getCandidates(io));
                 definition.isOpaqueCube = false;
                 definition.allowRotate = false;
+                definition.showInJei = false;
                 MultiblockComponents.registerComponent(definition);
                 MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).setCreativeTab(null);
             }

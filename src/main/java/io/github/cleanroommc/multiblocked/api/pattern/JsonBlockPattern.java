@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.pattern;
 
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateBlocks;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
@@ -12,7 +13,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class JsonBlockPattern {
     public RelativeDirection[] structureDir;
@@ -230,6 +235,26 @@ public class JsonBlockPattern {
                 c1[2] = c0[i];
             }
         }
+    }
+
+
+    public void cleanUp() {
+        Set<Character> usedChar = new HashSet<>();
+        Set<String> usedPredicate = new HashSet<>();
+        for (String[] strings : pattern) {
+            for (String string : strings) {
+                for (char c : string.toCharArray()) {
+                    usedChar.add(c);
+                }
+            }
+        }
+        symbolMap.entrySet().removeIf(entry -> !usedChar.contains(entry.getKey()));
+        symbolMap.forEach((symbol, predicates) -> usedPredicate.addAll(predicates));
+        predicates.entrySet().removeIf(entry -> !usedPredicate.contains(entry.getKey()));
+    }
+
+    public String toJson() {
+        return Multiblocked.GSON.toJson(this);
     }
 
 }

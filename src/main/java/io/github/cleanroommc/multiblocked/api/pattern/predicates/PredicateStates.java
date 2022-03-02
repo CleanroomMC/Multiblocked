@@ -1,5 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.google.gson.JsonObject;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
@@ -81,5 +83,11 @@ public class PredicateStates extends SimplePredicate {
     private void updateStates(List<IBlockState> blockList) {
         states = blockList.stream().filter(Objects::nonNull).toArray(IBlockState[]::new);
         buildPredicate();
+    }
+
+    @Override
+    public JsonObject toJson(JsonObject jsonObject) {
+        jsonObject.add("states", Multiblocked.GSON.toJsonTree(states));
+        return super.toJson(jsonObject);
     }
 }

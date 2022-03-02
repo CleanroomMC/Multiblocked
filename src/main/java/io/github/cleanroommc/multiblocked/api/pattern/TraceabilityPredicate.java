@@ -30,7 +30,7 @@ public class TraceabilityPredicate {
     }
 
     public TraceabilityPredicate(SimplePredicate simplePredicate) {
-        if (simplePredicate.minGlobalCount != -1 || simplePredicate.maxGlobalCount != -1) {
+        if (simplePredicate.minCount != -1 || simplePredicate.maxCount != -1) {
             limited.add(simplePredicate);
         } else {
             common.add(simplePredicate);
@@ -46,7 +46,7 @@ public class TraceabilityPredicate {
     }
 
     public TraceabilityPredicate sort() {
-        limited.sort(Comparator.comparingInt(a -> a.minGlobalCount));
+        limited.sort(Comparator.comparingInt(a -> a.minCount));
         return this;
     }
 
@@ -81,7 +81,7 @@ public class TraceabilityPredicate {
         limited.addAll(common);
         common.clear();
         for (SimplePredicate predicate : limited) {
-            predicate.minGlobalCount = min;
+            predicate.minCount = min;
         }
         return this;
     }
@@ -97,7 +97,7 @@ public class TraceabilityPredicate {
         limited.addAll(common);
         common.clear();
         for (SimplePredicate predicate : limited) {
-            predicate.maxGlobalCount = max;
+            predicate.maxCount = max;
         }
         return this;
     }

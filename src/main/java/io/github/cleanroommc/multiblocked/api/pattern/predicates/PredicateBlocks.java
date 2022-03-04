@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked.api.pattern.predicates;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.BlockSelectorWidget;
@@ -45,18 +46,17 @@ public class PredicateBlocks extends SimplePredicate {
         super.getConfigWidget(groups);
         WidgetGroup group = new WidgetGroup(0, 0, 200, 100);
         groups.add(group);
-        DraggableScrollableWidgetGroup
-                container = new DraggableScrollableWidgetGroup(0, 20, 200, 80);
+        DraggableScrollableWidgetGroup container = new DraggableScrollableWidgetGroup(0, 25, 200, 80).setBackground(new ColorRectTexture(0xffaaaaaa));
         group.addWidget(container);
         List<IBlockState> blockList = Arrays.stream(blocks).map(Block::getDefaultState).collect(Collectors.toList());
         for (IBlockState blockState : blockList) {
             addBlockSelectorWidget(blockList, container, blockState);
         }
-        group.addWidget(new LabelWidget(0, 0, ()->"Blocks").setTextColor(-1).setDrop(true));
+        group.addWidget(new LabelWidget(0, 6, ()->"Block Settings").setTextColor(-1).setDrop(true));
         group.addWidget(new ButtonWidget(180, 0, 20, 20, cd -> {
             blockList.add(null);
             addBlockSelectorWidget(blockList, container, null);
-        }).setButtonTexture(new ColorRectTexture(-1), new TextTexture("add", 0xff000000)));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("add a new block"));
         return groups;
     }
 
@@ -71,7 +71,7 @@ public class PredicateBlocks extends SimplePredicate {
                 container.widgets.get(i).addSelfPosition(0, -21);
             }
             container.waitToRemoved(bsw);
-        }).setButtonTexture(new ColorRectTexture(0xffff0000), new TextTexture("remove", 0xff000000)).setHoverTooltip("remove"));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("remove"));
         if (blockState != null) {
             bsw.setBlock(blockState);
         }

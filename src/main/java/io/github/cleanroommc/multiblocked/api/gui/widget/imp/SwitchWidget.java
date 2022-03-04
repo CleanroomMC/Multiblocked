@@ -1,12 +1,14 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp;
 
 
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.ClickData;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.network.PacketBuffer;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.function.BiConsumer;
 
@@ -45,6 +47,11 @@ public class SwitchWidget extends Widget {
 
     public SwitchWidget setHoverTexture(IGuiTexture... hoverTexture) {
         this.hoverTexture = hoverTexture;
+        return this;
+    }
+
+    public SwitchWidget setHoverBorderTexture(int border, int color) {
+        this.hoverTexture = new IGuiTexture[]{new ColorBorderTexture(border, color)};
         return this;
     }
 
@@ -87,16 +94,17 @@ public class SwitchWidget extends Widget {
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
         Position position = getPosition();
         Size size = getSize();
-        if (isMouseOverElement(mouseX, mouseY) && hoverTexture != null) {
-            for (IGuiTexture texture : hoverTexture) {
-                texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
-            }
-        } else if (baseTexture != null && !isPressed) {
+        if (baseTexture != null && !isPressed) {
             for (IGuiTexture texture : baseTexture) {
                 texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
             }
         } else if (pressedTexture != null && isPressed) {
             for (IGuiTexture texture : pressedTexture) {
+                texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
+            }
+        }
+        if (isMouseOverElement(mouseX, mouseY) && hoverTexture != null) {
+            for (IGuiTexture texture : hoverTexture) {
                 texture.draw(mouseX, mouseY, position.x, position.y, size.width, size.height);
             }
         }

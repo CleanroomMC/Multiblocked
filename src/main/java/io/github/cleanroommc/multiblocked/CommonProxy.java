@@ -157,7 +157,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        ForgeRegistries.RECIPES.register(new ItemMultiblockBuilder.BuilderRecipeLogic());
+        ForgeRegistries.RECIPES.register(new ItemMultiblockBuilder.BuilderRecipeLogic().setRegistryName(Multiblocked.MODID, "builder"));
     }
 
 }

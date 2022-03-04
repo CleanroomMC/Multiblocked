@@ -13,8 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 
 public class IBlockStateTypeAdapterFactory implements TypeAdapterFactory {
-    public static final IRendererTypeAdapterFactory
-            INSTANCE = new IRendererTypeAdapterFactory();
+    public static final IBlockStateTypeAdapterFactory INSTANCE = new IBlockStateTypeAdapterFactory();
 
     @SuppressWarnings("unchecked")
     @Override

@@ -3,26 +3,29 @@ package io.github.cleanroommc.multiblocked.api.item;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import io.github.cleanroommc.multiblocked.api.pattern.MultiblockState;
-import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 public class ItemMultiblockBuilder extends Item {
 
@@ -61,14 +64,12 @@ public class ItemMultiblockBuilder extends Item {
                     return EnumActionResult.SUCCESS;
                 } else {
                     String json = hold.getOrCreateSubCompound("pattern").getString("json");
-                    if (!json.isEmpty()) {
-                        JsonBlockPattern jsonBlockPattern = Multiblocked.GSON.fromJson(json, JsonBlockPattern.class);
-                        if (jsonBlockPattern.predicates.get("controller") instanceof PredicateComponent) {
-                            PredicateComponent predicate = (PredicateComponent) jsonBlockPattern.predicates.get("controller");
-                            if (predicate.location.equals(((ControllerTileEntity) tileEntity).getDefinition().location)) {
-                                jsonBlockPattern.build().autoBuild(player, new MultiblockState(world, pos));
-                                return EnumActionResult.SUCCESS;
-                            }
+                    String controller = hold.getOrCreateSubCompound("pattern").getString("controller");
+                    if (!json.isEmpty() && !controller.isEmpty()) {
+                        if (controller.equals(((ControllerTileEntity) tileEntity).getDefinition().location.toString())) {
+                            JsonBlockPattern jsonBlockPattern = Multiblocked.GSON.fromJson(json, JsonBlockPattern.class);
+                            jsonBlockPattern.build().autoBuild(player, new MultiblockState(world, pos));
+                            return EnumActionResult.SUCCESS;
                         }
                     }
                 }
@@ -77,14 +78,28 @@ public class ItemMultiblockBuilder extends Item {
         return EnumActionResult.PASS;
     }
 
-    public static class BuilderRecipeLogic extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe{
-        private final ItemStack resultStack;
-        private final Ingredient builder;
-        private final Ingredient blueprint;
+    @Override
+    @ParametersAreNonnullByDefault
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+        if (isItemMultiblockBuilder(stack)) {
+            if (isRaw(stack)) {
+                tooltip.add("auto build");
+            } else {
+                ResourceLocation location = new ResourceLocation(stack.getOrCreateSubCompound("pattern").getString("controller"));
+                tooltip.add("pattern build");
+                tooltip.add(String.format("Controller: %s", I18n.format(location.getPath() + ".name")));
+            }
+        }
+    }
 
-        public BuilderRecipeLogic() {
-            this.setRegistryName(Multiblocked.MODID, "builder");
-            this.resultStack = MultiblockedItems.BUILDER.getDefaultInstance();
+    public static class BuilderRecipeLogic extends ShapelessRecipes {
+        private static final ItemStack resultStack;
+        private static final Ingredient builder;
+        private static final Ingredient blueprint;
+
+        static {
+            resultStack = MultiblockedItems.BUILDER.getDefaultInstance();
             ItemMultiblockBuilder.setPattern(resultStack);
             ItemStack stack = MultiblockedItems.BLUEPRINT.getDefaultInstance();
             ItemBlueprint.setPattern(stack);
@@ -92,6 +107,10 @@ public class ItemMultiblockBuilder extends Item {
             stack = MultiblockedItems.BUILDER.getDefaultInstance();
             ItemMultiblockBuilder.setPattern(stack);
             builder = Ingredient.fromStacks(MultiblockedItems.BUILDER.getDefaultInstance(), stack);
+        }
+
+        public BuilderRecipeLogic() {
+            super("builder", resultStack, NonNullList.from(Ingredient.EMPTY, builder, blueprint));
         }
 
         @Override
@@ -134,22 +153,39 @@ public class ItemMultiblockBuilder extends Item {
             ItemMultiblockBuilder.setPattern(builder);
             if (ItemBlueprint.isItemBlueprint(a) && !ItemBlueprint.isRaw(a)) {
                 builder.getOrCreateSubCompound("pattern").setString("json", a.getOrCreateSubCompound("pattern").getString("json"));
+                builder.getOrCreateSubCompound("pattern").setString("controller", a.getOrCreateSubCompound("pattern").getString("controller"));
             } else if (ItemBlueprint.isItemBlueprint(b) && !ItemBlueprint.isRaw(b)) {
                 builder.getOrCreateSubCompound("pattern").setString("json", b.getOrCreateSubCompound("pattern").getString("json"));
+                builder.getOrCreateSubCompound("pattern").setString("controller", b.getOrCreateSubCompound("pattern").getString("controller"));
             }
             return builder;
         }
 
         @Nonnull
         @Override
-        public ItemStack getRecipeOutput() {
-            return resultStack.copy();
-        }
+        public NonNullList<ItemStack> getRemainingItems(@Nonnull InventoryCrafting inv) {
+            NonNullList<ItemStack> ret = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
 
-        @Nonnull
-        @Override
-        public NonNullList<Ingredient> getIngredients() {
-            return NonNullList.from(builder, blueprint);
+            ItemStack blueprint = null;
+            ItemStack builder = null;
+            int index = 0;
+            for (int i = 0; i < inv.getSizeInventory(); i++) {
+                ItemStack itemStack = inv.getStackInSlot(i).copy();
+                if (ItemMultiblockBuilder.isItemMultiblockBuilder(itemStack) && !ItemMultiblockBuilder.isRaw(itemStack)) {
+                    index = i;
+                    builder = itemStack;
+                } else if (ItemBlueprint.isItemBlueprint(itemStack)) {
+                    blueprint = itemStack;
+                }
+            }
+
+            if (builder != null && blueprint != null) {
+                ret.set(index, blueprint);
+                blueprint.getOrCreateSubCompound("pattern").setString("json", builder.getOrCreateSubCompound("pattern").getString("json"));
+                blueprint.getOrCreateSubCompound("pattern").setString("controller", builder.getOrCreateSubCompound("pattern").getString("controller"));
+            }
+
+            return ret;
         }
 
         @Override
@@ -162,10 +198,5 @@ public class ItemMultiblockBuilder extends Item {
             return true;
         }
 
-        @Nonnull
-        @Override
-        public String getGroup() {
-            return "";
-        }
     }
 }

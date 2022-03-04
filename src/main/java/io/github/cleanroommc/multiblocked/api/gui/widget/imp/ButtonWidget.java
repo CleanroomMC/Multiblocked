@@ -1,12 +1,14 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp;
 
 
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.ClickData;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.network.PacketBuffer;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.function.Consumer;
 
@@ -34,6 +36,11 @@ public class ButtonWidget extends Widget {
 
     public ButtonWidget setHoverTexture(IGuiTexture... hoverTexture) {
         this.hoverTexture = hoverTexture;
+        return this;
+    }
+
+    public ButtonWidget setHoverBorderTexture(int border, int color) {
+        this.hoverTexture = ArrayUtils.add(buttonTexture, new ColorBorderTexture(border, color));
         return this;
     }
 

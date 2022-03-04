@@ -5,6 +5,8 @@ import com.google.gson.JsonPrimitive;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
 import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
@@ -70,19 +72,23 @@ public class PredicateAnyCapability extends SimplePredicate {
         super.getConfigWidget(groups);
         WidgetGroup group = new WidgetGroup(0, 0, 100, 20);
         groups.add(group);
-        group.addWidget(new SelectorWidget(0, 0, 40, 20, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
+        group.addWidget(new SelectorWidget(0, 0, 40, 20, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), 0xff333333)
                 .setValue(io.name())
                 .setOnChanged(io-> {
                     this.io = IO.valueOf(io);
                     buildPredicate();
                 })
+                .setButtonBackground(new ResourceTexture("multiblocked:textures/gui/button_common.png"))
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
                 .setHoverTooltip("IO"));
-        group.addWidget(new SelectorWidget(50, 0, 40, 20, new ArrayList<>(MultiblockCapabilities.CAPABILITY_REGISTRY.keySet()), -1)
+        group.addWidget(new SelectorWidget(50, 0, 40, 20, new ArrayList<>(MultiblockCapabilities.CAPABILITY_REGISTRY.keySet()), 0xff333333)
                 .setValue(capability)
                 .setOnChanged(capability-> {
                     this.capability = capability;
                     buildPredicate();
                 })
+                .setButtonBackground(new ResourceTexture("multiblocked:textures/gui/button_common.png"))
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
                 .setHoverTooltip("Capability"));
         return groups;
     }

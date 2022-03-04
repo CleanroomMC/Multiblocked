@@ -17,6 +17,7 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.blo
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.item.ItemBlueprint;
 import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
+import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
@@ -92,13 +93,16 @@ public class BlueprintTableWidget extends TabContainer {
                     widget.setVisible(false);
                 }
                 this.addWidget(0, opened = new JsonBlockPatternWidget(pattern, widget -> {
-                    if (ItemBlueprint.setPattern(itemStack)) {
+                    if (ItemBlueprint.setPattern(itemStack) && widget.pattern.predicates.get("controller") instanceof PredicateComponent) {
                         widget.pattern.cleanUp();
                         String json = widget.pattern.toJson();
+                        String controller = ((PredicateComponent)widget.pattern.predicates.get("controller")).location.toString();
                         itemStack.getOrCreateSubCompound("pattern").setString("json", json);
+                        itemStack.getOrCreateSubCompound("pattern").setString("controller", controller);
                         writeClientAction(-1, buffer -> {
                             buffer.writeVarInt(selected.slotWidget.getHandle().getSlotIndex());
                             buffer.writeString(json);
+                            buffer.writeString(controller);
                         });
                     }
                     for (Widget w : widgets) {
@@ -116,6 +120,7 @@ public class BlueprintTableWidget extends TabContainer {
         if (id == -1) {
             int slotIndex = buffer.readVarInt();
             String json = buffer.readString(Short.MAX_VALUE);
+            String controller = buffer.readString(Short.MAX_VALUE);
             TileEntity tileEntity = table.getWorld().getTileEntity(table.getPos().offset(EnumFacing.UP).offset(table.getFrontFacing().getOpposite()).offset(table.getFrontFacing().rotateY()));
             if (tileEntity != null && tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
                 IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
@@ -124,6 +129,7 @@ public class BlueprintTableWidget extends TabContainer {
                     if (ItemBlueprint.isItemBlueprint(itemStack)) {
                         ItemBlueprint.setPattern(itemStack);
                         itemStack.getOrCreateSubCompound("pattern").setString("json", json);
+                        itemStack.getOrCreateSubCompound("pattern").setString("controller", controller);
                     }
                 }
             }

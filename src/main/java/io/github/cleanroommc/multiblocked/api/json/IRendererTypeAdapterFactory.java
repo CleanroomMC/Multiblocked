@@ -14,8 +14,7 @@ import io.github.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 
 public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
-    public static final IBlockStateTypeAdapterFactory
-            INSTANCE = new IBlockStateTypeAdapterFactory();
+    public static final IRendererTypeAdapterFactory INSTANCE = new IRendererTypeAdapterFactory();
 
     @SuppressWarnings("unchecked")
     @Override

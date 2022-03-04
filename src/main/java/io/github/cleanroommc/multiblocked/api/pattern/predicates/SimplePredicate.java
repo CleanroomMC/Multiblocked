@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
@@ -130,7 +131,7 @@ public class SimplePredicate {
         WidgetGroup group = new WidgetGroup(0, 0, 120, 70);
         groups.add(group);
         group.setClientSideWidget();
-        group.addWidget(new LabelWidget(0, 0, () -> "Type: " + type));
+        group.addWidget(new LabelWidget(0, 0, () -> "Type: " + type).setTextColor(-1).setDrop(true));
         TextFieldWidget min, max, preview;
 
         group.addWidget(min = new TextFieldWidget(55, 15, 30, 15, true, () -> minCount + "", s -> {
@@ -139,11 +140,12 @@ public class SimplePredicate {
                 maxCount = minCount;
             }
         }).setNumbersOnly(0, Integer.MAX_VALUE));
-        min.setHoverTooltip("min").setActive(minCount != -1);
+        min.setHoverTooltip("min").setVisible(minCount != -1);
         group.addWidget(new SwitchWidget(0, 15, 50, 15, (cd, r)->{
-            min.setActive(r);
+            min.setVisible(r);
             minCount = r ? 0 : -1;
-        }).setPressed(minCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("min", -1)));
+        }).setPressed(minCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("min (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("min (Y)", -1).setDropShadow(true))
+                .setHoverTooltip("minimum limit in the structure"));
 
         group.addWidget(max = new TextFieldWidget(55, 33, 30, 15, true, () -> maxCount + "", s -> {
             maxCount = Integer.parseInt(s);
@@ -151,18 +153,21 @@ public class SimplePredicate {
                 minCount = maxCount;
             }
         }).setNumbersOnly(0, Integer.MAX_VALUE));
-        max.setHoverTooltip("max").setActive(maxCount != -1);
+        max.setHoverTooltip("max").setVisible(maxCount != -1);
         group.addWidget(new SwitchWidget(0, 33, 50, 15, (cd, r)->{
-            max.setActive(r);
+            max.setVisible(r);
             maxCount = r ? 0 : -1;
-        }).setPressed(maxCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("max", -1)));
+        }).setPressed(maxCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("max (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("max (Y)", -1).setDropShadow(true))
+                .setHoverTooltip("maximum limit in the structure"));
 
 
         group.addWidget(preview = (TextFieldWidget) new TextFieldWidget(55, 51 , 30, 15, true, () -> previewCount + "", s -> previewCount = Integer.parseInt(s)).setNumbersOnly(0, Integer.MAX_VALUE).setHoverTooltip("preview"));
+        preview.setHoverTooltip("jei").setVisible(previewCount != -1);
         group.addWidget(new SwitchWidget(0, 51, 50, 15, (cd, r)->{
-            preview.setActive(r);
+            preview.setVisible(r);
             previewCount = r ? 0 : -1;
-        }).setPressed(previewCount != -1).setBaseTexture(new ColorRectTexture(0xff000000), new TextTexture("unlimited", -1)).setPressedTexture(new ColorRectTexture(0xffff0000), new TextTexture("count", -1)));
+        }).setPressed(previewCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("jei (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("jei (Y)", -1).setDropShadow(true))
+                .setHoverTooltip("exact limit in the jei preview"));
 
         return groups;
     }

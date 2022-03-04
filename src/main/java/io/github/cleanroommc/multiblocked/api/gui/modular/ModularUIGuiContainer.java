@@ -236,18 +236,15 @@ public class ModularUIGuiContainer extends GuiContainer {
             int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
             mouseWheelMove(mouseX, mouseY, wheelMovement);
         }
-        switchFocus(null);
     }
 
     protected void mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
         for (int i = modularUI.guiWidgets.size() - 1; i >= 0; i--) {
             Widget widget = modularUI.guiWidgets.get(i);
-            if(widget.isVisible() && widget.isActive() && (widget = widget.mouseWheelMove(mouseX, mouseY, wheelDelta)) != null) {
-                switchFocus(widget);
+            if(widget.isVisible() && widget.isActive() && widget.mouseWheelMove(mouseX, mouseY, wheelDelta) != null) {
                 return;
             }
         }
-        switchFocus(null);
     }
 
     public Set<Slot> getDragSplittingSlots() {
@@ -280,12 +277,10 @@ public class ModularUIGuiContainer extends GuiContainer {
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
         for (int i = modularUI.guiWidgets.size() - 1; i >= 0; i--) {
             Widget widget = modularUI.guiWidgets.get(i);
-            if(widget.isVisible() && widget.isActive() && (widget = widget.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)) != null) {
-                switchFocus(widget);
+            if(widget.isVisible() && widget.isActive() && widget.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick) != null) {
                 return;
             }
         }
-        switchFocus(null);
     }
 
     public void superMouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
@@ -296,12 +291,10 @@ public class ModularUIGuiContainer extends GuiContainer {
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         for (int i = modularUI.guiWidgets.size() - 1; i >= 0; i--) {
             Widget widget = modularUI.guiWidgets.get(i);
-            if(widget.isVisible() && widget.isActive() && (widget = widget.mouseReleased(mouseX, mouseY, state)) != null) {
-                switchFocus(widget);
+            if(widget.isVisible() && widget.isActive() && widget.mouseReleased(mouseX, mouseY, state) != null) {
                 return;
             }
         }
-        switchFocus(null);
     }
 
     public void superMouseReleased(int mouseX, int mouseY, int state) {
@@ -312,12 +305,10 @@ public class ModularUIGuiContainer extends GuiContainer {
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         for (int i = modularUI.guiWidgets.size() - 1; i >= 0; i--) {
             Widget widget = modularUI.guiWidgets.get(i);
-            if(widget.isVisible() && widget.isActive() && (widget = widget.keyTyped(typedChar, keyCode)) != null) {
-                switchFocus(widget);
+            if(widget.isVisible() && widget.isActive() && widget.keyTyped(typedChar, keyCode) != null) {
                 return;
             }
         }
-        switchFocus(null);
         super.keyTyped(typedChar, keyCode);
     }
 

@@ -5,6 +5,7 @@ import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
@@ -42,7 +43,8 @@ public class PredicateComponent extends SimplePredicate {
         super.getConfigWidget(groups);
         WidgetGroup group = new WidgetGroup(0, 0, 100, 20);
         groups.add(group);
-        group.addWidget(new TextFieldWidget(0, 0, 50, 20, true, null, s -> {
+        group.addWidget(new LabelWidget(0, 0, ()->"Component registry name:").setDrop(true).setTextColor(-1));
+        group.addWidget(new TextFieldWidget(0, 10, 120, 20, true, null, s -> {
             if (s != null && !s.isEmpty()) {
                 location = new ResourceLocation(s);
                 buildPredicate();

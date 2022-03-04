@@ -1,6 +1,5 @@
 package io.github.cleanroommc.multiblocked.core.asm;
 
-import net.minecraft.block.Block;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;

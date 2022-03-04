@@ -102,7 +102,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @ZenMethod
     public String getUnlocalizedName() {
-        return getLocation().getPath();
+        return getLocation().getPath() + ".name";
     }
 
     @SideOnly(Side.CLIENT)

@@ -27,7 +27,7 @@ public class SimplePredicateTypeAdapter implements JsonDeserializer<SimplePredic
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
             .setLenient()
             .create();
-    public static final JsonDeserializer<SimplePredicate> INSTANCE = new SimplePredicateTypeAdapter();
+    public static final SimplePredicateTypeAdapter INSTANCE = new SimplePredicateTypeAdapter();
 
     private SimplePredicateTypeAdapter() { }
 

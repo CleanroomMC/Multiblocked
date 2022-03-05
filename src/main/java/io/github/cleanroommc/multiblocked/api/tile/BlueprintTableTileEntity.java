@@ -52,18 +52,15 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
     public static void registerBlueprintTable() {
         tableDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table"), BlueprintTableTileEntity.class);
         tableDefinition.recipeMap.inputCapabilities.add(MultiblockCapabilities.ITEM);
-        tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"))
-                .setRenderLayer(BlockRenderLayer.SOLID, true);
-        tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"))
-                .setRenderLayer(BlockRenderLayer.SOLID, true);
+        tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"), BlockRenderLayer.SOLID);
+        tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"), BlockRenderLayer.SOLID);
         tableDefinition.isOpaqueCube = false;
         tableDefinition.disableOthersRendering = true;
         tableDefinition.catalyst = null;
 
 
         partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));
-        partDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"))
-                .setRenderLayer(BlockRenderLayer.SOLID, true);
+        partDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"), BlockRenderLayer.SOLID);
         partDefinition.allowRotate = false;
         partDefinition.isOpaqueCube = false;
 

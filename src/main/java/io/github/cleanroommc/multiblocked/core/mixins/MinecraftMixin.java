@@ -19,8 +19,8 @@ public class MinecraftMixin {
 
 	@Inject(method = "refreshResources", at = @At(value = "HEAD"))
 	private void addInternalResourcePack(CallbackInfo ci) {
-		if (defaultResourcePacks.isEmpty() || defaultResourcePacks.get(0) != MultiblockedResourceLoader.INSTANCE) {
-			defaultResourcePacks.add(0, MultiblockedResourceLoader.INSTANCE);
+		if (defaultResourcePacks.isEmpty() || !defaultResourcePacks.contains(MultiblockedResourceLoader.INSTANCE)) {
+			defaultResourcePacks.add(MultiblockedResourceLoader.INSTANCE);
 		}
 	}
 

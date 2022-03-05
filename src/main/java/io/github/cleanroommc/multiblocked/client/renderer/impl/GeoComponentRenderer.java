@@ -38,12 +38,15 @@ import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 import javax.annotation.Nonnull;
-import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import static io.github.cleanroommc.multiblocked.client.ClientProxy.registerNeeds;
 
 @SuppressWarnings("unchecked")
 public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.ComponentFactory> implements IRenderer, IGeoRenderer<GeoComponentRenderer.ComponentFactory> {
+    private static final Set<String> CACHE = new HashSet<>();
+
     static {
         if (Multiblocked.isClient()) {
             AnimationController.addModelFetcher((IAnimatable object) -> {
@@ -65,7 +68,9 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     public GeoComponentRenderer(String modelName) {
         this.modelName = modelName;
         if (Multiblocked.isClient()) {
-            registerNeeds.add(this);
+            if (isRaw()) {
+                registerNeeds.add(this);
+            }
         }
     }
 
@@ -97,8 +102,14 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     }
 
     @Override
+    public boolean isRaw() {
+        return !CACHE.contains(modelName);
+    }
+
+    @Override
     public void register(TextureMap map) {
         particleTexture = map.registerSprite(new ResourceLocation(Multiblocked.MODID, modelName));
+        CACHE.add(modelName);
     }
 
     @Override
@@ -115,7 +126,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        if (te instanceof ComponentTileEntity<?>) {
+        if (te instanceof ComponentTileEntity<?> && !isRaw()) {
             ComponentTileEntity<?> controller = (ComponentTileEntity<?>) te;
             ComponentFactory factory = controller.getFactory(this);
             GeoModel model = this.getModel(this.getModelLocation(factory));

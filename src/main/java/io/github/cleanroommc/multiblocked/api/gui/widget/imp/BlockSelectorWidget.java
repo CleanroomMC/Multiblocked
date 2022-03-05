@@ -1,5 +1,6 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp;
 
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -21,9 +22,9 @@ public class BlockSelectorWidget extends WidgetGroup {
     private final TextFieldWidget metaField;
 
     public BlockSelectorWidget(int x, int y, boolean isState) {
-        super(x, y, 200, 20);
+        super(x, y, 180, 20);
         setClientSideWidget();
-        blockField = (TextFieldWidget) new TextFieldWidget(20, 0, 139, 20, true, null, s -> {
+        blockField = (TextFieldWidget) new TextFieldWidget(22, 0, isState ? 119 : 139, 20, true, null, s -> {
             if (s != null && !s.isEmpty()) {
                 Block block = Block.REGISTRY.getObject(new ResourceLocation(s));
                 if (this.block != block) {
@@ -32,34 +33,40 @@ public class BlockSelectorWidget extends WidgetGroup {
                 }
             }
         }).setHoverTooltip("block register name");
-        metaField = (TextFieldWidget) new TextFieldWidget(160, 0, 20, 20, true, null, s -> {
+        metaField = (TextFieldWidget) new TextFieldWidget(142, 0, 20, 20, true, null, s -> {
             meta = Integer.parseInt(s);
             onUpdate();
         }).setNumbersOnly(0, 16).setHoverTooltip("block state meta");
 
-        addWidget(new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, 1, 1).setClearSlotOnRightClick(true).setChangeListener(() -> {
-            ItemStack stack = handler.getStackInSlot(0);
-            if (stack.isEmpty() || !(stack.getItem() instanceof ItemBlock)) {
-                if (block != null) {
-                    block = null;
-                    meta = 0;
-                    blockField.setCurrentString("");
-                    metaField.setCurrentString("0");
-                    onUpdate();
-                }
-            } else {
-                ItemBlock itemBlock = (ItemBlock) stack.getItem();
-                block = itemBlock.getBlock();
-                meta = itemBlock.getMetadata(stack.getMetadata());
-                blockField.setCurrentString(block.getRegistryName() == null ? "" : block.getRegistryName().toString());
-                metaField.setCurrentString(meta + "");
-                onUpdate();
-            }
-        }));
+        addWidget(new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, 1, 1)
+                .setClearSlotOnRightClick(true)
+                .setChangeListener(() -> {
+                    ItemStack stack = handler.getStackInSlot(0);
+                    if (stack.isEmpty() || !(stack.getItem() instanceof ItemBlock)) {
+                        if (block != null) {
+                            block = null;
+                            meta = 0;
+                            blockField.setCurrentString("");
+                            metaField.setCurrentString("0");
+                            onUpdate();
+                        }
+                    } else {
+                        ItemBlock itemBlock = (ItemBlock) stack.getItem();
+                        block = itemBlock.getBlock();
+                        meta = itemBlock.getMetadata(stack.getMetadata());
+                        blockField.setCurrentString(block.getRegistryName() == null ? "" : block.getRegistryName().toString());
+                        metaField.setCurrentString(meta + "");
+                        onUpdate();
+                    }
+                }).setBackgroundTexture(new ColorBorderTexture(1, -1)));
         addWidget(blockField);
         if (isState) {
             addWidget(metaField);
         }
+    }
+
+    public IBlockState getBlock() {
+        return block == null ? null : block.getStateFromMeta(meta);
     }
 
     public BlockSelectorWidget setBlock(IBlockState blockState) {

@@ -13,7 +13,6 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.blockpattern.JsonBlockPatternWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.item.ItemBlueprint;
 import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
@@ -21,6 +20,7 @@ import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateCompon
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -49,6 +49,13 @@ public class BlueprintTableWidget extends TabContainer {
         this.addWidget(new LabelWidget(134, 49, this::size).setTextColor(-1).setDrop(true));
         this.addWidget(new LabelWidget(134, 64, this::description).setTextColor(-1).setDrop(true));
         this.addWidget(templateButton = new ButtonWidget(36, 132, 20, 20, new ItemStackTexture(MultiblockedItems.BUILDER), this::onBuildTemplate));
+        this.addWidget(new ButtonWidget(56, 132, 20, 20, new ItemStackTexture(Items.APPLE), cd -> {
+            for (Widget widget : widgets) {
+                widget.setActive(false);
+                widget.setVisible(false);
+            }
+            this.addWidget(new IRendererWidget(null, null));
+        }));
         templateButton.setHoverTooltip("Create template for multiblock builder");
         templateButton.setVisible(false);
     }

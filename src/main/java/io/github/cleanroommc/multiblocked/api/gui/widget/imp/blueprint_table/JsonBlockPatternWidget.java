@@ -1,4 +1,4 @@
-package io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.blockpattern;
+package io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
@@ -90,189 +90,187 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         super(0, 0, 384, 256);
         setClientSideWidget();
         this.onSave = onSave;
-        if (Multiblocked.isClient()) {
-            this.pattern = pattern;
-            this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/json_block_pattern.png")));
-            this.addWidget(sceneWidget = new BlockPatternSceneWidget());
-            this.addWidget(container = new TabContainer(0, 0, 384, 256));
-            this.addWidget(new ButtonWidget(280, 29, 70, 20, cd->{
-                if (onSave != null) {
-                    onSave.accept(this);
+        this.pattern = pattern;
+        this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/json_block_pattern.png")));
+        this.addWidget(sceneWidget = new BlockPatternSceneWidget());
+        this.addWidget(container = new TabContainer(0, 0, 384, 256));
+        this.addWidget(new ButtonWidget(280, 29, 70, 20, cd->{
+            if (onSave != null) {
+                onSave.accept(this);
+            }
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
+
+        // patternTab
+        ResourceTexture tabPattern = new ResourceTexture("multiblocked:textures/gui/tab_pattern.png");
+        WidgetGroup patternTab;
+        container.addTab((TabButton)new TabButton(171, 29, 20, 20)
+                        .setTexture(tabPattern.getSubTexture(0, 0, 1, 0.5),
+                                tabPattern.getSubTexture(0, 0.5, 1, 0.5))
+                        .setHoverTooltip("Pattern Settings"),
+                patternTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
+
+        int bgColor = 0x8f111111;
+
+        patternTab.addWidget(new LabelWidget(174, 92, () -> "Repeat:").setTextColor(-1).setDrop(true));
+        repeats = new TextFieldWidget[2];
+        patternTab.addWidget(new ImageWidget(266, 86, 29, 18, new ResourceTexture("multiblocked:textures/gui/repeat.png")).setHoverTooltip("repetition of aisle (1 <= min <= max <= 1)"));
+        patternTab.addWidget(repeats[0] = new TextFieldWidget(215, 87, 40, 15, true, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][0] + "", s -> {
+            if (sceneWidget.selected != null && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
+                pattern.aisleRepetitions[sceneWidget.selected.a][0] = Integer.parseInt(s);
+                if (pattern.aisleRepetitions[sceneWidget.selected.a][0] > pattern.aisleRepetitions[sceneWidget.selected.a][1]) {
+                    pattern.aisleRepetitions[sceneWidget.selected.a][1] = pattern.aisleRepetitions[sceneWidget.selected.a][0];
                 }
-            }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
+            }
+        }).setNumbersOnly(1, Integer.MAX_VALUE));
 
-            // patternTab
-            ResourceTexture tabPattern = new ResourceTexture("multiblocked:textures/gui/tab_pattern.png");
-            WidgetGroup patternTab;
-            container.addTab((TabButton)new TabButton(171, 29, 20, 20)
-                            .setTexture(tabPattern.getSubTexture(0, 0, 1, 0.5),
-                                    tabPattern.getSubTexture(0, 0.5, 1, 0.5))
-                            .setHoverTooltip("Pattern Settings"),
-                    patternTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
-
-            int bgColor = 0x8f111111;
-
-            patternTab.addWidget(new LabelWidget(174, 92, () -> "Repeat:").setTextColor(-1).setDrop(true));
-            repeats = new TextFieldWidget[2];
-            patternTab.addWidget(new ImageWidget(266, 86, 29, 18, new ResourceTexture("multiblocked:textures/gui/repeat.png")).setHoverTooltip("repetition of aisle (1 <= min <= max <= 1)"));
-            patternTab.addWidget(repeats[0] = new TextFieldWidget(215, 87, 40, 15, true, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][0] + "", s -> {
-                if (sceneWidget.selected != null && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
-                    pattern.aisleRepetitions[sceneWidget.selected.a][0] = Integer.parseInt(s);
-                    if (pattern.aisleRepetitions[sceneWidget.selected.a][0] > pattern.aisleRepetitions[sceneWidget.selected.a][1]) {
-                        pattern.aisleRepetitions[sceneWidget.selected.a][1] = pattern.aisleRepetitions[sceneWidget.selected.a][0];
-                    }
+        patternTab.addWidget(repeats[1] = new TextFieldWidget(305, 87, 40, 15, true, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][1] + "", s -> {
+            if (sceneWidget.selected != null && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
+                pattern.aisleRepetitions[sceneWidget.selected.a][1] = Integer.parseInt(s);
+                if (pattern.aisleRepetitions[sceneWidget.selected.a][0] > pattern.aisleRepetitions[sceneWidget.selected.a][1]) {
+                    pattern.aisleRepetitions[sceneWidget.selected.a][0] = pattern.aisleRepetitions[sceneWidget.selected.a][1];
                 }
-            }).setNumbersOnly(1, Integer.MAX_VALUE));
+            }
+        }).setNumbersOnly(0, Integer.MAX_VALUE));
+        repeats[0].setActive(false); repeats[1].setActive(false); repeats[0].setHoverTooltip("min"); repeats[1].setHoverTooltip("max");
 
-            patternTab.addWidget(repeats[1] = new TextFieldWidget(305, 87, 40, 15, true, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][1] + "", s -> {
-                if (sceneWidget.selected != null && sceneWidget.centerOffset[0] != sceneWidget.selected.a) {
-                    pattern.aisleRepetitions[sceneWidget.selected.a][1] = Integer.parseInt(s);
-                    if (pattern.aisleRepetitions[sceneWidget.selected.a][0] > pattern.aisleRepetitions[sceneWidget.selected.a][1]) {
-                        pattern.aisleRepetitions[sceneWidget.selected.a][0] = pattern.aisleRepetitions[sceneWidget.selected.a][1];
-                    }
-                }
-            }).setNumbersOnly(0, Integer.MAX_VALUE));
-            repeats[0].setActive(false); repeats[1].setActive(false); repeats[0].setHoverTooltip("min"); repeats[1].setHoverTooltip("max");
-
-            patternTab.addWidget(symbolSelector = new DraggableScrollableWidgetGroup(215, 105, 130, 35).setBackground(new ColorRectTexture(bgColor)));
-            patternTab.addWidget(new ButtonWidget(174, 105, 35, 35, null, (cd) -> {
-                char next = (char) (pattern.symbolMap.keySet().stream().max(Comparator.comparingInt(a -> a)).get() + 1);
-                pattern.symbolMap.put(next, new HashSet<>());
-                updateSymbolButton();
-            }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_wood.png"), new TextTexture("Add", -1).setDropShadow(true).setWidth(40)).setHoverBorderTexture(1, -1));
+        patternTab.addWidget(symbolSelector = new DraggableScrollableWidgetGroup(215, 105, 130, 35).setBackground(new ColorRectTexture(bgColor)));
+        patternTab.addWidget(new ButtonWidget(174, 105, 35, 35, null, (cd) -> {
+            char next = (char) (pattern.symbolMap.keySet().stream().max(Comparator.comparingInt(a -> a)).get() + 1);
+            pattern.symbolMap.put(next, new HashSet<>());
             updateSymbolButton();
-            patternTab.addWidget(new LabelWidget(174, 143, ()->"tips: you cant modify controller").setDrop(true).setTextColor(-1));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_wood.png"), new TextTexture("Add", -1).setDropShadow(true).setWidth(40)).setHoverBorderTexture(1, -1));
+        updateSymbolButton();
+        patternTab.addWidget(new LabelWidget(174, 143, ()->"tips: you cant modify controller").setDrop(true).setTextColor(-1));
 
-            List<String> candidates = Arrays.stream(RelativeDirection.values()).map(Enum::name).collect(Collectors.toList());
-            patternTab.addWidget(new LabelWidget(174, 70, () -> "Dir:").setTextColor(-1).setDrop(true));
-            patternTab.addWidget(new ImageWidget(193, 60, 20, 20, new ResourceTexture("multiblocked:textures/gui/axis.png")).setHoverTooltip("relative directions"));
-            patternTab.addWidget(new ImageWidget(215, 57, 40, 10, new TextTexture("Char", -1).setDropShadow(true)));
-            patternTab.addWidget(new ImageWidget(260, 57, 40, 10, new TextTexture("String", -1).setDropShadow(true)));
-            patternTab.addWidget(new ImageWidget(305, 57, 40, 10, new TextTexture("Aisle", -1).setDropShadow(true)));
-            selectors = new SelectorWidget[3];
-            patternTab.addWidget(selectors[0] = new SelectorWidget(215, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(0, s)).setButtonBackground(new ColorRectTexture(bgColor)).setValue(pattern.structureDir[0].name()));
-            patternTab.addWidget(selectors[1] = new SelectorWidget(260, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(1, s)).setButtonBackground(new ColorRectTexture(bgColor)).setValue(pattern.structureDir[1].name()));
-            patternTab.addWidget(selectors[2] = new SelectorWidget(305, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(2, s)).setButtonBackground(new ColorRectTexture(bgColor)).setValue(pattern.structureDir[2].name()));
+        List<String> candidates = Arrays.stream(RelativeDirection.values()).map(Enum::name).collect(Collectors.toList());
+        patternTab.addWidget(new LabelWidget(174, 70, () -> "Dir:").setTextColor(-1).setDrop(true));
+        patternTab.addWidget(new ImageWidget(193, 60, 20, 20, new ResourceTexture("multiblocked:textures/gui/axis.png")).setHoverTooltip("relative directions"));
+        patternTab.addWidget(new ImageWidget(215, 57, 40, 10, new TextTexture("Char", -1).setDropShadow(true)));
+        patternTab.addWidget(new ImageWidget(260, 57, 40, 10, new TextTexture("String", -1).setDropShadow(true)));
+        patternTab.addWidget(new ImageWidget(305, 57, 40, 10, new TextTexture("Aisle", -1).setDropShadow(true)));
+        selectors = new SelectorWidget[3];
+        patternTab.addWidget(selectors[0] = new SelectorWidget(215, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(0, s)).setButtonBackground(new ColorRectTexture(bgColor)).setValue(pattern.structureDir[0].name()));
+        patternTab.addWidget(selectors[1] = new SelectorWidget(260, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(1, s)).setButtonBackground(new ColorRectTexture(bgColor)).setValue(pattern.structureDir[1].name()));
+        patternTab.addWidget(selectors[2] = new SelectorWidget(305, 67, 40, 15, candidates, -1).setOnChanged(s->this.onDirChange(2, s)).setButtonBackground(new ColorRectTexture(bgColor)).setValue(pattern.structureDir[2].name()));
 
-            //predicateTab
-            ResourceTexture tabPredicate = new ResourceTexture("multiblocked:textures/gui/tab_predicate.png");
-            WidgetGroup predicateTab;
-            container.addTab((TabButton)new TabButton(171 + 25, 29, 20, 20)
-                            .setTexture(tabPredicate.getSubTexture(0, 0, 1, 0.5),
-                                    tabPredicate.getSubTexture(0, 0.5, 1, 0.5))
-                            .setHoverTooltip("Predicate Settings"),
-                    predicateTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
-            DraggableScrollableWidgetGroup predicatesContainer = new DraggableScrollableWidgetGroup(171, 52, 179, 136 - 52)
-                    .setBackground(new ColorRectTexture(bgColor))
-                    .setYScrollBarWidth(4)
-                    .setYBarStyle(null, new ColorRectTexture(-1));
-            predicateTab.addWidget(predicatesContainer);
-            AtomicReference<PredicateWidget> selectedPredicate = new AtomicReference<>();
-            SelectorWidget sw;
-            TextFieldWidget fw;
-            predicateTab.addWidget(sw = new SelectorWidget(172, 138, 60, 16, Arrays.asList("capability", "blocks", "states", "component"), -1)
-                    .setButtonBackground(new ColorRectTexture(bgColor)).setValue("blocks"));
-            predicateTab.addWidget(fw = new TextFieldWidget(232, 138, 50, 16, true, null, null));
-            predicateTab.addWidget(new ButtonWidget(285, 138, 16, 16, cd -> {
-                if (sw.getValue() == null) return;
-                SimplePredicate predicate = null;
-                switch (sw.getValue()) {
-                    case "capability":
-                        predicate = new PredicateAnyCapability();
-                        break;
-                    case "blocks":
-                        predicate = new PredicateBlocks();
-                        break;
-                    case "states":
-                        predicate = new PredicateStates();
-                        break;
-                    case "component":
-                        predicate = new PredicateComponent();
-                        break;
-                }
-                String predicateName = fw.getCurrentString();
-                if (predicate != null && !pattern.predicates.containsKey(predicateName)) {
-                    pattern.predicates.put(fw.getCurrentString(), predicate);
-                    predicatesContainer.addWidget(new PredicateWidget(0, predicatesContainer.widgets.size() * 21, predicate, predicateName, selectedPredicate));
-                }
-            }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("create predicate"));
-            predicateTab.addWidget(new ButtonWidget(350 - 36, 138, 16, 16, cd -> {
-                if (selectedPredicate.get() == null) return;
-                String name = selectedPredicate.get().name;
-                if (sceneWidget.selected != null && !name.equals("controller")) {
-                    pattern.symbolMap.get(sceneWidget.selected.symbol).add(name);
-                    needUpdatePredicateSelector = true;
-                }
-            }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/move_down.png")).setHoverBorderTexture(1, -1).setHoverTooltip("add selected predicate to symbol"));
-            predicateTab.addWidget(new ButtonWidget(350 - 18, 138, 16, 16, cd -> {
-                if (selectedPredicate.get() == null) return;
-                String name = selectedPredicate.get().name;
-                if (sceneWidget.selected != null) {
-                    pattern.symbolMap.get(sceneWidget.selected.symbol).remove(name);
-                }
-                pattern.symbolMap.values().forEach(set->set.remove(name));
-                pattern.predicates.remove(name);
-                needUpdatePredicateSelector = true;
-                boolean found = false;
-                for (Widget widget : predicatesContainer.widgets) {
-                    if (found) {
-                        widget.addSelfPosition(0, -21);
-                    } else if (widget == selectedPredicate.get()) {
-                        predicatesContainer.waitToRemoved(widget);
-                        found = true;
-                    }
-                }
-                for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
-                    tile.updateRenderer();
-                }
-            }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("remove selected predicate"));
-            pattern.predicates.forEach((predicateName, predicate) -> {
-                if (predicateName.equals("controller")) return;
+        //predicateTab
+        ResourceTexture tabPredicate = new ResourceTexture("multiblocked:textures/gui/tab_predicate.png");
+        WidgetGroup predicateTab;
+        container.addTab((TabButton)new TabButton(171 + 25, 29, 20, 20)
+                        .setTexture(tabPredicate.getSubTexture(0, 0, 1, 0.5),
+                                tabPredicate.getSubTexture(0, 0.5, 1, 0.5))
+                        .setHoverTooltip("Predicate Settings"),
+                predicateTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
+        DraggableScrollableWidgetGroup predicatesContainer = new DraggableScrollableWidgetGroup(171, 52, 179, 136 - 52)
+                .setBackground(new ColorRectTexture(bgColor))
+                .setYScrollBarWidth(4)
+                .setYBarStyle(null, new ColorRectTexture(-1));
+        predicateTab.addWidget(predicatesContainer);
+        AtomicReference<PredicateWidget> selectedPredicate = new AtomicReference<>();
+        SelectorWidget sw;
+        TextFieldWidget fw;
+        predicateTab.addWidget(sw = new SelectorWidget(172, 138, 60, 16, Arrays.asList("capability", "blocks", "states", "component"), -1)
+                .setButtonBackground(new ColorRectTexture(bgColor)).setValue("blocks"));
+        predicateTab.addWidget(fw = new TextFieldWidget(232, 138, 50, 16, true, null, null));
+        predicateTab.addWidget(new ButtonWidget(285, 138, 16, 16, cd -> {
+            if (sw.getValue() == null) return;
+            SimplePredicate predicate = null;
+            switch (sw.getValue()) {
+                case "capability":
+                    predicate = new PredicateAnyCapability();
+                    break;
+                case "blocks":
+                    predicate = new PredicateBlocks();
+                    break;
+                case "states":
+                    predicate = new PredicateStates();
+                    break;
+                case "component":
+                    predicate = new PredicateComponent();
+                    break;
+            }
+            String predicateName = fw.getCurrentString();
+            if (predicate != null && !pattern.predicates.containsKey(predicateName)) {
+                pattern.predicates.put(fw.getCurrentString(), predicate);
                 predicatesContainer.addWidget(new PredicateWidget(0, predicatesContainer.widgets.size() * 21, predicate, predicateName, selectedPredicate));
-            });
-
-            //textFieldTab
-            ResourceTexture tabTextField = new ResourceTexture("multiblocked:textures/gui/tab_text_field.png");
-            WidgetGroup textFieldTab;
-            container.addTab((TabButton)new TabButton(171 + 50, 29, 20, 20)
-                            .setTexture(tabTextField.getSubTexture(0, 0, 1, 0.5),
-                                    tabTextField.getSubTexture(0, 0.5, 1, 0.5))
-                            .setHoverTooltip("Predicate Settings"),
-                    textFieldTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
-            textFieldTab.addWidget(new ImageWidget(171, 52, 179, 20, new ResourceTexture("multiblocked:textures/gui/bar.png")));
-            textFieldTab.addWidget(new SwitchWidget(173, 54, 16, 16, (cd,r) -> {
-                isPretty = r;
-                updatePatternJson();
-            }).setHoverBorderTexture(1, -1).setTexture(new ResourceTexture("multiblocked:textures/gui/pretty.png"), new ResourceTexture("multiblocked:textures/gui/pretty_active.png")));
-            textFieldTab.addWidget(new ButtonWidget(193, 54, 16, 16, cd -> GuiScreen.setClipboardString(isPretty ? Multiblocked.prettyJson(getPatternJson()) : getPatternJson())).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/copy.png")).setHoverBorderTexture(1, -1));
-            textFieldTab.addWidget(tfGroup = new DraggableScrollableWidgetGroup(171, 72, 179, 136 - 52)
-                    .setBackground(new ColorRectTexture(bgColor))
-                    .setYScrollBarWidth(4)
-                    .setYBarStyle(null, new ColorRectTexture(-1)));
-            tfGroup.addWidget(textBox = new TextBoxWidget(0, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
-            container.setOnChanged((a, b)->{
-                if (b == textFieldTab) {
-                    updatePatternJson();
+            }
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("create predicate"));
+        predicateTab.addWidget(new ButtonWidget(350 - 36, 138, 16, 16, cd -> {
+            if (selectedPredicate.get() == null) return;
+            String name = selectedPredicate.get().name;
+            if (sceneWidget.selected != null && !name.equals("controller")) {
+                pattern.symbolMap.get(sceneWidget.selected.symbol).add(name);
+                needUpdatePredicateSelector = true;
+            }
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/move_down.png")).setHoverBorderTexture(1, -1).setHoverTooltip("add selected predicate to symbol"));
+        predicateTab.addWidget(new ButtonWidget(350 - 18, 138, 16, 16, cd -> {
+            if (selectedPredicate.get() == null) return;
+            String name = selectedPredicate.get().name;
+            if (sceneWidget.selected != null) {
+                pattern.symbolMap.get(sceneWidget.selected.symbol).remove(name);
+            }
+            pattern.symbolMap.values().forEach(set->set.remove(name));
+            pattern.predicates.remove(name);
+            needUpdatePredicateSelector = true;
+            boolean found = false;
+            for (Widget widget : predicatesContainer.widgets) {
+                if (found) {
+                    widget.addSelfPosition(0, -21);
+                } else if (widget == selectedPredicate.get()) {
+                    predicatesContainer.waitToRemoved(widget);
+                    found = true;
                 }
-            });
+            }
+            for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
+                tile.updateRenderer();
+            }
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("remove selected predicate"));
+        pattern.predicates.forEach((predicateName, predicate) -> {
+            if (predicateName.equals("controller")) return;
+            predicatesContainer.addWidget(new PredicateWidget(0, predicatesContainer.widgets.size() * 21, predicate, predicateName, selectedPredicate));
+        });
 
-            //information
-            addWidget(new LabelWidget(31, 166, () -> "Symbol Character: " + (sceneWidget.selected == null ? "" : ("'" + sceneWidget.selected.symbol + "'"))).setTextColor(-1));
-            addWidget(new LabelWidget(31, 178, () -> {
-                if (sceneWidget.selected == null) return "Aisle Repetition: ";
-                return String.format("Aisle Index: %d", sceneWidget.selected.a);
-            }).setTextColor(-1));
-            addWidget(new LabelWidget(31, 190, () -> {
-                if (sceneWidget.selected == null) return "Aisle Repetition: ";
-                int[] repeat = pattern.aisleRepetitions[sceneWidget.selected.a];
-                return String.format("Aisle Repetition: (%d, %d)", repeat[0], repeat[1]);
-            }).setTextColor(-1));
-            addWidget(predicateGroup = new DraggableScrollableWidgetGroup(171, 166, 179, 58)
-                    .setBackground(new ColorRectTexture(bgColor))
-                    .setYScrollBarWidth(4)
-                    .setYBarStyle(null, new ColorRectTexture(-1)));
-            updatePredicateSelector();
-        }
+        //textFieldTab
+        ResourceTexture tabTextField = new ResourceTexture("multiblocked:textures/gui/tab_text_field.png");
+        WidgetGroup textFieldTab;
+        container.addTab((TabButton)new TabButton(171 + 50, 29, 20, 20)
+                        .setTexture(tabTextField.getSubTexture(0, 0, 1, 0.5),
+                                tabTextField.getSubTexture(0, 0.5, 1, 0.5))
+                        .setHoverTooltip("Predicate Settings"),
+                textFieldTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
+        textFieldTab.addWidget(new ImageWidget(171, 52, 179, 20, new ResourceTexture("multiblocked:textures/gui/bar.png")));
+        textFieldTab.addWidget(new SwitchWidget(173, 54, 16, 16, (cd,r) -> {
+            isPretty = r;
+            updatePatternJson();
+        }).setHoverBorderTexture(1, -1).setTexture(new ResourceTexture("multiblocked:textures/gui/pretty.png"), new ResourceTexture("multiblocked:textures/gui/pretty_active.png")));
+        textFieldTab.addWidget(new ButtonWidget(193, 54, 16, 16, cd -> GuiScreen.setClipboardString(isPretty ? Multiblocked.prettyJson(getPatternJson()) : getPatternJson())).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/copy.png")).setHoverBorderTexture(1, -1));
+        textFieldTab.addWidget(tfGroup = new DraggableScrollableWidgetGroup(171, 72, 179, 136 - 52)
+                .setBackground(new ColorRectTexture(bgColor))
+                .setYScrollBarWidth(4)
+                .setYBarStyle(null, new ColorRectTexture(-1)));
+        tfGroup.addWidget(textBox = new TextBoxWidget(0, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
+        container.setOnChanged((a, b)->{
+            if (b == textFieldTab) {
+                updatePatternJson();
+            }
+        });
+
+        //information
+        addWidget(new LabelWidget(31, 166, () -> "Symbol Character: " + (sceneWidget.selected == null ? "" : ("'" + sceneWidget.selected.symbol + "'"))).setTextColor(-1));
+        addWidget(new LabelWidget(31, 178, () -> {
+            if (sceneWidget.selected == null) return "Aisle Repetition: ";
+            return String.format("Aisle Index: %d", sceneWidget.selected.a);
+        }).setTextColor(-1));
+        addWidget(new LabelWidget(31, 190, () -> {
+            if (sceneWidget.selected == null) return "Aisle Repetition: ";
+            int[] repeat = pattern.aisleRepetitions[sceneWidget.selected.a];
+            return String.format("Aisle Repetition: (%d, %d)", repeat[0], repeat[1]);
+        }).setTextColor(-1));
+        addWidget(predicateGroup = new DraggableScrollableWidgetGroup(171, 166, 179, 58)
+                .setBackground(new ColorRectTexture(bgColor))
+                .setYScrollBarWidth(4)
+                .setYBarStyle(null, new ColorRectTexture(-1)));
+        updatePredicateSelector();
     }
 
     public void updatePatternJson() {
@@ -761,11 +759,6 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         public IRenderer getRenderer() {
             return widget == null ? null : widget.sceneWidget.viewMode == 1 ? null : renderer;
         }
-
-        @Override
-        public boolean shouldRenderInPass(int pass) { // why i do render here!!
-
-            return super.shouldRenderInPass(pass);
-        }
+        
     }
 }

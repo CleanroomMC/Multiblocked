@@ -1,0 +1,39 @@
+package io.github.cleanroommc.multiblocked.command;
+
+import io.github.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import io.github.cleanroommc.multiblocked.network.s2c.SPacketCommand;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+
+import javax.annotation.Nonnull;
+
+public class CommandReload extends CommandBase {
+
+    @Override
+    @Nonnull
+    public String getName() {
+        return "mbd_reload";
+    }
+
+    @Override
+    @Nonnull
+    public String getUsage(@Nonnull ICommandSender sender) {
+        return "multiblocked <reload>";
+    }
+
+
+    @Override
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
+        if (sender instanceof EntityPlayerMP) {
+            MultiblockedNetworking.sendToPlayer(new SPacketCommand("dddd"), (EntityPlayerMP) sender);
+            sender.sendMessage(new TextComponentString("Reloaded Shaders"));
+        } else {
+            sender.sendMessage(new TextComponentString("Command cannot be run on the server"));
+        }
+    }
+
+
+}

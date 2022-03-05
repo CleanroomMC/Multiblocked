@@ -10,7 +10,7 @@ import java.io.File;
 
 public class MultiblockedResourceLoader extends FolderResourcePack {
 
-    private static final File location;
+    public static final File location;
 
     static {
         location = new File(Loader.instance().getConfigDir(), "multiblocked");

@@ -123,7 +123,7 @@ public class TextFieldWidget extends Widget {
 
     @Override
     public Widget keyTyped(char charTyped, int keyCode) {
-        return this.textField.textboxKeyTyped(charTyped, keyCode) || isFocus() ? this : null;
+        return this.textField.textboxKeyTyped(charTyped, keyCode) ? this : null;
     }
 
     @Override

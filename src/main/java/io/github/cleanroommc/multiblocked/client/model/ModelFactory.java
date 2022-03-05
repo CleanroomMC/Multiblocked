@@ -145,11 +145,7 @@ public class ModelFactory {
         }
     }
 
-    public static IModel getModel(ResourceLocation resourceLocation) throws RuntimeException {
-        try {
-            return ModelLoaderRegistry.getModel(resourceLocation);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public static IModel getModel(ResourceLocation resourceLocation) {
+        return ModelLoaderRegistry.getModelOrMissing(resourceLocation);
     }
 }

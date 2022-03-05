@@ -36,17 +36,17 @@ public class MultiblockCapabilities {
         registerCapability(FE = new FEMultiblockCapability());
         registerCapability(ITEM = new ItemMultiblockCapability());
         registerCapability(FLUID = new FluidMultiblockCapability());
-        if (Multiblocked.isModLoaded("botania")) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_BOT)) {
             registerCapability(ManaBotainaCapability.CAP);
         }
-        if (Multiblocked.isModLoaded("thaumcraft")) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6)) {
             registerCapability(AspectThaumcraftCapability.CAP);
         }
-        if (Multiblocked.isModLoaded("mekanism")) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_MEK)) {
             registerCapability(HeatMekanismCapability.CAP);
             registerCapability(GasMekanismCapability.CAP);
         }
-        if (Multiblocked.isModLoaded("qmd")) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_QMD)) {
             registerCapability(ParticleQMDCapability.CAP);
         }
     }

@@ -4,7 +4,8 @@ import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.blockpattern.JsonBlockPatternWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.IRendererWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.JsonBlockPatternWidget;
 import io.github.cleanroommc.multiblocked.api.item.ItemMultiblockBuilder;
 import io.github.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
@@ -74,12 +75,12 @@ public class CommonProxy {
         BlueprintTableTileEntity.registerBlueprintTable();
         // register JsonBlock
         JsonBlockPatternWidget.registerBlock();
+        IRendererWidget.registerBlock();
         
         // create a part component.
         PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "test_part"));
         MultiblockComponents.registerComponent(partDefinition);
-        partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"))
-                .setRenderLayer(BlockRenderLayer.CUTOUT_MIPPED, true);
+        partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"), BlockRenderLayer.CUTOUT_MIPPED);
         partDefinition.baseRenderer = new BlockStateRenderer(Blocks.BEDROCK.getDefaultState());
         partDefinition.isOpaqueCube = false;
         partDefinition.allowRotate = false;
@@ -128,10 +129,9 @@ public class CommonProxy {
                 .where('C', blocks(Blocks.CHEST)) // tho not define a specific Capability here. it will still be detected according to the recipeMap, so will create a proxy of the BOTH-Item-Capability here. (item in/outputBus)
                 .where('Y', component(controllerDefinition));
         controllerDefinition.basePattern = factory.build();
-//        controllerDefinition.formedRenderer = new OBJRenderer(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"))
-//                .setRenderLayer(BlockRenderLayer.SOLID, true);
+//        controllerDefinition.formedRenderer = OBJRenderer.get(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"), BlockRenderLayer.SOLID);
         controllerDefinition.formedRenderer = new GeoComponentRenderer("botarium");
-        controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model")).setRenderLayer(BlockRenderLayer.CUTOUT_MIPPED, true);
+        controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"), BlockRenderLayer.CUTOUT_MIPPED);
         controllerDefinition.isOpaqueCube = false;
         recipeMap.categoryTexture = new ItemStackTexture(controllerDefinition.getStackForm());
 

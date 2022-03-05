@@ -59,7 +59,7 @@ public class RecipeWrapper extends ModularWrapper {
                     .collect(Collectors.toList()));
         }
 
-        if (Multiblocked.isModLoaded("thaumcraft")) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6)) {
             if (recipe.inputs.containsKey(AspectThaumcraftCapability.CAP)) {
                 ingredients.setInputs(AspectListIngredient.INSTANCE, recipe.inputs.get(AspectThaumcraftCapability.CAP).stream()
                         .map(AspectStack.class::cast)
@@ -74,7 +74,7 @@ public class RecipeWrapper extends ModularWrapper {
             }
         }
 
-        if (Multiblocked.isModLoaded("mekanism")) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_MEK)) {
             if (recipe.inputs.containsKey(GasMekanismCapability.CAP)) {
                 ingredients.setInputs(MekanismJEI.TYPE_GAS, recipe.inputs.get(GasMekanismCapability.CAP).stream()
                         .map(GasStack.class::cast)
@@ -87,7 +87,7 @@ public class RecipeWrapper extends ModularWrapper {
             }
         }
 
-        if (Multiblocked.isModLoaded("qmd")) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_QMD)) {
             if (recipe.inputs.containsKey(ParticleQMDCapability.CAP)) {
                 ingredients.setInputs(ParticleType.Particle, recipe.inputs.get(ParticleQMDCapability.CAP).stream()
                         .map(ParticleStack.class::cast)

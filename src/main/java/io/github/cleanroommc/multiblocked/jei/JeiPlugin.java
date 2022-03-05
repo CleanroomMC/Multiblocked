@@ -112,7 +112,7 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(@Nonnull IModIngredientRegistration registry) {
-        if (Multiblocked.isModLoaded("thaumcraft") && !Multiblocked.isModLoaded("thaumicjei")) {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6) && !Multiblocked.isModLoaded("thaumicjei")) {
             AspectListIngredient.INSTANCE.registerIngredients(registry);
         }
     }

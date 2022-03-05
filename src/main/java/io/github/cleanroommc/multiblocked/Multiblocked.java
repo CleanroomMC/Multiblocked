@@ -4,14 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import io.github.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
-import io.github.cleanroommc.multiblocked.api.json.EnumMapTypeAdapter;
+import io.github.cleanroommc.multiblocked.api.json.GeoComponentRendererTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
 import io.github.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
 import io.github.cleanroommc.multiblocked.api.json.ItemStackTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.json.SimplePredicateTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
-import io.github.cleanroommc.multiblocked.command.CommandReloadDefinitions;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
+import io.github.cleanroommc.multiblocked.command.CommandReload;
 import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -44,21 +45,17 @@ public class Multiblocked {
     public static final String MODID = "multiblocked";
     public static final String MODID_CT = "crafttweaker";
     public static final String MODID_JEI = "jei";
+    public static final String MODID_BOT = "botania";
+    public static final String MODID_QMD = "qmd";
+    public static final String MODID_TC6 = "thaumcraft";
+    public static final String MODID_MEK = "mekanism";
+    public static final String MODID_GEO = "geckolib3";
     public static final String NAME = "Multiblocked";
     public static final String VERSION = "1.0";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
-    public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
-            .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
-            .registerTypeAdapterFactory(BlockTypeAdapterFactory.INSTANCE)
-            .registerTypeAdapter(EnumMapTypeAdapter.BlockRenderLayerBooleanType, EnumMapTypeAdapter.BlockRenderLayerBooleanCreator)
-            .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
-            .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
-            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-            .setLenient()
-            .create();
+    public static Gson GSON;
 
     @SidedProxy(modId = MODID, clientSide = "io.github.cleanroommc.multiblocked.client.ClientProxy", serverSide = "io.github.cleanroommc.multiblocked.CommonProxy")
     public static CommonProxy proxy;
@@ -90,6 +87,17 @@ public class Multiblocked {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
+                .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
+                .registerTypeAdapterFactory(BlockTypeAdapterFactory.INSTANCE)
+                .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
+                .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
+                .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
+        if (isModLoaded(MODID_GEO)) {
+            gsonBuilder.registerTypeAdapter(GeoComponentRenderer.class, GeoComponentRendererTypeAdapter.INSTANCE);
+        }
+        GSON = gsonBuilder.setLenient().create();
         proxy.preInit();
     }
 
@@ -111,7 +119,7 @@ public class Multiblocked {
 
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-        event.registerServerCommand(new CommandReloadDefinitions());
+        event.registerServerCommand(new CommandReload());
     }
 
     @EventHandler

@@ -29,32 +29,40 @@ import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static io.github.cleanroommc.multiblocked.client.ClientProxy.registerNeeds;
 
 public class IModelRenderer implements IRenderer {
 
+    protected static final Set<ResourceLocation> CACHE = new HashSet<>();
+
     public final ResourceLocation modelLocation;
+    public final Set<BlockRenderLayer> renderLayer;
     @SideOnly(Side.CLIENT)
     protected transient IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
     protected transient Map<EnumFacing, IBakedModel> blockModels;
-    protected EnumMap<BlockRenderLayer, Boolean> renderLayer;
 
-    public IModelRenderer(ResourceLocation modelLocation) {
+    public IModelRenderer(ResourceLocation modelLocation, BlockRenderLayer... renderLayers) {
         this.modelLocation = modelLocation;
-        this.renderLayer = new EnumMap<>(BlockRenderLayer.class);
+        this.renderLayer = Arrays.stream(renderLayers).collect(Collectors.toSet());
         if (Multiblocked.isClient()) {
-            registerNeeds.add(this);
+            if (isRaw()) {
+                registerNeeds.add(this);
+            }
             blockModels = new EnumMap<>(EnumFacing.class);
         }
     }
 
-    public IModelRenderer setRenderLayer(BlockRenderLayer layer, boolean shouldRender) {
-        renderLayer.put(layer, shouldRender);
-        return this;
+    public IRenderer fromJson() {
+        return new IModelRenderer(modelLocation, renderLayer.toArray(new BlockRenderLayer[0]));
     }
 
     protected IModel getModel() {
@@ -70,7 +78,7 @@ public class IModelRenderer implements IRenderer {
 
     @Override
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
-        if (!renderLayer.isEmpty() && !renderLayer.getOrDefault(MinecraftForgeClient.getRenderLayer(), false)) return false;
+        if (!renderLayer.isEmpty() && !renderLayer.contains(MinecraftForgeClient.getRenderLayer())) return false;
         BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
         blockModelRenderer.renderModel(blockAccess, getBlockBakedModel(pos, blockAccess), state, pos, buffer, true);
         return true;
@@ -106,7 +114,13 @@ public class IModelRenderer implements IRenderer {
     }
 
     @Override
+    public boolean isRaw() {
+        return !CACHE.contains(modelLocation);
+    }
+
+    @Override
     public void register(TextureMap map) {
+        CACHE.add(modelLocation);
         IModel model = getModel();
         for (ResourceLocation texture : model.getTextures()) {
             map.registerSprite(texture);

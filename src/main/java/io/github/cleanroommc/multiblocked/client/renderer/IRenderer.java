@@ -22,6 +22,11 @@ import javax.annotation.Nonnull;
 public interface IRenderer {
 
     @SideOnly(Side.CLIENT)
+    default boolean isRaw() {
+        return false;
+    }
+
+    @SideOnly(Side.CLIENT)
     void renderItem(ItemStack stack);
 
     @SideOnly(Side.CLIENT)

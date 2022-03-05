@@ -1,7 +1,5 @@
 package io.github.cleanroommc.multiblocked.util;
 
-import net.minecraft.util.Rotation;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;

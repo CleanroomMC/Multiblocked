@@ -88,15 +88,15 @@ public class CommonProxy {
         // create a recipeMap.
         RecipeMap recipeMap = new RecipeMap("test_recipe_map");
         recipeMap.start()
-                .inputItems(new ItemsIngredient(2, new ItemStack(Items.GOLD_INGOT), new ItemStack(Items.IRON_INGOT)))
+                .inputItems(0.85f, new ItemsIngredient(2, new ItemStack(Items.GOLD_INGOT), new ItemStack(Items.IRON_INGOT)))
                 .outputItems(new ItemStack(Items.APPLE, 10))
                 .inputFluids(new FluidStack(FluidRegistry.LAVA, 2000))
-                .outputMana(100)
+                .outputMana(0.125f, 100)
                 .outputAspects(new AspectStack(Aspect.AURA, 50))
                 .duration(2000) // 60 tick -> 3s
                 .buildAndRegister();
         recipeMap.start()
-                .inputGas(new GasStack(GasRegistry.getGas(0), 150))
+                .inputGas(0.3f, new GasStack(GasRegistry.getGas(0), 150))
                 .inputAspects(new AspectStack(Aspect.AURA, 50))
                 .outputHeat(100)
                 .duration(200) // 60 tick -> 3s

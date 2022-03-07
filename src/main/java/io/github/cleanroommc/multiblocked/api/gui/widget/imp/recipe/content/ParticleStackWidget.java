@@ -31,8 +31,7 @@ public class ParticleStackWidget extends ContentWidget<ParticleStack> {
     }
 
     @Override
-    public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
-        super.drawInBackground(mouseX, mouseY, partialTicks);
+    public void drawHookBackground(int mouseX, int mouseY, float partialTicks) {
         if (content != null) {
             Position pos = getPosition();
             Size size = getSize();
@@ -59,7 +58,6 @@ public class ParticleStackWidget extends ContentWidget<ParticleStack> {
                 }
             }
         }
-        drawHoverOverlay(mouseX, mouseY);
     }
 
     @Override

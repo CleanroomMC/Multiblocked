@@ -144,6 +144,8 @@ public class RecipePage extends PageWidget{
                 removeWidget(recipeWidget);
             }
             this.addWidget(recipeWidget = new RecipeWidget(recipe, controller.getDefinition().recipeMap.progressTexture, null));
+            recipeWidget.inputs.addSelfPosition(5, 0);
+            recipeWidget.outputs.addSelfPosition(-5, 0);
             recipeWidget.setSelfPosition(new Position(0, 167));
         } else {
             if (recipeWidget != null) {

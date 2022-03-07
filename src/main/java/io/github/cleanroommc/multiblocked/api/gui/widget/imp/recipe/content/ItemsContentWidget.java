@@ -21,7 +21,7 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
             copy.setCount(content.getAmount());
             return copy;
         }).collect(Collectors.toList())));
-        addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false));
+        addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false).setDrawOverlay(false));
     }
 
     @Override

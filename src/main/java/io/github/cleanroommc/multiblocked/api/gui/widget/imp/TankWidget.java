@@ -124,14 +124,6 @@ public class TankWidget extends Widget implements IIngredientSlot {
             GlStateManager.enableBlend();
             GlStateManager.color(1, 1, 1, 1);
         }
-        if (isMouseOverElement(mouseX, mouseY)) {
-            GlStateManager.disableDepth();
-            GlStateManager.colorMask(true, true, true, false);
-            DrawerHelper.drawSolidRect(pos.x + 1, pos.y + 1, 16, 16, -2130706433);
-            GlStateManager.colorMask(true, true, true, true);
-            GlStateManager.enableDepth();
-            GlStateManager.enableBlend();
-        }
         if (overlay != null) {
             overlay.draw(mouseX, mouseY, pos.x, pos.y, size.width, size.height);
         }

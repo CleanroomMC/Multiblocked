@@ -27,8 +27,7 @@ public class GasStackWidget extends ContentWidget<GasStack> {
     }
 
     @Override
-    public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
-        super.drawInBackground(mouseX, mouseY, partialTicks);
+    public void drawHookBackground(int mouseX, int mouseY, float partialTicks) {
         if (content != null) {
             Position pos = getPosition();
             Size size = getSize();
@@ -42,7 +41,6 @@ public class GasStackWidget extends ContentWidget<GasStack> {
             fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 21, (pos.y + (size.height / 3f) + 6) * 2, 0xFFFFFF);
             GlStateManager.popMatrix();
         }
-        drawHoverOverlay(mouseX, mouseY);
     }
 
     private void drawGas(Minecraft minecraft, final int xPosition, final int yPosition, @Nullable GasStack gasStack) {

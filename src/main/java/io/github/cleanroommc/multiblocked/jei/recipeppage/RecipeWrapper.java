@@ -17,6 +17,7 @@ import mekanism.api.gas.GasStack;
 import mekanism.client.jei.MekanismJEI;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
+import net.minecraft.util.Tuple;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
@@ -36,12 +37,14 @@ public class RecipeWrapper extends ModularWrapper {
     public void getIngredients(@Nonnull IIngredients ingredients) {
         if (recipe.inputs.containsKey(MultiblockCapabilities.ITEM)) {
             ingredients.setInputs(VanillaTypes.ITEM, recipe.inputs.get(MultiblockCapabilities.ITEM).stream()
+                    .map(Tuple::getFirst)
                     .map(ItemsIngredient.class::cast)
                     .flatMap(r-> Arrays.stream(r.matchingStacks))
                     .collect(Collectors.toList()));
         }
         if (recipe.outputs.containsKey(MultiblockCapabilities.ITEM)) {
             ingredients.setOutputs(VanillaTypes.ITEM, recipe.outputs.get(MultiblockCapabilities.ITEM).stream()
+                    .map(Tuple::getFirst)
                     .map(ItemsIngredient.class::cast)
                     .flatMap(r -> Arrays.stream(r.matchingStacks))
                     .collect(Collectors.toList()));
@@ -50,11 +53,13 @@ public class RecipeWrapper extends ModularWrapper {
         if (recipe.inputs.containsKey(MultiblockCapabilities.FLUID)) {
 
             ingredients.setInputs(VanillaTypes.FLUID, recipe.inputs.get(MultiblockCapabilities.FLUID).stream()
+                    .map(Tuple::getFirst)
                     .map(FluidStack.class::cast)
                     .collect(Collectors.toList()));
         }
         if (recipe.outputs.containsKey(MultiblockCapabilities.FLUID)) {
             ingredients.setOutputs(VanillaTypes.FLUID, recipe.outputs.get(MultiblockCapabilities.FLUID).stream()
+                    .map(Tuple::getFirst)
                     .map(FluidStack.class::cast)
                     .collect(Collectors.toList()));
         }
@@ -62,12 +67,14 @@ public class RecipeWrapper extends ModularWrapper {
         if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6)) {
             if (recipe.inputs.containsKey(AspectThaumcraftCapability.CAP)) {
                 ingredients.setInputs(AspectListIngredient.INSTANCE, recipe.inputs.get(AspectThaumcraftCapability.CAP).stream()
+                        .map(Tuple::getFirst)
                         .map(AspectStack.class::cast)
                         .map(AspectStack::toAspectList)
                         .collect(Collectors.toList()));
             }
             if (recipe.outputs.containsKey(AspectThaumcraftCapability.CAP)) {
                 ingredients.setOutputs(AspectListIngredient.INSTANCE, recipe.outputs.get(AspectThaumcraftCapability.CAP).stream()
+                        .map(Tuple::getFirst)
                         .map(AspectStack.class::cast)
                         .map(AspectStack::toAspectList)
                         .collect(Collectors.toList()));
@@ -77,11 +84,13 @@ public class RecipeWrapper extends ModularWrapper {
         if (Multiblocked.isModLoaded(Multiblocked.MODID_MEK)) {
             if (recipe.inputs.containsKey(GasMekanismCapability.CAP)) {
                 ingredients.setInputs(MekanismJEI.TYPE_GAS, recipe.inputs.get(GasMekanismCapability.CAP).stream()
+                        .map(Tuple::getFirst)
                         .map(GasStack.class::cast)
                         .collect(Collectors.toList()));
             }
             if (recipe.outputs.containsKey(GasMekanismCapability.CAP)) {
                 ingredients.setOutputs(MekanismJEI.TYPE_GAS, recipe.outputs.get(GasMekanismCapability.CAP).stream()
+                        .map(Tuple::getFirst)
                         .map(GasStack.class::cast)
                         .collect(Collectors.toList()));
             }
@@ -90,11 +99,13 @@ public class RecipeWrapper extends ModularWrapper {
         if (Multiblocked.isModLoaded(Multiblocked.MODID_QMD)) {
             if (recipe.inputs.containsKey(ParticleQMDCapability.CAP)) {
                 ingredients.setInputs(ParticleType.Particle, recipe.inputs.get(ParticleQMDCapability.CAP).stream()
+                        .map(Tuple::getFirst)
                         .map(ParticleStack.class::cast)
                         .collect(Collectors.toList()));
             }
             if (recipe.outputs.containsKey(ParticleQMDCapability.CAP)) {
                 ingredients.setOutputs(ParticleType.Particle, recipe.outputs.get(ParticleQMDCapability.CAP).stream()
+                        .map(Tuple::getFirst)
                         .map(ParticleStack.class::cast)
                         .collect(Collectors.toList()));
             }

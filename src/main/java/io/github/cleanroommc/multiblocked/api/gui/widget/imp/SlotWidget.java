@@ -40,6 +40,7 @@ public class SlotWidget extends Widget implements IIngredientSlot {
     protected final boolean canPutItems;
     public boolean isPlayerInventory;
     public boolean isPlayerHotBar;
+    public boolean drawOverlay = true;
 
     protected IGuiTexture backgroundTexture;
     protected Runnable changeListener;
@@ -69,6 +70,11 @@ public class SlotWidget extends Widget implements IIngredientSlot {
 
     public SlotWidget setOnAddedTooltips(BiConsumer<SlotWidget, List<String>> onAddedTooltips) {
         this.onAddedTooltips = onAddedTooltips;
+        return this;
+    }
+
+    public SlotWidget setDrawOverlay(boolean drawOverlay) {
+        this.drawOverlay = drawOverlay;
         return this;
     }
 
@@ -116,6 +122,7 @@ public class SlotWidget extends Widget implements IIngredientSlot {
             GlStateManager.popMatrix();
             RenderHelper.disableStandardItemLighting();
         }
+        if (!drawOverlay) return;
         if (isActive()) {
             if (slotReference instanceof ISlotWidget) {
                 if (isMouseOverElement(mouseX, mouseY)) {

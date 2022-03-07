@@ -23,8 +23,7 @@ public class AspectStackWidget extends ContentWidget<AspectStack> {
     }
 
     @Override
-    public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
-        super.drawInBackground(mouseX, mouseY, partialTicks);
+    public void drawHookBackground(int mouseX, int mouseY, float partialTicks) {
         if (content != null) {
             Position pos = getPosition();
             Size size = getSize();
@@ -44,7 +43,6 @@ public class AspectStackWidget extends ContentWidget<AspectStack> {
             }
             GlStateManager.popMatrix();
         }
-        drawHoverOverlay(mouseX, mouseY);
     }
 
     @Override

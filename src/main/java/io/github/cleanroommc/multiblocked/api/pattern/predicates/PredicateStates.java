@@ -42,16 +42,16 @@ public class PredicateStates extends SimplePredicate {
     @Override
     public List<WidgetGroup> getConfigWidget(List<WidgetGroup> groups) {
         super.getConfigWidget(groups);
-        WidgetGroup group = new WidgetGroup(0, 0, 200, 100);
+        WidgetGroup group = new WidgetGroup(0, 0, 182, 100);
         groups.add(group);
-        DraggableScrollableWidgetGroup container = new DraggableScrollableWidgetGroup(0, 25, 200, 80).setBackground(new ColorRectTexture(0xffaaaaaa));
+        DraggableScrollableWidgetGroup container = new DraggableScrollableWidgetGroup(0, 25, 182, 80).setBackground(new ColorRectTexture(0xffaaaaaa));
         group.addWidget(container);
         List<IBlockState> blockList = new ArrayList<>(Arrays.asList(states));
         for (IBlockState blockState : blockList) {
             addBlockSelectorWidget(blockList, container, blockState);
         }
         group.addWidget(new LabelWidget(0, 6, ()->"BlockState Settings").setTextColor(-1).setDrop(true));
-        group.addWidget(new ButtonWidget(180, 0, 20, 20, cd -> {
+        group.addWidget(new ButtonWidget(162, 0, 20, 20, cd -> {
             blockList.add(null);
             addBlockSelectorWidget(blockList, container, null);
         }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("add a new blockstate"));

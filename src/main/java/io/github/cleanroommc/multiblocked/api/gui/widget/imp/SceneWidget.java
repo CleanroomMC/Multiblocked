@@ -37,6 +37,7 @@ public class SceneWidget extends WidgetGroup {
     protected TrackedDummyWorld dummyWorld;
     protected boolean dragging;
     protected boolean renderFacing = true;
+    protected boolean renderSelect = true;
     protected int lastMouseX;
     protected int lastMouseY;
     protected int currentMouseX;
@@ -92,6 +93,12 @@ public class SceneWidget extends WidgetGroup {
         if (Multiblocked.isClient()) {
             renderer.setClearColor(color);
         }
+        return this;
+    }
+
+
+    public SceneWidget setRenderSelect(boolean renderSelect) {
+        this.renderSelect = renderSelect;
         return this;
     }
 
@@ -174,7 +181,9 @@ public class SceneWidget extends WidgetGroup {
             GlStateManager.popMatrix();
         }
         if (selectedPosFace == null) return;
-        RenderUtils.renderBlockOverLay(selectedPosFace.pos, 0.6f, 0, 0, 1.01f);
+        if (renderSelect) {
+            RenderUtils.renderBlockOverLay(selectedPosFace.pos, 0.6f, 0, 0, 1.01f);
+        }
     }
 
     protected void drawFacingBorder(BlockPosFace posFace, int color) {
@@ -220,7 +229,7 @@ public class SceneWidget extends WidgetGroup {
     @Override
     public Widget mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
         if (isMouseOverElement(mouseX, mouseY)) {
-            zoom = (float) MathHelper.clamp(zoom + (wheelDelta < 0 ? 0.5 : -0.5), 3, 999);
+            zoom = (float) MathHelper.clamp(zoom + (wheelDelta < 0 ? 0.5 : -0.5), 1.5, 999);
             if (renderer != null) {
                 renderer.setCameraLookAt(center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
             }

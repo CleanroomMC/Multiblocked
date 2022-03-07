@@ -31,7 +31,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +55,7 @@ public class IModelRenderer implements IRenderer {
         if (Multiblocked.isClient()) {
             if (isRaw()) {
                 registerNeeds.add(this);
+                CACHE.add(modelLocation);
             }
             blockModels = new EnumMap<>(EnumFacing.class);
         }
@@ -120,7 +120,6 @@ public class IModelRenderer implements IRenderer {
 
     @Override
     public void register(TextureMap map) {
-        CACHE.add(modelLocation);
         IModel model = getModel();
         for (ResourceLocation texture : model.getTextures()) {
             map.registerSprite(texture);

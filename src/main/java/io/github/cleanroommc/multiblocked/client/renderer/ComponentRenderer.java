@@ -30,7 +30,7 @@ public class ComponentRenderer implements ICustomItemRenderer {
     public void renderItem(ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem() instanceof ItemComponent) {
             IRenderer renderer = ((ItemComponent) stack.getItem()).getDefinition().getRenderer();
-            if (renderer == null) return;
+            if (renderer == null || renderer.isRaw()) return;
             renderer.renderItem(stack);
         }
     }
@@ -39,7 +39,7 @@ public class ComponentRenderer implements ICustomItemRenderer {
         TileEntity tileEntity = blockAccess.getTileEntity(pos);
         if (tileEntity instanceof ComponentTileEntity) {
             IRenderer renderer = ((ComponentTileEntity<?>) tileEntity).getRenderer();
-            if (renderer == null) return;
+            if (renderer == null || renderer.isRaw()) return;
             renderer.renderBlockDamage(state, pos, texture, blockAccess);
         }
     }
@@ -48,12 +48,12 @@ public class ComponentRenderer implements ICustomItemRenderer {
         TileEntity tileEntity = blockAccess.getTileEntity(pos);
         if (tileEntity instanceof ComponentTileEntity) {
             IRenderer renderer = ((ComponentTileEntity<?>) tileEntity).getRenderer();
-            if (renderer == null) return false;
+            if (renderer == null || renderer.isRaw()) return false;
             return renderer.renderBlock(state, pos, blockAccess, buffer);
         } else {
             if (state.getBlock() instanceof BlockComponent) { // random capability
                 IRenderer renderer =  ((BlockComponent) state.getBlock()).definition.baseRenderer;
-                if (renderer == null) return false;
+                if (renderer == null || renderer.isRaw()) return false;
                 return renderer.renderBlock(state, pos, blockAccess, buffer);
             }
         }

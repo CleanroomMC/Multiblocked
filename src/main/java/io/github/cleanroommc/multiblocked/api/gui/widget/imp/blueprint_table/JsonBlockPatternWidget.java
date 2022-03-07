@@ -106,7 +106,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         container.addTab((TabButton)new TabButton(171, 29, 20, 20)
                         .setTexture(tabPattern.getSubTexture(0, 0, 1, 0.5),
                                 tabPattern.getSubTexture(0, 0.5, 1, 0.5))
-                        .setHoverTooltip("Pattern Settings"),
+                        .setHoverTooltip("Pattern"),
                 patternTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
 
         int bgColor = 0x8f111111;
@@ -159,7 +159,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         container.addTab((TabButton)new TabButton(171 + 25, 29, 20, 20)
                         .setTexture(tabPredicate.getSubTexture(0, 0, 1, 0.5),
                                 tabPredicate.getSubTexture(0, 0.5, 1, 0.5))
-                        .setHoverTooltip("Predicate Settings"),
+                        .setHoverTooltip("Predicate"),
                 predicateTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
         DraggableScrollableWidgetGroup predicatesContainer = new DraggableScrollableWidgetGroup(171, 52, 179, 136 - 52)
                 .setBackground(new ColorRectTexture(bgColor))
@@ -236,14 +236,14 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         container.addTab((TabButton)new TabButton(171 + 50, 29, 20, 20)
                         .setTexture(tabTextField.getSubTexture(0, 0, 1, 0.5),
                                 tabTextField.getSubTexture(0, 0.5, 1, 0.5))
-                        .setHoverTooltip("Predicate Settings"),
+                        .setHoverTooltip("Json"),
                 textFieldTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
         textFieldTab.addWidget(new ImageWidget(171, 52, 179, 20, new ResourceTexture("multiblocked:textures/gui/bar.png")));
         textFieldTab.addWidget(new SwitchWidget(173, 54, 16, 16, (cd,r) -> {
             isPretty = r;
             updatePatternJson();
-        }).setHoverBorderTexture(1, -1).setTexture(new ResourceTexture("multiblocked:textures/gui/pretty.png"), new ResourceTexture("multiblocked:textures/gui/pretty_active.png")));
-        textFieldTab.addWidget(new ButtonWidget(193, 54, 16, 16, cd -> GuiScreen.setClipboardString(isPretty ? Multiblocked.prettyJson(getPatternJson()) : getPatternJson())).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/copy.png")).setHoverBorderTexture(1, -1));
+        }).setHoverBorderTexture(1, -1).setTexture(new ResourceTexture("multiblocked:textures/gui/pretty.png"), new ResourceTexture("multiblocked:textures/gui/pretty_active.png")).setHoverTooltip("pretty format"));
+        textFieldTab.addWidget(new ButtonWidget(193, 54, 16, 16, cd -> GuiScreen.setClipboardString(isPretty ? Multiblocked.prettyJson(getPatternJson()) : getPatternJson())).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/copy.png")).setHoverBorderTexture(1, -1).setHoverTooltip("copy to clipboard"));
         textFieldTab.addWidget(tfGroup = new DraggableScrollableWidgetGroup(171, 72, 179, 136 - 52)
                 .setBackground(new ColorRectTexture(bgColor))
                 .setYScrollBarWidth(4)

@@ -2,6 +2,7 @@ package io.github.cleanroommc.multiblocked.api.gui.widget.imp;
 
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import io.github.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.FileNode;
@@ -58,10 +59,10 @@ public class DialogWidget extends WidgetGroup {
 
     @Override
     public Widget keyTyped(char charTyped, int keyCode) {
-        if (keyCode == 1) {
+        Widget widget = super.keyTyped(charTyped, keyCode);
+        if (widget == null && keyCode == 1) {
             close();
         }
-        Widget widget = super.keyTyped(charTyped, keyCode);
         return widget == null ? this : widget;
     }
 
@@ -82,17 +83,19 @@ public class DialogWidget extends WidgetGroup {
                 .setLeafTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png")));
         int x = 130 + (size.width - 133 - WIDTH) / 2;
         int y = (size.height - HEIGHT) / 2;
-        dialog.addWidget(new ImageWidget(x, y, WIDTH, HEIGHT, new ColorBorderTexture(1, -1)));
-        dialog.addWidget(new ButtonWidget(x + WIDTH / 2 - 30, y + HEIGHT - 22, 20, 20, cd -> {
+        dialog.addWidget(new ImageWidget(x, y, WIDTH, HEIGHT, new ResourceTexture("multiblocked:textures/gui/bordered_background.png")));
+        dialog.addWidget(new ButtonWidget(x + WIDTH / 2 - 30 - 20, y + HEIGHT - 32, 40, 20, cd -> {
             dialog.close();
             if (result != null) result.accept(selected.get());
-        }).setButtonTexture(new ColorRectTexture(0xffff0000)));
-        dialog.addWidget(new ButtonWidget(x + WIDTH / 2 + 30, y + HEIGHT - 22, 20, 20, cd -> {
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("confirm", -1).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000));
+        dialog.addWidget(new ButtonWidget(x + WIDTH / 2 + 30 - 20, y + HEIGHT - 32, 40, 20, cd -> {
             dialog.close();
             if (result != null) result.accept(null);
-        }).setButtonTexture(new ColorRectTexture(0xff00ff00)));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("cancel", 0xffff0000).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000));
         if (isSelector) {
-            dialog.addWidget(new ImageWidget(x + WIDTH / 2, y + HEIGHT / 2 - 5, WIDTH - 16, 20,
+            dialog.addWidget(new ImageWidget(x + 8, y + HEIGHT / 2 - 5, WIDTH - 16, 20,
+                    new GuiTextureGroup(new ColorBorderTexture(1, -1), new ColorRectTexture(0xff000000))));
+            dialog.addWidget(new ImageWidget(x + 8, y + HEIGHT / 2 - 5, WIDTH - 16, 20,
                     new TextTexture("", -1).setWidth(WIDTH - 16).setType(TextTexture.TextType.ROLL)
                             .setSupplier(() -> {
                                 if (selected.get() != null) {
@@ -117,7 +120,7 @@ public class DialogWidget extends WidgetGroup {
                 }
             }));
         }
-        dialog.addWidget(new ButtonWidget(x + 17, y + 15, 20, 20, cd -> {
+        dialog.addWidget(new ButtonWidget(x + 15, y + 15, 20, 20, cd -> {
             File file = selected.get();
             if (file != null) {
                 try {
@@ -126,8 +129,9 @@ public class DialogWidget extends WidgetGroup {
                     e.printStackTrace();
                 }
             }
-        }).setButtonTexture(new ColorRectTexture(0xff0000ff)));
-        dialog.addWidget(new LabelWidget(x + WIDTH / 2, y + 11, ()->title).setTextColor(-1));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000).setHoverTooltip("open folder"));
+        dialog.addWidget(new ImageWidget(x + 15, y + 20, WIDTH - 30,10, new TextTexture(title, -1).setWidth(WIDTH - 30).setDropShadow(true)));
+        //        dialog.addWidget(new LabelWidget(x + WIDTH / 2, y + 11, ()->title).setTextColor(-1));
         return dialog;
     }
 }

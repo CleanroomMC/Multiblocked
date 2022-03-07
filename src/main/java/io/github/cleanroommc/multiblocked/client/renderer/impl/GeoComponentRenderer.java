@@ -9,8 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -36,16 +34,12 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Set;
-
-import static io.github.cleanroommc.multiblocked.client.ClientProxy.registerNeeds;
 
 @SuppressWarnings("unchecked")
 public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.ComponentFactory> implements IRenderer, IGeoRenderer<GeoComponentRenderer.ComponentFactory> {
-    private static final Set<String> CACHE = new HashSet<>();
 
     static {
         if (Multiblocked.isClient()) {
@@ -62,16 +56,9 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     public final String modelName;
     @SideOnly(Side.CLIENT)
     private ComponentFactory itemFactory;
-    @SideOnly(Side.CLIENT)
-    private TextureAtlasSprite particleTexture;
 
     public GeoComponentRenderer(String modelName) {
         this.modelName = modelName;
-        if (Multiblocked.isClient()) {
-            if (isRaw()) {
-                registerNeeds.add(this);
-            }
-        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -103,18 +90,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
 
     @Override
     public boolean isRaw() {
-        return !CACHE.contains(modelName);
-    }
-
-    @Override
-    public void register(TextureMap map) {
-        particleTexture = map.registerSprite(new ResourceLocation(Multiblocked.MODID, modelName));
-        CACHE.add(modelName);
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleTexture() {
-        return particleTexture == null ? IRenderer.super.getParticleTexture() : particleTexture;
+        return !GeckoLibCache.getInstance().getGeoModels().containsKey(this.getModelLocation(null));
     }
 
     @SideOnly(Side.CLIENT)
@@ -126,7 +102,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        if (te instanceof ComponentTileEntity<?> && !isRaw()) {
+        if (te instanceof ComponentTileEntity<?>) {
             ComponentTileEntity<?> controller = (ComponentTileEntity<?>) te;
             ComponentFactory factory = controller.getFactory(this);
             GeoModel model = this.getModel(this.getModelLocation(factory));

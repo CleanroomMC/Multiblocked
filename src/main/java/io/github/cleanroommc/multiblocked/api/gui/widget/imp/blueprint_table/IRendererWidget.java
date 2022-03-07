@@ -1,8 +1,8 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
-import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.definition.PartDefinition;
+import io.github.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
@@ -19,7 +19,6 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
-import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import io.github.cleanroommc.multiblocked.client.MultiblockedResourceLoader;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.B3DRenderer;
@@ -40,46 +39,49 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class IRendererWidget extends WidgetGroup {
-    public static BlockComponent rendererBlock;
+public class IRendererWidget extends DialogWidget {
+    public static PartDefinition definition;
     public Consumer<IRenderer> onSave;
-    private final IRendererTileEntity tileEntity;
     private final DraggableScrollableWidgetGroup group;
     private Runnable onUpdate;
 
-
-    public IRendererWidget(IRenderer renderer, Consumer<IRenderer> onSave) {
-        super(0, 0, 384, 256);
+    public IRendererWidget(WidgetGroup parent, IRenderer renderer, Consumer<IRenderer> onSave) {
+        super(parent, true);
         setClientSideWidget();
+        setNewRenderer(renderer);
         this.onSave = onSave;
-        this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/irenderer.png")));
+        this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xaf333333)));
         TrackedDummyWorld world = new TrackedDummyWorld();
-        world.addBlock(BlockPos.ORIGIN, new BlockInfo(rendererBlock));
-        tileEntity = (IRendererTileEntity)world.getTileEntity(BlockPos.ORIGIN);
-        tileEntity.renderer = renderer;
+        world.addBlock(BlockPos.ORIGIN, new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location)));
+        this.addWidget(new ImageWidget(35, 59, 138, 138, new ColorBorderTexture(3, -1)));
         this.addWidget(new SceneWidget(35, 59,  138, 138, world)
                 .setRenderedCore(Collections.singleton(BlockPos.ORIGIN), null)
+                .setRenderSelect(false)
                 .setRenderFacing(false));
         this.addWidget(group = new DraggableScrollableWidgetGroup(181, 80, 180, 120));
-        this.addWidget(new ButtonWidget(300, 55, 20, 20, this::onUpdate)
-                .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png"))
+        this.addWidget(new ButtonWidget(285, 55, 40, 20, this::onUpdate)
+                .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("update"));
+        this.addWidget(new ButtonWidget(330, 55, 45, 20, cd -> Minecraft.getMinecraft().scheduleResourcesRefresh())
+                .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("refresh", -1).setDropShadow(true))
+                .setHoverBorderTexture(1, -1)
+                .setHoverTooltip("§4NOTE: Resources refresh will cause the game to stall for a while.§r" +
+                        "\n§2Must refresh to display models which have never been loaded before (obj, b3d, and geo).§r" +
+                        "\n§3Also need to refresh if the texture is not loaded.§r"));
         this.addWidget(new SelectorWidget(181, 55, 100, 20, Multiblocked.isModLoaded(Multiblocked.MODID_GEO) ?
                         Arrays.asList("BlockState", "B3D", "OBJ", "IModel", "Geo") :
-                        Arrays.asList("BlockState", "B3D", "OBJ", "IModel"), 0xff333333)
+                        Arrays.asList("BlockState", "B3D", "OBJ", "IModel"), -1)
                 .setValue(getType(renderer))
                 .setOnChanged(this::onChangeRenderer)
-                .setButtonBackground(new ResourceTexture("multiblocked:textures/gui/button_common.png"))
-                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setButtonBackground(new ColorBorderTexture(1, -1))
+                .setValue("select a model")
+                .setBackground(new ColorRectTexture(0xff999999))
                 .setHoverTooltip("renderer"));
     }
 
     private void setNewRenderer(IRenderer newRenderer) {
-        tileEntity.renderer = newRenderer;
-        if (newRenderer != null && newRenderer.isRaw()) {
-            Minecraft.getMinecraft().scheduleResourcesRefresh();
-        }
+        definition.baseRenderer = newRenderer;
     }
 
     private void onUpdate(ClickData clickData) {
@@ -89,7 +91,7 @@ public class IRendererWidget extends WidgetGroup {
     private void onChangeRenderer(String s) {
         group.clearAllWidgets();
         onUpdate = null;
-        IRenderer current = tileEntity.renderer;
+        IRenderer current = definition.baseRenderer;
         switch (s) {
             case "BlockState":
                 BlockSelectorWidget blockSelectorWidget = new BlockSelectorWidget(0, 1, true);
@@ -193,7 +195,7 @@ public class IRendererWidget extends WidgetGroup {
         TextFieldWidget tfw = new TextFieldWidget(1,1,150,20,true, null, null);
         group.addWidget(tfw);
         int y = 25;
-        IModelRenderer current = tileEntity.renderer instanceof IModelRenderer ? (IModelRenderer) tileEntity.renderer : null;
+        IModelRenderer current = definition.baseRenderer instanceof IModelRenderer ? (IModelRenderer) definition.baseRenderer : null;
         for (BlockRenderLayer layer : BlockRenderLayer.values()) {
             group.addWidget(new SwitchWidget(1, y, 150, 15, (cd, r)->{
                 if (r) layers.add(layer);
@@ -225,29 +227,10 @@ public class IRendererWidget extends WidgetGroup {
     }
 
     public static void registerBlock() {
-        PartDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "irenderer"), IRendererTileEntity.class);
+        definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "irenderer"));
         definition.isOpaqueCube = false;
         definition.showInJei = false;
         MultiblockComponents.registerComponent(definition);
-        rendererBlock = MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location);
-        rendererBlock.setCreativeTab(null);
-    }
-
-    public static class IRendererTileEntity extends PartTileEntity<PartDefinition> {
-        public IRenderer renderer;
-
-        public IRendererTileEntity() {
-            super();
-        }
-
-        @Override
-        public boolean isFormed() {
-            return false;
-        }
-
-        @Override
-        public IRenderer getRenderer() {
-            return renderer;
-        }
+        MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).setCreativeTab(null);
     }
 }

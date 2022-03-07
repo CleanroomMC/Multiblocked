@@ -50,11 +50,7 @@ public class BlueprintTableWidget extends TabContainer {
         this.addWidget(new LabelWidget(134, 64, this::description).setTextColor(-1).setDrop(true));
         this.addWidget(templateButton = new ButtonWidget(36, 132, 20, 20, new ItemStackTexture(MultiblockedItems.BUILDER), this::onBuildTemplate));
         this.addWidget(new ButtonWidget(56, 132, 20, 20, new ItemStackTexture(Items.APPLE), cd -> {
-            for (Widget widget : widgets) {
-                widget.setActive(false);
-                widget.setVisible(false);
-            }
-            this.addWidget(new IRendererWidget(null, null));
+            new IRendererWidget(this, null, null);
         }));
         templateButton.setHoverTooltip("Create template for multiblock builder");
         templateButton.setVisible(false);

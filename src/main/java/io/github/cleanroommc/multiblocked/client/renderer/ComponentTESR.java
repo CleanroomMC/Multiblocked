@@ -17,7 +17,7 @@ public class ComponentTESR extends TileEntitySpecialRenderer<ComponentTileEntity
     @Override
     public void render(@Nonnull ComponentTileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         IRenderer renderer = te.getRenderer();
-        if (renderer != null) {
+        if (renderer != null && !renderer.isRaw()) {
             te.getRenderer().renderTESR(te, x, y, z, partialTicks, destroyStage, alpha);
         }
     }

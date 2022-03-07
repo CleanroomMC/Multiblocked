@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import io.github.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
+import io.github.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.json.GeoComponentRendererTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
 import io.github.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
@@ -17,6 +18,7 @@ import io.github.cleanroommc.multiblocked.jei.JeiPlugin;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -92,6 +94,7 @@ public class Multiblocked {
                 .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
                 .registerTypeAdapterFactory(BlockTypeAdapterFactory.INSTANCE)
                 .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
+                .registerTypeAdapter(FluidStack.class, FluidStackTypeAdapter.INSTANCE)
                 .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
                 .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
         if (isModLoaded(MODID_GEO)) {

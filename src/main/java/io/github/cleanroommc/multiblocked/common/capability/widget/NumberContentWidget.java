@@ -1,14 +1,15 @@
-package io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content;
+package io.github.cleanroommc.multiblocked.common.capability.widget;
 
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class NumberContentWidget extends ContentWidget<Number>{
+public class NumberContentWidget extends ContentWidget<Number> {
     protected boolean isDecimal;
     protected IGuiTexture contentTexture;
     protected String unit;

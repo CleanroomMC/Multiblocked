@@ -1,18 +1,25 @@
 package io.github.cleanroommc.multiblocked.common.capability;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ParticleStackWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import io.github.cleanroommc.multiblocked.common.capability.widget.ParticleStackWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import lach_01298.qmd.particle.ITileParticleStorage;
 import lach_01298.qmd.particle.ParticleStack;
 import lach_01298.qmd.particle.ParticleStorage;
+import lach_01298.qmd.particle.Particles;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,6 +48,26 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
     @Override
     public ContentWidget<ParticleStack> createContentWidget() {
         return new ParticleStackWidget();
+    }
+
+    @Override
+    public ParticleStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+        return new ParticleStack(
+                Particles.getParticleFromName(jsonObj.get("particle").getAsString()),
+                jsonObj.get("amount").getAsInt(),
+                jsonObj.get("energy").getAsLong(),
+                jsonObj.get("focus").getAsDouble());
+    }
+
+    @Override
+    public JsonElement serialize(ParticleStack particleStack, Type type, JsonSerializationContext jsonSerializationContext) {
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("particle", particleStack.getParticle().getName());
+        jsonObj.addProperty("amount", particleStack.getAmount());
+        jsonObj.addProperty("focus", particleStack.getFocus());
+        jsonObj.addProperty("energy", particleStack.getMeanEnergy());
+        return jsonObj;
     }
 
     public static class ParticleQMDCapabilityProxy extends CapabilityProxy<ParticleStack> {

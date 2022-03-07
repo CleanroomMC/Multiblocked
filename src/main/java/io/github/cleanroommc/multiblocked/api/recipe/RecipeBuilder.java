@@ -3,6 +3,7 @@ package io.github.cleanroommc.multiblocked.api.recipe;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import crafttweaker.annotations.ZenRegister;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import io.github.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
@@ -17,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 
 import java.util.Arrays;
@@ -28,11 +30,11 @@ import java.util.Map;
 @ZenRegister
 public class RecipeBuilder {
 
-    private final RecipeMap recipeMap;
-    private final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> inputBuilder = new HashMap<>();
-    private final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> outputBuilder = new HashMap<>();
-    int duration;
-    private StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name himself.
+    public final RecipeMap recipeMap;
+    public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> inputBuilder = new HashMap<>();
+    public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> outputBuilder = new HashMap<>();
+    protected int duration;
+    protected StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name himself.
 
     public RecipeBuilder(RecipeMap recipeMap) {
         this.recipeMap = recipeMap;
@@ -140,32 +142,39 @@ public class RecipeBuilder {
         return output(MultiblockCapabilities.FLUID, chance, (Object[]) outputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_BOT)
     public RecipeBuilder inputMana(int mana) {
         return inputMana(1, mana);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_BOT)
     public RecipeBuilder outputMana(int mana) {
         return outputMana(1, mana);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_BOT)
     public RecipeBuilder inputMana(float chance, int mana) {
         keyBuilder.append(ManaBotainaCapability.CAP.name).append(mana);
         return input(ManaBotainaCapability.CAP, chance, mana);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_BOT)
     public RecipeBuilder outputMana(float chance, int mana) {
         keyBuilder.append(ManaBotainaCapability.CAP.name).append(mana);
         return output(ManaBotainaCapability.CAP, chance, mana);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_TC6)
     public RecipeBuilder inputAspects(AspectStack... inputs) {
         return inputAspects(1, inputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_TC6)
     public RecipeBuilder outputAspects(AspectStack... outputs) {
         return outputAspects(1, outputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_TC6)
     public RecipeBuilder inputAspects(float chance, AspectStack... inputs) {
         keyBuilder.append(AspectThaumcraftCapability.CAP.name);
         for (AspectStack input : inputs) {
@@ -175,6 +184,7 @@ public class RecipeBuilder {
         return input(AspectThaumcraftCapability.CAP, chance, (Object[]) inputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_TC6)
     public RecipeBuilder outputAspects(float chance, AspectStack... outputs) {
         keyBuilder.append(AspectThaumcraftCapability.CAP.name);
         for (AspectStack output : outputs) {
@@ -184,32 +194,39 @@ public class RecipeBuilder {
         return output(AspectThaumcraftCapability.CAP, chance, (Object[]) outputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder inputHeat(double heat) {
         return inputHeat(1, heat);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder outputHeat(double heat) {
         return outputHeat(1, heat);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder inputHeat(float chance, double heat) {
         keyBuilder.append(HeatMekanismCapability.CAP.name).append(heat);
         return input(HeatMekanismCapability.CAP, chance, heat);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder outputHeat(float chance, double heat) {
         keyBuilder.append(HeatMekanismCapability.CAP.name).append(heat);
         return output(HeatMekanismCapability.CAP, chance, heat);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder inputGas(GasStack... inputs) {
         return inputGas(1, inputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder outputGas(GasStack... outputs) {
         return outputGas(1, outputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder inputGas(float chance, GasStack... inputs) {
         keyBuilder.append(GasMekanismCapability.CAP.name);
         for (GasStack input : inputs) {
@@ -219,6 +236,7 @@ public class RecipeBuilder {
         return input(GasMekanismCapability.CAP, chance, (Object[]) inputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder outputGas(float chance, GasStack... outputs) {
         keyBuilder.append(GasMekanismCapability.CAP.name);
         for (GasStack output : outputs) {
@@ -228,14 +246,17 @@ public class RecipeBuilder {
         return output(GasMekanismCapability.CAP, chance, (Object[]) outputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_QMD)
     public RecipeBuilder inputParticles(ParticleStack... inputs) {
         return inputParticles(1, inputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_QMD)
     public RecipeBuilder outputParticles(ParticleStack... outputs) {
         return outputParticles(1, outputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_QMD)
     public RecipeBuilder inputParticles(float chance, ParticleStack... inputs) {
         keyBuilder.append(ParticleQMDCapability.CAP.name);
         for (ParticleStack input : inputs) {
@@ -247,6 +268,7 @@ public class RecipeBuilder {
         return input(ParticleQMDCapability.CAP, chance, (Object[]) inputs);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_QMD)
     public RecipeBuilder outputParticles(float chance, ParticleStack... outputs) {
         keyBuilder.append(ParticleQMDCapability.CAP.name);
         for (ParticleStack output : outputs) {

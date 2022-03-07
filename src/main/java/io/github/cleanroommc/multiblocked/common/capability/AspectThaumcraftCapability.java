@@ -1,10 +1,15 @@
 package io.github.cleanroommc.multiblocked.common.capability;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.AspectStackWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
+import io.github.cleanroommc.multiblocked.common.capability.widget.AspectStackWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import net.minecraft.tileentity.TileEntity;
@@ -14,6 +19,7 @@ import thaumcraft.api.aspects.IAspectContainer;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,6 +48,19 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
     @Override
     public ContentWidget<AspectStack> createContentWidget() {
         return new AspectStackWidget();
+    }
+
+    @Override
+    public AspectStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        return new AspectStack(Aspect.getAspect(jsonElement.getAsJsonObject().get("aspect").getAsString()), jsonElement.getAsJsonObject().get("amount").getAsInt());
+    }
+
+    @Override
+    public JsonElement serialize(AspectStack aspectStack, Type type, JsonSerializationContext jsonSerializationContext) {
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("aspect", aspectStack.aspect.getTag());
+        jsonObj.addProperty("amount", aspectStack.amount);
+        return jsonObj;
     }
 
     public static class AspectThaumcraftCapabilityProxy extends CapabilityProxy<AspectStack> {

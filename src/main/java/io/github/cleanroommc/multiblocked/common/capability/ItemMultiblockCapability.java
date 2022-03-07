@@ -1,10 +1,16 @@
 package io.github.cleanroommc.multiblocked.common.capability;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ItemsContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import io.github.cleanroommc.multiblocked.common.capability.widget.ItemsContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
@@ -15,6 +21,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,6 +49,20 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
     @Override
     public ContentWidget<? super ItemsIngredient> createContentWidget() {
         return new ItemsContentWidget();
+    }
+
+    @Override
+    public ItemsIngredient deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        return new ItemsIngredient(jsonObject.get("amount").getAsInt(), Multiblocked.GSON.fromJson(jsonObject.get("matches"), ItemStack[].class));
+    }
+
+    @Override
+    public JsonElement serialize(ItemsIngredient itemsIngredient, Type type, JsonSerializationContext jsonSerializationContext) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("matches", Multiblocked.GSON.toJsonTree(itemsIngredient.getMatchingStacks()));
+        jsonObject.addProperty("amount", itemsIngredient.getAmount());
+        return jsonObject;
     }
 
     public static class ItemCapabilityProxy extends CapabilityProxy<ItemsIngredient> {

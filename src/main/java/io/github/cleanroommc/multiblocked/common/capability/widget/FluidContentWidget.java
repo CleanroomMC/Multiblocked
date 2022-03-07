@@ -1,10 +1,11 @@
-package io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content;
+package io.github.cleanroommc.multiblocked.common.capability.widget;
 
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.TankWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 
-public class FluidContentWidget extends ContentWidget<FluidStack>{
+public class FluidContentWidget extends ContentWidget<FluidStack> {
     TankWidget tankWidget;
 
     @Override

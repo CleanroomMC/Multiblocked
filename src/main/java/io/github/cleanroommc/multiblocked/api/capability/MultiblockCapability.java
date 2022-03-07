@@ -1,10 +1,12 @@
 package io.github.cleanroommc.multiblocked.api.capability;
 
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
 import crafttweaker.annotations.ZenRegister;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.block.BlockComponent;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -25,7 +27,7 @@ import java.util.List;
  */
 @ZenClass("mods.multiblocked.capability.capability")
 @ZenRegister
-public abstract class MultiblockCapability<T> {
+public abstract class MultiblockCapability<T> implements JsonSerializer<T>, JsonDeserializer<T> {
     protected IBlockState[] scannedStates;
     @ZenProperty
     public final String name;

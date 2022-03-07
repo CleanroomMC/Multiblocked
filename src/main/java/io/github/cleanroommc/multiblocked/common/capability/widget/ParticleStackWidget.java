@@ -1,7 +1,8 @@
-package io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content;
+package io.github.cleanroommc.multiblocked.common.capability.widget;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import io.github.cleanroommc.multiblocked.util.Position;
 import io.github.cleanroommc.multiblocked.util.Size;
 import lach_01298.qmd.particle.Particle;

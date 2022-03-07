@@ -1,11 +1,16 @@
 package io.github.cleanroommc.multiblocked.common.capability;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.FluidContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import io.github.cleanroommc.multiblocked.common.capability.widget.FluidContentWidget;
+import io.github.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import mekanism.common.base.FluidHandlerWrapper;
@@ -17,6 +22,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,6 +51,16 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
     @Override
     public ContentWidget<? super FluidStack> createContentWidget() {
         return new FluidContentWidget();
+    }
+
+    @Override
+    public FluidStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        return FluidStackTypeAdapter.INSTANCE.deserialize(jsonElement, type, jsonDeserializationContext);
+    }
+
+    @Override
+    public JsonElement serialize(FluidStack fluidStack, Type type, JsonSerializationContext jsonSerializationContext) {
+        return FluidStackTypeAdapter.INSTANCE.serialize(fluidStack, type, jsonSerializationContext);
     }
 
     public static class FluidCapabilityProxy extends CapabilityProxy<FluidStack> {

@@ -1,11 +1,17 @@
 package io.github.cleanroommc.multiblocked.common.capability;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.GasStackWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import io.github.cleanroommc.multiblocked.common.capability.widget.GasStackWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
+import mekanism.api.gas.GasRegistry;
 import mekanism.api.gas.GasStack;
 import mekanism.api.gas.IGasHandler;
 import mekanism.common.capabilities.Capabilities;
@@ -14,6 +20,7 @@ import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,6 +49,19 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     @Override
     public ContentWidget<? super GasStack> createContentWidget() {
         return new GasStackWidget();
+    }
+
+    @Override
+    public GasStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        return new GasStack(GasRegistry.getGas(jsonElement.getAsJsonObject().get("gas").getAsString()), jsonElement.getAsJsonObject().get("amount").getAsInt());
+    }
+
+    @Override
+    public JsonElement serialize(GasStack gasStack, Type type, JsonSerializationContext jsonSerializationContext) {
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("gas", gasStack.getGas().getName());
+        jsonObj.addProperty("amount", gasStack.amount);
+        return jsonObj;
     }
 
     public static class GasMekanismCapabilityProxy extends CapabilityProxy<GasStack> {

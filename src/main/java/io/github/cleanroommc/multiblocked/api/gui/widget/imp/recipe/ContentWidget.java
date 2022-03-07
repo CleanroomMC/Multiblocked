@@ -1,4 +1,4 @@
-package io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content;
+package io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe;
 
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;

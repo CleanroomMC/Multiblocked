@@ -1,11 +1,16 @@
 package io.github.cleanroommc.multiblocked.common.capability;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
 import io.github.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import io.github.cleanroommc.multiblocked.api.capability.IO;
 import io.github.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.ContentWidget;
-import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content.NumberContentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import io.github.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.Recipe;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import net.minecraft.block.state.IBlockState;
@@ -15,6 +20,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,6 +56,16 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
     @Override
     public IBlockState[] getCandidates(IO io) {
         return scanForCandidates(io);
+    }
+
+    @Override
+    public Integer deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        return jsonElement.getAsInt();
+    }
+
+    @Override
+    public JsonElement serialize(Integer integer, Type type, JsonSerializationContext jsonSerializationContext) {
+        return new JsonPrimitive(integer);
     }
 
     public static class FECapabilityProxy extends CapabilityProxy<Integer> {

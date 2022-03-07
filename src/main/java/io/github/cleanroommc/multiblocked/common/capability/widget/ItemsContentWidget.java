@@ -1,9 +1,9 @@
-package io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.content;
+package io.github.cleanroommc.multiblocked.common.capability.widget;
 
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import io.github.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import io.github.cleanroommc.multiblocked.util.CycleItemStackHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 import java.util.Arrays;

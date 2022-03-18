@@ -120,6 +120,7 @@ public class BlockStateRenderer implements IRenderer {
     @Override
     public boolean isGlobalRenderer(@Nonnull TileEntity te) {
         TileEntity tileEntity = getTileEntity(te.getWorld(), te.getPos());
+        if (tileEntity == null) return false;
         TileEntitySpecialRenderer<TileEntity> tesr = TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass());
         if (tesr != null) {
             return tesr.isGlobalRenderer(tileEntity);
@@ -131,6 +132,7 @@ public class BlockStateRenderer implements IRenderer {
     @Override
     public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         TileEntity tileEntity = getTileEntity(te.getWorld(), te.getPos());
+        if (tileEntity == null) return;
         TileEntitySpecialRenderer<TileEntity> tesr = TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass());
         if (tesr != null) {
             tesr.render(tileEntity, x, y, z, partialTicks, destroyStage, alpha);

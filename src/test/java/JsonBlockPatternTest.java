@@ -1,5 +1,5 @@
-import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
-import io.github.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
+import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
+import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 

@@ -1,9 +1,7 @@
 package io.github.cleanroommc.multiblocked.client.model;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.cleanroommc.multiblocked.Multiblocked;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;

@@ -9,12 +9,14 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import io.github.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
 public class PredicateComponent extends SimplePredicate {
     public ResourceLocation location = new ResourceLocation("mod_id", "component_id");
+    public transient ComponentDefinition definition;
 
     public PredicateComponent() {
         super("component");
@@ -22,6 +24,7 @@ public class PredicateComponent extends SimplePredicate {
 
     public PredicateComponent(ComponentDefinition definition) {
         this(definition.location);
+        this.definition = definition;
         buildPredicate();
     }
 
@@ -34,7 +37,16 @@ public class PredicateComponent extends SimplePredicate {
     @Override
     public SimplePredicate buildPredicate() {
         predicate = state -> state.getBlockState().getBlock() instanceof BlockComponent && ((BlockComponent) state.getBlockState().getBlock()).definition.location.equals(location);
-        candidates = () -> !MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.containsKey(location) ? new BlockInfo[0] : new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location))};
+        candidates = () -> {
+            if (MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.containsKey(location)) {
+                return new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location).getDefaultState(), MultiblockComponents.DEFINITION_REGISTRY.get(location).createNewTileEntity(null))};
+            } else {
+                if (definition == null) return new BlockInfo[0];
+                DummyComponentTileEntity te = new DummyComponentTileEntity();
+                te.setDefinition(definition);
+                return new BlockInfo[]{new BlockInfo(MultiblockComponents.DummyComponentBlock.getDefaultState(), te)};
+            }
+        };
         return this;
     }
 

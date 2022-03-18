@@ -10,19 +10,27 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 public class BlockStateRenderer implements IRenderer {
 
     public final IBlockState state;
     @SideOnly(Side.CLIENT)
     private transient IBakedModel itemModel;
+    @SideOnly(Side.CLIENT)
+    private transient TileEntity tileEntity;
 
     public BlockStateRenderer(IBlockState state) {
         this.state = state;
@@ -68,6 +76,65 @@ public class BlockStateRenderer implements IRenderer {
             return brd.renderBlock(state, pos, access, buffer);
         }
         return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean hasTESR() {
+        TileEntity tileEntity = getTileEntity(null, null);
+        if (tileEntity == null) {
+            return false;
+        }
+        return TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass()) != null;
+    }
+
+    public TileEntity getTileEntity(World world, BlockPos pos) {
+        try {
+            if (tileEntity != null) {
+                if (world != null && pos != null) {
+                    tileEntity.setPos(pos);
+                    tileEntity.setWorld(world);
+                }
+                return tileEntity;
+            }
+            if (!state.getBlock().hasTileEntity(state)) return null;
+            tileEntity = state.getBlock().createTileEntity(world, state);
+            if (tileEntity != null) {
+                tileEntity.setPos(pos);
+                tileEntity.setWorld(world);
+            }
+            return tileEntity;
+        } catch (Throwable throwable) {
+            return null;
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean shouldRenderInPass(World world, BlockPos pos, int pass) {
+        TileEntity tileEntity = getTileEntity(world, pos);
+        return tileEntity != null && tileEntity.shouldRenderInPass(pass);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean isGlobalRenderer(@Nonnull TileEntity te) {
+        TileEntity tileEntity = getTileEntity(te.getWorld(), te.getPos());
+        TileEntitySpecialRenderer<TileEntity> tesr = TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass());
+        if (tesr != null) {
+            return tesr.isGlobalRenderer(tileEntity);
+        }
+        return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        TileEntity tileEntity = getTileEntity(te.getWorld(), te.getPos());
+        TileEntitySpecialRenderer<TileEntity> tesr = TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass());
+        if (tesr != null) {
+            tesr.render(tileEntity, x, y, z, partialTicks, destroyStage, alpha);
+        }
     }
 
     @Override

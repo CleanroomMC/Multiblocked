@@ -1,5 +1,7 @@
-package io.github.cleanroommc.multiblocked.client.model.emissivemodel;
+package io.github.cleanroommc.multiblocked.client.model.custommodel;
 
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import io.github.cleanroommc.multiblocked.client.model.bakedpipeline.VertexBuilder;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -10,7 +12,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -25,42 +29,64 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to baked the model with emissive effect.
+ * Used to baked the model with emissive effect. or multi-layer
  *
  * Making the top layer emissive.
  */
 @SideOnly(Side.CLIENT)
-public class EmissiveBakedModel implements IBakedModel {
+public class CustomBakedModel implements IBakedModel {
     private final IBakedModel parent;
-    private final EnumMap<EnumFacing, List<BakedQuad>> sideCache;
-    private List<BakedQuad> noSideCache;
+    private final Table<BlockRenderLayer,EnumFacing, List<BakedQuad>> sideCache;
+    private final EnumMap<BlockRenderLayer, List<BakedQuad>> noSideCache;
 
-    public EmissiveBakedModel(IBakedModel parent) {
+    public CustomBakedModel(IBakedModel parent) {
         this.parent = parent;
-        this.sideCache = new EnumMap<>(EnumFacing.class);
+        this.noSideCache = new EnumMap<>(BlockRenderLayer.class);
+        this.sideCache = Tables.newCustomTable(new EnumMap<>(BlockRenderLayer.class), ()-> new EnumMap<>(EnumFacing.class));
+    }
+
+    public boolean shouldRenderInLayer(@Nullable IBlockState state, long rand) {
+        if (!getQuads(state, null, rand).isEmpty()) return true;
+        for (EnumFacing side : EnumFacing.VALUES) {
+            if (!getQuads(state, side, rand).isEmpty()) return true;
+        }
+        return false;
     }
 
     @Override
     @Nonnull
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-        if (side == null && noSideCache != null) {
-            return noSideCache;
-        } else if (sideCache.containsKey(side)) {
-            return sideCache.get(side);
+        BlockRenderLayer currentLayer = MinecraftForgeClient.getRenderLayer();
+        currentLayer = currentLayer == null ? BlockRenderLayer.CUTOUT : currentLayer;
+        if (side == null) {
+            if (!noSideCache.containsKey(currentLayer)) {
+                reBake(currentLayer, state, null, rand);
+            }
+            return noSideCache.get(currentLayer);
+        } else {
+            if (!sideCache.contains(currentLayer, side)) {
+                reBake(currentLayer, state, side, rand);
+            }
+            return sideCache.get(currentLayer, side);
         }
+    }
+
+    public void reBake(BlockRenderLayer currentLayer, @Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         List<BakedQuad> parentQuads = parent.getQuads(state, side, rand);
         List<BakedQuad> resultQuads = new LinkedList<>();
         for (BakedQuad quad : parentQuads) {
             TextureAtlasSprite sprite = quad.getSprite();
             boolean isEmissive = MetadataSectionEmissive.isEmissive(sprite);
+            BlockRenderLayer layer = MetadataSectionEmissive.getLayer(sprite);
+            layer = layer == null ? BlockRenderLayer.CUTOUT : layer;
+            if (currentLayer != layer) continue;
             if (isEmissive) {
                 quad = reBakeEmissive(quad);
             }
             resultQuads.add(quad);
         }
-        if (side == null) noSideCache = resultQuads;
-        else sideCache.put(side, resultQuads);
-        return resultQuads;
+        if (side == null) noSideCache.put(currentLayer, resultQuads);
+        else sideCache.put(currentLayer, side, resultQuads);
     }
 
     public static BakedQuad reBakeEmissive(BakedQuad quad) {

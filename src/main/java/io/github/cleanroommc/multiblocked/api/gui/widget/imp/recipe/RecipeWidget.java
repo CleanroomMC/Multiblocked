@@ -42,8 +42,8 @@ public class RecipeWidget extends WidgetGroup {
         int index = 0;
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.inputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();
-            for (Tuple<Object, Float> o : entry.getValue()) {
-                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, o.getFirst(), o.getSecond()).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+            for (Tuple<Object, Float> in : entry.getValue()) {
+                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, in.getFirst(), in.getSecond()).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
         }
@@ -51,8 +51,8 @@ public class RecipeWidget extends WidgetGroup {
         index = 0;
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.outputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();
-            for (Tuple<Object, Float> o : entry.getValue()) {
-                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, o.getFirst(), o.getSecond()).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+            for (Tuple<Object, Float> out : entry.getValue()) {
+                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out.getFirst(), out.getSecond()).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
         }

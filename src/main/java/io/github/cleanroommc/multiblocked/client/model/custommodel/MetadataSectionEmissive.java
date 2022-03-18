@@ -1,4 +1,4 @@
-package io.github.cleanroommc.multiblocked.client.model.emissivemodel;
+package io.github.cleanroommc.multiblocked.client.model.custommodel;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.IMetadataSectionSerializer;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,13 +27,16 @@ public class MetadataSectionEmissive implements IMetadataSection {
     private static final Map<ResourceLocation, MetadataSectionEmissive> METADATA_CACHE = new HashMap<>();
 
     public final boolean emissive;
+    private final BlockRenderLayer layer;
 
     public MetadataSectionEmissive() {
         this.emissive = false;
+        this.layer = null;
     }
 
-    public MetadataSectionEmissive(boolean emissive) {
+    public MetadataSectionEmissive(boolean emissive, BlockRenderLayer layer) {
         this.emissive = emissive;
+        this.layer = layer;
     }
 
     @Nullable
@@ -55,6 +59,11 @@ public class MetadataSectionEmissive implements IMetadataSection {
         return ret != null && ret.emissive;
     }
 
+    public static BlockRenderLayer getLayer(TextureAtlasSprite sprite) {
+        MetadataSectionEmissive ret = getMetadata(spriteToAbsolute(new ResourceLocation(sprite.getIconName())));
+        return ret == null ? null : ret.layer;
+    }
+
     public static ResourceLocation spriteToAbsolute(ResourceLocation sprite) {
         if (!sprite.getPath().startsWith("textures/")) {
             sprite = new ResourceLocation(sprite.getNamespace(), "textures/" + sprite.getPath());
@@ -70,16 +79,24 @@ public class MetadataSectionEmissive implements IMetadataSection {
         @Override
         public @Nullable
         MetadataSectionEmissive deserialize(@Nullable JsonElement json, @Nullable Type typeOfT, @Nullable JsonDeserializationContext context) throws JsonParseException {
+            boolean emissive = false;
+            BlockRenderLayer layer = null;
             if (json != null && json.isJsonObject()) {
                 JsonObject obj = json.getAsJsonObject();
                 if (obj.has("emissive")) {
                     JsonElement element = obj.get("emissive");
                     if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean()) {
-                        return new MetadataSectionEmissive(element.getAsBoolean());
+                        emissive = element.getAsBoolean();
+                    }
+                }
+                if (obj.has("layer")) {
+                    JsonElement element = obj.get("emissive");
+                    if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+                        layer = BlockRenderLayer.valueOf(element.getAsString());
                     }
                 }
             }
-            return null;
+            return new MetadataSectionEmissive(emissive, layer);
         }
 
         @Override

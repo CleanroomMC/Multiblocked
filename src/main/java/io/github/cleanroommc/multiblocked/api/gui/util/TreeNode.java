@@ -3,6 +3,8 @@ package io.github.cleanroommc.multiblocked.api.gui.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /***
  * Tree
@@ -14,11 +16,16 @@ public class TreeNode<T, K> {
     protected final T key;
     protected K content;
     protected List<TreeNode<T, K>> children;
-
+    protected Predicate<TreeNode<T, K>> valid;
 
     public TreeNode(int dimension, T key) {
         this.dimension = dimension;
         this.key = key;
+    }
+
+    public TreeNode<T, K> setValid(Predicate<TreeNode<T, K>> valid) {
+        this.valid = valid;
+        return this;
     }
 
     public boolean isLeaf(){
@@ -65,7 +72,8 @@ public class TreeNode<T, K> {
     }
 
     public List<TreeNode<T, K>> getChildren() {
-        return children;
+        if (valid == null) return children;
+        return children.stream().filter(valid).collect(Collectors.toList());
     }
 
     @Override

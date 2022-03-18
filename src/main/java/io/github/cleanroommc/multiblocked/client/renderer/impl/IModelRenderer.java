@@ -3,7 +3,7 @@ package io.github.cleanroommc.multiblocked.client.renderer.impl;
 import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.ModelFactory;
-import io.github.cleanroommc.multiblocked.client.model.emissivemodel.EmissiveBakedModel;
+import io.github.cleanroommc.multiblocked.client.model.custommodel.CustomBakedModel;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -18,23 +18,20 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static io.github.cleanroommc.multiblocked.client.ClientProxy.registerNeeds;
 
@@ -43,15 +40,17 @@ public class IModelRenderer implements IRenderer {
     protected static final Set<ResourceLocation> CACHE = new HashSet<>();
 
     public final ResourceLocation modelLocation;
-    public final Set<BlockRenderLayer> renderLayer;
     @SideOnly(Side.CLIENT)
     protected transient IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
-    protected transient Map<EnumFacing, IBakedModel> blockModels;
+    protected transient Map<EnumFacing, CustomBakedModel> blockModels;
 
-    public IModelRenderer(ResourceLocation modelLocation, BlockRenderLayer... renderLayers) {
+    public IModelRenderer(ResourceLocation modelLocation) {
         this.modelLocation = modelLocation;
-        this.renderLayer = Arrays.stream(renderLayers).collect(Collectors.toSet());
+        checkRegister();
+    }
+
+    public IModelRenderer checkRegister() {
         if (Multiblocked.isClient()) {
             if (isRaw()) {
                 registerNeeds.add(this);
@@ -59,10 +58,7 @@ public class IModelRenderer implements IRenderer {
             }
             blockModels = new EnumMap<>(EnumFacing.class);
         }
-    }
-
-    public IRenderer fromJson() {
-        return new IModelRenderer(modelLocation, renderLayer.toArray(new BlockRenderLayer[0]));
+        return this;
     }
 
     protected IModel getModel() {
@@ -78,9 +74,10 @@ public class IModelRenderer implements IRenderer {
 
     @Override
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
-        if (!renderLayer.isEmpty() && !renderLayer.contains(MinecraftForgeClient.getRenderLayer())) return false;
+        CustomBakedModel model = getBlockBakedModel(pos, blockAccess);
+        if (!model.shouldRenderInLayer(state, MathHelper.getPositionRandom(pos))) return false;
         BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
-        blockModelRenderer.renderModel(blockAccess, getBlockBakedModel(pos, blockAccess), state, pos, buffer, true);
+        blockModelRenderer.renderModel(blockAccess, model, state, pos, buffer, true);
         return true;
     }
 
@@ -101,13 +98,13 @@ public class IModelRenderer implements IRenderer {
         return itemModel;
     }
 
-    protected IBakedModel getBlockBakedModel(BlockPos pos, IBlockAccess blockAccess) {
+    protected CustomBakedModel getBlockBakedModel(BlockPos pos, IBlockAccess blockAccess) {
         TileEntity tileEntity = blockAccess.getTileEntity(pos);
         EnumFacing frontFacing = EnumFacing.NORTH;
         if (tileEntity instanceof  ComponentTileEntity<?>) {
             frontFacing = ((ComponentTileEntity<?>) tileEntity).getFrontFacing();
         }
-        return blockModels.computeIfAbsent(frontFacing, facing -> new EmissiveBakedModel(getModel().bake(
+        return blockModels.computeIfAbsent(frontFacing, facing -> new CustomBakedModel(getModel().bake(
                 TRSRTransformation.from(facing),
                 DefaultVertexFormats.BLOCK,
                 location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()))));
@@ -120,6 +117,8 @@ public class IModelRenderer implements IRenderer {
 
     @Override
     public void register(TextureMap map) {
+        blockModels.clear();
+        itemModel = null;
         IModel model = getModel();
         for (ResourceLocation texture : model.getTextures()) {
             map.registerSprite(texture);

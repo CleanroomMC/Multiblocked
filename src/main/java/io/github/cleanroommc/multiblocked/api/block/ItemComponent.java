@@ -17,6 +17,7 @@ public class ItemComponent extends ItemBlock {
     public ItemComponent(BlockComponent block) {
         super(block);
         setHasSubtypes(true);
+        setRegistryName(block.getRegistryName());
     }
 
     public ComponentDefinition getDefinition() {

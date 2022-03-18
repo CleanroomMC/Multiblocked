@@ -75,12 +75,11 @@ public class CommonProxy {
         BlueprintTableTileEntity.registerBlueprintTable();
         // register JsonBlock
         JsonBlockPatternWidget.registerBlock();
-        IRendererWidget.registerBlock();
-        
+
         // create a part component.
         PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "test_part"));
         MultiblockComponents.registerComponent(partDefinition);
-        partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"), BlockRenderLayer.CUTOUT_MIPPED);
+        partDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/emitter"));
         partDefinition.baseRenderer = new BlockStateRenderer(Blocks.BEDROCK.getDefaultState());
         partDefinition.isOpaqueCube = false;
         partDefinition.allowRotate = false;
@@ -131,7 +130,7 @@ public class CommonProxy {
         controllerDefinition.basePattern = factory.build();
 //        controllerDefinition.formedRenderer = OBJRenderer.get(new ResourceLocation(Multiblocked.MODID,"models/obj/energy_core_model.obj"), BlockRenderLayer.SOLID);
         controllerDefinition.formedRenderer = new GeoComponentRenderer("botarium");
-        controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"), BlockRenderLayer.CUTOUT_MIPPED);
+        controllerDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"test_model"));
         controllerDefinition.isOpaqueCube = false;
         recipeMap.categoryTexture = new ItemStackTexture(controllerDefinition.getStackForm());
 
@@ -144,8 +143,7 @@ public class CommonProxy {
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         registerComponents();
         IForgeRegistry<Block> registry = event.getRegistry();
-        MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.values().forEach(registry::register);
-        MultiblockComponents.registerTileEntity();
+        MultiblockComponents.registerBlocks(registry);
     }
 
     @SubscribeEvent

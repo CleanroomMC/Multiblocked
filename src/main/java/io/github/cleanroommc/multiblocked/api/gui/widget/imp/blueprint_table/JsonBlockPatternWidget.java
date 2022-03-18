@@ -71,7 +71,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class JsonBlockPatternWidget extends WidgetGroup {
+public class JsonBlockPatternWidget extends DialogWidget {
     public static BlockComponent symbolBlock;
     public JsonBlockPattern pattern;
     public TabContainer container;
@@ -83,29 +83,24 @@ public class JsonBlockPatternWidget extends WidgetGroup {
     public DraggableScrollableWidgetGroup tfGroup;
     public TextBoxWidget textBox;
     public boolean needUpdatePredicateSelector;
-    public Consumer<JsonBlockPatternWidget> onSave;
     public boolean isPretty;
 
-    public JsonBlockPatternWidget(JsonBlockPattern pattern, Consumer<JsonBlockPatternWidget> onSave) {
-        super(0, 0, 384, 256);
-        setClientSideWidget();
-        this.onSave = onSave;
+    public JsonBlockPatternWidget(WidgetGroup parent, JsonBlockPattern pattern, Runnable onSave) {
+        super(parent, true);
         this.pattern = pattern;
         this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/json_block_pattern.png")));
         this.addWidget(sceneWidget = new BlockPatternSceneWidget());
         this.addWidget(container = new TabContainer(0, 0, 384, 256));
-        this.addWidget(new ButtonWidget(280, 29, 70, 20, cd->{
-            if (onSave != null) {
-                onSave.accept(this);
-            }
+        this.addWidget(new ButtonWidget(280, 29, 70, 20, cd -> {
+            if (onSave != null) onSave.run();
+            close();
         }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
 
         // patternTab
         ResourceTexture tabPattern = new ResourceTexture("multiblocked:textures/gui/tab_pattern.png");
         WidgetGroup patternTab;
-        container.addTab((TabButton)new TabButton(171, 29, 20, 20)
-                        .setTexture(tabPattern.getSubTexture(0, 0, 1, 0.5),
-                                tabPattern.getSubTexture(0, 0.5, 1, 0.5))
+        container.addTab(new TabButton(171, 29, 20, 20)
+                        .setTexture(tabPattern.getSubTexture(0, 0, 1, 0.5), tabPattern.getSubTexture(0, 0.5, 1, 0.5))
                         .setHoverTooltip("Pattern"),
                 patternTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
 
@@ -156,7 +151,7 @@ public class JsonBlockPatternWidget extends WidgetGroup {
         //predicateTab
         ResourceTexture tabPredicate = new ResourceTexture("multiblocked:textures/gui/tab_predicate.png");
         WidgetGroup predicateTab;
-        container.addTab((TabButton)new TabButton(171 + 25, 29, 20, 20)
+        container.addTab(new TabButton(171 + 25, 29, 20, 20)
                         .setTexture(tabPredicate.getSubTexture(0, 0, 1, 0.5),
                                 tabPredicate.getSubTexture(0, 0.5, 1, 0.5))
                         .setHoverTooltip("Predicate"),
@@ -740,7 +735,10 @@ public class JsonBlockPatternWidget extends WidgetGroup {
                 Set<IBlockState> candidates = new HashSet<>();
                 for (String s : widget.pattern.symbolMap.get(symbol)) {
                     SimplePredicate predicate = widget.pattern.predicates.get(s);
-                    if (predicate != null && predicate.candidates != null) {
+                    if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
+                        renderer = ((PredicateComponent) predicate).definition.baseRenderer;
+                        return;
+                    } else if (predicate != null && predicate.candidates != null) {
                         for (BlockInfo blockInfo : predicate.candidates.get()) {
                             candidates.add(blockInfo.getBlockState());
                         }

@@ -94,7 +94,7 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
         return name.hashCode();
     }
 
-    public BlockComponent getAnyBlock(IO io) {
+    public final BlockComponent getAnyBlock(IO io) {
         return MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation(Multiblocked.MODID, name + "." + io.name()));
     }
 }

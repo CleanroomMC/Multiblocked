@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class TextFieldWidget extends Widget {
@@ -25,7 +25,7 @@ public class TextFieldWidget extends Widget {
     protected GuiTextField textField;
 
     protected int maxStringLength = Integer.MAX_VALUE;
-    protected Predicate<String> textValidator = (s)->true;
+    protected Function<String, String> textValidator = (s)->s;
     protected Supplier<String> textSupplier;
     protected Consumer<String> textResponder;
     protected String currentString;
@@ -58,12 +58,16 @@ public class TextFieldWidget extends Widget {
 
     public TextFieldWidget setCurrentString(String currentString) {
         this.currentString = currentString;
-        this.textField.setText(currentString);
+        if (Multiblocked.isClient()) {
+            if (!this.textField.getText().equals(currentString)) {
+                this.textField.setText(currentString);
+            }
+        }
         return this;
     }
 
     public String getCurrentString() {
-        if (isRemote()) {
+        if (Multiblocked.isClient()) {
             return this.textField.getText();
         }
         return this.currentString;
@@ -146,18 +150,17 @@ public class TextFieldWidget extends Widget {
         if (background != null) {
             background.updateTick();
         }
-        if (textSupplier != null && isClientSideWidget&& !textSupplier.get().equals(currentString)) {
-            this.currentString = textSupplier.get();
-            this.textField.setText(currentString);
+        if (textSupplier != null && isClientSideWidget&& !textSupplier.get().equals(getCurrentString())) {
+            setCurrentString(textSupplier.get());
         }
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        if (textSupplier != null && !textSupplier.get().equals(currentString)) {
-            this.currentString = textSupplier.get();
-            writeUpdateInfo(1, buffer -> buffer.writeString(currentString));
+        if (textSupplier != null && !textSupplier.get().equals(getCurrentString())) {
+            setCurrentString(textSupplier.get());
+            writeUpdateInfo(1, buffer -> buffer.writeString(getCurrentString()));
         }
     }
 
@@ -165,17 +168,19 @@ public class TextFieldWidget extends Widget {
     public void readUpdateInfo(int id, PacketBuffer buffer) {
         super.readUpdateInfo(id, buffer);
         if (id == 1) {
-            this.currentString = buffer.readString(Short.MAX_VALUE);
-            this.textField.setText(currentString);
+            setCurrentString(buffer.readString(Short.MAX_VALUE));
         }
     }
 
     protected void onTextChanged(String newTextString) {
-        if (textValidator.test(newTextString)) {
+        String lastText = getCurrentString();
+        String newText = textValidator.apply(newTextString);
+        if (!newText.equals(lastText)) {
+            setCurrentString(newText);
             if (isClientSideWidget && textResponder != null) {
-                textResponder.accept(newTextString);
+                textResponder.accept(newText);
             }
-            writeClientAction(1, buffer -> buffer.writeString(newTextString));
+            writeClientAction(1, buffer -> buffer.writeString(newText));
         }
     }
 
@@ -183,12 +188,13 @@ public class TextFieldWidget extends Widget {
     public void handleClientAction(int id, PacketBuffer buffer) {
         super.handleClientAction(id, buffer);
         if (id == 1) {
-            String clientText = buffer.readString(Short.MAX_VALUE);
-            clientText = clientText.substring(0, Math.min(clientText.length(), maxStringLength));
-            if (textValidator.test(clientText)) {
-                this.currentString = clientText;
+            String lastText = getCurrentString();
+            String newText = textValidator.apply(buffer.readString(Short.MAX_VALUE));
+            newText = newText.substring(0, Math.min(newText.length(), maxStringLength));
+            if (!lastText.equals(newText)) {
+                setCurrentString(newText);
                 if (textResponder != null) {
-                    this.textResponder.accept(clientText);
+                    this.textResponder.accept(newText);
                 }
             }
         }
@@ -209,21 +215,21 @@ public class TextFieldWidget extends Widget {
         return this;
     }
 
-    public TextFieldWidget setValidator(Predicate<String> validator) {
+    public TextFieldWidget setValidator(Function<String, String> validator) {
         this.textValidator = validator;
-        if (Multiblocked.isClient()) {
-            this.textField.setValidator(validator::test);
-        }
         return this;
     }
 
     public TextFieldWidget setNumbersOnly(int minValue, int maxValue) {
         setValidator(s -> {
             try {
+                if (s == null || s.isEmpty()) return maxValue + "";
                 int value = Integer.parseInt(s);
-                if (minValue <= value && value <= maxValue) return true;
+                if (minValue <= value && value <= maxValue) return s;
+                if (value < minValue) return minValue + "";
+                return maxValue + "";
             } catch (NumberFormatException ignored) { }
-            return false;
+            return this.currentString;
         });
         return this;
     }

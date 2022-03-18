@@ -2,7 +2,6 @@ package io.github.cleanroommc.multiblocked.client.renderer;
 
 import crafttweaker.annotations.ZenRegister;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -44,7 +43,7 @@ public interface IRenderer {
 
     @SideOnly(Side.CLIENT)
     default TextureAtlasSprite getParticleTexture() {
-        return Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+        return null;
     }
 
     //************* TESR *************//

@@ -32,6 +32,11 @@ public class TextTexture implements IGuiTexture{
         }
     }
 
+    public TextTexture(String text) {
+        this(text, -1);
+        setDropShadow(true);
+    }
+
     public TextTexture setSupplier(Supplier<String> supplier) {
         this.supplier = supplier;
         return this;

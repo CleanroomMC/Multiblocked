@@ -12,6 +12,7 @@ import io.github.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import io.github.cleanroommc.multiblocked.api.pattern.util.PatternMatchContext;
 import io.github.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import io.github.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -193,7 +194,6 @@ public class BlockPattern {
         worldState.clean();
         BlockPos centerPos = worldState.getController().getPos();
         EnumFacing facing = worldState.getController().getFrontFacing();
-        Map<SimplePredicate, BlockInfo[]> cacheInfos = new HashMap<>();
         Map<SimplePredicate, Integer> cacheGlobal = worldState.globalCount;
         Map<BlockPos, Object> blocks = new HashMap<>();
         blocks.put(centerPos, worldState.getController());
@@ -224,10 +224,7 @@ public class BlockPattern {
                                 } else {
                                     continue;
                                 }
-                                if (!cacheInfos.containsKey(limit)) {
-                                    cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-                                }
-                                infos = cacheInfos.get(limit);
+                                infos = limit.candidates == null ? null : limit.candidates.get();
                                 find = true;
                                 break;
                             }
@@ -235,21 +232,15 @@ public class BlockPattern {
                                 for (SimplePredicate limit : predicate.limited) {
                                     if (limit.maxCount != -1 && cacheGlobal.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxCount)
                                         continue;
-                                    if (!cacheInfos.containsKey(limit)) {
-                                        cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-                                    }
                                     if (cacheGlobal.containsKey(limit)) {
                                         cacheGlobal.put(limit, cacheGlobal.get(limit) + 1);
                                     } else {
                                         cacheGlobal.put(limit, 1);
                                     }
-                                    infos = ArrayUtils.addAll(infos, cacheInfos.get(limit));
+                                    infos = ArrayUtils.addAll(infos, limit.candidates == null ? null : limit.candidates.get());
                                 }
                                 for (SimplePredicate common : predicate.common) {
-                                    if (!cacheInfos.containsKey(common)) {
-                                        cacheInfos.put(common, common.candidates == null ? null : common.candidates.get());
-                                    }
-                                    infos = ArrayUtils.addAll(infos, cacheInfos.get(common));
+                                    infos = ArrayUtils.addAll(infos, common.candidates == null ? null : common.candidates.get());
                                 }
                             }
 
@@ -257,8 +248,8 @@ public class BlockPattern {
                             for (BlockInfo info : infos) {
                                 if (info.getBlockState().getBlock() != Blocks.AIR) {
                                     IBlockState blockState = info.getBlockState();
-                                    if (blockState.getBlock() instanceof BlockComponent && ((BlockComponent) blockState.getBlock()).definition.baseRenderer instanceof CycleBlockStateRenderer) {
-                                        CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((BlockComponent) blockState.getBlock()).definition.baseRenderer;
+                                    if (info.getTileEntity() instanceof DummyComponentTileEntity && ((DummyComponentTileEntity) info.getTileEntity()).getRenderer() instanceof CycleBlockStateRenderer) {
+                                        CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((DummyComponentTileEntity) info.getTileEntity()).getRenderer();
                                         for (IBlockState state : renderer.states) {
                                             candidates.add(new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, blockState.getBlock().damageDropped(state)));
                                         }
@@ -330,7 +321,6 @@ public class BlockPattern {
     }
 
     public BlockInfo[][][] getPreview(int[] repetition) {
-        Map<SimplePredicate, BlockInfo[]> cacheInfos = new HashMap<>();
         Map<SimplePredicate, Integer> cacheGlobal = new HashMap<>();
         Map<BlockPos, BlockInfo> blocks = new HashMap<>();
         int minX = Integer.MAX_VALUE;
@@ -369,10 +359,7 @@ public class BlockPattern {
                             } else {
                                 continue;
                             }
-                            if (!cacheInfos.containsKey(limit)) {
-                                cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-                            }
-                            infos = cacheInfos.get(limit);
+                            infos = limit.candidates == null ? null : limit.candidates.get();
                             find = true;
                             break;
                         }
@@ -389,10 +376,7 @@ public class BlockPattern {
                                 } else {
                                     continue;
                                 }
-                                if (!cacheInfos.containsKey(common)) {
-                                    cacheInfos.put(common, common.candidates == null ? null : common.candidates.get());
-                                }
-                                infos = cacheInfos.get(common);
+                                infos = common.candidates == null ? null : common.candidates.get();
                                 find = true;
                                 break;
                             }
@@ -400,10 +384,7 @@ public class BlockPattern {
                         if (!find) { // check without previewCount
                             for (SimplePredicate common : predicate.common) {
                                 if (common.previewCount == -1) {
-                                    if (!cacheInfos.containsKey(common)) {
-                                        cacheInfos.put(common, common.candidates == null ? null : common.candidates.get());
-                                    }
-                                    infos = cacheInfos.get(common);
+                                    infos = common.candidates == null ? null : common.candidates.get();
                                     find = true;
                                     break;
                                 }
@@ -425,20 +406,13 @@ public class BlockPattern {
                                     }
                                 }
 
-                                if (!cacheInfos.containsKey(limit)) {
-                                    cacheInfos.put(limit, limit.candidates == null ? null : limit.candidates.get());
-                                }
-                                infos = cacheInfos.get(limit);
+                                infos = limit.candidates == null ? null : limit.candidates.get();
                                 break;
                             }
                         }
                         BlockInfo info = infos == null || infos.length == 0 ? BlockInfo.EMPTY : infos[0];
                         BlockPos pos = setActualRelativeOffset(z, y, x, EnumFacing.NORTH);
 
-                        if (info.getBlockState().getBlock() instanceof BlockComponent) {
-                            TileEntity tileEntity = info.getBlockState().getBlock().createTileEntity(null, info.getBlockState());
-                            info = new BlockInfo(info.getBlockState(), tileEntity);
-                        }
                         blocks.put(pos, info);
                         minX = Math.min(pos.getX(), minX);
                         minY = Math.min(pos.getY(), minY);

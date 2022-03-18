@@ -1,6 +1,7 @@
 package io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
 import io.github.cleanroommc.multiblocked.Multiblocked;
+import io.github.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.ClickData;
@@ -13,6 +14,8 @@ import io.github.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.components.ComponentWidget;
+import io.github.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.components.ControllerWidget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import io.github.cleanroommc.multiblocked.api.item.ItemBlueprint;
 import io.github.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
@@ -20,11 +23,13 @@ import io.github.cleanroommc.multiblocked.api.pattern.predicates.PredicateCompon
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import io.github.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import io.github.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -37,9 +42,10 @@ import java.util.Set;
 public class BlueprintTableWidget extends TabContainer {
     public final BlueprintTableTileEntity table;
     public final ButtonWidget templateButton;
-    public Widget opened;
     public SceneWidget sceneWidget;
     public Group selected;
+    private BlockPos pos;
+    private EnumFacing facing;
 
     public BlueprintTableWidget(BlueprintTableTileEntity table) {
         super(0, 0, 384, 256);
@@ -50,7 +56,24 @@ public class BlueprintTableWidget extends TabContainer {
         this.addWidget(new LabelWidget(134, 64, this::description).setTextColor(-1).setDrop(true));
         this.addWidget(templateButton = new ButtonWidget(36, 132, 20, 20, new ItemStackTexture(MultiblockedItems.BUILDER), this::onBuildTemplate));
         this.addWidget(new ButtonWidget(56, 132, 20, 20, new ItemStackTexture(Items.APPLE), cd -> {
-            new IRendererWidget(this, null, null);
+            if (cd.isRemote) {
+                if (pos != null && facing != null && selected != null) {
+                    ItemStack itemStack = selected.slotWidget.getHandle().getStack();
+                    BlockPos[] poses = ItemBlueprint.getPos(itemStack);
+                    if (poses != null) {
+                        World world = table.getWorld();
+                        ResourceLocation location = new ResourceLocation("mod_id:component_id");
+                        ControllerDefinition controllerDefinition = new ControllerDefinition(location);
+                        controllerDefinition.baseRenderer = new BlockStateRenderer(world.getBlockState(pos));
+                        addWidget(new ControllerWidget(new JsonBlockPattern(world, location, pos, facing,
+                                poses[0].getX(), poses[0].getY(), poses[0].getZ(),
+                                poses[1].getX(), poses[1].getY(), poses[1].getZ()),
+                                controllerDefinition));
+                    }
+                } else {
+                    // TODO
+                }
+            }
         }));
         templateButton.setHoverTooltip("Create template for multiblock builder");
         templateButton.setVisible(false);
@@ -91,15 +114,12 @@ public class BlueprintTableWidget extends TabContainer {
                 pattern = Multiblocked.GSON.fromJson(json, JsonBlockPattern.class);
             }
             if (pattern != null) {
-                for (Widget widget : widgets) {
-                    widget.setActive(false);
-                    widget.setVisible(false);
-                }
-                this.addWidget(0, opened = new JsonBlockPatternWidget(pattern, widget -> {
-                    if (ItemBlueprint.setPattern(itemStack) && widget.pattern.predicates.get("controller") instanceof PredicateComponent) {
-                        widget.pattern.cleanUp();
-                        String json = widget.pattern.toJson();
-                        String controller = ((PredicateComponent)widget.pattern.predicates.get("controller")).location.toString();
+                JsonBlockPattern finalPattern = pattern;
+                new JsonBlockPatternWidget(this, finalPattern, () -> {
+                    if (ItemBlueprint.setPattern(itemStack) && finalPattern.predicates.get("controller") instanceof PredicateComponent) {
+                        finalPattern.cleanUp();
+                        String json = finalPattern.toJson();
+                        String controller = ((PredicateComponent)finalPattern.predicates.get("controller")).location.toString();
                         itemStack.getOrCreateSubCompound("pattern").setString("json", json);
                         itemStack.getOrCreateSubCompound("pattern").setString("controller", controller);
                         writeClientAction(-1, buffer -> {
@@ -108,12 +128,7 @@ public class BlueprintTableWidget extends TabContainer {
                             buffer.writeString(controller);
                         });
                     }
-                    for (Widget w : widgets) {
-                        w.setActive(true);
-                        w.setVisible(true);
-                    }
-                    this.waitToRemoved(widget);
-                }));
+                });
             }
         }
     }
@@ -210,6 +225,8 @@ public class BlueprintTableWidget extends TabContainer {
         if (this.selected != selected) {
             this.selected = selected;
             if (selected != null && isRemote()) {
+                this.pos = null;
+                this.facing = null;
                 templateButton.setVisible(true);
                 if (sceneWidget != null) {
                     removeWidget(sceneWidget);
@@ -229,9 +246,13 @@ public class BlueprintTableWidget extends TabContainer {
                                 }
                             }
                         }
-                        this.addWidget(sceneWidget = new SceneWidget(34, 34, 94, 94, world)
-                                .setRenderedCore(rendered, null)
-                                .setRenderFacing(false));
+                        this.addWidget(sceneWidget = (SceneWidget) new SceneWidget(34, 34, 94, 94, world)
+                                        .setRenderedCore(rendered, null)
+                                        .setOnSelected(((pos, facing) -> {
+                                            this.pos = pos;
+                                            this.facing = facing;
+                                        }))
+                                        .setClientSideWidget());
                     }
                 }
             }

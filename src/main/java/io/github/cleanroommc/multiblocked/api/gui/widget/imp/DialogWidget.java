@@ -6,6 +6,7 @@ import io.github.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
 import io.github.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import io.github.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import io.github.cleanroommc.multiblocked.api.gui.util.FileNode;
+import io.github.cleanroommc.multiblocked.api.gui.util.TreeNode;
 import io.github.cleanroommc.multiblocked.api.gui.widget.Widget;
 import io.github.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import io.github.cleanroommc.multiblocked.util.Size;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class DialogWidget extends WidgetGroup {
     private static final int HEIGHT = 128;
@@ -66,7 +68,7 @@ public class DialogWidget extends WidgetGroup {
         return widget == null ? this : widget;
     }
 
-    public static DialogWidget showFileDialog(WidgetGroup parent, String title, File dir, boolean isSelector, Consumer<File> result) {
+    public static DialogWidget showFileDialog(WidgetGroup parent, String title, File dir, boolean isSelector, Predicate<TreeNode<File, File>> valid, Consumer<File> result) {
         Size size = parent.getSize();
         DialogWidget dialog = new DialogWidget(parent, true);
         if (!dir.isDirectory()) {
@@ -77,7 +79,7 @@ public class DialogWidget extends WidgetGroup {
         dialog.addWidget(new ImageWidget(0, 0, parent.getSize().width, parent.getSize().height, new ColorRectTexture(0x4f000000)));
         AtomicReference<File> selected = new AtomicReference<>();
         selected.set(dir);
-        dialog.addWidget(new TreeListWidget<>(0, 0, 130, size.height, new FileNode(dir), node -> selected.set(node.getKey()))
+        dialog.addWidget(new TreeListWidget<>(0, 0, 130, size.height, new FileNode(dir).setValid(valid), node -> selected.set(node.getKey()))
                 .setNodeTexture(new ResourceTexture("multiblocked:textures/gui/bordered_background.png"))
                 .canSelectNode(true)
                 .setLeafTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png")));

@@ -8,6 +8,7 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.client.renderer.IRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.B3DRenderer;
 import io.github.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
@@ -58,13 +59,13 @@ public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
                 case "BlockState":
                     return gson.fromJson(jsonElement, BlockStateRenderer.class);
                 case "B3D":
-                    return gson.fromJson(jsonElement, B3DRenderer.class).fromJson();
+                    return gson.fromJson(jsonElement, B3DRenderer.class).checkRegister();
                 case "IModel":
-                    return gson.fromJson(jsonElement, IModelRenderer.class).fromJson();
+                    return gson.fromJson(jsonElement, IModelRenderer.class).checkRegister();
                 case "OBJ":
-                    return gson.fromJson(jsonElement, OBJRenderer.class).fromJson();
+                    return gson.fromJson(jsonElement, OBJRenderer.class).checkRegister();
                 case "Geo":
-                    return new GeoComponentRenderer(jsonObj.get("modelName").getAsString());
+                    return Multiblocked.isModLoaded(Multiblocked.MODID_GEO) ? new GeoComponentRenderer(jsonObj.get("modelName").getAsString()) : null;
                 default:
                     return null;
             }

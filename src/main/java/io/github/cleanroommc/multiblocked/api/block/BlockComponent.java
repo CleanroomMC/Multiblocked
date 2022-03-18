@@ -4,6 +4,7 @@ import io.github.cleanroommc.multiblocked.Multiblocked;
 import io.github.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import io.github.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import io.github.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import io.github.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import io.github.cleanroommc.multiblocked.client.model.IModelSupplier;
 import io.github.cleanroommc.multiblocked.client.model.SimpleStateMapper;
 import io.github.cleanroommc.multiblocked.client.particle.ParticleHandler;
@@ -57,11 +58,14 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     public BlockComponent(ComponentDefinition definition) {
         super(Material.IRON);
-        setCreativeTab(Multiblocked.CREATIVE_TAB);
+        if (definition != null) {
+            setCreativeTab(Multiblocked.CREATIVE_TAB);
+            setRegistryName(definition.location);
+            setTranslationKey(definition.location.getPath());
+        }
         setSoundType(SoundType.METAL);
         setHardness(1.5F);
         setResistance(10.0F);
-        setTranslationKey("component_block");
         this.definition = definition;
     }
 
@@ -200,7 +204,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public int getPackedLightmapCoords(@Nonnull IBlockState state, @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
-        if (definition.isOpaqueCube) return super.getPackedLightmapCoords(state, source, pos);
+        if (isOpaqueCube(state)) return super.getPackedLightmapCoords(state, source, pos);
         int i = source.getCombinedLight(pos, 0);
         int j = source.getCombinedLight(pos.up(), 0);
         int k = i & 255;
@@ -212,7 +216,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public int getLightOpacity(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
-        return definition.isOpaqueCube ? 255 : 1;
+        return isOpaqueCube(state) ? 255 : 1;
     }
 
     @Override
@@ -233,7 +237,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public boolean shouldSideBeRendered(@Nonnull IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos pos, @Nonnull EnumFacing side) {
-        return !definition.isOpaqueCube || super.shouldSideBeRendered(blockState, blockAccess, pos, side);
+        return !isOpaqueCube(blockState) || super.shouldSideBeRendered(blockState, blockAccess, pos, side);
     }
 
     @SideOnly(Side.CLIENT)
@@ -252,7 +256,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @SideOnly(Side.CLIENT)
     public boolean addHitEffects(@Nonnull IBlockState state, @Nonnull World worldObj, RayTraceResult target, @Nonnull ParticleManager manager) {
         TextureAtlasSprite atlasSprite = getParticleTexture(worldObj, target.getBlockPos());
-        if (atlasSprite == null) return false;
+        if (atlasSprite == null) return true;
         ParticleHandler.addHitEffects(state, worldObj, target, manager, atlasSprite);
         return true;
     }
@@ -261,7 +265,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @SideOnly(Side.CLIENT)
     public boolean addDestroyEffects(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull ParticleManager manager) {
         TextureAtlasSprite atlasSprite = getParticleTexture(world, pos);
-        if (atlasSprite == null) return false;
+        if (atlasSprite == null) return true;
         ParticleHandler.addBlockDestroyEffects(world.getBlockState(pos), world, pos, manager, atlasSprite);
         return true;
     }

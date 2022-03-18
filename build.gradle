@@ -10,9 +10,11 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+		classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
 
 version = "1.0"
 group = "io.github.cleanroommc" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -72,6 +74,14 @@ dependencies {
     compile files("libs/Thaumcraft-1.12.2-6.1.BETA26.jar")
     compile files("libs/NuclearCraft-2o.5.5-1.12.2.jar")
     compile files("libs/QMD-1.0.4-1.12.2.jar")
+}
+
+sourceSets {
+
+    main {
+        ext.refMap = 'mixins.multiblocked.refmap.json'
+    }
+
 }
 
 processResources {

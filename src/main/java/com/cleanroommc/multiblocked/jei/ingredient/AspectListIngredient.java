@@ -1,6 +1,8 @@
 package com.cleanroommc.multiblocked.jei.ingredient;
 
+import com.cleanroommc.multiblocked.CommonProxy;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,13 +19,22 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AspectListIngredient extends AbstractIngredient<AspectList>{
+@SuppressWarnings("unchecked")
+public class AspectListIngredient extends AbstractIngredient<AspectList> {
+    public static IIngredientType<AspectList> aspectListIIngredientType;
     public static AspectListIngredient INSTANCE = new AspectListIngredient();
+
+    static {
+        aspectListIIngredientType = (IIngredientType<AspectList>) CommonProxy.thaumicJEIProxy.getIngredientInstance();
+        if (aspectListIIngredientType == null) {
+            aspectListIIngredientType = new AspectListIngredient();
+        }
+    }
 
     private AspectListIngredient() {}
 
     public void registerIngredients(IModIngredientRegistration registry) {
-        registry.register(this, getAllIngredients(), this, this);
+        registry.register(aspectListIIngredientType, getAllIngredients(), this, this);
     }
 
     @Override
@@ -71,7 +82,7 @@ public class AspectListIngredient extends AbstractIngredient<AspectList>{
     @Override
     @Nonnull
     public String getWildcardId(@Nonnull AspectList ingredient) {
-        return "/";
+        return getUniqueId(ingredient);
     }
 
     @Override
@@ -95,7 +106,7 @@ public class AspectListIngredient extends AbstractIngredient<AspectList>{
     @Override
     @Nonnull
     public AspectList copyIngredient(@Nonnull AspectList ingredient) {
-        return ingredient;
+        return ingredient.copy();
     }
 
     @Override

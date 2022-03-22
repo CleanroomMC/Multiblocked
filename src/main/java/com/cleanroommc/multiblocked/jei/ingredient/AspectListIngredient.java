@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.jei.ingredient;
 
-import com.cleanroommc.multiblocked.CommonProxy;
+import com.buuz135.thaumicjei.ThaumcraftJEIPlugin;
+import com.cleanroommc.multiblocked.Multiblocked;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.client.Minecraft;
@@ -19,22 +20,13 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unchecked")
 public class AspectListIngredient extends AbstractIngredient<AspectList> {
-    public static IIngredientType<AspectList> aspectListIIngredientType;
-    public static AspectListIngredient INSTANCE = new AspectListIngredient();
-
-    static {
-        aspectListIIngredientType = (IIngredientType<AspectList>) CommonProxy.thaumicJEIProxy.getIngredientInstance();
-        if (aspectListIIngredientType == null) {
-            aspectListIIngredientType = new AspectListIngredient();
-        }
-    }
+    public static IIngredientType<AspectList> INSTANCE = Multiblocked.isModLoaded(Multiblocked.MODID_THAUMJEI) ? ThaumcraftJEIPlugin.ASPECT_LIST : new AspectListIngredient();
 
     private AspectListIngredient() {}
 
     public void registerIngredients(IModIngredientRegistration registry) {
-        registry.register(aspectListIIngredientType, getAllIngredients(), this, this);
+        registry.register(INSTANCE, getAllIngredients(), this, this);
     }
 
     @Override

@@ -66,14 +66,14 @@ public class RecipeWrapper extends ModularWrapper {
 
         if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6)) {
             if (recipe.inputs.containsKey(AspectThaumcraftCapability.CAP)) {
-                ingredients.setInputs(AspectListIngredient.aspectListIIngredientType, recipe.inputs.get(AspectThaumcraftCapability.CAP).stream()
+                ingredients.setInputs(AspectListIngredient.INSTANCE, recipe.inputs.get(AspectThaumcraftCapability.CAP).stream()
                         .map(Tuple::getFirst)
                         .map(AspectStack.class::cast)
                         .map(AspectStack::toAspectList)
                         .collect(Collectors.toList()));
             }
             if (recipe.outputs.containsKey(AspectThaumcraftCapability.CAP)) {
-                ingredients.setOutputs(AspectListIngredient.aspectListIIngredientType, recipe.outputs.get(AspectThaumcraftCapability.CAP).stream()
+                ingredients.setOutputs(AspectListIngredient.INSTANCE, recipe.outputs.get(AspectThaumcraftCapability.CAP).stream()
                         .map(Tuple::getFirst)
                         .map(AspectStack.class::cast)
                         .map(AspectStack::toAspectList)

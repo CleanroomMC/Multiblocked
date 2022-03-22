@@ -25,7 +25,6 @@ import com.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import com.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import com.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import com.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
-import com.cleanroommc.multiblocked.proxies.thaumicjei.IThaumicJEIProxy;
 import lach_01298.qmd.particle.ParticleStack;
 import lach_01298.qmd.particle.Particles;
 import mekanism.api.gas.GasRegistry;
@@ -41,7 +40,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -52,20 +50,7 @@ import thaumcraft.api.aspects.Aspect;
 @Mod.EventBusSubscriber(modid = Multiblocked.MODID)
 public class CommonProxy {
 
-    public static IThaumicJEIProxy thaumicJEIProxy = null;
-
     public void preInit() {
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_JEI) && Multiblocked.isModLoaded(Multiblocked.MODID_TC6)) {
-            try {
-                if (Multiblocked.isModLoaded(Multiblocked.MODID_THAUMJEI)) {
-                    thaumicJEIProxy = Class.forName("com.cleanroommc.multiblocked.proxies.thaumicjei.ActiveThaumicJEIProxy").asSubclass(IThaumicJEIProxy.class).newInstance();
-                } else {
-                    thaumicJEIProxy = Class.forName("com.cleanroommc.multiblocked.proxies.thaumicjei.DummyThaumicJEIProxy").asSubclass(IThaumicJEIProxy.class).newInstance();
-                }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
-                throw new LoaderException("Failed to load the proxy for Thaumic JEI");
-            }
-        }
 
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.init();

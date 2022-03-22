@@ -50,6 +50,7 @@ public class Multiblocked {
     public static final String MODID_BOT = "botania";
     public static final String MODID_QMD = "qmd";
     public static final String MODID_TC6 = "thaumcraft";
+    public static final String MODID_THAUMJEI = "thaumicjei";
     public static final String MODID_MEK = "mekanism";
     public static final String MODID_GEO = "geckolib3";
     public static final String NAME = "Multiblocked";

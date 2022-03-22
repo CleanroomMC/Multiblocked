@@ -1,6 +1,9 @@
 package com.cleanroommc.multiblocked.jei.ingredient;
 
+import com.buuz135.thaumicjei.ThaumcraftJEIPlugin;
+import com.cleanroommc.multiblocked.Multiblocked;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,13 +20,13 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AspectListIngredient extends AbstractIngredient<AspectList>{
-    public static AspectListIngredient INSTANCE = new AspectListIngredient();
+public class AspectListIngredient extends AbstractIngredient<AspectList> {
+    public static IIngredientType<AspectList> INSTANCE = Multiblocked.isModLoaded(Multiblocked.MODID_THAUMJEI) ? ThaumcraftJEIPlugin.ASPECT_LIST : new AspectListIngredient();
 
     private AspectListIngredient() {}
 
     public void registerIngredients(IModIngredientRegistration registry) {
-        registry.register(this, getAllIngredients(), this, this);
+        registry.register(INSTANCE, getAllIngredients(), this, this);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class AspectListIngredient extends AbstractIngredient<AspectList>{
     @Override
     @Nonnull
     public String getWildcardId(@Nonnull AspectList ingredient) {
-        return "/";
+        return getUniqueId(ingredient);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class AspectListIngredient extends AbstractIngredient<AspectList>{
     @Override
     @Nonnull
     public AspectList copyIngredient(@Nonnull AspectList ingredient) {
-        return ingredient;
+        return ingredient.copy();
     }
 
     @Override

@@ -51,6 +51,7 @@ import thaumcraft.api.aspects.Aspect;
 public class CommonProxy {
 
     public void preInit() {
+
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.init();
         MultiblockCapabilities.registerCapabilities();

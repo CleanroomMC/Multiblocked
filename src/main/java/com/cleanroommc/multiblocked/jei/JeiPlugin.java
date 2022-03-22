@@ -62,6 +62,7 @@ public class JeiPlugin implements IModPlugin {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public static List<RecipeLayout> getRecipeLayouts(RecipesGui recipesGui) {
         try {
             return (List<RecipeLayout>) fieldRecipeLayouts.get(recipesGui);
@@ -112,8 +113,8 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(@Nonnull IModIngredientRegistration registry) {
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6) && !Multiblocked.isModLoaded("thaumicjei")) {
-            AspectListIngredient.INSTANCE.registerIngredients(registry);
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6) && !Multiblocked.isModLoaded(Multiblocked.MODID_THAUMJEI)) {
+            ((AspectListIngredient) AspectListIngredient.INSTANCE).registerIngredients(registry);
         }
     }
 

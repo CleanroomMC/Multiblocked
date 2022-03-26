@@ -36,6 +36,7 @@ public class ModularUIContainer extends Container implements WidgetUIAccess {
 
     public ModularUIContainer(ModularUI modularUI) {
         this.modularUI = modularUI;
+        this.modularUI.setModularUIContainer(this);
         modularUI.guiWidgets.values().forEach(widget -> widget.setUiAccess(this));
         modularUI.guiWidgets.values().stream()
                 .flatMap(widget -> widget.getNativeWidgets().stream())
@@ -104,6 +105,7 @@ public class ModularUIContainer extends Container implements WidgetUIAccess {
     @Override
     public void onContainerClosed(@Nonnull EntityPlayer playerIn) {
         super.onContainerClosed(playerIn);
+        modularUI.triggerCloseListeners();
     }
 
     @Override

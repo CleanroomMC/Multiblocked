@@ -257,4 +257,18 @@ public class JsonBlockPattern {
         return Multiblocked.GSON.toJson(this);
     }
 
+    public int[] getCenterOffset() {
+        int[] centerOffset = new int[3];
+        for (int i = 0; i < pattern.length; i++) {
+            for (int j = 0; j < pattern[0].length; j++) {
+                for (int k = 0; k < pattern[0][0].length(); k++) {
+                    if (pattern[i][j].charAt(k) == '@') {
+                        centerOffset = new int[]{i, j, k};
+                        break;
+                    }
+                }
+            }
+        }
+        return centerOffset;
+    }
 }

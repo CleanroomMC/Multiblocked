@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.util.Position;
 import com.google.common.collect.ImmutableBiMap;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,6 +27,7 @@ public final class ModularUI {
     @SideOnly(Side.CLIENT)
     private ModularUIGuiContainer guiContainer;
     private ModularUIContainer container;
+    private final List<Runnable> uiCloseCallback;
 
     /**
      * UIHolder of this modular UI
@@ -40,6 +42,7 @@ public final class ModularUI {
         this.height = height;
         this.holder = holder;
         this.entityPlayer = entityPlayer;
+        this.uiCloseCallback = new ArrayList<>();
     }
 
     public ModularUIContainer getModularUIContainer() {
@@ -48,6 +51,14 @@ public final class ModularUI {
 
     public void setModularUIContainer(ModularUIContainer container) {
         this.container = container;
+    }
+
+    public void registerCloseListener(Runnable runnable) {
+        uiCloseCallback.add(runnable);
+    }
+
+    public void triggerCloseListeners() {
+        uiCloseCallback.forEach(Runnable::run);
     }
 
     @SideOnly(Side.CLIENT)

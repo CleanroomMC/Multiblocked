@@ -87,6 +87,7 @@ public class IOPageWidget extends PageWidget {
         addWidget(lines[1][2] = new ImageWidget(138, 202, 4, 35));
 
         addWidget(new SceneWidget(6, 6, 164, 143, Multiblocked.isClient() ? Minecraft.getMinecraft().world : null)
+                .useCacheBuffer()
                 .setRenderedCore(controller.state.getCache(), null)
                 .setOnSelected(this::onPosSelected)
                 .setRenderFacing(false)

@@ -246,12 +246,13 @@ public class BlueprintTableWidget extends TabContainer {
                             }
                         }
                         this.addWidget(sceneWidget = (SceneWidget) new SceneWidget(34, 34, 94, 94, world)
-                                        .setRenderedCore(rendered, null)
-                                        .setOnSelected(((pos, facing) -> {
-                                            this.pos = pos;
-                                            this.facing = facing;
-                                        }))
-                                        .setClientSideWidget());
+                                .useCacheBuffer()
+                                .setRenderedCore(rendered, null)
+                                .setOnSelected(((pos, facing) -> {
+                                    this.pos = pos;
+                                    this.facing = facing;
+                                }))
+                                .setClientSideWidget());
                     }
                 }
             }

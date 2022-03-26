@@ -30,7 +30,7 @@ public class MultiblockComponents {
     public static final ItemComponent DummyComponentItem;
 
     static {
-        PartDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "dummy_component"), DummyComponentTileEntity.class);
+        ComponentDefinition definition = new ComponentDefinition(new ResourceLocation(Multiblocked.MODID, "dummy_component"), DummyComponentTileEntity.class);
         definition.isOpaqueCube = false;
         definition.showInJei = false;
         registerComponent(definition);

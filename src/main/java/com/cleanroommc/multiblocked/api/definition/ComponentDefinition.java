@@ -75,7 +75,7 @@ public class ComponentDefinition {
     @ZenProperty
     public transient IUpdateTick updateTick;
 
-    protected ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
+    public ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
         this.location = location;
         this.clazz = clazz;
         this.baseRenderer = null;

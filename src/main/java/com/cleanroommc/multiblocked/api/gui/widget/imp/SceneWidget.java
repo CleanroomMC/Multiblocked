@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp;
 
+import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.client.renderer.scene.ISceneRenderHook;
 import com.cleanroommc.multiblocked.client.renderer.scene.ImmediateWorldSceneRenderer;
 import com.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRenderer;
@@ -59,8 +60,40 @@ public class SceneWidget extends WidgetGroup {
         }
     }
 
+    public SceneWidget useCacheBuffer() {
+        if (Multiblocked.isClient()) {
+            renderer.useCacheBuffer(true);
+        }
+        return this;
+    }
+
+    public boolean isUseCache() {
+        if (Multiblocked.isClient()) {
+            return renderer.isUseCache();
+        }
+        return false;
+    }
+
+    @Override
+    public void setGui(ModularUI gui) {
+        super.setGui(gui);
+        gui.registerCloseListener(this::releaseCacheBuffer);
+    }
+
+    public void releaseCacheBuffer() {
+        if (Multiblocked.isClient()) {
+            renderer.deleteCacheBuffer();
+        }
+    }
+
+    public void needCompileCache() {
+        if (Multiblocked.isClient()) {
+            renderer.needCompileCache();
+        }
+    }
+
     @SideOnly(Side.CLIENT)
-    protected void createScene(World world) {
+    public final void createScene(World world) {
         core = new HashSet<>();
         dummyWorld = new TrackedDummyWorld(world);
         dummyWorld.setRenderFilter(pos -> renderer.renderedBlocksMap.keySet().stream().anyMatch(c -> c.contains(pos)));
@@ -129,6 +162,7 @@ public class SceneWidget extends WidgetGroup {
             renderer.addRenderedBlocks(core, renderHook);
             this.zoom = (float) (3.5 * Math.sqrt(Math.max(Math.max(Math.max(maxX - minX + 1, maxY - minY + 1), maxZ - minZ + 1), 1)));
             renderer.setCameraLookAt(center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
+            needCompileCache();
         }
         return this;
     }

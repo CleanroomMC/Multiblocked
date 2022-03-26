@@ -11,6 +11,7 @@ import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRenderer;
 import com.cleanroommc.multiblocked.client.util.RenderBufferUtils;
@@ -228,7 +229,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
         //textFieldTab
         ResourceTexture tabTextField = new ResourceTexture("multiblocked:textures/gui/tab_text_field.png");
         WidgetGroup textFieldTab;
-        container.addTab((TabButton)new TabButton(171 + 50, 29, 20, 20)
+        container.addTab(new TabButton(171 + 50, 29, 20, 20)
                         .setTexture(tabTextField.getSubTexture(0, 0, 1, 0.5),
                                 tabTextField.getSubTexture(0, 0.5, 1, 0.5))
                         .setHoverTooltip("Json"),
@@ -380,6 +381,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
         TrackedDummyWorld world;
         public BlockPatternSceneWidget() {
             super(31, 31, 125, 125, null);
+            useCacheBuffer();
             texture = new TextTexture("", -1).setWidth(125).setType(TextTexture.TextType.ROLL);
             addWidget(characterView = new DraggableScrollableWidgetGroup(0, 0, 125, 125));
             reloadBlocks();
@@ -450,19 +452,10 @@ public class JsonBlockPatternWidget extends DialogWidget {
                 }
                 return true;
             });
+            centerOffset = pattern.getCenterOffset();
             String[][] pattern = JsonBlockPatternWidget.this.pattern.pattern;
             Set<BlockPos> posSet = new HashSet<>();
             offset = Math.max(pattern.length, Math.max(pattern[0].length, pattern[0][0].length()));
-            for (int i = 0; i < pattern.length; i++) {
-                for (int j = 0; j < pattern[0].length; j++) {
-                    for (int k = 0; k < pattern[0][0].length(); k++) {
-                        if (pattern[i][j].charAt(k) == '@') {
-                            centerOffset = new int[]{i, j, k};
-                            break;
-                        }
-                    }
-                }
-            }
             for (int i = 0; i < pattern.length; i++) {
                 for (int j = 0; j < pattern[0].length; j++) {
                     for (int k = 0; k < pattern[0][0].length(); k++) {
@@ -470,6 +463,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
                         BlockPos pos = JsonBlockPatternWidget.this.pattern.getActualPosOffset(k - centerOffset[2], j - centerOffset[1], i - centerOffset[0], EnumFacing.NORTH).add(offset, offset, offset);
                         world.addBlock(pos, new BlockInfo(symbolBlock.getDefaultState()));
                         SymbolTileEntity tileEntity = (SymbolTileEntity) world.getTileEntity(pos);
+                        assert tileEntity != null;
                         tileEntity.init(c, JsonBlockPatternWidget.this, i, j, k);
                         tileEntity.setDefinition(symbolBlock.definition);
                         tileEntity.setWorld(world);
@@ -484,6 +478,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
             setOnSelected(this::onSelected);
             setRenderFacing(false);
             updateCharacterView();
+            needCompileCache();
         }
 
         @Override
@@ -737,14 +732,22 @@ public class JsonBlockPatternWidget extends DialogWidget {
                     SimplePredicate predicate = widget.pattern.predicates.get(s);
                     if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
                         renderer = ((PredicateComponent) predicate).definition.baseRenderer;
-                        return;
+                        candidates.clear();
+                        break;
                     } else if (predicate != null && predicate.candidates != null) {
                         for (BlockInfo blockInfo : predicate.candidates.get()) {
                             candidates.add(blockInfo.getBlockState());
                         }
                     }
                 }
-                renderer = new CycleBlockStateRenderer(candidates.toArray(new IBlockState[0]));
+                if (candidates.size() == 1) {
+                    renderer = new BlockStateRenderer((IBlockState) candidates.toArray()[0]);
+                } else if (!candidates.isEmpty()){
+                    renderer = new CycleBlockStateRenderer(candidates.toArray(new IBlockState[0]));
+                }
+            }
+            if (widget.sceneWidget != null) {
+                widget.sceneWidget.needCompileCache();
             }
         }
 

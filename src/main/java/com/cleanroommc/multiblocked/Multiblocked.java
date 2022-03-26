@@ -115,12 +115,6 @@ public class Multiblocked {
         proxy.postInit();
     }
 
-
-    @EventHandler
-    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
-//        Multiblock.loadMultiblocks(); TODO
-    }
-
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandReload());

@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.client.renderer.scene;
 
-import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.PositionedRect;
 import com.cleanroommc.multiblocked.util.Size;
@@ -12,11 +12,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -48,6 +51,7 @@ import java.util.function.Consumer;
  * @Date: 2021/08/23
  * @Description: Abstract class, and extend a lot of features compared with the original one.
  */
+@SuppressWarnings("ALL")
 @SideOnly(Side.CLIENT)
 public abstract class WorldSceneRenderer {
     protected static final FloatBuffer MODELVIEW_MATRIX_BUFFER = ByteBuffer.allocateDirect(16 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -58,6 +62,10 @@ public abstract class WorldSceneRenderer {
 
     public final World world;
     public final Map<Collection<BlockPos>, ISceneRenderHook> renderedBlocksMap;
+    protected VertexBuffer[] vertexBuffers;
+    protected boolean useCache;
+    protected boolean needCompile;
+
     private Consumer<WorldSceneRenderer> beforeRender;
     private Consumer<WorldSceneRenderer> afterRender;
     private Consumer<RayTraceResult> onLookingAt;
@@ -70,6 +78,38 @@ public abstract class WorldSceneRenderer {
     public WorldSceneRenderer(World world) {
         this.world = world;
         renderedBlocksMap = new LinkedHashMap<>();
+    }
+
+    public WorldSceneRenderer useCacheBuffer(boolean useCache) {
+        if (useCache && !OpenGlHelper.useVbo()) return this;
+        if (useCache) {
+            deleteCacheBuffer();
+            this.vertexBuffers = new VertexBuffer[BlockRenderLayer.values().length];
+            for (int j = 0; j < BlockRenderLayer.values().length; ++j) {
+                this.vertexBuffers[j] = new VertexBuffer(DefaultVertexFormats.BLOCK);
+            }
+            needCompile = true;
+        }
+        this.useCache = useCache;
+        return this;
+    }
+
+    public WorldSceneRenderer deleteCacheBuffer() {
+        if (useCache) {
+            for (int i = 0; i < BlockRenderLayer.values().length; ++i) {
+                if (this.vertexBuffers[i] != null) {
+                    this.vertexBuffers[i].deleteGlBuffers();
+                }
+            }
+        }
+        useCache = false;
+        needCompile = true;
+        return this;
+    }
+
+    public WorldSceneRenderer needCompileCache() {
+        needCompile = true;
+        return this;
     }
 
     public WorldSceneRenderer setBeforeWorldRender(Consumer<WorldSceneRenderer> callback) {
@@ -92,6 +132,10 @@ public abstract class WorldSceneRenderer {
     public WorldSceneRenderer setOnLookingAt(Consumer<RayTraceResult> onLookingAt) {
         this.onLookingAt = onLookingAt;
         return this;
+    }
+
+    public boolean isUseCache() {
+        return useCache;
     }
 
     public void setClearColor(int clearColor) {
@@ -235,45 +279,38 @@ public abstract class WorldSceneRenderer {
         GlStateManager.enableAlpha();
 
         boolean checkDisabledModel = world == mc.world || (world instanceof TrackedDummyWorld && ((TrackedDummyWorld) world).proxyWorld == mc.world);
-        try { // render block in each layer
-            for (BlockRenderLayer layer : BlockRenderLayer.values()) {
-                int pass = layer == BlockRenderLayer.TRANSLUCENT ? 1 : 0;
-                ForgeHooksClient.setRenderLayer(layer);
-                if (pass == 1) {
-                    renderTESR(0, mc.getRenderPartialTicks(), checkDisabledModel);
+        float particleTicks = mc.getRenderPartialTicks();
+        if (useCache) {
+            renderCacheBuffer(mc, oldRenderLayer, particleTicks, checkDisabledModel);
+        } else {
+            BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
+            try { // render block in each layer
+                for (BlockRenderLayer layer : BlockRenderLayer.values()) {
+                    int pass = layer == BlockRenderLayer.TRANSLUCENT ? 1 : 0;
+                    ForgeHooksClient.setRenderLayer(layer);
+                    if (pass == 1) {
+                        renderTESR(0, particleTicks, checkDisabledModel);
+                    }
+                    renderedBlocksMap.forEach((renderedBlocks, hook)->{
+                        if (hook != null) {
+                            hook.apply(false, pass, layer);
+                        } else {
+                            setDefaultPassRenderState(pass);
+                        }
+                        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+                        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+
+                        renderBlocks(checkDisabledModel, blockrendererdispatcher, layer, buffer, renderedBlocks);
+
+                        Tessellator.getInstance().draw();
+                        Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
+                    });
                 }
-                renderedBlocksMap.forEach((renderedBlocks, hook)->{
-                    if (hook != null) {
-                        hook.apply(false, pass, layer);
-                    } else {
-                        setDefaultPassRenderState(pass);
-                    }
-
-                    BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-                    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-                    BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
-
-                    for (BlockPos pos : renderedBlocks) {
-                        if (checkDisabledModel && MultiblockWorldSavedData.isModelDisabled(pos)) {
-                            continue;
-                        }
-                        IBlockState state = world.getBlockState(pos);
-                        Block block = state.getBlock();
-                        if (block == Blocks.AIR) continue;
-                        state = state.getActualState(world, pos);
-                        if (block.canRenderInLayer(state, layer)) {
-                            blockrendererdispatcher.renderBlock(state, pos, world, buffer);
-                        }
-                    }
-
-                    Tessellator.getInstance().draw();
-                    Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
-                });
+            } finally {
+                ForgeHooksClient.setRenderLayer(oldRenderLayer);
             }
-        } finally {
-            ForgeHooksClient.setRenderLayer(oldRenderLayer);
+            renderTESR(1, particleTicks, checkDisabledModel);
         }
-        renderTESR(1, mc.getRenderPartialTicks(), checkDisabledModel);
         GlStateManager.shadeModel(7425);
         RenderHelper.enableStandardItemLighting();
         GlStateManager.enableDepth();
@@ -283,6 +320,93 @@ public abstract class WorldSceneRenderer {
         if (afterRender != null) {
             afterRender.accept(this);
         }
+    }
+
+    private void renderCacheBuffer(Minecraft mc, BlockRenderLayer oldRenderLayer, float particleTicks, boolean checkDisabledModel) {
+        if (needCompile) {
+            BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
+            try { // render block in each layer
+                for (BlockRenderLayer layer : BlockRenderLayer.values()) {
+                    ForgeHooksClient.setRenderLayer(layer);
+                    BufferBuilder buffer = new BufferBuilder(262144);
+                    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+                    renderedBlocksMap.forEach((renderedBlocks, hook) -> renderBlocks(checkDisabledModel, blockrendererdispatcher, layer, buffer, renderedBlocks));
+                    buffer.reset();
+                    vertexBuffers[layer.ordinal()].bufferData(buffer.getByteBuffer());
+                }
+            } finally {
+                ForgeHooksClient.setRenderLayer(oldRenderLayer);
+            }
+            needCompile = false;
+        } else {
+            for (BlockRenderLayer layer : BlockRenderLayer.values()) {
+                int pass = layer == BlockRenderLayer.TRANSLUCENT ? 1 : 0;
+                if (pass == 1) {
+                    renderTESR(0, particleTicks, checkDisabledModel);
+                }
+
+                GlStateManager.glEnableClientState(32884);
+                OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+                GlStateManager.glEnableClientState(32888);
+                OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
+                GlStateManager.glEnableClientState(32888);
+                OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+                GlStateManager.glEnableClientState(32886);
+
+                VertexBuffer vbo = vertexBuffers[layer.ordinal()];
+                setDefaultPassRenderState(pass);
+                vbo.bindBuffer();
+                this.setupArrayPointers();
+                vbo.drawArrays(7);
+                OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, 0);
+                GlStateManager.resetColor();
+
+                for (VertexFormatElement vertexformatelement : DefaultVertexFormats.BLOCK.getElements()) {
+                    VertexFormatElement.EnumUsage enumUsage = vertexformatelement.getUsage();
+                    int k1 = vertexformatelement.getIndex();
+
+                    switch (enumUsage) {
+                        case POSITION:
+                            GlStateManager.glDisableClientState(32884);
+                            break;
+                        case UV:
+                            OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + k1);
+                            GlStateManager.glDisableClientState(32888);
+                            OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+                            break;
+                        case COLOR:
+                            GlStateManager.glDisableClientState(32886);
+                            GlStateManager.resetColor();
+                    }
+                }
+
+            }
+            renderTESR(1, particleTicks, checkDisabledModel);
+        }
+    }
+
+    private void renderBlocks(boolean checkDisabledModel, BlockRendererDispatcher blockrendererdispatcher, BlockRenderLayer layer, BufferBuilder buffer, Collection<BlockPos> renderedBlocks) {
+        for (BlockPos pos : renderedBlocks) {
+            if (checkDisabledModel && MultiblockWorldSavedData.isModelDisabled(pos)) {
+                continue;
+            }
+            IBlockState state = world.getBlockState(pos);
+            Block block = state.getBlock();
+            if (block == Blocks.AIR) continue;
+            state = state.getActualState(world, pos);
+            if (block.canRenderInLayer(state, layer)) {
+                blockrendererdispatcher.renderBlock(state, pos, world, buffer);
+            }
+        }
+    }
+
+    private void setupArrayPointers() {
+        GlStateManager.glVertexPointer(3, 5126, 28, 0);
+        GlStateManager.glColorPointer(4, 5121, 28, 12);
+        GlStateManager.glTexCoordPointer(2, 5126, 28, 16);
+        OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.glTexCoordPointer(2, 5122, 28, 24);
+        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
     private void renderTESR(final int pass, float particle, boolean checkDisabledModel) {

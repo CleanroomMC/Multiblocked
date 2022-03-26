@@ -79,6 +79,7 @@ public class PatternWidget extends WidgetGroup {
         allItemStackInputs = new ArrayList<>();
         predicates = new ArrayList<>();
         addWidget(sceneWidget = new SceneWidget(6, 51, 164, 143, world)
+                .useCacheBuffer()
                 .setOnSelected(this::onPosSelected)
                 .setRenderFacing(false)
                 .setRenderFacing(false));
@@ -155,6 +156,7 @@ public class PatternWidget extends WidgetGroup {
             controllerBase.state = null;
             controllerBase.onStructureInvalid();
         }
+        sceneWidget.needCompileCache();
     }
 
     private void onPosSelected(BlockPos pos, EnumFacing facing) {

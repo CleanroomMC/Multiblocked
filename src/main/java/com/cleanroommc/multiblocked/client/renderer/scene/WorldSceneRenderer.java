@@ -255,7 +255,7 @@ public abstract class WorldSceneRenderer {
         GlStateManager.matrixMode(GL11.GL_MODELVIEW);
         GlStateManager.popMatrix();
 
-        GlStateManager.disableBlend();
+        GlStateManager.enableBlend();
         GlStateManager.disableDepth();
 
         //reset attributes

@@ -39,14 +39,14 @@ public class RecipeWrapper extends ModularWrapper {
             ingredients.setInputs(VanillaTypes.ITEM, recipe.inputs.get(MultiblockCapabilities.ITEM).stream()
                     .map(Tuple::getFirst)
                     .map(ItemsIngredient.class::cast)
-                    .flatMap(r-> Arrays.stream(r.matchingStacks))
+                    .flatMap(r-> Arrays.stream(r.getMatchingStacks()))
                     .collect(Collectors.toList()));
         }
         if (recipe.outputs.containsKey(MultiblockCapabilities.ITEM)) {
             ingredients.setOutputs(VanillaTypes.ITEM, recipe.outputs.get(MultiblockCapabilities.ITEM).stream()
                     .map(Tuple::getFirst)
                     .map(ItemsIngredient.class::cast)
-                    .flatMap(r -> Arrays.stream(r.matchingStacks))
+                    .flatMap(r -> Arrays.stream(r.getMatchingStacks()))
                     .collect(Collectors.toList()));
         }
 

@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.pattern;
 
+import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternError;
@@ -167,7 +168,7 @@ public class BlockPattern {
                 z++;
             }
             //Repetitions out of range
-            if (r < aisleRepetitions[c][0] || !worldState.isFormed()) {
+            if (r < aisleRepetitions[c][0] || !worldState.isFormed() || !findFirstAisle) {
                 if (worldState.isFormed()) {
                     worldState.setError(new PatternError());
                 }
@@ -244,16 +245,22 @@ public class BlockPattern {
                             }
 
                             List<ItemStack> candidates = new ArrayList<>();
-                            for (BlockInfo info : infos) {
-                                if (info.getBlockState().getBlock() != Blocks.AIR) {
-                                    IBlockState blockState = info.getBlockState();
-                                    if (info.getTileEntity() instanceof DummyComponentTileEntity && ((DummyComponentTileEntity) info.getTileEntity()).getRenderer() instanceof CycleBlockStateRenderer) {
-                                        CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((DummyComponentTileEntity) info.getTileEntity()).getRenderer();
-                                        for (IBlockState state : renderer.states) {
-                                            candidates.add(new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, blockState.getBlock().damageDropped(state)));
+                            if (infos != null) {
+                                for (BlockInfo info : infos) {
+                                    if (info.getBlockState().getBlock() != Blocks.AIR) {
+                                        IBlockState blockState = info.getBlockState();
+                                        if (blockState.getBlock() instanceof BlockComponent && ((BlockComponent) blockState.getBlock()).definition != null) {
+                                            if (((BlockComponent) blockState.getBlock()).definition.baseRenderer instanceof CycleBlockStateRenderer) {
+                                                CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((BlockComponent) blockState.getBlock()).definition.baseRenderer;
+                                                for (IBlockState state : renderer.states) {
+                                                    candidates.add(new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, blockState.getBlock().damageDropped(state)));
+                                                }
+                                            } else {
+                                                candidates.add(new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState)));
+                                            }
+                                        } else {
+                                            candidates.add(new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState)));
                                         }
-                                    } else {
-                                        candidates.add(new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState)));
                                     }
                                 }
                             }

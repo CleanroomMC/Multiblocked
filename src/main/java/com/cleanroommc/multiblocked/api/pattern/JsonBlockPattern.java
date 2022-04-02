@@ -1,11 +1,11 @@
 package com.cleanroommc.multiblocked.api.pattern;
 
-import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateBlocks;
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
+import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateStates;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
-import com.cleanroommc.multiblocked.Multiblocked;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +16,6 @@ import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class JsonBlockPattern {
@@ -57,8 +56,8 @@ public class JsonBlockPattern {
 
         predicates.put("controller", new PredicateComponent(location)); // controller
 
-        Map<Block, Character> map = new HashMap<>();
-        map.put(Blocks.AIR, ' ');
+        Map<IBlockState, Character> map = new HashMap<>();
+        map.put(Blocks.AIR.getDefaultState(), ' ');
 
         char c = 'A'; // auto
 
@@ -70,15 +69,15 @@ public class JsonBlockPattern {
                     if (controllerPos.equals(pos)) {
                         builder.append('@'); // controller
                     } else {
-                        Block block = world.getBlockState(pos).getBlock();
-                        if (!map.containsKey(block)) {
-                            map.put(block, c);
-                            String name = Objects.requireNonNull(block.getRegistryName()).toString();
-                            predicates.put(name, new PredicateBlocks(block));
+                        IBlockState state = world.getBlockState(pos);
+                        if (!map.containsKey(state)) {
+                            map.put(state, c);
+                            String name = String.valueOf(c);
+                            predicates.put(name, new PredicateStates(state));
                             symbolMap.computeIfAbsent(c, key -> new HashSet<>()).add(name); // any
                             c++;
                         }
-                        builder.append(map.get(block));
+                        builder.append(map.get(state));
                     }
                 }
                 pattern[x - minX][y - minY] = builder.toString();
@@ -270,5 +269,30 @@ public class JsonBlockPattern {
             }
         }
         return centerOffset;
+    }
+
+    public JsonBlockPattern copy() {
+        JsonBlockPattern newPattern = new JsonBlockPattern();
+        System.arraycopy(this.structureDir, 0, newPattern.structureDir, 0, this.structureDir.length);
+
+        newPattern.pattern = new String[pattern.length][pattern[0].length];
+        for (int i = 0; i < pattern.length; i++) {
+            System.arraycopy(pattern[i], 0, newPattern.pattern[i], 0, pattern[i].length);
+        }
+
+        newPattern.aisleRepetitions = new int[aisleRepetitions.length][2];
+        for (int i = 0; i < aisleRepetitions.length; i++) {
+            System.arraycopy(aisleRepetitions[i], 0, newPattern.aisleRepetitions[i], 0, pattern[i].length);
+        }
+
+        predicates.forEach((k, v) -> {
+            newPattern.predicates.put(k, Multiblocked.GSON.fromJson(Multiblocked.GSON.toJsonTree(v, SimplePredicate.class), SimplePredicate.class));
+            if (v instanceof PredicateComponent) {
+                ((PredicateComponent)newPattern.predicates.get(k)).definition = ((PredicateComponent) v).definition;
+            }
+        });
+        symbolMap.forEach((k, v) -> newPattern.symbolMap.put(k, new HashSet<>(v)));
+
+        return newPattern;
     }
 }

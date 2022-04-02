@@ -2,6 +2,9 @@ package com.cleanroommc.multiblocked.common.capability.widget;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
@@ -19,9 +22,9 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 public class ParticleStackWidget extends ContentWidget<ParticleStack> {
+
     @Override
     protected void onContentUpdate() {
-
         if (Multiblocked.isClient() && content != null) {
             String tips = Lang.localise(content.getParticle().getUnlocalizedName()) + '\n' +
                             TextFormatting.YELLOW + Lang.localise("gui.qmd.particlestack.amount", Units.getSIFormat(content.getAmount(), "pu")) + '\n' +
@@ -29,6 +32,14 @@ public class ParticleStackWidget extends ContentWidget<ParticleStack> {
                             TextFormatting.RED + Lang.localise("gui.qmd.particlestack.focus", Units.getSIFormat(content.getFocus(), "")) + '\n';
             this.setHoverTooltip(tips);
         }
+    }
+
+    @Override
+    public ParticleStack getJEIContent(Object content) {
+        if (content instanceof ParticleStack) {
+            return new ParticleStack(((ParticleStack) content).getParticle(), this.content.getAmount(), this.content.getMeanEnergy(), this.content.getFocus());
+        }
+        return null;
     }
 
     @Override
@@ -62,10 +73,28 @@ public class ParticleStackWidget extends ContentWidget<ParticleStack> {
     }
 
     @Override
-    public Object getIngredientOverMouse(int mouseX, int mouseY) {
-        if (isMouseOverElement(mouseX, mouseY)) {
-            return content;
-        }
-        return null;
+    public void openConfigurator(WidgetGroup dialog) {
+        super.openConfigurator(dialog);
+        int x = 125 - 60;
+        int y = 25;
+        dialog.addWidget(new LabelWidget(5, y + 3, "Amount:"));
+        dialog.addWidget(new TextFieldWidget(x, y, 60, 15, true, null, number -> {
+            content = new ParticleStack(content.getParticle(), Integer.parseInt(number), content.getMeanEnergy(), content.getFocus());
+            onContentUpdate();
+        }).setNumbersOnly(1, Integer.MAX_VALUE).setCurrentString(content.getAmount()+""));
+
+        dialog.addWidget(new LabelWidget(5, y + 21, "Energy:"));
+        dialog.addWidget(new TextFieldWidget(x, y + 18, 60, 15, true, null, number -> {
+            content = new ParticleStack(content.getParticle(), content.getAmount(), Long.parseLong(number), content.getFocus());
+            onContentUpdate();
+        }).setNumbersOnly(0, Long.MAX_VALUE).setCurrentString(content.getMeanEnergy()+""));
+
+        dialog.addWidget(new LabelWidget(5, y + 39, "Focus:"));
+        dialog.addWidget(new TextFieldWidget(x, y + 36, 60, 15, true, null, number -> {
+            content = new ParticleStack(content.getParticle(),  content.getAmount(), content.getMeanEnergy(), Float.parseFloat(number));
+            onContentUpdate();
+        }).setNumbersOnly(1f, Float.MAX_VALUE).setCurrentString(content.getFocus()+""));
+
     }
+
 }

@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.gui.widget;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.api.gui.modular.WidgetUIAccess;
 import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
@@ -296,7 +297,7 @@ public class Widget {
     }
 
     public boolean isRemote() {
-        return gui.holder.isRemote();
+        return (gui != null && gui.holder != null) ? gui.holder.isRemote() : Multiblocked.isClient();
     }
 
 }

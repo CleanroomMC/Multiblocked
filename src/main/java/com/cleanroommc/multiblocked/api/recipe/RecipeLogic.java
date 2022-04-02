@@ -48,10 +48,10 @@ public class RecipeLogic {
 
     public void findAndHandleRecipe() {
         Recipe recipe;
-        if (lastRecipe != null && lastRecipe.match(this.controller.getCapabilities())) {
+        if (lastRecipe != null && lastRecipe.match(this.controller)) {
             recipe = lastRecipe;
         } else {
-            recipe = this.definition.recipeMap.searchRecipe(this.controller.getCapabilities());
+            recipe = this.definition.recipeMap.searchRecipe(this.controller);
         }
         lastRecipe = null;
         if (recipe != null) setupRecipe(recipe);
@@ -65,9 +65,10 @@ public class RecipeLogic {
         }
         lastRecipe = recipe;
         isWorking = true;
+        controller.setStatus("working");
         progress = 0;
         duration = recipe.duration;
-        recipe.handleInput(this.controller.getCapabilities());
+        recipe.handleInput(this.controller);
         markDirty();
     }
 
@@ -78,9 +79,10 @@ public class RecipeLogic {
             }
         }
         isWorking = false;
+        controller.setStatus("idle");
         progress = 0;
         duration = 0;
-        lastRecipe.handleOutput(this.controller.getCapabilities());
+        lastRecipe.handleOutput(this.controller);
         markDirty();
     }
 

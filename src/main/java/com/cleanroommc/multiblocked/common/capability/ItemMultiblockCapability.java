@@ -14,6 +14,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -24,11 +25,17 @@ import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredient> {
 
     public ItemMultiblockCapability() {
         super("item", new Color(0xD96106).getRGB());
+    }
+
+    @Override
+    public ItemsIngredient defaultContent() {
+        return new ItemsIngredient(1, Items.IRON_INGOT.getDefaultInstance());
     }
 
     @Override
@@ -54,14 +61,22 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
     @Override
     public ItemsIngredient deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
-        return new ItemsIngredient(jsonObject.get("amount").getAsInt(), Multiblocked.GSON.fromJson(jsonObject.get("matches"), ItemStack[].class));
+        if (jsonObject.has("ore")) {
+            return new ItemsIngredient(jsonObject.get("amount").getAsInt(), jsonObject.get("ore").getAsString());
+        } else {
+            return new ItemsIngredient(jsonObject.get("amount").getAsInt(), Multiblocked.GSON.fromJson(jsonObject.get("matches"), ItemStack[].class));
+        }
     }
 
     @Override
     public JsonElement serialize(ItemsIngredient itemsIngredient, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("matches", Multiblocked.GSON.toJsonTree(itemsIngredient.getMatchingStacks()));
         jsonObject.addProperty("amount", itemsIngredient.getAmount());
+        if (itemsIngredient.isOre()) {
+            jsonObject.addProperty("ore", itemsIngredient.getOreDict());
+        } else {
+            jsonObject.add("matches", Multiblocked.GSON.toJsonTree(itemsIngredient.matchingStacks));
+        }
         return jsonObject;
     }
 
@@ -76,6 +91,11 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
         }
 
         @Override
+        public boolean equals(Object obj) {
+            return obj instanceof ItemCapabilityProxy && Objects.equals(getCapability(), ((ItemCapabilityProxy) obj).getCapability());
+        }
+
+        @Override
         protected List<ItemsIngredient> handleRecipeInner(IO io, Recipe recipe, List<ItemsIngredient> left, boolean simulate) {
             IItemHandler capability = getCapability();
             if (capability == null) return left;
@@ -85,7 +105,7 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
                     ItemsIngredient ingredient = iterator.next();
                     for (int i = 0; i < capability.getSlots(); i++) {
                         ItemStack itemStack = capability.getStackInSlot(i);
-                        if (ingredient.match(itemStack)) {
+                        if (ingredient.apply(itemStack)) {
                             ItemStack extracted = capability.extractItem(i, ingredient.getAmount(), simulate);
                             ingredient.setAmount(ingredient.getAmount() - extracted.getCount());
                             if (ingredient.getAmount() <= 0) {

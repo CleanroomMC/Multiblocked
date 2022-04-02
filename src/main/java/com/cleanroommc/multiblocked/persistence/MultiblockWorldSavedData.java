@@ -32,10 +32,13 @@ public class MultiblockWorldSavedData extends WorldSavedData {
 
     @SideOnly(Side.CLIENT)
     public static Set<BlockPos> modelDisabled;
+    @SideOnly(Side.CLIENT)
+    public static Map<BlockPos, Collection<BlockPos>> multiDisabled;
 
     static {
         if (Multiblocked.isClient()) {
             modelDisabled = new HashSet<>();
+            multiDisabled = new HashMap<>();
         }
     }
 
@@ -66,6 +69,11 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         this.mapping = new Object2ObjectOpenHashMap<>();
         this.chunkPosMapping = new HashMap<>();
         this.loading = new ObjectOpenHashSet<>();
+    }
+
+    public static void clearDisabled() {
+        modelDisabled.clear();
+        multiDisabled.clear();
     }
 
     public Set<MultiblockState> getControllerInChunk(ChunkPos chunkPos) {
@@ -106,32 +114,28 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void removeDisableModel(Collection<BlockPos> poses) {
-        World  world = Minecraft.getMinecraft().world;
-        if (world == null) {
-            modelDisabled.removeAll(poses);
-        } else {
-            for (BlockPos pos : poses) {
-                if (modelDisabled.remove(pos)) {
-                    world.markBlockRangeForRenderUpdate(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
+    public static void removeDisableModel(BlockPos controllerPos) {
+        Collection<BlockPos> poses = multiDisabled.remove(controllerPos);
+        if (poses == null) return;
+        modelDisabled.clear();
+        multiDisabled.values().forEach(modelDisabled::addAll);
+        updateRenderChunk(poses);
+    }
 
-                }
+    private static void updateRenderChunk(Collection<BlockPos> poses) {
+        World world = Minecraft.getMinecraft().world;
+        if (world != null) {
+            for (BlockPos pos : poses) {
+                world.markBlockRangeForRenderUpdate(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
             }
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public static void addDisableModel(Collection<BlockPos> poses) {
-        World  world = Minecraft.getMinecraft().world;
-        if (world == null) {
-            modelDisabled.addAll(poses);
-        } else {
-            for (BlockPos pos : poses) {
-                if (modelDisabled.add(pos)) {
-                    world.markBlockRangeForRenderUpdate(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
-                }
-            }
-        }
+    public static void addDisableModel(BlockPos controllerPos, Collection<BlockPos> poses) {
+        multiDisabled.put(controllerPos, poses);
+        modelDisabled.addAll(poses);
+        updateRenderChunk(poses);
     }
 
     @SideOnly(Side.CLIENT)

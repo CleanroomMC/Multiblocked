@@ -253,11 +253,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
         private PlayState predicate(AnimationEvent<ComponentFactory> event) {
             AnimationController<ComponentFactory> controller = event.getController();
             if (component instanceof ControllerTileEntity) {
-                if (((ControllerTileEntity)component).isWorking()) {
-                    controller.setAnimation(new AnimationBuilder().addAnimation("working"));
-                } else {
-                    controller.setAnimation(new AnimationBuilder().addAnimation("idle"));
-                }
+                controller.setAnimation(new AnimationBuilder().addAnimation(((ControllerTileEntity)component).getStatus()));
             } else {
                 controller.setAnimation(new AnimationBuilder().addAnimation("idle"));
             }

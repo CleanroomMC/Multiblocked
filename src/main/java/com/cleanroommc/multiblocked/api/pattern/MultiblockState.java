@@ -136,11 +136,9 @@ public class MultiblockState {
     public void onBlockStateChanged(BlockPos pos) {
         if (pos.equals(controllerPos)) {
             if (getController() != null) {
-                if (controller.getDefinition().disableOthersRendering) {
-                    MultiblockState state = controller.state;
-                    if (state != null && state.cache != null) {
-                        MultiblockedNetworking.sendToWorld(new SPacketRemoveDisabledRendering(state.cache), controller.getWorld());
-                    }
+                MultiblockState state = controller.state;
+                if (state != null && state.getMatchContext().containsKey("renderMask")) {
+                    MultiblockedNetworking.sendToWorld(new SPacketRemoveDisabledRendering(state.controllerPos), controller.getWorld());
                 }
                 controller.onStructureInvalid();
             }

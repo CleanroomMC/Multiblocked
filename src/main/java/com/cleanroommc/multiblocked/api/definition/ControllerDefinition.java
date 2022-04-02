@@ -51,8 +51,6 @@ public class ControllerDefinition extends ComponentDefinition {
     public boolean consumeCatalyst;
     @ZenProperty
     public transient List<MultiblockShapeInfo> designs;
-    @ZenProperty
-    public boolean disableOthersRendering; // if true, only render controller, all other blocks of the multi do not render.
 
     // used for Gson
     public ControllerDefinition() {

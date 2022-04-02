@@ -1,6 +1,9 @@
 package com.cleanroommc.multiblocked.api.capability;
 
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializer;
 import crafttweaker.annotations.ZenRegister;
 import com.cleanroommc.multiblocked.Multiblocked;
@@ -20,6 +23,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Used to detect whether a machine has a certain capability. And provide its capability in proxy {@link CapabilityProxy}.
@@ -44,6 +48,11 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     }
 
     /**
+     * default content for the RecipeMapWidget selector
+     */
+    public abstract T defaultContent();
+
+    /**
      * detect whether this block has capability
      */
     public abstract boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity);
@@ -62,26 +71,45 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
      * Create a Widget of given contents
      */
     public ContentWidget<? super T> createContentWidget() {
-        return new ContentWidget<Object>() {
+        return new ContentWidget<T>() {
             @Override
             protected void onContentUpdate() {
                 if (Multiblocked.isClient()) {
                     setHoverTooltip(I18n.format("multiblocked.content.miss", io, I18n.format(MultiblockCapability.this.getUnlocalizedName()), content.toString()));
                 }
             }
+
+            @Override
+            public void openConfigurator(WidgetGroup dialog) {
+                super.openConfigurator(dialog);
+                dialog.addWidget(new LabelWidget(5, 30, ()->"missing configurator!!!"));
+            }
+
         }.setBackground(new ColorRectTexture(color));
     }
 
-    public IBlockState[] getCandidates(IO io) {
-        return scannedStates == null ? scannedStates = scanForCandidates(IO.BOTH) : scannedStates;
+    public IBlockState[] getCandidates() {
+        return scannedStates == null ? scannedStates = scanForCandidates() : scannedStates;
     }
 
-    protected final IBlockState[] scanForCandidates(IO io){
+    public void initCandidates(Map<Block, TileEntity> tiles) {
+        List<IBlockState> states = new ArrayList<>();
+        tiles.forEach(((block, tile) -> {
+            try {
+                if (tile != null && (isBlockHasCapability(IO.OUT, tile) || isBlockHasCapability(IO.IN, tile) || isBlockHasCapability(IO.BOTH, tile))) {
+                    states.add(block.getDefaultState());
+                }
+            } catch (Exception ignored) { }
+        }));
+        scannedStates = states.toArray(new IBlockState[0]);
+    }
+
+    protected final IBlockState[] scanForCandidates(){
         List<IBlockState> states = new ArrayList<>();
         for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
             try {
                 TileEntity tile = block.createTileEntity(null, block.getDefaultState());
-                if (tile != null && isBlockHasCapability(io, tile)) {
+                if (tile != null && (isBlockHasCapability(IO.OUT, tile) || isBlockHasCapability(IO.IN, tile) || isBlockHasCapability(IO.BOTH, tile))) {
                     states.add(block.getDefaultState());
                 }
             } catch (Exception ignored) { }
@@ -97,4 +125,13 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     public final BlockComponent getAnyBlock(IO io) {
         return MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation(Multiblocked.MODID, name + "." + io.name()));
     }
+
+    public final JsonElement serialize(Object obj) {
+        return serialize((T)obj, null, null);
+    }
+
+    public final T deserialize(JsonElement jsonElement){
+        return deserialize(jsonElement, null, null);
+    }
+
 }

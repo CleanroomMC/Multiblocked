@@ -21,6 +21,8 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.LongSets;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -39,11 +41,13 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
 public class PatternWidget extends WidgetGroup {
@@ -137,26 +141,12 @@ public class PatternWidget extends WidgetGroup {
         MBPattern pattern = patterns[index];
         ControllerTileEntity controllerBase = pattern.controllerBase;
         if (isPressed) {
-            controllerBase.state = new MultiblockState(world, controllerBase.getPos());
-            controllerBase.getPattern().checkPatternAt(controllerBase.state, true);
-            controllerBase.onStructureFormed();
-            if (controllerBase.isFormed() && controllerBase.getDefinition().disableOthersRendering) {
-                long controllerLong = controllerBase.getPos().toLong();
-                Set<BlockPos> modelDisabled = new HashSet<>();
-                for (long blockPos : controllerBase.state.cache) {
-                    if (controllerLong == blockPos) continue;
-                    modelDisabled.add(BlockPos.fromLong(blockPos));
-                }
-                world.setRenderFilter(pos -> !modelDisabled.contains(pos));
-            }
+            loadControllerFormed(pattern.blockMap.keySet(), controllerBase);
         } else {
-            if (controllerBase.getDefinition().disableOthersRendering) {
-                world.setRenderFilter(null);
-            }
+            sceneWidget.setRenderedCore(pattern.blockMap.keySet(), null);
             controllerBase.state = null;
             controllerBase.onStructureInvalid();
         }
-        sceneWidget.needCompileCache();
     }
 
     private void onPosSelected(BlockPos pos, EnumFacing facing) {
@@ -256,18 +246,7 @@ public class PatternWidget extends WidgetGroup {
 
         Map<BlockPos, TraceabilityPredicate> predicateMap = new HashMap<>();
         if (controllerBase != null) {
-            controllerBase.state = new MultiblockState(world, controllerBase.getPos());
-            controllerBase.getPattern().checkPatternAt(controllerBase.state, true);
-            controllerBase.onStructureFormed();
-            if (controllerBase.isFormed() && controllerBase.getDefinition().disableOthersRendering) {
-                long controllerLong = controllerBase.getPos().toLong();
-                Set<BlockPos> modelDisabled = new HashSet<>();
-                for (long blockPos : controllerBase.state.cache) {
-                    if (controllerLong == blockPos) continue;
-                    modelDisabled.add(BlockPos.fromLong(blockPos));
-                }
-                world.setRenderFilter(pos -> !modelDisabled.contains(pos));
-            }
+            loadControllerFormed(predicateMap.keySet(), controllerBase);
             predicateMap = controllerBase.state.getMatchContext().get("predicates");
         }
         return new MBPattern(blockMap, parts.values().stream().sorted((one, two) -> {
@@ -278,6 +257,21 @@ public class PatternWidget extends WidgetGroup {
             if (one.blockId != two.blockId) return two.blockId - one.blockId;
             return two.amount - one.amount;
         }).map(PartInfo::getItemStack).toArray(ItemStack[]::new), predicateMap, controllerBase);
+    }
+
+    private void loadControllerFormed(Collection<BlockPos> poses, ControllerTileEntity controllerBase) {
+        controllerBase.state = new MultiblockState(world, controllerBase.getPos());
+        controllerBase.getPattern().checkPatternAt(controllerBase.state, true);
+        controllerBase.onStructureFormed();
+        if (controllerBase.isFormed()) {
+            LongSet set = controllerBase.state.getMatchContext().getOrDefault("renderMask", LongSets.EMPTY_SET);
+            Set<BlockPos> modelDisabled = set.stream().map(BlockPos::fromLong).collect(Collectors.toSet());
+            if (!modelDisabled.isEmpty()) {
+                sceneWidget.setRenderedCore(poses.stream().filter(pos->!modelDisabled.contains(pos)).collect(Collectors.toList()), null);
+            } else {
+                sceneWidget.setRenderedCore(poses, null);
+            }
+        }
     }
 
     private Map<ItemStackKey, PartInfo> gatherBlockDrops(Map<BlockPos, BlockInfo> blocks) {

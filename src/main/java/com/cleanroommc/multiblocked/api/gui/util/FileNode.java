@@ -38,7 +38,7 @@ public class FileNode extends TreeNode<File, File> {
                     return -1;
                 }
                 return 1;
-            }).forEach(file -> children.add(new FileNode(dimension + 1, file)));
+            }).forEach(file -> children.add(new FileNode(dimension + 1, file).setValid(valid)));
         }
         return super.getChildren();
     }

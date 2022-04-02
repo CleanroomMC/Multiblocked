@@ -23,6 +23,7 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
     protected IGuiTexture yBarF;
     protected boolean focus;
     protected Widget draggedWidget;
+    protected Widget selectedWidget;
     protected boolean useScissor;
 
     private int lastMouseX;
@@ -97,6 +98,8 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
     public void removeWidget(Widget widget) {
         super.removeWidget(widget);
         computeMax();
+        if (widget == draggedWidget) draggedWidget = null;
+        if (widget == selectedWidget) selectedWidget = null;
     }
 
     @Override
@@ -106,6 +109,8 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
         maxWidth = getSize().width;
         scrollXOffset = 0;
         scrollYOffset = 0;
+        draggedWidget = null;
+        selectedWidget = null;
     }
 
     @Override
@@ -223,6 +228,13 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
     }
 
     @Override
+    public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
+        if (isMouseOverElement(mouseX, mouseY)) {
+            super.drawInForeground(mouseX, mouseY, partialTicks);
+        }
+    }
+
+    @Override
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
         int x = getPosition().x;
         int y = getPosition().y;
@@ -287,28 +299,34 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
                 return this;
             }
             return null;
-        } else if ((widget = checkClickedDragged(mouseX, mouseY, button)) != null) {
-            return widget;
         }
         focus = false;
         return null;
     }
 
     protected Widget checkClickedDragged(int mouseX, int mouseY, int button) {
-        draggedWidget = null;
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
             if(widget.isVisible()) {
-                Widget w;
-                if((w = widget.mouseClicked(mouseX, mouseY, button)) != null) {
-                    return w;
-                } else if (widget instanceof IDraggable && ((IDraggable) widget).allowDrag(mouseX, mouseY, button)) {
-                    draggedWidget = widget;
-                    ((IDraggable) widget).startDrag(mouseX, mouseY);
-                    return widget;
+                Widget w = widget.mouseClicked(mouseX, mouseY, button);
+                if (waitToRemoved == null || !waitToRemoved.contains(widget))  {
+                    if (widget instanceof IDraggable && ((IDraggable) widget).allowDrag(mouseX, mouseY, button)) {
+                        draggedWidget = widget;
+                        ((IDraggable) widget).startDrag(mouseX, mouseY);
+                        return w != null ? w : widget;
+                    } else if (widget instanceof ISelected && ((ISelected) widget).allowSelected(mouseX, mouseY, button)) {
+                        if (selectedWidget != null && selectedWidget != widget) {
+                            ((ISelected) selectedWidget).onUnSelected();
+                        }
+                        selectedWidget = widget;
+                        ((ISelected) selectedWidget).onSelected();
+                        return w != null ? w : widget;
+                    }
                 }
+                if (w != null) return w;
             }
         }
+        draggedWidget = null;
         return null;
     }
 
@@ -372,10 +390,18 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
         return this;
     }
 
-    public interface IDraggable {
-        boolean allowDrag(int mouseX, int mouseY, int button);
+    public interface IDraggable extends ISelected {
+        default boolean allowDrag(int mouseX, int mouseY, int button) {
+            return allowSelected(mouseX, mouseY, button);
+        }
         default void startDrag(int mouseX, int mouseY) {}
         default boolean dragging(int mouseX, int mouseY, int deltaX, int deltaY) {return true;}
         default void endDrag(int mouseX, int mouseY) {}
+    }
+
+    public interface ISelected {
+        boolean allowSelected(int mouseX, int mouseY, int button);
+        default void onSelected() {}
+        default void onUnSelected() {}
     }
 }

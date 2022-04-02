@@ -3,6 +3,9 @@ package com.cleanroommc.multiblocked.common.capability.widget;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
@@ -20,11 +23,17 @@ import net.minecraft.util.text.TextFormatting;
 import javax.annotation.Nullable;
 
 public class GasStackWidget extends ContentWidget<GasStack> {
+
     @Override
     protected void onContentUpdate() {
         if (Multiblocked.isClient() && content != null) {
             this.setHoverTooltip(TextFormatting.AQUA + content.getGas().getLocalizedName() + " Gas\nAmount: " + TextFormatting.YELLOW + content.amount);
         }
+    }
+
+    @Override
+    public GasStack getJEIContent(Object content) {
+        return super.getJEIContent(content);
     }
 
     @Override
@@ -92,10 +101,15 @@ public class GasStackWidget extends ContentWidget<GasStack> {
     }
 
     @Override
-    public Object getIngredientOverMouse(int mouseX, int mouseY) {
-        if (isMouseOverElement(mouseX, mouseY)) {
-            return content;
-        }
-        return null;
+    public void openConfigurator(WidgetGroup dialog) {
+        super.openConfigurator(dialog);
+        int x = 5;
+        int y = 25;
+        dialog.addWidget(new LabelWidget(5, y + 3, "Amount:"));
+        dialog.addWidget(new TextFieldWidget(125 - 60, y, 60, 15, true, null, number -> {
+            content = new GasStack(content.getGas(), Integer.parseInt(number));
+            onContentUpdate();
+        }).setNumbersOnly(1, Integer.MAX_VALUE).setCurrentString(content.amount+""));
     }
+
 }

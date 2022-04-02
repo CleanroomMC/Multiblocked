@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import net.minecraft.tileentity.TileEntity;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +25,13 @@ public abstract class CapabilityProxy<K> {
             tileEntity = tileEntity.getWorld().getTileEntity(tileEntity.getPos());
         }
         return tileEntity;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CapabilityProxy<?>)) return false;
+        return Objects.equals(getTileEntity(), ((CapabilityProxy<?>) obj).getTileEntity());
     }
 
     /**

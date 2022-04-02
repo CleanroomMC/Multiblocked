@@ -23,12 +23,18 @@ import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     public static final GasMekanismCapability CAP = new GasMekanismCapability();
 
     private GasMekanismCapability() {
         super("mek_gas", new Color(0x85909E).getRGB());
+    }
+
+    @Override
+    public GasStack defaultContent() {
+        return new GasStack(GasRegistry.getGas(0), 1000);
     }
 
     @Override
@@ -72,6 +78,11 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
 
         public IGasHandler getCapability() {
             return getTileEntity().getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof GasMekanismCapabilityProxy && Objects.equals(getCapability(), ((GasMekanismCapabilityProxy) obj).getCapability());
         }
 
         @Override

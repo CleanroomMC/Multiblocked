@@ -16,6 +16,7 @@ import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import mekanism.common.base.FluidHandlerWrapper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -25,11 +26,17 @@ import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
 
     public FluidMultiblockCapability() {
         super("fluid", new Color(0x3C70EE).getRGB());
+    }
+
+    @Override
+    public FluidStack defaultContent() {
+        return new FluidStack(FluidRegistry.WATER, 1000);
     }
 
     @Override
@@ -75,6 +82,11 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
                 return getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
             }
             return fluidHandler;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof FluidCapabilityProxy && Objects.equals(getCapability(), ((FluidCapabilityProxy) obj).getCapability());
         }
 
         @Override

@@ -17,6 +17,12 @@ public class LabelWidget extends Widget {
     private int color;
     private boolean drop;
 
+    public LabelWidget(int xPosition, int yPosition, String text) {
+        this(xPosition, yPosition, ()->text);
+        setDrop(true);
+        setTextColor(-1);
+    }
+
     public LabelWidget(int xPosition, int yPosition, Supplier<String> text) {
         super(new Position(xPosition, yPosition), Size.ZERO);
         this.textSupplier = text;

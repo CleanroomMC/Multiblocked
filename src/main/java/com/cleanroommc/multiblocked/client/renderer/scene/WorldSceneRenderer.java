@@ -81,9 +81,9 @@ public abstract class WorldSceneRenderer {
     }
 
     public WorldSceneRenderer useCacheBuffer(boolean useCache) {
-        if (useCache && !OpenGlHelper.useVbo()) return this;
+        if (useCache || !OpenGlHelper.useVbo() || !Minecraft.getMinecraft().isCallingFromMinecraftThread()) return this;
+        deleteCacheBuffer();
         if (useCache) {
-            deleteCacheBuffer();
             this.vertexBuffers = new VertexBuffer[BlockRenderLayer.values().length];
             for (int j = 0; j < BlockRenderLayer.values().length; ++j) {
                 this.vertexBuffers[j] = new VertexBuffer(DefaultVertexFormats.BLOCK);

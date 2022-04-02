@@ -3,6 +3,7 @@ package com.cleanroommc.multiblocked.api.tile;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.BlueprintTableWidget;
 import com.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.Predicates;
 import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
@@ -12,7 +13,6 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.BlueprintTableWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +54,6 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
         tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"));
         tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"));
         tableDefinition.isOpaqueCube = false;
-        tableDefinition.disableOthersRendering = true;
         tableDefinition.catalyst = null;
 
 
@@ -68,8 +67,8 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .aisle("PTP", "   ")
                 .where(' ', Predicates.any())
                 .where('T', Predicates.component(tableDefinition))
-                .where('P', Predicates.component(partDefinition))
-                .where('C', Predicates.anyCapability(IO.BOTH, MultiblockCapabilities.ITEM))
+                .where('P', Predicates.component(partDefinition).disableRenderFormed())
+                .where('C', Predicates.anyCapability(IO.BOTH, MultiblockCapabilities.ITEM).disableRenderFormed())
                 .build();
         MultiblockComponents.registerComponent(tableDefinition);
         MultiblockComponents.registerComponent(partDefinition);

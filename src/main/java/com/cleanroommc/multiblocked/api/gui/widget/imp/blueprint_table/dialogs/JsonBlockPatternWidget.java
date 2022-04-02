@@ -1,8 +1,9 @@
-package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
+package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
@@ -86,16 +87,17 @@ public class JsonBlockPatternWidget extends DialogWidget {
     public boolean needUpdatePredicateSelector;
     public boolean isPretty;
 
-    public JsonBlockPatternWidget(WidgetGroup parent, JsonBlockPattern pattern, Runnable onSave) {
+    public JsonBlockPatternWidget(WidgetGroup parent, JsonBlockPattern pattern, Consumer<JsonBlockPattern> onClose) {
         super(parent, true);
+        this.setOnClosed(()->onClose.accept(null));
         this.pattern = pattern;
-        this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/json_block_pattern.png")));
+        this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/json_block_pattern.png")));
         this.addWidget(sceneWidget = new BlockPatternSceneWidget());
         this.addWidget(container = new TabContainer(0, 0, 384, 256));
         this.addWidget(new ButtonWidget(280, 29, 70, 20, cd -> {
-            if (onSave != null) onSave.run();
-            close();
-        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
+            if (onClose != null) onClose.accept(pattern);
+            parent.waitToRemoved(this);
+        }).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
 
         // patternTab
         ResourceTexture tabPattern = new ResourceTexture("multiblocked:textures/gui/tab_pattern.png");
@@ -130,7 +132,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
         repeats[0].setActive(false); repeats[1].setActive(false); repeats[0].setHoverTooltip("min"); repeats[1].setHoverTooltip("max");
 
         patternTab.addWidget(symbolSelector = new DraggableScrollableWidgetGroup(215, 105, 130, 35).setBackground(new ColorRectTexture(bgColor)));
-        patternTab.addWidget(new ButtonWidget(174, 105, 35, 35, null, (cd) -> {
+        patternTab.addWidget(new ButtonWidget(174, 105, 35, 35, (cd) -> {
             char next = (char) (pattern.symbolMap.keySet().stream().max(Comparator.comparingInt(a -> a)).get() + 1);
             pattern.symbolMap.put(next, new HashSet<>());
             updateSymbolButton();
@@ -234,7 +236,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
                                 tabTextField.getSubTexture(0, 0.5, 1, 0.5))
                         .setHoverTooltip("Json"),
                 textFieldTab = new WidgetGroup(0, 0, getSize().width, getSize().height));
-        textFieldTab.addWidget(new ImageWidget(171, 52, 179, 20, new ResourceTexture("multiblocked:textures/gui/bar.png")));
+        textFieldTab.addWidget(new ImageWidget(171, 52, 179, 20, ResourceBorderTexture.BAR));
         textFieldTab.addWidget(new SwitchWidget(173, 54, 16, 16, (cd,r) -> {
             isPretty = r;
             updatePatternJson();
@@ -381,7 +383,6 @@ public class JsonBlockPatternWidget extends DialogWidget {
         TrackedDummyWorld world;
         public BlockPatternSceneWidget() {
             super(31, 31, 125, 125, null);
-            useCacheBuffer();
             texture = new TextTexture("", -1).setWidth(125).setType(TextTexture.TextType.ROLL);
             addWidget(characterView = new DraggableScrollableWidgetGroup(0, 0, 125, 125));
             reloadBlocks();
@@ -426,12 +427,14 @@ public class JsonBlockPatternWidget extends DialogWidget {
                 layerSwitch.setVisible(true);
                 layerSwitch.setActive(true);
             }
+            sceneWidget.needCompileCache();
         }
 
         private void addAisle(int add) {
             if (aisleRender + add >= -1 && aisleRender + add < pattern.pattern.length) {
                 aisleRender += add;
             }
+            sceneWidget.needCompileCache();
         }
 
         public void updateTips(String tips) {
@@ -446,6 +449,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
             sameSymbol.clear();
             sameAisle.clear();
             createScene(world = new TrackedDummyWorld());
+            useCacheBuffer();
             world.setRenderFilter(pos -> {
                 if (aisleRender > -1) {
                     return tiles.containsKey(pos) && tiles.get(pos).a == aisleRender;
@@ -732,7 +736,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
                     SimplePredicate predicate = widget.pattern.predicates.get(s);
                     if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
                         renderer = ((PredicateComponent) predicate).definition.baseRenderer;
-                        candidates.clear();
+                        candidates = null;
                         break;
                     } else if (predicate != null && predicate.candidates != null) {
                         for (BlockInfo blockInfo : predicate.candidates.get()) {
@@ -740,10 +744,14 @@ public class JsonBlockPatternWidget extends DialogWidget {
                         }
                     }
                 }
-                if (candidates.size() == 1) {
-                    renderer = new BlockStateRenderer((IBlockState) candidates.toArray()[0]);
-                } else if (!candidates.isEmpty()){
-                    renderer = new CycleBlockStateRenderer(candidates.toArray(new IBlockState[0]));
+                if (candidates != null) {
+                    if (candidates.size() == 1) {
+                        renderer = new BlockStateRenderer((IBlockState) candidates.toArray()[0]);
+                    } else if (!candidates.isEmpty()){
+                        renderer = new CycleBlockStateRenderer(candidates.toArray(new IBlockState[0]));
+                    } else {
+                        renderer = null;
+                    }
                 }
             }
             if (widget.sceneWidget != null) {

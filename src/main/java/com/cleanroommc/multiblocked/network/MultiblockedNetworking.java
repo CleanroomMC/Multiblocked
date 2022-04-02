@@ -5,8 +5,12 @@ import com.cleanroommc.multiblocked.network.s2c.SPacketUIWidgetUpdate;
 import com.cleanroommc.multiblocked.network.c2s.CPacketUIClientAction;
 import com.cleanroommc.multiblocked.network.s2c.SPacketCommand;
 import com.cleanroommc.multiblocked.network.s2c.SPacketRemoveDisabledRendering;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -46,6 +50,24 @@ public class MultiblockedNetworking {
         network.sendTo(packet, player);
     }
 
-    final static IMessageHandler<IPacket, IPacket> S2CHandler = (message, ctx) -> message.executeClient(ctx.getClientHandler());
-    final static IMessageHandler<IPacket, IPacket> C2SHandler = (message, ctx) -> message.executeServer(ctx.getServerHandler());
+    final static IMessageHandler<IPacket, IPacket> S2CHandler = (message, ctx) -> {
+        NetHandlerPlayClient handler = ctx.getClientHandler();
+        IThreadListener threadListener = FMLCommonHandler.instance().getWorldThread(handler);
+        if (threadListener.isCallingFromMinecraftThread()) {
+            return message.executeClient(handler);
+        } else {
+            threadListener.addScheduledTask(() -> message.executeClient(handler));
+        }
+        return null;
+    };
+    final static IMessageHandler<IPacket, IPacket> C2SHandler = (message, ctx) -> {
+        NetHandlerPlayServer handler = ctx.getServerHandler();
+        IThreadListener threadListener = FMLCommonHandler.instance().getWorldThread(handler);
+        if (threadListener.isCallingFromMinecraftThread()) {
+            return message.executeServer(handler);
+        } else {
+            threadListener.addScheduledTask(() -> message.executeServer(handler));
+        }
+        return null;
+    };
 }

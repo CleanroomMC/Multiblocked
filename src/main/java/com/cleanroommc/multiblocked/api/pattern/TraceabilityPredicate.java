@@ -123,6 +123,16 @@ public class TraceabilityPredicate {
         return this;
     }
 
+
+    /**
+     * Set renderMask.
+     */
+    public TraceabilityPredicate disableRenderFormed() {
+        common.forEach(predicate -> predicate.disableRenderFormed = true);
+        limited.forEach(predicate -> predicate.disableRenderFormed = true);
+        return this;
+    }
+
     public boolean test(MultiblockState blockWorldState) {
         boolean flag = false;
         for (SimplePredicate predicate : limited) {

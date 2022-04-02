@@ -36,13 +36,13 @@ public class TreeNode<T, K> {
         TreeNode<T, K> result;
         if (getChildren() != null) {
             result = getChildren().stream().filter(child->child.key.equals(childKey)).findFirst().orElseGet(()->{
-                TreeNode<T, K> newNode = new TreeNode<>(dimension + 1, childKey);
+                TreeNode<T, K> newNode = new TreeNode<T, K>(dimension + 1, childKey).setValid(valid);
                 getChildren().add(newNode);
                 return newNode;
             });
         } else {
             children = new ArrayList<>();
-            result = new TreeNode<>(dimension + 1, childKey);
+            result = new TreeNode<T, K>(dimension + 1, childKey).setValid(valid);
             getChildren().add(result);
         }
         return result;

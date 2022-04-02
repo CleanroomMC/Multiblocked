@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.cleanroommc.multiblocked.Multiblocked;
@@ -78,7 +79,7 @@ public class PredicateAnyCapability extends SimplePredicate {
                     this.io = IO.valueOf(io);
                     buildPredicate();
                 })
-                .setButtonBackground(new ResourceTexture("multiblocked:textures/gui/button_common.png"))
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
                 .setHoverTooltip("IO"));
         group.addWidget(new SelectorWidget(50, 0, 40, 20, new ArrayList<>(MultiblockCapabilities.CAPABILITY_REGISTRY.keySet()), 0xff333333)
@@ -87,7 +88,7 @@ public class PredicateAnyCapability extends SimplePredicate {
                     this.capability = capability;
                     buildPredicate();
                 })
-                .setButtonBackground(new ResourceTexture("multiblocked:textures/gui/button_common.png"))
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
                 .setHoverTooltip("Capability"));
         return groups;

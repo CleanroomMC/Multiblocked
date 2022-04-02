@@ -1,6 +1,10 @@
 package com.cleanroommc.multiblocked;
 
+import com.cleanroommc.multiblocked.api.json.RecipeMapTypeAdapter;
+import com.cleanroommc.multiblocked.api.json.RecipeTypeAdapter;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
+import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
 import com.cleanroommc.multiblocked.command.CommandReload;
@@ -28,7 +32,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -97,6 +100,8 @@ public class Multiblocked {
                 .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
                 .registerTypeAdapter(FluidStack.class, FluidStackTypeAdapter.INSTANCE)
                 .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
+                .registerTypeAdapter(Recipe.class, RecipeTypeAdapter.INSTANCE)
+                .registerTypeAdapter(RecipeMap.class, RecipeMapTypeAdapter.INSTANCE)
                 .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
         if (isModLoaded(MODID_GEO)) {
             gsonBuilder.registerTypeAdapter(GeoComponentRenderer.class, GeoComponentRendererTypeAdapter.INSTANCE);

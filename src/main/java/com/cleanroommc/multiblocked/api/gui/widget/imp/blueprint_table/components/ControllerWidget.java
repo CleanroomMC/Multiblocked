@@ -5,15 +5,21 @@ import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.RecipeMapBuilderWidget;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
+import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
@@ -24,10 +30,12 @@ import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.PhantomSlotWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.JsonBlockPatternWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.JsonBlockPatternWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
+import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -35,28 +43,30 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
-public class ControllerWidget extends ComponentWidget{
-    protected final JsonBlockPattern pattern;
+public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
+    protected JsonBlockPattern pattern;
     protected final WidgetGroup S2;
+    protected final WidgetGroup S3;
     protected final SceneWidget sceneWidget;
     protected final Set<DummyComponentTileEntity> tiles = new HashSet<>();
     protected boolean isFormed;
+    protected String recipeMap;
 
-    public ControllerWidget(JsonBlockPattern pattern, ControllerDefinition definition) {
-        super(definition);
+    public ControllerWidget(WidgetGroup group, ControllerDefinition definition, JsonBlockPattern pattern, String recipeMap, Consumer<JsonObject> onSave) {
+        super(group, definition, onSave);
         this.pattern = pattern;
+        this.recipeMap = recipeMap;
         int x = 47;
-        SimplePredicate predicate = pattern.predicates.get("controller");
+        SimplePredicate predicate = this.pattern.predicates.get("controller");
         if (predicate instanceof PredicateComponent) {
             ((PredicateComponent) predicate).definition = definition;
         }
         S1.addWidget(createBoolSwitch(x + 100, 90, "consumeCatalyst", "consume Catalyst", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
-        S1.addWidget(createBoolSwitch(x + 100, 105, "disableOthersRendering", "disable Others Rendering", definition.disableOthersRendering, r -> definition.disableOthersRendering = r));
 
         IItemHandlerModifiable handler;
         PhantomSlotWidget phantomSlotWidget = new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, x + 205, 73);
@@ -82,20 +92,50 @@ public class ControllerWidget extends ComponentWidget{
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S2"))
                         .setHoverTooltip("Step 2: structure pattern setup"),
                 S2 = new WidgetGroup(0, 0, getSize().width, getSize().height));
-        S2.addWidget(new ImageWidget(35, 59, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
-        S2.addWidget(sceneWidget = new SceneWidget(35, 59, 138, 138, null).useCacheBuffer().setRenderFacing(false).setRenderSelect(false));
+        S2.addWidget(new ImageWidget(50, 66, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
+        S2.addWidget(sceneWidget = new SceneWidget(50, 66, 138, 138, null)
+                .useCacheBuffer()
+                .setRenderFacing(false)
+                .setRenderSelect(false));
         ResourceTexture PAGE = new ResourceTexture("multiblocked:textures/gui/structure_page.png");
         sceneWidget.addWidget(new SwitchWidget(138 - 20, 138 - 20, 16, 16, this::onFormedSwitch)
                 .setPressed(isFormed)
                 .setTexture(PAGE.getSubTexture(176 / 256.0, 184 / 256.0, 16 / 256.0, 16 / 256.0), PAGE.getSubTexture(176 / 256.0, 200 / 256.0, 16 / 256.0, 16 / 256.0))
                 .setHoverTooltip("multiblocked.structure_page.switch"));
-        S2.addWidget(new ButtonWidget(181, 55, 20, 20, new ColorRectTexture(-1), cd -> new JsonBlockPatternWidget(this, pattern, this::savePattern)));
+        S2.addWidget(new TextBoxWidget(200, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
+        S2.addWidget(new ButtonWidget(200, 66, 100, 20,
+                new GuiTextureGroup(ResourceBorderTexture.BAR, new TextTexture("Pattern Setting", -1).setDropShadow(true)), cd -> {
+            sceneWidget.setActive(false);
+            sceneWidget.setVisible(false);
+            new JsonBlockPatternWidget(this, this.pattern.copy(), this::savePattern);
+        }).setHoverBorderTexture(1, -1));
         updateScene();
+
+        tabContainer.addTab(new TabButton(88, 26, 20, 20)
+                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S3"))
+                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S3"))
+                        .setHoverTooltip("Step 3: machine recipe map"),
+                S3 = new WidgetGroup(0, 0, getSize().width, getSize().height));
+        S3.addWidget(new LabelWidget(80, 55, "RecipeMap: "));
+        S3.addWidget(new TextFieldWidget(80, 70, 100, 15, true, () -> this.recipeMap, s -> this.recipeMap = s));
+        S3.addWidget(new RecipeMapBuilderWidget(this, 188, 50, 150, 170).setOnRecipeMapSelected(recipeMap1 -> this.recipeMap = recipeMap1.name));
+    }
+
+    @Override
+    protected JsonObject getJsonObj() {
+        JsonObject jsonObject = super.getJsonObj();
+        jsonObject.add("basePattern", Multiblocked.GSON.toJsonTree(pattern));
+        jsonObject.addProperty("recipeMap", this.recipeMap == null ? RecipeMap.EMPTY.name : this.recipeMap);
+        if (definition.catalyst == null) {
+            jsonObject.add("catalyst", null);
+        }
+        return jsonObject;
     }
 
     private void onFormedSwitch(ClickData clickData, boolean isPressed) {
         isFormed = isPressed;
         tiles.forEach(t->t.isFormed = isFormed);
+        sceneWidget.needCompileCache();
     }
 
     private void updateScene() {
@@ -115,26 +155,35 @@ public class ControllerWidget extends ComponentWidget{
                     DummyComponentTileEntity  tileEntity = (DummyComponentTileEntity) world.getTileEntity(pos);
                     ComponentDefinition definition = null;
                     assert tileEntity != null;
+                    boolean disableFormed = false;
                     if (this.pattern.symbolMap.containsKey(symbol)) {
                         Set<IBlockState> candidates = new HashSet<>();
                         for (String s : this.pattern.symbolMap.get(symbol)) {
                             SimplePredicate predicate = this.pattern.predicates.get(s);
                             if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
                                 definition = ((PredicateComponent) predicate).definition;
+                                disableFormed |= predicate.disableRenderFormed;
                                 break;
                             } else if (predicate != null && predicate.candidates != null) {
                                 for (BlockInfo blockInfo : predicate.candidates.get()) {
                                     candidates.add(blockInfo.getBlockState());
                                 }
+                                disableFormed |= predicate.disableRenderFormed;
                             }
                         }
-                        if (!candidates.isEmpty()) {
+                        if (candidates.size() == 1) {
+                            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
+                            definition.baseRenderer = new BlockStateRenderer((IBlockState) candidates.toArray()[0]);
+                        } else if (!candidates.isEmpty()) {
                             definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
                             definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new IBlockState[0]));
                         }
                     }
                     if (definition != null) {
                         tileEntity.setDefinition(definition);
+                        if (disableFormed) {
+                            definition.formedRenderer = new BlockStateRenderer(Blocks.AIR.getDefaultState());
+                        }
                     }
                     tileEntity.isFormed = isFormed;
                     tileEntity.setWorld(world);
@@ -147,8 +196,14 @@ public class ControllerWidget extends ComponentWidget{
         sceneWidget.setRenderedCore(posSet, null);
     }
 
-    private void savePattern() {
-        updateScene();
+    private void savePattern(JsonBlockPattern patternResult) {
+        if (patternResult != null) {
+            pattern = patternResult;
+            pattern.cleanUp();
+            updateScene();
+        }
+        sceneWidget.setVisible(true);
+        sceneWidget.setActive(true);
     }
 
     @Override

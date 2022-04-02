@@ -32,9 +32,10 @@ public class TankWidget extends Widget implements IIngredientSlot {
 
     public final IFluidTank fluidTank;
 
-    protected boolean alwaysShowFull;
+    protected boolean showTips;
     protected boolean allowClickFilling;
     protected boolean allowClickEmptying;
+    protected boolean drawHoverTips;
     protected IGuiTexture background;
     protected IGuiTexture overlay;
 
@@ -44,8 +45,15 @@ public class TankWidget extends Widget implements IIngredientSlot {
     public TankWidget(IFluidTank fluidTank, int x, int y, boolean allowClickContainerFilling, boolean allowClickContainerEmptying) {
         super(new Position(x, y), new Size(18, 18));
         this.fluidTank = fluidTank;
+        this.showTips = true;
         this.allowClickFilling = allowClickContainerFilling;
         this.allowClickEmptying = allowClickContainerEmptying;
+        this.drawHoverTips = true;
+    }
+
+    public TankWidget setDrawHoverTips(boolean drawHoverTips) {
+        this.drawHoverTips = drawHoverTips;
+        return this;
     }
 
     @Override
@@ -56,8 +64,8 @@ public class TankWidget extends Widget implements IIngredientSlot {
         return this;
     }
 
-    public TankWidget setAlwaysShowFull(boolean alwaysShowFull) {
-        this.alwaysShowFull = alwaysShowFull;
+    public TankWidget setShowTips(boolean showTips) {
+        this.showTips = showTips;
         return this;
     }
 
@@ -85,14 +93,6 @@ public class TankWidget extends Widget implements IIngredientSlot {
         return null;
     }
 
-    public String getFormattedFluidAmount() {
-        return String.format("%,d", lastFluidInTank == null ? 0 : lastFluidInTank.amount);
-    }
-
-    public String getFluidLocalizedName() {
-        return lastFluidInTank == null ? "" : lastFluidInTank.getLocalizedName();
-    }
-
     @Override
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
         Position pos = getPosition();
@@ -104,15 +104,15 @@ public class TankWidget extends Widget implements IIngredientSlot {
         if (lastFluidInTank != null) {
             GlStateManager.disableBlend();
             FluidStack stackToDraw = lastFluidInTank;
-            int drawAmount = alwaysShowFull ? lastFluidInTank.amount : lastTankCapacity;
-            if (alwaysShowFull && lastFluidInTank.amount == 0) {
+            int drawAmount = lastFluidInTank.amount;
+            if (showTips && lastFluidInTank.amount == 0) {
                 stackToDraw = lastFluidInTank.copy();
                 stackToDraw.amount = 1;
                 drawAmount = 1;
             }
             DrawerHelper.drawFluidForGui(stackToDraw, drawAmount, pos.x + 1, pos.y + 1, size.width - 2, size.height - 2);
 
-            if (alwaysShowFull) {
+            if (showTips) {
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(0.5, 0.5, 1);
                 String s = TextFormattingUtil.formatLongToCompactString(lastFluidInTank.amount, 4) + "L";
@@ -131,7 +131,7 @@ public class TankWidget extends Widget implements IIngredientSlot {
 
     @Override
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
-        if (isMouseOverElement(mouseX, mouseY)) {
+        if (drawHoverTips && isMouseOverElement(mouseX, mouseY)) {
             List<String> tooltips = new ArrayList<>();
             if (lastFluidInTank != null) {
                 Fluid fluid = lastFluidInTank.getFluid();

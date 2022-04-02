@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.common.capability;
 
+import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -9,23 +10,31 @@ import com.google.gson.JsonSerializationContext;
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import mekanism.api.IHeatTransfer;
 import mekanism.common.capabilities.Capabilities;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class HeatMekanismCapability extends MultiblockCapability<Double> {
     public static final HeatMekanismCapability CAP = new HeatMekanismCapability();
 
     private HeatMekanismCapability() {
         super("mek_heat", new Color(0xD9068D).getRGB());
+    }
+
+    @Override
+    public Double defaultContent() {
+        return 100d;
     }
 
     @Override
@@ -45,7 +54,12 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
 
     @Override
     public ContentWidget<? super Double> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new ColorRectTexture(this.color)).setUnit("Heat");
+        return new NumberContentWidget().setContentTexture(new ItemStackTexture(
+                Arrays.stream(getCandidates())
+                        .map(state -> new ItemStack(
+                                Item.getItemFromBlock(state.getBlock()), 1,
+                                state.getBlock().damageDropped(state)))
+                        .toArray(ItemStack[]::new))).setUnit("Heat");
     }
 
     @Override
@@ -66,6 +80,11 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
 
         public IHeatTransfer getCapability() {
             return getTileEntity().getCapability(Capabilities.HEAT_TRANSFER_CAPABILITY, null);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof HeatMekanismCapabilityProxy && Objects.equals(getCapability(), ((HeatMekanismCapabilityProxy) obj).getCapability());
         }
 
         @Override

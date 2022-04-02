@@ -17,12 +17,11 @@ import javax.annotation.Nonnull;
 public class RecipeMapCategory implements IRecipeCategory<ModularWrapper> {
     private final RecipeMap recipeMap;
     private final IDrawable background;
-    private final IDrawable icon;
+    private IDrawable icon;
 
     public RecipeMapCategory(IJeiHelpers helpers, RecipeMap recipeMap) {
         IGuiHelper guiHelper = helpers.getGuiHelper();
         this.background = guiHelper.createBlankDrawable(176, 84);
-        this.icon = recipeMap.categoryTexture == null ? guiHelper.createBlankDrawable(18, 18) : recipeMap.categoryTexture.toDrawable(18, 18);
         this.recipeMap = recipeMap;
     }
 
@@ -52,7 +51,7 @@ public class RecipeMapCategory implements IRecipeCategory<ModularWrapper> {
 
     @Override
     public IDrawable getIcon() {
-        return icon;
+        return icon == null ? (icon = recipeMap.categoryTexture == null ? null : recipeMap.categoryTexture.toDrawable(18, 18)) : icon;
     }
 
     @Override

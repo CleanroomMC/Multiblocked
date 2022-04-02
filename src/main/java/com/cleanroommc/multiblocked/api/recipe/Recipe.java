@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.recipe;
 
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.ICapabilityProxyHolder;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.google.common.collect.ImmutableList;
@@ -14,8 +15,10 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ZenClass("mods.multiblocked.recipe.Recipe")
@@ -43,16 +46,20 @@ public class Recipe {
      * @param capabilityProxies proxies
      * @return result
      */
-    public boolean match(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
-        if (!match(IO.IN, capabilityProxies)) return false;
-        return match(IO.OUT, capabilityProxies);
+    public boolean match(ICapabilityProxyHolder holder) {
+        if (!holder.hasProxies()) return false;
+        if (!match(IO.IN, holder.getCapabilities())) return false;
+        return match(IO.OUT, holder.getCapabilities());
     }
 
     private boolean match(IO io, Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : io == IO.IN ? inputs.entrySet() : outputs.entrySet()) {
+            Set<CapabilityProxy<?>> used = new HashSet<>();
             List<?> content = entry.getValue().stream().map(Tuple::getFirst).collect(Collectors.toList());
             if (capabilityProxies.contains(io, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey()).values()) { // search same io type
+                    if (used.contains(proxy)) continue;
+                    used.add(proxy);
                     content = proxy.searchingRecipe(io, this, content);
                     if (content == null) break;
                 }
@@ -60,6 +67,8 @@ public class Recipe {
             if (content == null) continue;
             if (capabilityProxies.contains(IO.BOTH, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
+                    if (used.contains(proxy)) continue;
+                    used.add(proxy);
                     content = proxy.searchingRecipe(io, this, content);
                     if (content == null) break;
                 }
@@ -69,9 +78,12 @@ public class Recipe {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
-    public void handleInput(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
+    @SuppressWarnings("ALL")
+    public void handleInput(ICapabilityProxyHolder holder) {
+        if (!holder.hasProxies()) return;
+        Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : inputs.entrySet()) {
+            Set<CapabilityProxy<?>> used = new HashSet<>();
             List content = new ArrayList<>();
             for (Tuple<Object, Float> tuple : entry.getValue()) {
                 if (tuple.getSecond() == 1 || Multiblocked.RNG.nextFloat() < tuple.getSecond()) { // chance input
@@ -81,6 +93,8 @@ public class Recipe {
             if (content.isEmpty()) continue;
             if (capabilityProxies.contains(IO.IN, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.IN, entry.getKey()).values()) { // search same io type
+                    if (used.contains(proxy)) continue;
+                    used.add(proxy);
                     content = proxy.handleRecipeInput(this, content);
                     if (content == null) break;
                 }
@@ -88,6 +102,8 @@ public class Recipe {
             if (content == null) continue;
             if (capabilityProxies.contains(IO.BOTH, entry.getKey())){
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
+                    if (used.contains(proxy)) continue;
+                    used.add(proxy);
                     content = proxy.handleRecipeInput(this, content);
                     if (content == null) break;
                 }
@@ -95,9 +111,12 @@ public class Recipe {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void handleOutput(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
+    @SuppressWarnings("ALL")
+    public void handleOutput(ICapabilityProxyHolder holder) {
+        if (!holder.hasProxies()) return;
+        Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : outputs.entrySet()) {
+            Set<CapabilityProxy<?>> used = new HashSet<>();
             List content = new ArrayList<>();
             for (Tuple<Object, Float> tuple : entry.getValue()) {
                 if (tuple.getSecond() == 1 || Multiblocked.RNG.nextFloat() < tuple.getSecond()) { // chance output
@@ -107,6 +126,8 @@ public class Recipe {
             if (content.isEmpty()) continue;
             if (capabilityProxies.contains(IO.OUT, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.OUT, entry.getKey()).values()) { // search same io type
+                    if (used.contains(proxy)) continue;
+                    used.add(proxy);
                     content = proxy.handleRecipeOutput(this, content);
                     if (content == null) break;
                 }
@@ -114,6 +135,8 @@ public class Recipe {
             if (content == null) continue;
             if (capabilityProxies.contains(IO.BOTH, entry.getKey())) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
+                    if (used.contains(proxy)) continue;
+                    used.add(proxy);
                     content = proxy.handleRecipeOutput(this, content);
                     if (content == null) break;
                 }

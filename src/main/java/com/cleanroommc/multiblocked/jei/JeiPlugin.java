@@ -89,6 +89,7 @@ public class JeiPlugin implements IModPlugin {
         IJeiHelpers jeiHelpers = registry.getJeiHelpers();
         registry.addRecipeCategories(new MultiblockInfoCategory(jeiHelpers));
         for (RecipeMap recipeMap : RecipeMap.RECIPE_MAP_REGISTRY.values()) {
+            if (recipeMap == RecipeMap.EMPTY) continue;
             registry.addRecipeCategories(new RecipeMapCategory(jeiHelpers, recipeMap));
         }
     }

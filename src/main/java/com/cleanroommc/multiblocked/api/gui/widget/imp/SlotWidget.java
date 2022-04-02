@@ -41,6 +41,7 @@ public class SlotWidget extends Widget implements IIngredientSlot {
     public boolean isPlayerInventory;
     public boolean isPlayerHotBar;
     public boolean drawOverlay = true;
+    public boolean drawHoverTips = true;
 
     protected IGuiTexture backgroundTexture;
     protected Runnable changeListener;
@@ -73,20 +74,20 @@ public class SlotWidget extends Widget implements IIngredientSlot {
         return this;
     }
 
+    public SlotWidget setDrawHoverTips(boolean drawHoverTips) {
+        this.drawHoverTips = drawHoverTips;
+        return this;
+    }
+
     public SlotWidget setDrawOverlay(boolean drawOverlay) {
         this.drawOverlay = drawOverlay;
         return this;
     }
 
     @Override
-    public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
-        super.drawInForeground(mouseX, mouseY, partialTicks);
-        ((ISlotWidget) slotReference).setHover(isMouseOverElement(mouseX, mouseY) && isActive());
-    }
-
-    @Override
     @SideOnly(Side.CLIENT)
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
+        ((ISlotWidget) slotReference).setHover(drawHoverTips && isMouseOverElement(mouseX, mouseY) && isActive());
         Position pos = getPosition();
         Size size = getSize();
         if (backgroundTexture != null) {

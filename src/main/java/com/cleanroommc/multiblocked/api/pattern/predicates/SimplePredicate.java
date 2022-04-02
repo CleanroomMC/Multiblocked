@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -13,6 +14,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import com.cleanroommc.multiblocked.api.pattern.error.SinglePredicateError;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
@@ -33,14 +35,15 @@ public class SimplePredicate {
     public static SimplePredicate ANY = new SimplePredicate("any", x -> true, null);
     public static SimplePredicate AIR = new SimplePredicate("air", blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()), null);
     
-    public Supplier<BlockInfo[]> candidates;
-    public Predicate<MultiblockState> predicate;
+    public transient Supplier<BlockInfo[]> candidates;
+    public transient Predicate<MultiblockState> predicate;
 
     public List<String> toolTips;
 
     public int minCount = -1;
     public int maxCount = -1;
     public int previewCount = -1;
+    public boolean disableRenderFormed = false;
     
     public final String type;
 
@@ -101,11 +104,23 @@ public class SimplePredicate {
     }
 
     public boolean test(MultiblockState blockWorldState) {
-        return predicate.test(blockWorldState);
+        if (predicate.test(blockWorldState)) {
+            if (disableRenderFormed) {
+                blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new).add(blockWorldState.getPos().toLong());
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean testLimited(MultiblockState blockWorldState) {
-        return testGlobal(blockWorldState);
+        if (testGlobal(blockWorldState)) {
+            if (disableRenderFormed) {
+                blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new).add(blockWorldState.getPos().toLong());
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean testGlobal(MultiblockState blockWorldState) {
@@ -127,7 +142,7 @@ public class SimplePredicate {
     }
 
     public List<WidgetGroup> getConfigWidget(List<WidgetGroup> groups) {
-        WidgetGroup group = new WidgetGroup(0, 0, 120, 70);
+        WidgetGroup group = new WidgetGroup(0, 0, 120, 90);
         groups.add(group);
         group.setClientSideWidget();
         group.addWidget(new LabelWidget(0, 0, () -> "Type: " + type).setTextColor(-1).setDrop(true));
@@ -144,7 +159,7 @@ public class SimplePredicate {
             min.setVisible(r);
             minCount = r ? 0 : -1;
         }).setPressed(minCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("min (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("min (Y)", -1).setDropShadow(true))
-                .setHoverTooltip("minimum limit in the structure"));
+                .setHoverTooltip("minimum count limit in the structure"));
 
         group.addWidget(max = new TextFieldWidget(55, 33, 30, 15, true, () -> maxCount + "", s -> {
             maxCount = Integer.parseInt(s);
@@ -157,7 +172,7 @@ public class SimplePredicate {
             max.setVisible(r);
             maxCount = r ? 0 : -1;
         }).setPressed(maxCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("max (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("max (Y)", -1).setDropShadow(true))
-                .setHoverTooltip("maximum limit in the structure"));
+                .setHoverTooltip("maximum count limit in the structure"));
 
 
         group.addWidget(preview = (TextFieldWidget) new TextFieldWidget(55, 51 , 30, 15, true, () -> previewCount + "", s -> previewCount = Integer.parseInt(s)).setNumbersOnly(0, Integer.MAX_VALUE).setHoverTooltip("preview"));
@@ -167,13 +182,24 @@ public class SimplePredicate {
             previewCount = r ? 0 : -1;
         }).setPressed(previewCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("jei (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("jei (Y)", -1).setDropShadow(true))
                 .setHoverTooltip("exact limit in the jei preview"));
-
+        WidgetGroup widgetGroup = new WidgetGroup(0, 70, 100, 15)
+                .addWidget(new SwitchWidget(0, 0, 15, 15, (cd, r)->disableRenderFormed = r)
+                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
+                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
+                        .setHoverTexture(new ColorBorderTexture(1, 0xff545757))
+                        .setPressed(disableRenderFormed)
+                        .setHoverTooltip("disable the original model rendering while the structure formed"))
+                .addWidget(new LabelWidget(20, 3, "disableRenderFormed").setTextColor(-1).setDrop(true));
+        group.addWidget(widgetGroup);
         return groups;
     }
 
     public JsonObject toJson(JsonObject jsonObject) {
         jsonObject.add("type", new JsonPrimitive(type));
         jsonObject.add("toolTips", Multiblocked.GSON.toJsonTree(toolTips));
+        if (disableRenderFormed) {
+            jsonObject.add("shouldRenderFormed", new JsonPrimitive(true));
+        }
         if (minCount > -1) {
             jsonObject.add("minCount", new JsonPrimitive(minCount));
         }

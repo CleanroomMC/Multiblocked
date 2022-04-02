@@ -4,9 +4,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.cleanroommc.multiblocked.Multiblocked;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,7 +23,7 @@ public class FluidStackTypeAdapter implements JsonDeserializer<FluidStack>, Json
     @Override
     public FluidStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         try {
-            return FluidStack.loadFluidStackFromNBT(JsonToNBT.getTagFromJson(Multiblocked.GSON.toJson(json)));
+            return FluidStack.loadFluidStackFromNBT(JsonToNBT.getTagFromJson(json.getAsString()));
         } catch (NBTException e) {
             return null;
         }
@@ -31,6 +31,6 @@ public class FluidStackTypeAdapter implements JsonDeserializer<FluidStack>, Json
 
     @Override
     public JsonElement serialize(FluidStack src, Type typeOfSrc, JsonSerializationContext context) {
-        return Multiblocked.GSON.fromJson(src.writeToNBT(new NBTTagCompound()).toString(), JsonElement.class);
+        return new JsonPrimitive(src.writeToNBT(new NBTTagCompound()).toString());
     }
 }

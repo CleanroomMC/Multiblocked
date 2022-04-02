@@ -31,6 +31,11 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
     }
 
     @Override
+    public ParticleStack defaultContent() {
+        return new ParticleStack(Particles.antidown);
+    }
+
+    @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return tileEntity instanceof ITileParticleStorage;
     }
@@ -90,7 +95,10 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
                     ParticleStack particleStack = iterator.next();
                     for (ParticleStorage storage : capability.getParticleBeams()) {
                         ParticleStack stored = storage.getParticleStack();
-                        if (stored != null && stored.getParticle() == particleStack.getParticle() && storage.canExtractParticle(null)) {
+                        if (stored != null
+                                && storage.canExtractParticle(null)
+                                && stored.getParticle() == particleStack.getParticle()
+                                && stored.getMeanEnergy() >= particleStack.getMeanEnergy()) {
                             int leftAmount = particleStack.getAmount() - stored.getAmount();
                             if (!simulate) {
                                 storage.extractParticle(null, particleStack.getParticle(), particleStack.getAmount());

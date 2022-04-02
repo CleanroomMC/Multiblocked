@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.tile;
 
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.ICapabilityProxyHolder;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
@@ -10,6 +11,7 @@ import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import crafttweaker.annotations.ZenRegister;
@@ -26,6 +28,8 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.Stru
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -45,10 +49,13 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
+import stanhebben.zenscript.annotations.ZenSetter;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,16 +67,17 @@ import java.util.stream.Collectors;
  */
 @ZenClass("mods.multiblocked.tile.Controller")
 @ZenRegister
-public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition>{
+public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition> implements ICapabilityProxyHolder {
     public MultiblockState state;
     protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
     private Map<Long, Map<MultiblockCapability<?>, IO>> settings;
     protected LongOpenHashSet parts;
-    private boolean isWorking;
+    protected String status;
     @ZenProperty
     public RecipeLogic recipeLogic;
 
     public ControllerTileEntity() {
+        status = "idle";
     }
 
     public BlockPattern getPattern() {
@@ -95,9 +103,19 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return state != null && state.isFormed();
     }
 
-    @ZenGetter
-    public boolean isWorking() {
-        return isWorking;
+    @ZenGetter("status")
+    public String getStatus() {
+        return status;
+    }
+
+    @ZenSetter("status")
+    public void setStatus(String status) {
+        if (!isRemote()) {
+            if (!this.status.equals(status)) {
+                this.status = status;
+                writeCustomData(-2, buffer->buffer.writeString(this.status));
+            }
+        }
     }
 
     @Override
@@ -117,10 +135,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public void updateFormed() {
         if (recipeLogic != null) {
             recipeLogic.update();
-            if (isWorking != recipeLogic.isWorking) {
-                isWorking = !isWorking;
-                writeCustomData(-2, buffer -> buffer.writeBoolean(isWorking));
-            }
         }
         if (definition.updateFormed != null) {
             definition.updateFormed.apply(this);
@@ -138,6 +152,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return super.getRenderer();
     }
 
+    @Override
+    public boolean hasProxies() {
+        return capabilities != null && !capabilities.isEmpty();
+    }
+
     public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
         return capabilities;
     }
@@ -149,6 +168,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (recipeLogic == null) {
             recipeLogic = new RecipeLogic(this);
         }
+        setStatus("idle");
         // init capabilities
         Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap = state.getMatchContext().get("capabilities");
         if (capabilityMap != null) {
@@ -208,6 +228,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     public void onStructureInvalid() {
         recipeLogic = null;
+        setStatus("idle");
         // invalid parts
         if (parts != null) {
             for (Long pos : parts) {
@@ -232,7 +253,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             readState(buf);
             scheduleChunkForRenderUpdate();
         } else if (dataId == -2) {
-            isWorking = buf.readBoolean();
+            status = buf.readString(Short.MAX_VALUE);
         } else {
             super.receiveCustomData(dataId, buf);
         }
@@ -242,22 +263,23 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public void writeInitialSyncData(PacketBuffer buf) {
         super.writeInitialSyncData(buf);
         writeState(buf);
-        buf.writeBoolean(isWorking);
+        buf.writeString(status);
     }
 
     @Override
     public void receiveInitialSyncData(PacketBuffer buf) {
         super.receiveInitialSyncData(buf);
         readState(buf);
-        isWorking = buf.readBoolean();
+        status = buf.readString(Short.MAX_VALUE);
         scheduleChunkForRenderUpdate();
     }
 
     protected void writeState(PacketBuffer buffer) {
         buffer.writeBoolean(isFormed());
-        if (isFormed() && definition.disableOthersRendering) {
-            buffer.writeVarInt(state.cache.size());
-            for (long blockPos : state.cache) {
+        if (isFormed()) {
+            LongSet disabled = state.getMatchContext().getOrDefault("renderMask", LongSets.EMPTY_SET);
+            buffer.writeVarInt(disabled.size());
+            for (long blockPos : disabled) {
                 buffer.writeLong(blockPos);
             }
         }
@@ -266,18 +288,17 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     protected void readState(PacketBuffer buffer) {
         if (buffer.readBoolean()) {
             state = new MultiblockState(world, pos);
-            if (definition.disableOthersRendering) {
-                int size = buffer.readVarInt();
-                state.cache = new LongOpenHashSet();
+            int size = buffer.readVarInt();
+            if (size > 0) {
+                ImmutableList.Builder<BlockPos> listBuilder = new ImmutableList.Builder<>();
                 for (int i = size; i > 0; i--) {
-                    state.cache.add(buffer.readLong());
+                    listBuilder.add(BlockPos.fromLong(buffer.readLong()));
                 }
-                long controllerPos = getPos().toLong();
-                MultiblockWorldSavedData.addDisableModel(state.cache.stream().filter(pos->pos != controllerPos).map(BlockPos::fromLong).collect(Collectors.toList()));
+                MultiblockWorldSavedData.addDisableModel(state.controllerPos, listBuilder.build());
             }
         } else {
-            if (state != null && definition.disableOthersRendering && state.cache != null) {
-                MultiblockWorldSavedData.removeDisableModel(state.cache.stream().map(BlockPos::fromLong).collect(Collectors.toList()));
+            if (state != null) {
+                MultiblockWorldSavedData.removeDisableModel(state.controllerPos);
             }
             state = null;
         }

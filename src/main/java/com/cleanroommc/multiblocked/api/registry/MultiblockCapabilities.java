@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.common.collect.Maps;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
@@ -15,8 +16,15 @@ import com.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import com.cleanroommc.multiblocked.common.capability.ItemMultiblockCapability;
 import com.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import com.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
+import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MultiblockCapabilities {
@@ -56,10 +64,30 @@ public class MultiblockCapabilities {
     }
 
     public static void registerAnyCapabilityBlocks() {
+        DummyWorld world = new DummyWorld();
+        BlockPos pos = BlockPos.ORIGIN;
+        boolean x = false;
+        Map<Block, TileEntity> tileMap = new HashMap<>();
+        for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
+            try {
+                world.setBlockState(pos, block.getDefaultState());
+                TileEntity tile = world.getTileEntity(pos);
+                if (tile != null) {
+                    tileMap.put(block, tile);
+                }
+            } catch (Exception ignored) { }
+            if (pos.getY() < 255)
+                pos = pos.offset(EnumFacing.UP);
+            else {
+                pos = new BlockPos(pos.getX() + (x ? 1 : 0), 0, pos.getZ() + (!x ? 1 : 0));
+                x = !x;
+            }
+        }
         for (MultiblockCapability<?> capability : MultiblockCapabilities.CAPABILITY_REGISTRY.values()) {
+            capability.initCandidates(tileMap);
             for (IO io : IO.values()) {
                 ComponentDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, capability.name + "." + io.name()));
-                definition.baseRenderer = new CycleBlockStateRenderer(capability.getCandidates(io));
+                definition.baseRenderer = new CycleBlockStateRenderer(capability.getCandidates());
                 definition.isOpaqueCube = false;
                 definition.allowRotate = false;
                 definition.showInJei = false;

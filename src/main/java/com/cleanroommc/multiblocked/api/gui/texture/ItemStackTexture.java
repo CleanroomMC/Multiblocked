@@ -32,6 +32,7 @@ public class ItemStackTexture implements IGuiTexture{
 
     @Override
     public void draw(int mouseX, int mouseY, double x, double y, int width, int height) {
+        if (itemStack.length == 0) return;
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableDepth();
         RenderHelper.enableGUIStandardItemLighting();

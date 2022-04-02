@@ -34,7 +34,7 @@ public class RecipeBuilder {
     public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> inputBuilder = new HashMap<>();
     public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> outputBuilder = new HashMap<>();
     protected int duration;
-    protected StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name himself.
+    protected StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name yourself.
 
     public RecipeBuilder(RecipeMap recipeMap) {
         this.recipeMap = recipeMap;

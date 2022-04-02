@@ -1,19 +1,20 @@
 package com.cleanroommc.multiblocked.common.capability;
 
+import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.IO;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
-import com.cleanroommc.multiblocked.api.capability.IO;
-import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -21,13 +22,20 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
     public FEMultiblockCapability() {
         super("forge_energy", new Color(0xCB0000).getRGB());
+    }
+
+    @Override
+    public Integer defaultContent() {
+        return 500;
     }
 
     @Override
@@ -50,12 +58,12 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new ColorRectTexture(this.color)).setUnit("FE");
-    }
-
-    @Override
-    public IBlockState[] getCandidates(IO io) {
-        return scanForCandidates(io);
+        return new NumberContentWidget().setContentTexture(new ItemStackTexture(
+                Arrays.stream(getCandidates())
+                        .map(state -> new ItemStack(
+                                Item.getItemFromBlock(state.getBlock()), 1,
+                                state.getBlock().damageDropped(state)))
+                        .toArray(ItemStack[]::new))).setUnit("FE");
     }
 
     @Override
@@ -76,6 +84,11 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
         public IEnergyStorage getCapability() {
             return getTileEntity().getCapability(CapabilityEnergy.ENERGY, null);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof FECapabilityProxy && Objects.equals(getCapability(), ((FECapabilityProxy) obj).getCapability());
         }
 
         @Override

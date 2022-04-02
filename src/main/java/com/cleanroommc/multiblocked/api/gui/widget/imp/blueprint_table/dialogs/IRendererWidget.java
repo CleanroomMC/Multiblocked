@@ -1,6 +1,7 @@
-package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
+package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
@@ -45,7 +46,6 @@ public class IRendererWidget extends DialogWidget {
 
     public IRendererWidget(WidgetGroup parent, IRenderer renderer, Consumer<IRenderer> onSave) {
         super(parent, true);
-        setClientSideWidget();
         this.onSave = onSave;
         this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xaf000000)));
         TrackedDummyWorld world = new TrackedDummyWorld();
@@ -59,11 +59,11 @@ public class IRendererWidget extends DialogWidget {
                 .setRenderFacing(false));
         this.addWidget(group = new DraggableScrollableWidgetGroup(181, 80, 180, 120));
         this.addWidget(new ButtonWidget(285, 55, 40, 20, this::onUpdate)
-                .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("update", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("update"));
         this.addWidget(new ButtonWidget(330, 55, 45, 20, cd -> Minecraft.getMinecraft().scheduleResourcesRefresh())
-                .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("refresh", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("refresh", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("§4NOTE: Resources refresh will cause the game to stall for a while.§r" +
                         "\n§2Must refresh to display models which have never been loaded before (obj, b3d, and geo).§r" +
@@ -76,13 +76,22 @@ public class IRendererWidget extends DialogWidget {
                 .setButtonBackground(new ColorBorderTexture(1, -1), new ColorRectTexture(0xff444444))
                 .setBackground(new ColorRectTexture(0xff999999))
                 .setHoverTooltip("renderer"));
+        this.addWidget(new ButtonWidget(285, 30, 40, 20, cd -> {
+            if (onSave != null && tileEntity != null) {
+                onSave.accept(tileEntity.getRenderer());
+            }
+            super.close();
+        })
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("save", -1).setDropShadow(true))
+                .setHoverBorderTexture(1, -1)
+                .setHoverTooltip("update"));
     }
 
     @Override
     public void close() {
         super.close();
         if (onSave != null) {
-            onSave.accept(tileEntity.getRenderer());
+            onSave.accept(null);
         }
     }
 
@@ -122,7 +131,7 @@ public class IRendererWidget extends DialogWidget {
                 TextFieldWidget tfw = addModelSettings();
                 File path = new File(MultiblockedResourceLoader.location, "assets/multiblocked/b3d");
                 group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", path, true,
-                        node -> !(node.isLeaf() && node.getContent().isFile() && !node.getContent().getName().endsWith(".b3d")), r -> {
+                        DialogWidget.suffixFilter(".b3d"), r -> {
                     if (r != null && r.isFile()) {
                         tfw.setCurrentString("multiblocked:b3d/" + r.getPath().replace(path.getPath(), "").substring(1).replace('\\', '/'));
                     }
@@ -143,7 +152,7 @@ public class IRendererWidget extends DialogWidget {
                 TextFieldWidget tfw = addModelSettings();
                 File path = new File(MultiblockedResourceLoader.location, "assets/multiblocked/obj");
                 group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", path, true,
-                        node -> !(node.isLeaf() && node.getContent().isFile() && !node.getContent().getName().endsWith(".obj")), r -> {
+                        DialogWidget.suffixFilter(".obj"), r -> {
                     if (r != null && r.isFile()) {
                         tfw.setCurrentString("multiblocked:obj/" + r.getPath().replace(path.getPath(), "").substring(1).replace('\\', '/'));
                     }
@@ -164,7 +173,7 @@ public class IRendererWidget extends DialogWidget {
                 TextFieldWidget tfw = addModelSettings();
                 File path = new File(MultiblockedResourceLoader.location, "assets/multiblocked/models");
                 group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", path, true,
-                        node -> !(node.isLeaf() && node.getContent().isFile() && !node.getContent().getName().endsWith(".json")), r -> {
+                        DialogWidget.suffixFilter(".json"), r -> {
                     if (r != null && r.isFile()) {
                         tfw.setCurrentString("multiblocked:" + r.getPath().replace(path.getPath(), "").substring(1).replace(".json", "").replace('\\', '/'));
                     }
@@ -185,7 +194,7 @@ public class IRendererWidget extends DialogWidget {
                 TextFieldWidget tfw = new TextFieldWidget(1, 1, 150, 20, true, null, null);
                 File path = new File(MultiblockedResourceLoader.location, "assets/multiblocked/geo");
                 group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", path, true,
-                        node -> !(node.isLeaf() && node.getContent().isFile() && !node.getContent().getName().endsWith(".geo.json")), r -> {
+                        DialogWidget.suffixFilter(".geo.json"), r -> {
                     if (r != null && r.isFile()) {
                         tfw.setCurrentString(r.getName().replace(".geo.json", ""));
                     }

@@ -31,6 +31,11 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
     }
 
     @Override
+    public AspectStack defaultContent() {
+        return new AspectStack(Aspect.AIR, 1);
+    }
+
+    @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return tileEntity instanceof IAspectContainer;
     }

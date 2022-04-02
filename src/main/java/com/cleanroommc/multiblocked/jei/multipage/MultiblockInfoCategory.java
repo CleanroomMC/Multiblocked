@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.jei.multipage;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
@@ -39,6 +40,9 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoWra
         registry.addRecipes(REGISTER.stream().map(MultiblockInfoWrapper::new).collect(Collectors.toList()), UID);
         for (ControllerDefinition definition : REGISTER) {
             if (definition.recipeMap != null) {
+                if (definition.recipeMap.categoryTexture == null) {
+                    definition.recipeMap.categoryTexture = new ItemStackTexture(definition.getStackForm());
+                }
                 registry.addRecipeCatalyst(definition.getStackForm(), Multiblocked.MODID + ":" + definition.recipeMap.name);
             }
         }

@@ -8,38 +8,30 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 public class SPacketRemoveDisabledRendering implements IPacket {
-    private Set<Long> poses;
+    private BlockPos controllerPos;
 
     public SPacketRemoveDisabledRendering() {
     }
 
-    public SPacketRemoveDisabledRendering(Set<Long> poses) {
-        this.poses = poses;
+    public SPacketRemoveDisabledRendering(BlockPos controllerPos) {
+        this.controllerPos = controllerPos;
     }
 
     @Override
     public void encode(PacketBuffer buf) {
-        buf.writeVarInt(poses.size());
-        poses.forEach(buf::writeLong);
+        buf.writeVarLong(controllerPos.toLong());
     }
 
     @Override
     public void decode(PacketBuffer buf) {
-        this.poses = new HashSet<>();
-        for (int i = buf.readVarInt(); i > 0; i--) {
-            poses.add(buf.readLong());
-        }
+        this.controllerPos = BlockPos.fromLong(buf.readVarLong());
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public IPacket executeClient(NetHandlerPlayClient handler) {
-        MultiblockWorldSavedData.removeDisableModel(poses.stream().map(BlockPos::fromLong).collect(Collectors.toList()));
+        MultiblockWorldSavedData.removeDisableModel(controllerPos);
         return null;
     }
 }

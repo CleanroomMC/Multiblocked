@@ -51,6 +51,16 @@ public class TextFieldWidget extends Widget {
         this.textResponder = textResponder;
     }
 
+    public TextFieldWidget setTextSupplier(Supplier<String> textSupplier) {
+        this.textSupplier = textSupplier;
+        return this;
+    }
+
+    public TextFieldWidget setTextResponder(Consumer<String> textResponder) {
+        this.textResponder = textResponder;
+        return this;
+    }
+
     public TextFieldWidget setBackground(IGuiTexture background) {
         this.background = background;
         return this;
@@ -173,7 +183,7 @@ public class TextFieldWidget extends Widget {
     }
 
     protected void onTextChanged(String newTextString) {
-        String lastText = getCurrentString();
+        String lastText = currentString;
         String newText = textValidator.apply(newTextString);
         if (!newText.equals(lastText)) {
             setCurrentString(newText);
@@ -220,11 +230,39 @@ public class TextFieldWidget extends Widget {
         return this;
     }
 
+    public TextFieldWidget setNumbersOnly(long minValue, long maxValue) {
+        setValidator(s -> {
+            try {
+                if (s == null || s.isEmpty()) return minValue + "";
+                long value = Long.parseLong(s);
+                if (minValue <= value && value <= maxValue) return s;
+                if (value < minValue) return minValue + "";
+                return maxValue + "";
+            } catch (NumberFormatException ignored) { }
+            return this.currentString;
+        });
+        return this;
+    }
+
     public TextFieldWidget setNumbersOnly(int minValue, int maxValue) {
         setValidator(s -> {
             try {
-                if (s == null || s.isEmpty()) return maxValue + "";
+                if (s == null || s.isEmpty()) return minValue + "";
                 int value = Integer.parseInt(s);
+                if (minValue <= value && value <= maxValue) return s;
+                if (value < minValue) return minValue + "";
+                return maxValue + "";
+            } catch (NumberFormatException ignored) { }
+            return this.currentString;
+        });
+        return this;
+    }
+
+    public TextFieldWidget setNumbersOnly(float minValue, float maxValue) {
+        setValidator(s -> {
+            try {
+                if (s == null || s.isEmpty()) return minValue + "";
+                float value = Float.parseFloat(s);
                 if (minValue <= value && value <= maxValue) return s;
                 if (value < minValue) return minValue + "";
                 return maxValue + "";

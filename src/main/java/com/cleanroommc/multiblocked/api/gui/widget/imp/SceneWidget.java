@@ -52,48 +52,46 @@ public class SceneWidget extends WidgetGroup {
     protected BlockPosFace selectedPosFace;
     protected BiConsumer<BlockPos, EnumFacing> onSelected;
     protected Set<BlockPos> core;
+    protected boolean useCache;
 
     public SceneWidget(int x, int y, int width, int height, World world) {
         super(x, y, width, height);
-        if (Multiblocked.isClient() && world != null) {
+        if (Multiblocked.isClient()) {
             createScene(world);
         }
     }
 
     public SceneWidget useCacheBuffer() {
-        if (Multiblocked.isClient()) {
+        useCache = true;
+        if (Multiblocked.isClient() && renderer != null) {
             renderer.useCacheBuffer(true);
         }
         return this;
     }
 
-    public boolean isUseCache() {
-        if (Multiblocked.isClient()) {
-            return renderer.isUseCache();
-        }
-        return false;
-    }
-
     @Override
     public void setGui(ModularUI gui) {
         super.setGui(gui);
-        gui.registerCloseListener(this::releaseCacheBuffer);
+        if (gui != null) {
+            gui.registerCloseListener(this::releaseCacheBuffer);
+        }
     }
 
     public void releaseCacheBuffer() {
-        if (Multiblocked.isClient()) {
+        if (Multiblocked.isClient() && renderer != null) {
             renderer.deleteCacheBuffer();
         }
     }
 
     public void needCompileCache() {
-        if (Multiblocked.isClient()) {
+        if (Multiblocked.isClient() && renderer != null) {
             renderer.needCompileCache();
         }
     }
 
     @SideOnly(Side.CLIENT)
     public final void createScene(World world) {
+        if (world == null) return;
         core = new HashSet<>();
         dummyWorld = new TrackedDummyWorld(world);
         dummyWorld.setRenderFilter(pos -> renderer.renderedBlocksMap.keySet().stream().anyMatch(c -> c.contains(pos)));
@@ -102,6 +100,7 @@ public class SceneWidget extends WidgetGroup {
         renderer.setOnLookingAt(ray -> {});
         renderer.setAfterWorldRender(this::renderBlockOverLay);
         renderer.setCameraLookAt(center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
+        renderer.useCacheBuffer(useCache);
         clickPosFace = null;
         hoverPosFace = null;
         selectedPosFace = null;

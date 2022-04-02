@@ -1,8 +1,7 @@
 package com.cleanroommc.multiblocked.client.renderer.impl;
 
-import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.capability.IO;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.client.util.FacadeBlockAccess;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -31,7 +30,7 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nonnull;
 
 /**
- * It will toggles the rendered block each second, mainly for rendering of the Any Capability. {@link MultiblockCapability#getCandidates(IO)} (IO)}
+ * It will toggles the rendered block each second, mainly for rendering of the Any Capability. {@link MultiblockCapability#getCandidates()}}
  *
  * Because you did not schedule the chunk compiling. So please don't use it in the world. Just for JEI or such dynamic rendering.
  */
@@ -120,6 +119,11 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     @SideOnly(Side.CLIENT)
     @Override
     public boolean hasTESR() {
+        return true;
+    }
+
+    @Override
+    public boolean shouldRenderInPass(World world, BlockPos pos, int pass) {
         return true;
     }
 

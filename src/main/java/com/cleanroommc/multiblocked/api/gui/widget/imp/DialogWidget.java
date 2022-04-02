@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp;
 
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.util.Size;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
@@ -68,6 +69,10 @@ public class DialogWidget extends WidgetGroup {
         return widget == null ? this : widget;
     }
 
+    public static Predicate<TreeNode<File, File>> suffixFilter(String suffix) {
+        return node -> !(node.isLeaf() && node.getContent().isFile() && !node.getContent().getName().toLowerCase().endsWith(suffix.toLowerCase()));
+    }
+
     public static DialogWidget showFileDialog(WidgetGroup parent, String title, File dir, boolean isSelector, Predicate<TreeNode<File, File>> valid, Consumer<File> result) {
         Size size = parent.getSize();
         DialogWidget dialog = new DialogWidget(parent, true);
@@ -80,12 +85,12 @@ public class DialogWidget extends WidgetGroup {
         AtomicReference<File> selected = new AtomicReference<>();
         selected.set(dir);
         dialog.addWidget(new TreeListWidget<>(0, 0, 130, size.height, new FileNode(dir).setValid(valid), node -> selected.set(node.getKey()))
-                .setNodeTexture(new ResourceTexture("multiblocked:textures/gui/bordered_background.png"))
+                .setNodeTexture(ResourceBorderTexture.BORDERED_BACKGROUND)
                 .canSelectNode(true)
                 .setLeafTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png")));
         int x = 130 + (size.width - 133 - WIDTH) / 2;
         int y = (size.height - HEIGHT) / 2;
-        dialog.addWidget(new ImageWidget(x, y, WIDTH, HEIGHT, new ResourceTexture("multiblocked:textures/gui/bordered_background.png")));
+        dialog.addWidget(new ImageWidget(x, y, WIDTH, HEIGHT, ResourceBorderTexture.BORDERED_BACKGROUND));
         dialog.addWidget(new ButtonWidget(x + WIDTH / 2 - 30 - 20, y + HEIGHT - 32, 40, 20, cd -> {
             dialog.close();
             if (result != null) result.accept(selected.get());

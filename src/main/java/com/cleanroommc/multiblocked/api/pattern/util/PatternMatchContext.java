@@ -56,4 +56,8 @@ public class PatternMatchContext {
         return result;
     }
 
+    public boolean containsKey (String key) {
+        return data.containsKey(key);
+    }
+
 }

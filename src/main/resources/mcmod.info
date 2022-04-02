@@ -7,8 +7,8 @@
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["CleanroomMC"],
-  "credits": "Rongmario and KilaBash",
+  "authorList": ["KilaBash", "Rongmario"],
+  "credits": "CleanroomMC Team",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

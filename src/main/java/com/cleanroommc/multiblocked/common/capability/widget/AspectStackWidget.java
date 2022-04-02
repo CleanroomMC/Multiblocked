@@ -2,6 +2,9 @@ package com.cleanroommc.multiblocked.common.capability.widget;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import com.cleanroommc.multiblocked.util.Position;
@@ -12,6 +15,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
+import thaumcraft.api.aspects.AspectList;
 
 import java.awt.Color;
 
@@ -47,10 +51,27 @@ public class AspectStackWidget extends ContentWidget<AspectStack> {
     }
 
     @Override
-    public Object getIngredientOverMouse(int mouseX, int mouseY) {
-        if (isMouseOverElement(mouseX, mouseY) && content != null) {
-            return content.toAspectList();
+    public AspectStack getJEIContent(Object content) {
+        if (content instanceof AspectList) {
+            return new AspectStack(((AspectList) content).getAspects()[0], this.content.amount);
         }
         return null;
+    }
+
+    @Override
+    public Object getJEIIngredient(AspectStack content) {
+        return content.toAspectList();
+    }
+
+    @Override
+    public void openConfigurator(WidgetGroup dialog) {
+        super.openConfigurator(dialog);
+        int x = 5;
+        int y = 25;
+        dialog.addWidget(new LabelWidget(5, y + 3, "Amount:"));
+        dialog.addWidget(new TextFieldWidget(125 - 60, y, 60, 15, true, null, number -> {
+            content = new AspectStack(content.aspect, Integer.parseInt(number));
+            onContentUpdate();
+        }).setNumbersOnly(1, Integer.MAX_VALUE).setCurrentString(content.amount+""));
     }
 }

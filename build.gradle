@@ -117,7 +117,8 @@ jar {
         if (project.use_mixins) {
             attribute_map['TweakClass'] = 'org.spongepowered.asm.launch.MixinTweaker'
         }
-        attributes 'FMLAT': 'multiblocked_at.cfg'
+        attribute_map['FMLAT'] = 'multiblocked_at.cfg'
+        attribute_map['ForceLoadAsMod'] = true
         attributes(attribute_map)
     }
 }

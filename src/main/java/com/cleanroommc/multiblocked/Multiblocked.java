@@ -106,7 +106,6 @@ public class Multiblocked {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        LOGGER.info("pre");
         GsonBuilder gsonBuilder = new GsonBuilder()
                 .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
                 .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
@@ -126,13 +125,11 @@ public class Multiblocked {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        LOGGER.info("init");
         proxy.init();
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        LOGGER.info("postInit");
         proxy.postInit();
     }
 

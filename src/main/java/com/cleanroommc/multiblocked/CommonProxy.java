@@ -2,6 +2,8 @@ package com.cleanroommc.multiblocked;
 
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
+import com.cleanroommc.multiblocked.api.gui.factory.UIFactory;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.JsonBlockPatternWidget;
 import com.cleanroommc.multiblocked.api.item.ItemMultiblockBuilder.BuilderRecipeLogic;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
@@ -38,9 +40,11 @@ public class CommonProxy {
 
     public void init() {
         // register recipe map
-        RecipeMap.registerRecipeFromFile(Multiblocked.GSON, new File(MultiblockedResourceLoader.location, "recipe_map"));
+        RecipeMap.registerRecipeFromFile(Multiblocked.GSON, new File(Multiblocked.location, "recipe_map"));
         // execute init handler
         MultiblockComponents.executeInitHandler();
+        // register ui
+        UIFactory.register(TileEntityUIFactory.INSTANCE);
     }
 
     public void postInit() {
@@ -57,7 +61,7 @@ public class CommonProxy {
         // register JsonFiles
         MultiblockComponents.registerComponentFromFile(
                 Multiblocked.GSON, 
-                new File(MultiblockedResourceLoader.location, "definition/controller"),
+                new File(Multiblocked.location, "definition/controller"),
                 ControllerDefinition.class, 
                 (definition, config) -> {
                     definition.basePattern = Multiblocked.GSON.fromJson(config.get("basePattern"), JsonBlockPattern.class).build();
@@ -65,7 +69,7 @@ public class CommonProxy {
                 });
         MultiblockComponents.registerComponentFromFile(
                 Multiblocked.GSON,
-                new File(MultiblockedResourceLoader.location, "definition/part"),
+                new File(Multiblocked.location, "definition/part"),
                 PartDefinition.class, null);
         
         

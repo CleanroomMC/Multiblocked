@@ -6,6 +6,8 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class StructurePageWidget extends WidgetGroup {
 
@@ -18,8 +20,16 @@ public class StructurePageWidget extends WidgetGroup {
                 this);
         setClientSideWidget();
         if (Multiblocked.isClient()) {
-            addWidget(PatternWidget.getPatternWidget(controllerDefinition));
+            addWidget(getPatternWidget(controllerDefinition));
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public PatternWidget getPatternWidget(ControllerDefinition controllerDefinition) {
+        if (Multiblocked.isClient()) {
+            return PatternWidget.getPatternWidget(controllerDefinition);
+        }
+        return null;
     }
 
 }

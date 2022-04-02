@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
@@ -30,7 +31,7 @@ public class ResourceTextureWidget extends DialogWidget {
         Size size = parent.getSize();
         int x = 130 + (size.width - 133 - WIDTH) / 2;
         int y = (size.height - HEIGHT) / 2;
-        File dir = new File(MultiblockedResourceLoader.location, "assets/multiblocked");
+        File dir = new File(Multiblocked.location, "assets/multiblocked");
         if (!dir.isDirectory()) {
             if (!dir.mkdirs()) {
                 close();

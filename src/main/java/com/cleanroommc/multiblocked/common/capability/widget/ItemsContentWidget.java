@@ -136,7 +136,7 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
         groupIngredient.addWidget(new LabelWidget(x + 50, 5, ()->"Settings").setTextColor(-1).setDrop(true));
         groupIngredient.addWidget(new ButtonWidget(100, 0, 20, 20, cd -> {
             ItemStack[] stacks = content.matchingStacks;
-            content = new ItemsIngredient(content.getAmount(), ArrayUtils.add(stacks, Items.IRON_INGOT.getDefaultInstance()));
+            content = new ItemsIngredient(content.getAmount(), ArrayUtils.add(stacks, new ItemStack(Items.IRON_INGOT)));
             updateIngredientWidget(container);
             onContentUpdate();
         }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("add a new item matcher"));

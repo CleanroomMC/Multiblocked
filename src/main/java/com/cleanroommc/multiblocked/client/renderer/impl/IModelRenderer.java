@@ -61,6 +61,7 @@ public class IModelRenderer implements IRenderer {
         return this;
     }
 
+    @SideOnly(Side.CLIENT)
     protected IModel getModel() {
         return ModelFactory.getModel(modelLocation);
     }
@@ -73,6 +74,7 @@ public class IModelRenderer implements IRenderer {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         CustomBakedModel model = getBlockBakedModel(pos, blockAccess);
         if (!model.shouldRenderInLayer(state, MathHelper.getPositionRandom(pos))) return false;
@@ -82,12 +84,14 @@ public class IModelRenderer implements IRenderer {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
         BlockModelRenderer blockModelRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
         IBakedModel bakedModel = net.minecraftforge.client.ForgeHooksClient.getDamageModel(getBlockBakedModel(pos, blockAccess), texture, state, blockAccess, pos);
         blockModelRenderer.renderModel(blockAccess, bakedModel, state, pos, Tessellator.getInstance().getBuffer(), true);
     }
 
+    @SideOnly(Side.CLIENT)
     protected IBakedModel getItemBakedModel() {
         if (itemModel == null) {
             itemModel = getModel().bake(
@@ -98,6 +102,7 @@ public class IModelRenderer implements IRenderer {
         return itemModel;
     }
 
+    @SideOnly(Side.CLIENT)
     protected CustomBakedModel getBlockBakedModel(BlockPos pos, IBlockAccess blockAccess) {
         TileEntity tileEntity = blockAccess.getTileEntity(pos);
         EnumFacing frontFacing = EnumFacing.NORTH;

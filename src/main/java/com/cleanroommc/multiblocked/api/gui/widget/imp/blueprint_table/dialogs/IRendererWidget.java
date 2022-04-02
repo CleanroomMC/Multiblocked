@@ -129,7 +129,7 @@ public class IRendererWidget extends DialogWidget {
                 break;
             case "B3D": {
                 TextFieldWidget tfw = addModelSettings();
-                File path = new File(MultiblockedResourceLoader.location, "assets/multiblocked/b3d");
+                File path = new File(Multiblocked.location, "assets/multiblocked/b3d");
                 group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", path, true,
                         DialogWidget.suffixFilter(".b3d"), r -> {
                     if (r != null && r.isFile()) {
@@ -150,7 +150,7 @@ public class IRendererWidget extends DialogWidget {
             }
             case "OBJ": {
                 TextFieldWidget tfw = addModelSettings();
-                File path = new File(MultiblockedResourceLoader.location, "assets/multiblocked/obj");
+                File path = new File(Multiblocked.location, "assets/multiblocked/obj");
                 group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", path, true,
                         DialogWidget.suffixFilter(".obj"), r -> {
                     if (r != null && r.isFile()) {
@@ -171,7 +171,7 @@ public class IRendererWidget extends DialogWidget {
             }
             case "IModel": {
                 TextFieldWidget tfw = addModelSettings();
-                File path = new File(MultiblockedResourceLoader.location, "assets/multiblocked/models");
+                File path = new File(Multiblocked.location, "assets/multiblocked/models");
                 group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", path, true,
                         DialogWidget.suffixFilter(".json"), r -> {
                     if (r != null && r.isFile()) {
@@ -192,7 +192,7 @@ public class IRendererWidget extends DialogWidget {
             }
             case "Geo": {
                 TextFieldWidget tfw = new TextFieldWidget(1, 1, 150, 20, true, null, null);
-                File path = new File(MultiblockedResourceLoader.location, "assets/multiblocked/geo");
+                File path = new File(Multiblocked.location, "assets/multiblocked/geo");
                 group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", path, true,
                         DialogWidget.suffixFilter(".geo.json"), r -> {
                     if (r != null && r.isFile()) {

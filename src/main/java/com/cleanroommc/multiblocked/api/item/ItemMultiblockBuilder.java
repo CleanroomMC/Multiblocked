@@ -99,14 +99,14 @@ public class ItemMultiblockBuilder extends Item {
         private static final Ingredient blueprint;
 
         static {
-            resultStack = MultiblockedItems.BUILDER.getDefaultInstance();
+            resultStack = new ItemStack(MultiblockedItems.BUILDER);
             ItemMultiblockBuilder.setPattern(resultStack);
-            ItemStack stack = MultiblockedItems.BLUEPRINT.getDefaultInstance();
+            ItemStack stack = new ItemStack(MultiblockedItems.BLUEPRINT);
             ItemBlueprint.setPattern(stack);
             blueprint = Ingredient.fromStacks(stack);
-            stack = MultiblockedItems.BUILDER.getDefaultInstance();
+            stack = new ItemStack(MultiblockedItems.BUILDER);
             ItemMultiblockBuilder.setPattern(stack);
-            builder = Ingredient.fromStacks(MultiblockedItems.BUILDER.getDefaultInstance(), stack);
+            builder = Ingredient.fromStacks(new ItemStack(MultiblockedItems.BUILDER), stack);
         }
 
         public BuilderRecipeLogic() {
@@ -149,7 +149,7 @@ public class ItemMultiblockBuilder extends Item {
                 }
             }
             if (a== null || b == null) return ItemStack.EMPTY;
-            ItemStack builder = MultiblockedItems.BUILDER.getDefaultInstance();
+            ItemStack builder = new ItemStack(MultiblockedItems.BUILDER);
             ItemMultiblockBuilder.setPattern(builder);
             if (ItemBlueprint.isItemBlueprint(a) && !ItemBlueprint.isRaw(a)) {
                 builder.getOrCreateSubCompound("pattern").setString("json", a.getOrCreateSubCompound("pattern").getString("json"));

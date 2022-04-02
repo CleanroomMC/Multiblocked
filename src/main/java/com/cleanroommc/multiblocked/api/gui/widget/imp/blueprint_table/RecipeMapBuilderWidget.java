@@ -38,7 +38,7 @@ public class RecipeMapBuilderWidget extends WidgetGroup {
         this.addWidget(recipeMapList = new DraggableScrollableWidgetGroup(20, 4, width - 20, height - 8));
         this.addWidget(new ButtonWidget(0, 5, 20, 20, new ResourceTexture("multiblocked:textures/gui/save.png"), cd->{
             try {
-                File dir = new File(MultiblockedResourceLoader.location, "recipe_map");
+                File dir = new File(Multiblocked.location, "recipe_map");
                 Desktop.getDesktop().open(dir.isDirectory() ? dir : dir.getParentFile());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -47,7 +47,7 @@ public class RecipeMapBuilderWidget extends WidgetGroup {
         this.addWidget(new ButtonWidget(0, 26, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd->{
             new RecipeMapWidget(parent, new RecipeMap(UUID.randomUUID().toString()),recipeMap -> {
                 if (recipeMap != null) {
-                    File path = new File(MultiblockedResourceLoader.location, "recipe_map/" + recipeMap.name + ".json");
+                    File path = new File(Multiblocked.location, "recipe_map/" + recipeMap.name + ".json");
                     JsonElement element = Multiblocked.GSON.toJsonTree(recipeMap);
                     FileUtility.saveJson(path, element);
                     updateRecipeMapList();
@@ -68,7 +68,7 @@ public class RecipeMapBuilderWidget extends WidgetGroup {
             onRecipeMapSelected.accept(RecipeMap.EMPTY);
         }
         selected = null;
-        File path = new File(MultiblockedResourceLoader.location, "recipe_map");
+        File path = new File(Multiblocked.location, "recipe_map");
         if (!path.isDirectory()) {
             if (!path.mkdirs()) {
                 return;

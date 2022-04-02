@@ -25,7 +25,10 @@ public abstract class UIFactory<T> {
 
     public UIFactory(){
         uiFactoryId = FACTORIES.size();
-        FACTORIES.put(uiFactoryId, this);
+    }
+    
+    public static void register(UIFactory<?> factory) {
+        FACTORIES.put(factory.uiFactoryId, factory);
     }
 
     public final boolean openUI(T holder, EntityPlayerMP player) {

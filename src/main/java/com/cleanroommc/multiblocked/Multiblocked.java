@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -61,7 +62,14 @@ public class Multiblocked {
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
+    public static File location;
     public static Gson GSON;
+
+    static {
+        location = new File(Loader.instance().getConfigDir(), "multiblocked");
+        location.mkdir();
+        new File(location, "assets").mkdir();
+    }
 
     @SidedProxy(modId = MODID, clientSide = "com.cleanroommc.multiblocked.client.ClientProxy", serverSide = "com.cleanroommc.multiblocked.CommonProxy")
     public static CommonProxy proxy;
@@ -127,7 +135,7 @@ public class Multiblocked {
 
     @EventHandler
     public void loadComplete(FMLLoadCompleteEvent event) {
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_JEI)) {
+        if (Multiblocked.isClient() && Multiblocked.isModLoaded(Multiblocked.MODID_JEI)) {
             JeiPlugin.setupInputHandler();
         }
     }

@@ -68,7 +68,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                             widget.setActive(true);
                         }
                         if (jsonObject != null) {
-                            FileUtility.saveJson(new File(MultiblockedResourceLoader.location, "definition/controller/" + jsonObject.get("location").getAsString().replace(":", "_") + ".json"), jsonObject);
+                            FileUtility.saveJson(new File(Multiblocked.location, "definition/controller/" + jsonObject.get("location").getAsString().replace(":", "_") + ".json"), jsonObject);
                             updateList();
                         }
                     });
@@ -105,7 +105,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
         int size = files.size();
         files.forEach(containers::waitToRemoved);
         files.clear();
-        File path = new File(MultiblockedResourceLoader.location, "definition/controller");
+        File path = new File(Multiblocked.location, "definition/controller");
         if (!path.isDirectory()) {
             if (!path.mkdirs()) {
                 return;

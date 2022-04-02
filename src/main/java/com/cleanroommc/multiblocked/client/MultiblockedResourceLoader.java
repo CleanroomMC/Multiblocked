@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.client;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.google.gson.JsonObject;
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
@@ -10,18 +11,10 @@ import java.io.File;
 
 public class MultiblockedResourceLoader extends FolderResourcePack {
 
-    public static final File location;
-
-    static {
-        location = new File(Loader.instance().getConfigDir(), "multiblocked");
-        location.mkdir();
-        new File(location, "assets").mkdir();
-    }
-
     public static final MultiblockedResourceLoader INSTANCE = new MultiblockedResourceLoader();
 
     private MultiblockedResourceLoader() {
-        super(location);
+        super(Multiblocked.location);
     }
 
     @Override

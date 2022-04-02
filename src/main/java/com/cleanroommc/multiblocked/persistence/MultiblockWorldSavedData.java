@@ -122,6 +122,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         updateRenderChunk(poses);
     }
 
+    @SideOnly(Side.CLIENT)
     private static void updateRenderChunk(Collection<BlockPos> poses) {
         World world = Minecraft.getMinecraft().world;
         if (world != null) {

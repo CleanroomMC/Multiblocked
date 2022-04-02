@@ -47,7 +47,7 @@ public class PartBuilderWidget extends WidgetGroup {
                     widget.setActive(true);
                 }
                 if (jsonObject != null) {
-                    FileUtility.saveJson(new File(MultiblockedResourceLoader.location, "definition/part/" + jsonObject.get("location").getAsString().replace(":", "_") + ".json"), jsonObject);
+                    FileUtility.saveJson(new File(Multiblocked.location, "definition/part/" + jsonObject.get("location").getAsString().replace(":", "_") + ".json"), jsonObject);
                 }
                 updateList();
             });
@@ -59,7 +59,7 @@ public class PartBuilderWidget extends WidgetGroup {
         int size = files.size();
         files.forEach(containers::waitToRemoved);
         files.clear();
-        File path = new File(MultiblockedResourceLoader.location, "definition/part");
+        File path = new File(Multiblocked.location, "definition/part");
         if (!path.isDirectory()) {
             if (!path.mkdirs()) {
                 return;

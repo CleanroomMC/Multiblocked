@@ -109,7 +109,7 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-//    rename '(.+_at.cfg)', 'META-INF/$1' // Access Transformers
+    rename '(.+_at.cfg)', 'META-INF/$1' // Access Transformers
 }
 
 jar {

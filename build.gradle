@@ -1,5 +1,9 @@
 buildscript {
     repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+        maven {url='https://repo.spongepowered.org/maven/'}
         maven {
             url = 'https://maven.cleanroommc.com'
         }

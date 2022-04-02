@@ -30,6 +30,8 @@ import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -133,6 +135,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
         return widgetGroup;
     }
 
+    @SideOnly(Side.CLIENT)
     protected WidgetGroup createScene(int x, int y, String text, String tips, IRenderer init, Consumer<IRenderer> onUpdate) {
         TrackedDummyWorld world = new TrackedDummyWorld();
         world.addBlock(BlockPos.ORIGIN, new BlockInfo(MultiblockComponents.DummyComponentBlock));

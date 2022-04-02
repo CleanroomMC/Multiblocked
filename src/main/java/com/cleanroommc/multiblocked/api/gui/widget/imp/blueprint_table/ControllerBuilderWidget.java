@@ -15,7 +15,6 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.component
 import com.cleanroommc.multiblocked.api.item.ItemBlueprint;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
-import com.cleanroommc.multiblocked.client.MultiblockedResourceLoader;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.JsonElement;

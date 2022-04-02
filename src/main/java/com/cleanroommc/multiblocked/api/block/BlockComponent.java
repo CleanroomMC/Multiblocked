@@ -231,7 +231,11 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     @Override
     @Nonnull
     public EnumBlockRenderType getRenderType(@Nonnull IBlockState state) {
-        return ComponentRenderer.COMPONENT_RENDER_TYPE;
+        if (Multiblocked.isClient()) {
+            return ComponentRenderer.COMPONENT_RENDER_TYPE;
+        } else {
+            return EnumBlockRenderType.MODEL;
+        }
     }
 
     @Override

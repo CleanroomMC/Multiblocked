@@ -40,6 +40,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -138,6 +140,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         sceneWidget.needCompileCache();
     }
 
+    @SideOnly(Side.CLIENT)
     private void updateScene() {
         int[] centerOffset = this.pattern.getCenterOffset();
         String[][] pattern = this.pattern.pattern;

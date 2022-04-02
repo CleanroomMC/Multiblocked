@@ -119,7 +119,17 @@ public class PatternWidget extends WidgetGroup {
         if (index >= patterns.length || index < 0) return;
         this.index = index;
         MBPattern pattern = patterns[index];
-        sceneWidget.setRenderedCore(pattern.blockMap.keySet(), null);
+        if (pattern.controllerBase.isFormed()) {
+            LongSet set = pattern.controllerBase.state.getMatchContext().getOrDefault("renderMask", LongSets.EMPTY_SET);
+            Set<BlockPos> modelDisabled = set.stream().map(BlockPos::fromLong).collect(Collectors.toSet());
+            if (!modelDisabled.isEmpty()) {
+                sceneWidget.setRenderedCore(pattern.blockMap.keySet().stream().filter(pos->!modelDisabled.contains(pos)).collect(Collectors.toList()), null);
+            } else {
+                sceneWidget.setRenderedCore(pattern.blockMap.keySet(), null);
+            }
+        } else {
+            sceneWidget.setRenderedCore(pattern.blockMap.keySet(), null);
+        }
         if (slotWidgets != null) {
             for (SlotWidget slotWidget : slotWidgets) {
                 removeWidget(slotWidget);

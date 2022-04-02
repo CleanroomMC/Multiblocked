@@ -11,6 +11,8 @@
   "credits": "CleanroomMC Team",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": [
+    "mixinbooter"
+  ]
 }
 ]

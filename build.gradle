@@ -105,7 +105,7 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-    rename '(.+_at.cfg)', 'META-INF/$1' // Access Transformers
+//    rename '(.+_at.cfg)', 'META-INF/$1' // Access Transformers
 }
 
 jar {
@@ -117,6 +117,7 @@ jar {
         if (project.use_mixins) {
             attribute_map['TweakClass'] = 'org.spongepowered.asm.launch.MixinTweaker'
         }
+        attributes 'FMLAT': 'multiblocked_at.cfg'
         attributes(attribute_map)
     }
 }

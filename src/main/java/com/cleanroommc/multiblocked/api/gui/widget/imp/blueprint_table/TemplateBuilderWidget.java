@@ -44,6 +44,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -260,6 +262,7 @@ public class TemplateBuilderWidget extends WidgetGroup {
                 TextFormatting.YELLOW + "raw" : TextFormatting.GREEN + "pattern");
     }
 
+    @SideOnly(Side.CLIENT)
     public void onSelected(ItemStack itemStack, int slot) {
         if (this.selected != itemStack) {
             this.selected = itemStack;

@@ -25,7 +25,7 @@ public class StructurePageWidget extends WidgetGroup {
     }
 
     @SideOnly(Side.CLIENT)
-    public PatternWidget getPatternWidget(ControllerDefinition controllerDefinition) {
+    public WidgetGroup getPatternWidget(ControllerDefinition controllerDefinition) {
         if (Multiblocked.isClient()) {
             return PatternWidget.getPatternWidget(controllerDefinition);
         }

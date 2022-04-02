@@ -45,7 +45,8 @@ import java.util.concurrent.ConcurrentMap;
 @Mod(modid = Multiblocked.MODID,
         name = Multiblocked.NAME,
         version = Multiblocked.VERSION,
-        dependencies = "after:jei@[4.15.0,);after:crafttweaker")
+        acceptedMinecraftVersions = "1.12.2",
+        dependencies = "required:mixinbooter;after:jei@[4.15.0,);after:crafttweaker")
 public class Multiblocked {
 
     public static final String MODID = "multiblocked";
@@ -58,18 +59,15 @@ public class Multiblocked {
     public static final String MODID_MEK = "mekanism";
     public static final String MODID_GEO = "geckolib3";
     public static final String NAME = "Multiblocked";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "0.1";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
     public static File location;
     public static Gson GSON;
 
-    static {
-        location = new File(Loader.instance().getConfigDir(), "multiblocked");
-        location.mkdir();
-        new File(location, "assets").mkdir();
-    }
+    @Mod.Instance(Multiblocked.MODID)
+    public static Multiblocked instance;
 
     @SidedProxy(modId = MODID, clientSide = "com.cleanroommc.multiblocked.client.ClientProxy", serverSide = "com.cleanroommc.multiblocked.CommonProxy")
     public static CommonProxy proxy;
@@ -83,6 +81,13 @@ public class Multiblocked {
     };
 
     private static Boolean isClient;
+
+    static {
+        location = new File(Loader.instance().getConfigDir(), "multiblocked");
+        location.mkdir();
+        new File(location, "assets").mkdir();
+    }
+
 
     public static boolean isClient() {
         if (isClient == null) isClient = FMLCommonHandler.instance().getSide().isClient();
@@ -101,6 +106,7 @@ public class Multiblocked {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        LOGGER.info("pre");
         GsonBuilder gsonBuilder = new GsonBuilder()
                 .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
                 .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
@@ -120,11 +126,13 @@ public class Multiblocked {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
+        LOGGER.info("init");
         proxy.init();
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
+        LOGGER.info("postInit");
         proxy.postInit();
     }
 

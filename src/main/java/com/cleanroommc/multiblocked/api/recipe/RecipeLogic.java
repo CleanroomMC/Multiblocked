@@ -88,7 +88,7 @@ public class RecipeLogic {
 
     @ZenMethod
     public void markDirty() {
-        this.controller.markDirty();
+        this.controller.markAsDirty();
     }
 
     public void readFromNBT(NBTTagCompound compound) {

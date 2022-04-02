@@ -275,7 +275,7 @@ public class IOPageWidget extends PageWidget {
                     capabilities.get(io, capability).put(pos.toLong(), capability.createProxy(io, entity));
                 }
             }
-            controller.markDirty();
+            controller.markAsDirty();
         } else {
             super.handleClientAction(id, buffer);
         }

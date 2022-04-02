@@ -231,7 +231,7 @@ public class SlotWidget extends Widget implements IIngredientSlot {
 
     public void onSlotChanged() {
         if (gui == null) return;
-        gui.holder.markDirty();
+        gui.holder.markAsDirty();
     }
 
     public ItemStack slotClick(int dragType, ClickType clickTypeIn, EntityPlayer player) {

@@ -149,7 +149,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         if (!isValidFrontFacing(facing)) return false;
         frontFacing = facing;
         if (world != null && !world.isRemote) {
-            markDirty();
+            markAsDirty();
             writeCustomData(0, buffer -> buffer.writeByte(frontFacing.getIndex()));
         }
         return true;
@@ -217,7 +217,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Override
     @ZenMethod
-    public void markDirty() {
+    public void markAsDirty() {
         super.markDirty();
     }
 

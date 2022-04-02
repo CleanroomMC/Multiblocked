@@ -21,7 +21,7 @@ public interface IUIHolder {
         }
 
         @Override
-        public void markDirty() {
+        public void markAsDirty() {
 
         }
     };
@@ -32,6 +32,6 @@ public interface IUIHolder {
 
     boolean isRemote();
 
-    void markDirty();
+    void markAsDirty();
 
 }

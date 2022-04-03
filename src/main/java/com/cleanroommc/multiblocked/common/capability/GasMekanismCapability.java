@@ -39,7 +39,15 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
 
     @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return tileEntity.hasCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
+        return getCapability(tileEntity) != null;
+    }
+
+    public IGasHandler getCapability(TileEntity tileEntity) {
+        for (EnumFacing facing : EnumFacing.values()) {
+            IGasHandler gasHandler = tileEntity.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, facing);
+            if (gasHandler != null) return gasHandler;
+        }
+        return tileEntity.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
     }
 
     @Override
@@ -77,11 +85,7 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
         }
 
         public IGasHandler getCapability() {
-            for (EnumFacing facing : EnumFacing.values()) {
-                IGasHandler gasHandler = getTileEntity().getCapability(Capabilities.GAS_HANDLER_CAPABILITY, facing);
-                if (gasHandler != null) return gasHandler;
-            }
-            return getTileEntity().getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
+            return GasMekanismCapability.CAP.getCapability(getTileEntity());
         }
 
         @Override

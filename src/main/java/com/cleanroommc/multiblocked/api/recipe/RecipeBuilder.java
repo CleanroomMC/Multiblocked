@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.api.recipe;
 
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.common.capability.EnergyGTCECapability;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -278,6 +279,28 @@ public class RecipeBuilder {
             keyBuilder.append(output.getFocus());
         }
         return output(ParticleQMDCapability.CAP, chance, (Object[]) outputs);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_GTCE)
+    public RecipeBuilder inputEU(int eu) {
+        return inputMana(1, eu);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_GTCE)
+    public RecipeBuilder outputEU(int eu) {
+        return outputMana(1, eu);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_GTCE)
+    public RecipeBuilder inputEU(float chance, long eu) {
+        keyBuilder.append(EnergyGTCECapability.CAP.name).append(eu);
+        return input(EnergyGTCECapability.CAP, chance, eu);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_GTCE)
+    public RecipeBuilder outputEU(float chance, long eu) {
+        keyBuilder.append(EnergyGTCECapability.CAP.name).append(eu);
+        return output(EnergyGTCECapability.CAP, chance, eu);
     }
 
     public Recipe build() {

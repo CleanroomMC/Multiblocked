@@ -41,7 +41,15 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
 
     @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        return getCapability(tileEntity) != null;
+    }
+
+    public IItemHandler getCapability(TileEntity tileEntity) {
+        for (EnumFacing facing : EnumFacing.values()) {
+            IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
+            if (itemHandler != null) return itemHandler;
+        }
+        return tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
     @Override
@@ -88,11 +96,7 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
         }
 
         public IItemHandler getCapability() {
-            for (EnumFacing facing : EnumFacing.values()) {
-                IItemHandler itemHandler = getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
-                if (itemHandler != null) return itemHandler;
-            }
-            return getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            return MultiblockCapabilities.ITEM.getCapability(getTileEntity());
         }
 
         @Override

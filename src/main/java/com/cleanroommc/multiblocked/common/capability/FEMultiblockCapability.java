@@ -3,7 +3,7 @@ package com.cleanroommc.multiblocked.common.capability;
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
@@ -13,8 +13,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -23,7 +21,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -41,10 +38,18 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
     @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        IEnergyStorage capability = tileEntity.getCapability(CapabilityEnergy.ENERGY, null);
+        IEnergyStorage capability = getCapability(tileEntity);
         return capability != null && (io == IO.IN && capability.canExtract() ||
                         io == IO.OUT && capability.canReceive() ||
                         io == IO.BOTH && capability.canReceive() && capability.canExtract());
+    }
+
+    public IEnergyStorage getCapability(TileEntity tileEntity) {
+        for (EnumFacing facing : EnumFacing.values()) {
+            IEnergyStorage energyStorage = tileEntity.getCapability(CapabilityEnergy.ENERGY, facing);
+            if (energyStorage != null) return energyStorage;
+        }
+        return tileEntity.getCapability(CapabilityEnergy.ENERGY, null);
     }
 
     @Override
@@ -59,12 +64,7 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new ItemStackTexture(
-                Arrays.stream(getCandidates())
-                        .map(state -> new ItemStack(
-                                Item.getItemFromBlock(state.getBlock()), 1,
-                                state.getBlock().damageDropped(state)))
-                        .toArray(ItemStack[]::new))).setUnit("FE");
+        return new NumberContentWidget().setContentTexture(new TextTexture("FE", color)).setUnit("FE");
     }
 
     @Override
@@ -84,11 +84,7 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
         }
 
         public IEnergyStorage getCapability() {
-            for (EnumFacing facing : EnumFacing.values()) {
-                IEnergyStorage energyStorage = getTileEntity().getCapability(CapabilityEnergy.ENERGY, facing);
-                if (energyStorage != null) return energyStorage;
-            }
-            return getTileEntity().getCapability(CapabilityEnergy.ENERGY, null);
+            return MultiblockCapabilities.FE.getCapability(getTileEntity());
         }
 
         @Override

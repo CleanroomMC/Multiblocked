@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
+import com.cleanroommc.multiblocked.common.capability.EnergyGTCECapability;
 import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.common.collect.Maps;
 import com.cleanroommc.multiblocked.Multiblocked;
@@ -21,7 +22,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.HashMap;
@@ -56,6 +56,9 @@ public class MultiblockCapabilities {
         }
         if (Multiblocked.isModLoaded(Multiblocked.MODID_QMD)) {
             registerCapability(ParticleQMDCapability.CAP);
+        }
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_GTCE)) {
+            registerCapability(EnergyGTCECapability.CAP);
         }
     }
 

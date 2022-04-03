@@ -58,6 +58,7 @@ public class Multiblocked {
     public static final String MODID_THAUMJEI = "thaumicjei";
     public static final String MODID_MEK = "mekanism";
     public static final String MODID_GEO = "geckolib3";
+    public static final String MODID_GTCE = "gregtech";
     public static final String NAME = "Multiblocked";
     public static final String VERSION = "0.1";
     public static final Logger LOGGER = LogManager.getLogger(NAME);

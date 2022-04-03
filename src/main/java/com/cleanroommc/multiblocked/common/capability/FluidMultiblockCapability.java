@@ -41,8 +41,17 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
 
     @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return tileEntity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        return getCapability(tileEntity) != null;
     }
+
+    public IFluidHandler getCapability(TileEntity tileEntity) {
+        for (EnumFacing facing : EnumFacing.values()) {
+            IFluidHandler fluidHandler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
+            if (fluidHandler != null) return fluidHandler;
+        }
+        return tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+    }
+
 
     @Override
     public FluidStack copyInner(FluidStack content) {
@@ -77,11 +86,7 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
         }
 
         public IFluidHandler getCapability() {
-            for (EnumFacing facing : EnumFacing.values()) {
-                IFluidHandler fluidHandler = getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
-                if (fluidHandler != null) return fluidHandler;
-            }
-            return getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+            return MultiblockCapabilities.FLUID.getCapability(getTileEntity());
         }
 
         @Override

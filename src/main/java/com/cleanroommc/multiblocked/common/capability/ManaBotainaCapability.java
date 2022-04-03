@@ -1,26 +1,23 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
+import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.IO;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
-import com.cleanroommc.multiblocked.api.capability.IO;
-import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import vazkii.botania.api.mana.IManaReceiver;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,12 +50,7 @@ public class ManaBotainaCapability extends MultiblockCapability<Integer> {
 
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new ItemStackTexture(
-                Arrays.stream(getCandidates())
-                        .map(state -> new ItemStack(
-                                Item.getItemFromBlock(state.getBlock()), 1,
-                                state.getBlock().damageDropped(state)))
-                        .toArray(ItemStack[]::new))).setUnit("mana");
+        return new NumberContentWidget().setContentTexture(new TextTexture("MN", color)).setUnit("mana");
     }
 
     @Override

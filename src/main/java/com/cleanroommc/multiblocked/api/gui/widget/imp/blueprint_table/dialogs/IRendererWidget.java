@@ -42,11 +42,13 @@ public class IRendererWidget extends DialogWidget {
     public Consumer<IRenderer> onSave;
     public final DummyComponentTileEntity tileEntity;
     private final DraggableScrollableWidgetGroup group;
+    private final IRenderer originalRenderer;
     private Runnable onUpdate;
 
     public IRendererWidget(WidgetGroup parent, IRenderer renderer, Consumer<IRenderer> onSave) {
         super(parent, true);
         this.onSave = onSave;
+        this.originalRenderer = renderer;
         this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xaf000000)));
         TrackedDummyWorld world = new TrackedDummyWorld();
         world.addBlock(BlockPos.ORIGIN, new BlockInfo(MultiblockComponents.DummyComponentBlock));
@@ -91,7 +93,7 @@ public class IRendererWidget extends DialogWidget {
     public void close() {
         super.close();
         if (onSave != null) {
-            onSave.accept(null);
+            onSave.accept(originalRenderer);
         }
     }
 

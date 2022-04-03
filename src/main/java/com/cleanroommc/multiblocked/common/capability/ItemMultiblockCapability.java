@@ -1,11 +1,5 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.common.capability.widget.ItemsContentWidget;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
@@ -14,9 +8,16 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.common.capability.widget.ItemsContentWidget;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -87,6 +88,10 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
         }
 
         public IItemHandler getCapability() {
+            for (EnumFacing facing : EnumFacing.values()) {
+                IItemHandler itemHandler = getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
+                if (itemHandler != null) return itemHandler;
+            }
             return getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         }
 

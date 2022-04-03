@@ -77,11 +77,11 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
         }
 
         public IFluidHandler getCapability() {
-            IFluidHandler fluidHandler = getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            if (Multiblocked.isModLoaded(Multiblocked.MODID_MEK) && fluidHandler instanceof FluidHandlerWrapper) {
-                return getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+            for (EnumFacing facing : EnumFacing.values()) {
+                IFluidHandler fluidHandler = getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
+                if (fluidHandler != null) return fluidHandler;
             }
-            return fluidHandler;
+            return getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
         }
 
         @Override

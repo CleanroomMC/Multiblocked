@@ -16,6 +16,7 @@ import com.google.gson.JsonSerializationContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -83,6 +84,10 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
         }
 
         public IEnergyStorage getCapability() {
+            for (EnumFacing facing : EnumFacing.values()) {
+                IEnergyStorage energyStorage = getTileEntity().getCapability(CapabilityEnergy.ENERGY, facing);
+                if (energyStorage != null) return energyStorage;
+            }
             return getTileEntity().getCapability(CapabilityEnergy.ENERGY, null);
         }
 

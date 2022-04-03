@@ -23,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -86,7 +87,7 @@ public class IOPageWidget extends PageWidget {
         addWidget(lines[1][1] = new ImageWidget(86, 202, 4, 35));
         addWidget(lines[1][2] = new ImageWidget(138, 202, 4, 35));
 
-        addWidget(new SceneWidget(6, 6, 164, 143, Multiblocked.isClient() ? Minecraft.getMinecraft().world : null)
+        addWidget(new SceneWidget(6, 6, 164, 143, Multiblocked.isClient() ? getWorld() : null)
                 .useCacheBuffer()
                 .setRenderedCore(controller.state.getCache(), null)
                 .setOnSelected(this::onPosSelected)
@@ -115,6 +116,11 @@ public class IOPageWidget extends PageWidget {
         addWidget(new ButtonWidget(134, 208, 12, 12, IGuiTexture.EMPTY, cd -> click(cd, index + 2, IO.IN)).setHoverTexture(new ColorRectTexture(0x4fffffff)));
         addWidget(new ButtonWidget(134, 229, 12, 12, IGuiTexture.EMPTY, cd -> click(cd, index + 2, IO.OUT)).setHoverTexture(new ColorRectTexture(0x4fffffff)));
 
+    }
+
+    @SideOnly(Side.CLIENT)
+    private World getWorld() {
+        return Minecraft.getMinecraft().world;
     }
 
     private void refresh() {

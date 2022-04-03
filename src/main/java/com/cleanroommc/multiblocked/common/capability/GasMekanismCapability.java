@@ -1,16 +1,16 @@
 package com.cleanroommc.multiblocked.common.capability;
 
+import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.IO;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.GasStackWidget;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
-import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
-import com.cleanroommc.multiblocked.api.capability.IO;
-import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import mekanism.api.gas.GasRegistry;
 import mekanism.api.gas.GasStack;
 import mekanism.api.gas.IGasHandler;
@@ -77,6 +77,10 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
         }
 
         public IGasHandler getCapability() {
+            for (EnumFacing facing : EnumFacing.values()) {
+                IGasHandler gasHandler = getTileEntity().getCapability(Capabilities.GAS_HANDLER_CAPABILITY, facing);
+                if (gasHandler != null) return gasHandler;
+            }
             return getTileEntity().getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
         }
 

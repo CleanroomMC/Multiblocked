@@ -80,7 +80,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                 .setBackgroundTexture(new ColorBorderTexture(1, -1))
                 .setHoverTooltip("Catalyst, if it is empty then right click can be formed")
                 .setVisible(definition.catalyst != null);
-        handler.setStackInSlot(0, definition.catalyst);
+        handler.setStackInSlot(0, definition.catalyst == null ? ItemStack.EMPTY : definition.catalyst);
         labelWidget.setVisible(definition.catalyst != null);
 
         S1.addWidget(createBoolSwitch(x + 100, 75, "needCatalyst", "If no catalyst is needed, the structure will try to formed per second.", definition.catalyst != null, r -> {

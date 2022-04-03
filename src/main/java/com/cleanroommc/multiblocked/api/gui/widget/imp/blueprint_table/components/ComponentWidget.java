@@ -151,10 +151,8 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
                 .setRenderFacing(false));
         widgetGroup.addWidget(new ButtonWidget(90-15, 12, 15, 15, new ResourceTexture("multiblocked:textures/gui/option.png"),(cd) ->
                 new IRendererWidget(this, tileEntity.getRenderer(), r -> {
-                    if (r != null) {
-                        tileEntity.getDefinition().baseRenderer = r;
-                        onUpdate.accept(r);
-                    }
+                    tileEntity.getDefinition().baseRenderer = r;
+                    onUpdate.accept(r);
                 })).setHoverBorderTexture(1, -1).setHoverTooltip(tips));
 
         return widgetGroup;

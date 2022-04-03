@@ -14,6 +14,8 @@ import com.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.events.Listeners;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import com.sun.org.apache.xpath.internal.operations.Mult;
+import crafttweaker.CraftTweakerAPI;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
@@ -45,6 +47,10 @@ public class CommonProxy {
         MultiblockComponents.executeInitHandler();
         // register ui
         UIFactory.register(TileEntityUIFactory.INSTANCE);
+        // loadCT
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
+            CraftTweakerAPI.tweaker.loadScript(false, "multiblocked");
+        }
     }
 
     public void postInit() {

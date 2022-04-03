@@ -21,6 +21,9 @@ import net.minecraft.util.Tuple;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenConstructor;
+import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenProperty;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,16 +34,20 @@ import java.util.Map;
 @ZenRegister
 public class RecipeBuilder {
 
+    @ZenProperty
     public final RecipeMap recipeMap;
     public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> inputBuilder = new HashMap<>();
     public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> outputBuilder = new HashMap<>();
+    @ZenProperty
     protected int duration;
     protected StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name yourself.
 
+    @ZenConstructor
     public RecipeBuilder(RecipeMap recipeMap) {
         this.recipeMap = recipeMap;
     }
 
+    @ZenMethod
     public RecipeBuilder copy() {
         RecipeBuilder copy = new RecipeBuilder(recipeMap);
         inputBuilder.forEach((k, v)->{
@@ -56,6 +63,7 @@ public class RecipeBuilder {
         return copy;
     }
 
+    @ZenMethod
     public RecipeBuilder duration(int duration) {
         this.duration = duration;
         return this;
@@ -73,19 +81,23 @@ public class RecipeBuilder {
         return this;
     }
 
+    @ZenMethod
     public RecipeBuilder inputFE(int forgeEnergy) {
         return inputFE(1, forgeEnergy);
     }
 
+    @ZenMethod
     public RecipeBuilder outputFE(int forgeEnergy) {
         return outputFE(1, forgeEnergy);
     }
 
+    @ZenMethod
     public RecipeBuilder inputFE(float chance, int forgeEnergy) {
         keyBuilder.append(MultiblockCapabilities.FE.name).append(forgeEnergy);
         return input(MultiblockCapabilities.FE, chance, forgeEnergy);
     }
 
+    @ZenMethod
     public RecipeBuilder outputFE(float chance, int forgeEnergy) {
         keyBuilder.append(MultiblockCapabilities.FE.name).append(forgeEnergy);
         return output(MultiblockCapabilities.FE, chance, forgeEnergy);
@@ -144,22 +156,26 @@ public class RecipeBuilder {
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BOT)
+    @ZenMethod
     public RecipeBuilder inputMana(int mana) {
         return inputMana(1, mana);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BOT)
+    @ZenMethod
     public RecipeBuilder outputMana(int mana) {
         return outputMana(1, mana);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BOT)
+    @ZenMethod
     public RecipeBuilder inputMana(float chance, int mana) {
         keyBuilder.append(ManaBotainaCapability.CAP.name).append(mana);
         return input(ManaBotainaCapability.CAP, chance, mana);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BOT)
+    @ZenMethod
     public RecipeBuilder outputMana(float chance, int mana) {
         keyBuilder.append(ManaBotainaCapability.CAP.name).append(mana);
         return output(ManaBotainaCapability.CAP, chance, mana);
@@ -196,22 +212,26 @@ public class RecipeBuilder {
     }
 
     @Optional.Method(modid = Multiblocked.MODID_MEK)
+    @ZenMethod
     public RecipeBuilder inputHeat(double heat) {
         return inputHeat(1, heat);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_MEK)
+    @ZenMethod
     public RecipeBuilder outputHeat(double heat) {
         return outputHeat(1, heat);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_MEK)
+    @ZenMethod
     public RecipeBuilder inputHeat(float chance, double heat) {
         keyBuilder.append(HeatMekanismCapability.CAP.name).append(heat);
         return input(HeatMekanismCapability.CAP, chance, heat);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_MEK)
+    @ZenMethod
     public RecipeBuilder outputHeat(float chance, double heat) {
         keyBuilder.append(HeatMekanismCapability.CAP.name).append(heat);
         return output(HeatMekanismCapability.CAP, chance, heat);
@@ -282,27 +302,32 @@ public class RecipeBuilder {
     }
 
     @Optional.Method(modid = Multiblocked.MODID_GTCE)
+    @ZenMethod
     public RecipeBuilder inputEU(int eu) {
         return inputMana(1, eu);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_GTCE)
+    @ZenMethod
     public RecipeBuilder outputEU(int eu) {
         return outputMana(1, eu);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_GTCE)
+    @ZenMethod
     public RecipeBuilder inputEU(float chance, long eu) {
         keyBuilder.append(EnergyGTCECapability.CAP.name).append(eu);
         return input(EnergyGTCECapability.CAP, chance, eu);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_GTCE)
+    @ZenMethod
     public RecipeBuilder outputEU(float chance, long eu) {
         keyBuilder.append(EnergyGTCECapability.CAP.name).append(eu);
         return output(EnergyGTCECapability.CAP, chance, eu);
     }
 
+    @ZenMethod
     public Recipe build() {
         ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputBuilder = new ImmutableMap.Builder<>();
         for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> entry : this.inputBuilder.entrySet()) {
@@ -316,6 +341,7 @@ public class RecipeBuilder {
         return new Recipe(keyBuilder.toString(), inputBuilder.build(), outputBuilder.build(), duration);
     }
 
+    @ZenMethod
     public void buildAndRegister(){
         recipeMap.addRecipe(build());
     }

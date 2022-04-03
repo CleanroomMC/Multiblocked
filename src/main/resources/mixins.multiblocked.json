@@ -12,6 +12,7 @@
   ],
   "client": [
     "BlockRendererDispatcherMixin",
+    "EntityRendererMixin",
     "MinecraftMixin",
     "RenderItemMixin",
     "TileEntityRendererDispatcherMixin"

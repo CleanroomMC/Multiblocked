@@ -4,7 +4,7 @@ import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.client.model.IModelSupplier;
 import com.cleanroommc.multiblocked.client.model.SimpleStateMapper;
-import com.cleanroommc.multiblocked.client.particle.ParticleHandler;
+import com.cleanroommc.multiblocked.client.particle.MCParticleHandler;
 import com.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.util.RayTraceUtils;
@@ -260,7 +260,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     public boolean addHitEffects(@Nonnull IBlockState state, @Nonnull World worldObj, RayTraceResult target, @Nonnull ParticleManager manager) {
         TextureAtlasSprite atlasSprite = getParticleTexture(worldObj, target.getBlockPos());
         if (atlasSprite == null) return true;
-        ParticleHandler.addHitEffects(state, worldObj, target, manager, atlasSprite);
+        MCParticleHandler.addHitEffects(state, worldObj, target, manager, atlasSprite);
         return true;
     }
 
@@ -269,7 +269,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     public boolean addDestroyEffects(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull ParticleManager manager) {
         TextureAtlasSprite atlasSprite = getParticleTexture(world, pos);
         if (atlasSprite == null) return true;
-        ParticleHandler.addBlockDestroyEffects(world.getBlockState(pos), world, pos, manager, atlasSprite);
+        MCParticleHandler.addBlockDestroyEffects(world.getBlockState(pos), world, pos, manager, atlasSprite);
         return true;
     }
 
@@ -279,7 +279,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         if (world.isRemote) {
             TextureAtlasSprite atlasSprite = getParticleTexture(world, pos);
             if (atlasSprite == null) return true;
-            ParticleHandler.addBlockRunningEffects(state, world, pos, entity, atlasSprite);
+            MCParticleHandler.addBlockRunningEffects(state, world, pos, entity, atlasSprite);
         }
         return true;
     }

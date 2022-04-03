@@ -14,15 +14,12 @@ import com.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.events.Listeners;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import crafttweaker.CraftTweakerAPI;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -59,11 +56,6 @@ public class CommonProxy {
 
     private static boolean init = false;
     public static void registerComponents(){
-        if (Multiblocked.isClient()) {
-            if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) return;
-        } else {
-            if (!FMLCommonHandler.instance().getMinecraftServerInstance().isCallingFromMinecraftThread()) return;
-        }
         if (init) return;
         init = true;
         // register any capability block

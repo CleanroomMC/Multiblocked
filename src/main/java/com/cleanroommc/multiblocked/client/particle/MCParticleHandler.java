@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ParticleHandler {
+public class MCParticleHandler {
 
     public static void addHitEffects(IBlockState iblockstate, World world, RayTraceResult target, ParticleManager manager, TextureAtlasSprite atlasSprite) {
         BlockPos pos = target.getBlockPos();

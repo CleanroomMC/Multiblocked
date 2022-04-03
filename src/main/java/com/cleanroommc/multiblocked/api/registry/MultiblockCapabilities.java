@@ -78,7 +78,7 @@ public class MultiblockCapabilities {
                 if (tile != null) {
                     tileMap.put(block, tile);
                 }
-            } catch (Exception ignored) { }
+            } catch (Throwable ignored) { }
             if (pos.getY() < 255)
                 pos = pos.offset(EnumFacing.UP);
             else {

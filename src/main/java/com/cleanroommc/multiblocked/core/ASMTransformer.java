@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.core;
 
 import com.cleanroommc.multiblocked.core.asm.JEIRecipesGuiVisitor;
+import com.cleanroommc.multiblocked.core.asm.MEKPacketHandlerVisitor;
 import com.cleanroommc.multiblocked.core.asm.util.TargetClassVisitor;
 import com.cleanroommc.multiblocked.core.asm.BlockVisitor;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -26,6 +27,12 @@ public class ASMTransformer implements IClassTransformer {
                 ClassReader classReader = new ClassReader(basicClass);
                 ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
                 classReader.accept(new TargetClassVisitor(classWriter, JEIRecipesGuiVisitor.TARGET_METHOD, JEIRecipesGuiVisitor::new), 0);
+                return classWriter.toByteArray();
+            }
+            case MEKPacketHandlerVisitor.TARGET_CLASS_NAME: {
+                ClassReader classReader = new ClassReader(basicClass);
+                ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+                classReader.accept(new TargetClassVisitor(classWriter, MEKPacketHandlerVisitor.TARGET_METHOD, MEKPacketHandlerVisitor::new), 0);
                 return classWriter.toByteArray();
             }
         }

@@ -46,7 +46,7 @@ public class ControllerDefinition extends ComponentDefinition {
     public transient ISetupRecipe setupRecipe;
     @ZenProperty
     public transient IRecipeFinish recipeFinish;
-    public ItemStack catalyst = ItemStack.EMPTY; // if null, checking pattern per second
+    public ItemStack catalyst; // if null, checking pattern per second
     @ZenProperty
     public boolean consumeCatalyst;
     @ZenProperty

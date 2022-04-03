@@ -72,7 +72,6 @@ dependencies {
     if (project.use_mixins) {
         compile 'zone.rong:mixinbooter:4.2'
     }
-
     compile ('software.bernie.geckolib:forge-1.12.2-geckolib:3.0.21')
     compile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.673"
     compile "mezz.jei:jei_1.12.2:4.15.0.293"
@@ -84,7 +83,8 @@ dependencies {
     compile files("libs/NuclearCraft-2o.5.5-1.12.2.jar")
     compile files("libs/QMD-1.0.4-1.12.2.jar")
     compile files("libs/ThaumicJEI-1.12.2-1.6.0-27.jar")
-
+    compile files("libs/gregtech-1.12.2-2.1.4-beta.jar")
+    compile files("CodeChickenLib-1.12.2-3.2.3.358-universal.jar")
 }
 
 sourceSets {

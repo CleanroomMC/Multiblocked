@@ -68,8 +68,7 @@ public class DrawerHelper {
         int i = (fluidColor & 0xFF0000) >> 16;
         int j = (fluidColor & 0xFF00) >> 8;
         int k = (fluidColor & 0xFF);
-        int opacity = (fluidColor & 0x000000FF);
-        GlStateManager.color(i / 255.0f, j / 255.0f, k / 255.0f, opacity / 255.0f);
+        GlStateManager.color(i / 255.0f, j / 255.0f, k / 255.0f, 1);
 
         final int xTileCount = widthT / 16;
         final int xRemainder = widthT - xTileCount * 16;

@@ -12,7 +12,6 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.RecipeMapWidget;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
-import com.cleanroommc.multiblocked.client.MultiblockedResourceLoader;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.JsonElement;
 

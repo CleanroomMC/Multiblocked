@@ -12,7 +12,6 @@ import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.api.registry.MultiblockedItems;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
-import com.cleanroommc.multiblocked.client.MultiblockedResourceLoader;
 import com.cleanroommc.multiblocked.events.Listeners;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import net.minecraft.block.Block;

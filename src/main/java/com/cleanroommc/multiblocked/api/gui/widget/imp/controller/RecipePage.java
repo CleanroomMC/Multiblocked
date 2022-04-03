@@ -6,6 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
@@ -101,14 +102,15 @@ public class RecipePage extends PageWidget{
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        if (controller.recipeLogic != null) {
-            if (recipe != controller.recipeLogic.lastRecipe) {
-                recipe = controller.recipeLogic.lastRecipe;
+        if (controller.getRecipeLogic() != null) {
+            RecipeLogic recipeLogic = controller.getRecipeLogic();
+            if (recipe != recipeLogic.lastRecipe) {
+                recipe = recipeLogic.lastRecipe;
                 writeUpdateInfo(-1, this::writeRecipe);
             }
-            if (isWorking != controller.recipeLogic.isWorking || progress != controller.recipeLogic.progress) {
-                isWorking = controller.recipeLogic.isWorking;
-                progress = controller.recipeLogic.progress;
+            if (isWorking != recipeLogic.isWorking || progress != recipeLogic.progress) {
+                isWorking = recipeLogic.isWorking;
+                progress = recipeLogic.progress;
                 writeUpdateInfo(-2, this::writeStatus);
             }
         } else if (recipe != null) {

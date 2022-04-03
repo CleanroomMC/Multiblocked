@@ -1,31 +1,31 @@
 package com.cleanroommc.multiblocked.api.tile;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.ICapabilityProxyHolder;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTController;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import com.cleanroommc.multiblocked.api.pattern.BlockPattern;
-import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
-import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
-import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Table;
-import com.google.common.collect.Tables;
-import crafttweaker.annotations.ZenRegister;
-import crafttweaker.mc1120.player.MCPlayer;
-import crafttweaker.mc1120.world.MCFacing;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
-import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.IOPageWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
+import com.cleanroommc.multiblocked.api.pattern.BlockPattern;
+import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
+import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
+import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -45,36 +45,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.Constants;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenProperty;
-import stanhebben.zenscript.annotations.ZenSetter;
+import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A TileEntity that defies all controller machines.
  *
  * Head of the multiblock.
  */
-@ZenClass("mods.multiblocked.tile.Controller")
-@ZenRegister
-public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition> implements ICapabilityProxyHolder {
+@Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTController")
+public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition> implements ICapabilityProxyHolder, ICTController {
     public MultiblockState state;
     protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
     private Map<Long, Map<MultiblockCapability<?>, IO>> settings;
     protected LongOpenHashSet parts;
     protected String status;
-    @ZenProperty
-    public RecipeLogic recipeLogic;
+    protected RecipeLogic recipeLogic;
 
     public ControllerTileEntity() {
         status = "idle";
@@ -87,7 +78,15 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return definition.basePattern;
     }
 
-    @ZenMethod
+    @Override
+    public ControllerTileEntity getInner() {
+        return this;
+    }
+
+    public RecipeLogic getRecipeLogic() {
+        return recipeLogic;
+    }
+
     public boolean checkPattern() {
         if (state == null) return false;
         return getPattern().checkPatternAt(state, false);
@@ -98,17 +97,14 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return definition.allowRotate && facing.getAxis() != EnumFacing.Axis.Y;
     }
 
-    @ZenGetter
     public boolean isFormed() {
         return state != null && state.isFormed();
     }
 
-    @ZenGetter("status")
     public String getStatus() {
         return status;
     }
 
-    @ZenSetter("status")
     public void setStatus(String status) {
         if (!isRemote()) {
             if (!this.status.equals(status)) {
@@ -353,7 +349,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (definition.onRightClick != null) {
-            if (definition.onRightClick.apply(this, new MCPlayer(player), new MCFacing(facing), hitX, hitY, hitZ)) return true;
+            if (definition.onRightClick.apply(this, CraftTweakerMC.getIPlayer(player), CraftTweakerMC.getIFacing(facing), hitX, hitY, hitZ)) return true;
         }
         if (!world.isRemote) {
             if (!isFormed() && definition.catalyst != null) {

@@ -32,6 +32,7 @@ public class RecipeLogic {
         this.timer = Multiblocked.RNG.nextInt();
     }
 
+    @ZenMethod
     public void update() {
         timer++;
         if (isWorking) {
@@ -46,6 +47,7 @@ public class RecipeLogic {
         }
     }
 
+    @ZenMethod
     public void findAndHandleRecipe() {
         Recipe recipe;
         if (lastRecipe != null && lastRecipe.match(this.controller)) {
@@ -57,6 +59,7 @@ public class RecipeLogic {
         if (recipe != null) setupRecipe(recipe);
     }
 
+    @ZenMethod
     public void setupRecipe(Recipe recipe) {
         if (definition.setupRecipe != null) {
             if (definition.setupRecipe.apply(this, recipe)) {
@@ -72,6 +75,7 @@ public class RecipeLogic {
         markDirty();
     }
 
+    @ZenMethod
     public void onRecipeFinish() {
         if (definition.recipeFinish != null) {
             if (definition.recipeFinish.apply(this, lastRecipe)) {

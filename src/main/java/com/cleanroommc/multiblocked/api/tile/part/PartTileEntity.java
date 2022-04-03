@@ -1,20 +1,19 @@
 package com.cleanroommc.multiblocked.api.tile.part;
 
+import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTPart;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
-import crafttweaker.annotations.ZenRegister;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
+import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -27,11 +26,15 @@ import java.util.Set;
  *
  * part of the multiblock.
  */
-@ZenClass("mods.multiblocked.tile.Part")
-@ZenRegister
-public abstract class PartTileEntity<T extends PartDefinition> extends ComponentTileEntity<T> {
+@Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTPart")
+public abstract class PartTileEntity<T extends PartDefinition> extends ComponentTileEntity<T> implements ICTPart {
 
     public Set<BlockPos> controllerPos = new HashSet<>();
+
+    @Override
+    public PartTileEntity<?> getInner() {
+        return this;
+    }
 
     @Override
     public boolean isFormed() {
@@ -50,7 +53,7 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
             return definition.dynamicRenderer.apply(this);
         }
         for (ControllerTileEntity controller : getControllers()) {
-            if (definition.workingRenderer != null && controller.recipeLogic != null && controller.recipeLogic.isWorking && controller.isFormed()) {
+            if (definition.workingRenderer != null && controller.getRecipeLogic() != null && controller.getRecipeLogic().isWorking && controller.isFormed()) {
                 return definition.workingRenderer;
             }
         }
@@ -60,9 +63,7 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
     public boolean canShared() {
         return definition.canShared;
     }
-
-    @ZenMethod
-    @ZenGetter("controllers")
+    
     public List<ControllerTileEntity> getControllers() {
         List<ControllerTileEntity> result = new ArrayList<>();
         for (BlockPos blockPos : controllerPos) {

@@ -1,25 +1,18 @@
 package com.cleanroommc.multiblocked.api.tile;
 
+import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTComponent;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
+import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
+import com.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
+import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer.ComponentFactory;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
-import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
-import crafttweaker.api.world.IBlockPos;
-import crafttweaker.api.world.IFacing;
-import crafttweaker.api.world.IWorld;
-import crafttweaker.mc1120.player.MCPlayer;
-import crafttweaker.mc1120.world.MCBlockPos;
-import crafttweaker.mc1120.world.MCFacing;
-import crafttweaker.mc1120.world.MCWorld;
-import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
-import com.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
-import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.state.IBlockState;
@@ -33,19 +26,21 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.Optional.Method;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenSetter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,9 +55,8 @@ import java.util.function.Consumer;
  * This isn't going to be in-world.
  */
 @SuppressWarnings("unchecked")
-@ZenClass("mods.multiblocked.tile.Component")
-@ZenRegister
-public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity implements IUIHolder {
+@Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTComponent")
+public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity implements IUIHolder, ICTComponent {
     // is good to write down all CT code here? or move them to @ZenExpansion.
     protected T definition;
 
@@ -77,8 +71,11 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         }
     }
 
-    @ZenMethod
-    @ZenGetter("definition")
+    @Override
+    public ComponentTileEntity<?> getInner() {
+        return this;
+    }
+
     public T getDefinition() {
         return definition;
     }
@@ -86,43 +83,21 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public ResourceLocation getLocation() {
         return definition.location;
     }
-
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod("getWorld")
-    @ZenGetter
-    public IWorld world(){
-        return world == null ? null : new MCWorld(world);
-    }
-
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod("getPos")
-    @ZenGetter
-    public IBlockPos pos(){
-        return pos == null ? null : new MCBlockPos(pos);
-    }
-
-    @ZenMethod
+    
     public String getUnlocalizedName() {
         return getLocation().getPath() + ".name";
     }
-
-    @SideOnly(Side.CLIENT)
-    @ZenMethod
+    
     public String getLocalizedName() {
         return I18n.format(getUnlocalizedName());
     }
 
-    @ZenMethod
-    @ZenGetter
     public abstract boolean isFormed();
 
-    @ZenMethod
-    @ZenGetter("timer")
     public int getTimer() {
         return timer;
     }
 
-    @ZenMethod
     public void update(){
         timer++;
         if (definition.updateTick != null) {
@@ -138,13 +113,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return frontFacing;
     }
 
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod("getFrontFacing")
-    @ZenGetter
-    public IFacing frontFacing() {
-        return new MCFacing(getFrontFacing());
-    }
-
     public boolean setFrontFacing(EnumFacing facing) {
         if (!isValidFrontFacing(facing)) return false;
         frontFacing = facing;
@@ -153,13 +121,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             writeCustomData(0, buffer -> buffer.writeByte(frontFacing.getIndex()));
         }
         return true;
-    }
-
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod()
-    @ZenSetter("frontFacing")
-    public void setFrontFacing(IFacing facing) {
-        setFrontFacing(CraftTweakerMC.getFacing(facing));
     }
 
     @Override
@@ -172,7 +133,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         rotate(mirrorIn.toRotation(getFrontFacing()));
     }
 
-    @ZenMethod
     public IRenderer getRenderer() {
         if (definition.dynamicRenderer != null) {
             return definition.dynamicRenderer.apply(this);
@@ -187,36 +147,27 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return definition.allowRotate;
     }
 
-    @Method(modid = Multiblocked.MODID_CT)
-    @ZenMethod()
-    public boolean isValidFrontFacing(IFacing facing) {
-        return isValidFrontFacing(CraftTweakerMC.getFacing(facing));
-    }
-
     public boolean canConnectRedstone(EnumFacing facing) {
         return definition.getOutputRedstoneSignal != null;
     }
 
     public int getOutputRedstoneSignal(EnumFacing facing) {
         if (definition.getOutputRedstoneSignal != null) {
-            return definition.getOutputRedstoneSignal.apply(this, new MCFacing(facing));
+//            return definition.getOutputRedstoneSignal.apply(this, new MCFacing(facing));
         }
         return 0;
     }
 
-    @ZenMethod
     public void scheduleChunkForRenderUpdate() {
         BlockPos pos = getPos();
         getWorld().markBlockRangeForRenderUpdate(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
     }
 
-    @ZenMethod
     public void notifyBlockUpdate() {
         getWorld().notifyNeighborsOfStateChange(pos, getBlockType(), false);
     }
 
     @Override
-    @ZenMethod
     public void markAsDirty() {
         super.markDirty();
     }
@@ -238,7 +189,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public void onDrops(NonNullList<ItemStack> drops, EntityPlayer player) {
         if (definition.onDrops != null) {
-            for (IItemStack drop : definition.onDrops.apply(this, new MCPlayer(player))) {
+            for (IItemStack drop : definition.onDrops.apply(this, CraftTweakerMC.getIPlayer(player))) {
                 drops.add(CraftTweakerMC.getItemStack(drop));
             }
         } else {
@@ -248,7 +199,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (definition.onRightClick != null) {
-            if (definition.onRightClick.apply(this, new MCPlayer(player), new MCFacing(facing), hitX, hitY, hitZ)) return true;
+            if (definition.onRightClick.apply(this, CraftTweakerMC.getIPlayer(player), CraftTweakerMC.getIFacing(facing), hitX, hitY, hitZ)) return true;
         }
         if (!player.isSneaking()) {
             if (!world.isRemote && player instanceof EntityPlayerMP) {
@@ -260,7 +211,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public void onLeftClick(EntityPlayer player) {
         if (definition.onLeftClick != null) {
-            definition.onLeftClick.apply(this, new MCPlayer(player));
+            definition.onLeftClick.apply(this, CraftTweakerMC.getIPlayer(player));
         }
     }
 

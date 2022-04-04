@@ -1,11 +1,7 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.*;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
@@ -13,8 +9,9 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.client.particle.CommonParticle;
+import com.cleanroommc.multiblocked.client.particle.LaserBeamParticle;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import com.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -31,7 +28,6 @@ public class IParticleWidget extends DialogWidget {
         this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xaf000000)));
         TrackedDummyWorld world = new TrackedDummyWorld();
         BlockPos[] poses = new BlockPos[]{
-                BlockPos.ORIGIN,
                 BlockPos.ORIGIN.offset(EnumFacing.NORTH),
                 BlockPos.ORIGIN.offset(EnumFacing.EAST),
                 BlockPos.ORIGIN.offset(EnumFacing.WEST),
@@ -53,14 +49,26 @@ public class IParticleWidget extends DialogWidget {
     }
 
     private void onUpdate(ClickData clickData) {
+//        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "textures/fx/fx.png");
+//        Random rand = Multiblocked.RNG;
+//        for (int i = 0; i < 20; i++) {
+//            CommonParticle particle = new CommonParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5, (rand.nextFloat() * 2 - 1) * 0, 1, (rand.nextFloat() * 2 - 1)*0);
+//            particle.isBackLayer = true;
+//            particle.setScale(1);
+//            particle.setTexturesCount(2);
+//            particle.setGravity(0.3f);
+//            particle.setTexturesIndex(rand.nextInt(2), rand.nextInt(2));
+//            particle.setLightingMap(15, 15);
+//            particle.setLife(60);
+//            particle.setTexture(texture);
+//            sceneWidget.getParticleManager().addEffect(particle);
+//        }
         sceneWidget.getParticleManager().clearAllEffects(true);
-        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "textures/fx/particles.png");
-        CommonParticle particle = new CommonParticle(sceneWidget.getDummyWorld(), 0, 3.5f, 0);
-        particle.isBackLayer = true;
-        particle.setScale(16);
-        particle.setGravity(0);
-        particle.setLife(20000);
-        particle.setTexture(texture);
+        LaserBeamParticle particle = new LaserBeamParticle(sceneWidget.getDummyWorld(), new Vector3(0.5, 1, -1), new Vector3(0.5, 3.5, 2.5))
+                .setEmit(0.1f)
+                .setHeadWidth(0.3f)
+                .setBody(new ResourceLocation(Multiblocked.MODID,"textures/fx/laser.png")) // create a beam particle and set its texture.
+                .setHead(new ResourceLocation(Multiblocked.MODID,"textures/fx/laser_start.png")); // create a beam particle and set its texture.
         sceneWidget.getParticleManager().addEffect(particle);
     }
 

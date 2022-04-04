@@ -115,8 +115,8 @@ public class Vector3 {
         return this;
     }
 
-    public Vector3 set(Vec3i vec) {
-        return this.set((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
+    public Vector3 set(Vector3 vec) {
+        return this.set(vec.x, vec.y, vec.z);
     }
 
     public Vector3 add(double dx, double dy, double dz) {
@@ -262,6 +262,27 @@ public class Vector3 {
         if (d != 0) {
             multiply(1 / d);
         }
+        return this;
+    }
+
+    public Vector3 project(Vector3 b) {
+        double l = b.magSquared();
+        if (l == 0.0D) {
+            this.set(0.0D, 0.0D, 0.0D);
+        } else {
+            double m = this.dotProduct(b) / l;
+            this.set(b).multiply(m);
+        }
+        return this;
+    }
+
+    public Vector3 crossProduct(Vector3 vec) {
+        double d = this.y * vec.z - this.z * vec.y;
+        double d1 = this.z * vec.x - this.x * vec.z;
+        double d2 = this.x * vec.y - this.y * vec.x;
+        this.x = d;
+        this.y = d1;
+        this.z = d2;
         return this;
     }
 }

@@ -207,6 +207,7 @@ public abstract class WorldSceneRenderer {
         this.lookAt = lookAt;
         this.worldUp = worldUp;
         if (viewEntity != null) {
+
             Vector3 xzProduct = new Vector3(lookAt.x - eyePos.x, 0, lookAt.z - eyePos.z);
             double angleYaw = Math.toDegrees(xzProduct.angle(Vector3.Z));
             if (xzProduct.angle(X) < Math.PI / 2) {
@@ -440,7 +441,6 @@ public abstract class WorldSceneRenderer {
 
     private void renderTESR(final int pass, float particle, boolean checkDisabledModel) {
         if (particleManager != null) {
-            ActiveRenderInfo.updateRenderInfo(viewEntity, false);
             particleManager.renderParticles(pass == 0, viewEntity, particle);
         }
         // render TESR

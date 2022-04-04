@@ -3,10 +3,13 @@ package com.cleanroommc.multiblocked.client.particle;
 import com.cleanroommc.multiblocked.Multiblocked;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 import java.util.function.Consumer;
 
+@SideOnly(Side.CLIENT)
 public abstract class AbstractParticle implements IParticle {
     public World world;
     public double posX;
@@ -45,6 +48,11 @@ public abstract class AbstractParticle implements IParticle {
     @Override
     public boolean isBackLayer() {
         return isBackLayer;
+    }
+
+    @Override
+    public void setBackLayer(boolean isBackLayer) {
+        this.isBackLayer = isBackLayer;
     }
 
     @Override

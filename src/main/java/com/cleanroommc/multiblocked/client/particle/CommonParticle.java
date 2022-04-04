@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SideOnly(Side.CLIENT)
 public class CommonParticle extends AbstractParticle{
     private static final AxisAlignedBB EMPTY_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
     private static final Map<ResourceLocation, IParticleHandler> textureMap = new HashMap<>();
@@ -42,6 +43,7 @@ public class CommonParticle extends AbstractParticle{
     public float particleBlue;
     public float particleAlpha;
     public int texturesCount = 1;
+    public int lightMap = -1;
     public boolean motionless = false;
 
     private ResourceLocation customTexture;
@@ -243,8 +245,8 @@ public class CommonParticle extends AbstractParticle{
         float renderY = (float) (this.prevPosY + (this.posY - this.prevPosY) * (double) partialTicks - particleManager.interPosY);
         float renderZ = (float) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTicks - particleManager.interPosZ);
         int brightnessForRender = this.getBrightnessForRender();
-        int j = brightnessForRender >> 16 & 65535;
-        int k = brightnessForRender & 65535;
+        int j = brightnessForRender >> 16 & 0xffff;
+        int k = brightnessForRender & 0xffff;
         buffer.pos(renderX - rotationX * scale - rotationXY * scale, renderY - rotationZ * scale,  (renderZ - rotationYZ * scale - rotationXZ * scale)).tex(maxU, maxV).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
         buffer.pos(renderX - rotationX * scale + rotationXY * scale, renderY + rotationZ * scale,  (renderZ - rotationYZ * scale + rotationXZ * scale)).tex(maxU, minV).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
         buffer.pos(renderX + rotationX * scale + rotationXY * scale,  (renderY + rotationZ * scale),  (renderZ + rotationYZ * scale + rotationXZ * scale)).tex(minU, minV).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
@@ -252,6 +254,7 @@ public class CommonParticle extends AbstractParticle{
     }
 
     public int getBrightnessForRender() {
+        if (lightMap >= 0) return lightMap;
         BlockPos blockpos = new BlockPos(this.posX, this.posY, this.posZ);
         return this.world.isBlockLoaded(blockpos) ? this.world.getCombinedLight(blockpos, 0) : 0;
     }
@@ -261,6 +264,10 @@ public class CommonParticle extends AbstractParticle{
         if (!textureMap.containsKey(texture)) {
             textureMap.put(texture, new TexturedParticleHandler(texture));
         }
+    }
+
+    public void setLightingMap(int block, int sky) {
+        lightMap = (((block * 16) & 0xffff) << 16) | ((sky * 16) & 0xffff);
     }
 
     @Override

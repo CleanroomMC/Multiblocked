@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.client.particle;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.client.util.EntityCamera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
@@ -147,6 +148,11 @@ public class ParticleManager {
         interPosX = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
         interPosY = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double) partialTicks;
         interPosZ = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double) partialTicks;
+        if (entityIn instanceof EntityCamera) {
+            interPosX *= 0.00001; //zNear / zFar
+            interPosY *= 0.00001; //zNear / zFar
+            interPosZ *= 0.00001; //zNear / zFar
+        }
         cameraViewDir = entityIn.getLook(partialTicks);
 
 //        GlStateManager.enableBlend();

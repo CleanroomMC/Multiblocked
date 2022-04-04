@@ -84,11 +84,13 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean shouldRenderInPass(World world, BlockPos pos, int pass) {
         return true;
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean isRaw() {
         return !GeckoLibCache.getInstance().getGeoModels().containsKey(this.getModelLocation(null));
     }
@@ -130,6 +132,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void renderRecursively(BufferBuilder builder, GeoBone bone, float red, float green, float blue, float alpha) {
         int pass = MinecraftForgeClient.getRenderPass();
         if (pass < 0) {
@@ -174,6 +177,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
         }
     }
 
+    @SideOnly(Side.CLIENT)
     private void rawRenderRecursively(BufferBuilder builder, GeoBone bone, float red, float green, float blue, float alpha) {
         MATRIX_STACK.push();
         MATRIX_STACK.translate(bone);
@@ -196,6 +200,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
         MATRIX_STACK.pop();
     }
 
+    @SideOnly(Side.CLIENT)
     protected void rotateBlock(EnumFacing facing) {
         switch (facing) {
             case SOUTH:

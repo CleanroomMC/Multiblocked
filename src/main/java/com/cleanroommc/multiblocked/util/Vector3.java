@@ -8,6 +8,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 import java.math.BigDecimal;
@@ -15,6 +16,10 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 public class Vector3 {
+    public static final Vector3 X = new Vector3(1, 0, 0);
+    public static final Vector3 Y = new Vector3(0, 1, 0);
+    public static final Vector3 Z = new Vector3(0, 0, 1);
+
     public double x;
     public double y;
     public double z;
@@ -43,6 +48,12 @@ public class Vector3 {
         this.z = vec.getZ();
     }
 
+    public Vector3(Tuple3f vec) {
+        this.x = vec.x;
+        this.y = vec.y;
+        this.z = vec.z;
+    }
+
     public static Vector3 fromNBT(NBTTagCompound tag) {
         return new Vector3(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"));
     }
@@ -58,6 +69,21 @@ public class Vector3 {
     public Vector3 rotate(double angle, Vector3 axis) {
         Quat.aroundAxis(axis.copy().normalize(), angle).rotate(this);
         return this;
+    }
+
+    public double angle(Vector3 vec) {
+        return Math.acos(this.copy().normalize().dotProduct(vec.copy().normalize()));
+    }
+
+    public double dotProduct(Vector3 vec) {
+        double d = vec.x * this.x + vec.y * this.y + vec.z * this.z;
+        if (d > 1.0D && d < 1.00001D) {
+            d = 1.0D;
+        } else if (d < -1.0D && d > -1.00001D) {
+            d = -1.0D;
+        }
+
+        return d;
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {

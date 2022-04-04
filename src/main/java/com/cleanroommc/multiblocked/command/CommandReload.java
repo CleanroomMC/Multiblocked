@@ -30,9 +30,7 @@ public class CommandReload extends CommandBase {
         if (sender instanceof EntityPlayerMP) {
             MultiblockedNetworking.sendToPlayer(new SPacketCommand("dddd"), (EntityPlayerMP) sender);
             sender.sendMessage(new TextComponentString("Reloaded Shaders"));
-        } else {
-            sender.sendMessage(new TextComponentString("Command cannot be run on the server"));
-        }
+        } 
     }
 
 

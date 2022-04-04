@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp;
 
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
+import com.cleanroommc.multiblocked.client.particle.ParticleManager;
 import com.cleanroommc.multiblocked.client.renderer.scene.ISceneRenderHook;
 import com.cleanroommc.multiblocked.client.renderer.scene.ImmediateWorldSceneRenderer;
 import com.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRenderer;
@@ -36,6 +37,8 @@ public class SceneWidget extends WidgetGroup {
     protected WorldSceneRenderer renderer;
     @SideOnly(Side.CLIENT)
     protected TrackedDummyWorld dummyWorld;
+    @SideOnly(Side.CLIENT)
+    protected ParticleManager particleManager;
     protected boolean dragging;
     protected boolean renderFacing = true;
     protected boolean renderSelect = true;
@@ -53,6 +56,8 @@ public class SceneWidget extends WidgetGroup {
     protected BiConsumer<BlockPos, EnumFacing> onSelected;
     protected Set<BlockPos> core;
     protected boolean useCache;
+    protected boolean useParticle;
+
 
     public SceneWidget(int x, int y, int width, int height, World world) {
         super(x, y, width, height);
@@ -69,11 +74,32 @@ public class SceneWidget extends WidgetGroup {
         return this;
     }
 
+    public SceneWidget useParticle() {
+        useParticle = true;
+        if (Multiblocked.isClient() && particleManager == null && renderer != null) {
+            renderer.setParticleManager(particleManager = new ParticleManager());
+        }
+        return this;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public ParticleManager getParticleManager() {
+        return particleManager;
+    }
+
     @Override
     public void setGui(ModularUI gui) {
         super.setGui(gui);
         if (gui != null) {
             gui.registerCloseListener(this::releaseCacheBuffer);
+        }
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        if (particleManager != null) {
+            particleManager.updateEffects();
         }
     }
 
@@ -101,6 +127,7 @@ public class SceneWidget extends WidgetGroup {
         renderer.setAfterWorldRender(this::renderBlockOverLay);
         renderer.setCameraLookAt(center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
         renderer.useCacheBuffer(useCache);
+        renderer.setParticleManager(particleManager = (useParticle ? new ParticleManager() : null));
         clickPosFace = null;
         hoverPosFace = null;
         selectedPosFace = null;

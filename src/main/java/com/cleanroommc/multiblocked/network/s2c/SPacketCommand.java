@@ -1,5 +1,7 @@
 package com.cleanroommc.multiblocked.network.s2c;
 
+import com.cleanroommc.multiblocked.client.particle.CommonParticle;
+import com.cleanroommc.multiblocked.client.particle.ParticleManager;
 import com.cleanroommc.multiblocked.network.IPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -30,7 +32,7 @@ public class SPacketCommand implements IPacket {
     @SideOnly(Side.CLIENT)
     @Override
     public IPacket executeClient(NetHandlerPlayClient handler) {
-        Minecraft.getMinecraft().scheduleResourcesRefresh();
+//        ParticleManager.INSTANCE.addEffect(new CommonParticle());
         return null;
     }
 }

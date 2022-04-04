@@ -1,5 +1,7 @@
 package com.cleanroommc.multiblocked.client.renderer.scene;
 
+import com.cleanroommc.multiblocked.client.particle.ParticleManager;
+import com.cleanroommc.multiblocked.client.util.EntityCamera;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.cleanroommc.multiblocked.util.Position;
@@ -65,6 +67,8 @@ public abstract class WorldSceneRenderer {
     protected VertexBuffer[] vertexBuffers;
     protected boolean useCache;
     protected boolean needCompile;
+    protected ParticleManager particleManager;
+    protected EntityCamera viewEntity;
 
     private Consumer<WorldSceneRenderer> beforeRender;
     private Consumer<WorldSceneRenderer> afterRender;
@@ -78,6 +82,18 @@ public abstract class WorldSceneRenderer {
     public WorldSceneRenderer(World world) {
         this.world = world;
         renderedBlocksMap = new LinkedHashMap<>();
+    }
+
+    public WorldSceneRenderer setParticleManager(ParticleManager particleManager) {
+        if (particleManager == null) {
+            this.particleManager = null;
+            this.viewEntity = null;
+            return this;
+        }
+        this.particleManager = particleManager;
+        this.viewEntity = new EntityCamera(world);
+        setCameraLookAt(eyePos, lookAt, worldUp);
+        return this;
     }
 
     public WorldSceneRenderer useCacheBuffer(boolean useCache) {
@@ -187,14 +203,19 @@ public abstract class WorldSceneRenderer {
         this.eyePos = eyePos;
         this.lookAt = lookAt;
         this.worldUp = worldUp;
+        if (viewEntity != null) {
+            Vector3 xzProduct = new Vector3(lookAt.x - eyePos.x, 0, lookAt.z - eyePos.z);
+            double angleYaw = xzProduct.angle(Vector3.X);
+            double anglePitch = new Vector3(lookAt).subtract(new Vector3(eyePos)).angle(Vector3.Y);
+            viewEntity.setLocationAndAngles(eyePos.x, eyePos.y, eyePos.z, (float) angleYaw, (float) anglePitch);
+        }
     }
 
     public void setCameraLookAt(Vector3f lookAt, double radius, double rotationPitch, double rotationYaw) {
-        this.lookAt = lookAt;
         Vector3 vecX = new Vector3(Math.cos(rotationPitch), 0, Math.sin(rotationPitch));
         Vector3 vecY = new Vector3(0, Math.tan(rotationYaw) * vecX.mag(),0);
         Vector3 pos = vecX.copy().add(vecY).normalize().multiply(radius);
-        this.eyePos = pos.add(lookAt.x, lookAt.y, lookAt.z).vector3f();
+        setCameraLookAt(pos.add(lookAt.x, lookAt.y, lookAt.z).vector3f(), lookAt, worldUp);
     }
 
     protected PositionedRect getPositionedRect(int x, int y, int width, int height) {
@@ -410,6 +431,9 @@ public abstract class WorldSceneRenderer {
     }
 
     private void renderTESR(final int pass, float particle, boolean checkDisabledModel) {
+        if (particleManager != null) {
+            particleManager.renderParticles(pass == 0, viewEntity, particle);
+        }
         // render TESR
         RenderHelper.enableStandardItemLighting();
         ForgeHooksClient.setRenderPass(pass);

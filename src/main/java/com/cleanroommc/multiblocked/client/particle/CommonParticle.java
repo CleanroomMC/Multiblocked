@@ -233,9 +233,9 @@ public class CommonParticle extends AbstractParticle{
         float maxV = minV + 1F / texturesCount;//0.0624375F;
         float scale = 0.1F * this.particleScale;
 
-        float renderX = (float) (this.prevPosX + (this.posX - this.prevPosX) * (double) partialTicks - ParticleManager.interPosX);
-        float renderY = (float) (this.prevPosY + (this.posY - this.prevPosY) * (double) partialTicks - ParticleManager.interPosY);
-        float renderZ = (float) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTicks - ParticleManager.interPosZ);
+        float renderX = (float) (this.prevPosX + (this.posX - this.prevPosX) * (double) partialTicks - particleManager.interPosX);
+        float renderY = (float) (this.prevPosY + (this.posY - this.prevPosY) * (double) partialTicks - particleManager.interPosY);
+        float renderZ = (float) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTicks - particleManager.interPosZ);
         int brightnessForRender = this.getBrightnessForRender();
         int j = brightnessForRender >> 16 & 65535;
         int k = brightnessForRender & 65535;

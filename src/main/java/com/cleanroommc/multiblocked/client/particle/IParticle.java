@@ -24,5 +24,5 @@ public interface IParticle {
     boolean shouldRendered(Entity entityIn, float partialTicks);
 
     @SideOnly(Side.CLIENT)
-    void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationXZ, float rotationZ, float rotationYZ, float rotationXY);
+    void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks);
 }

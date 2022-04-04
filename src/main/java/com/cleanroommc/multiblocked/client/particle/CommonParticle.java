@@ -133,7 +133,7 @@ public class CommonParticle extends AbstractParticle{
     }
 
     /**
-     * How many sub-textures in the current texture. it always 16 in the {@link net.minecraft.client.particle.Particle}. but we allow the bigger or smaller texture in the GTParticle.
+     * How many sub-textures in the current texture. it always 16 in the {@link net.minecraft.client.particle.Particle}. but we allow the bigger or smaller texture in the MBDParticle.
      */
     public void setTexturesCount(int texturesCount) {
         this.texturesCount = texturesCount;
@@ -189,7 +189,7 @@ public class CommonParticle extends AbstractParticle{
         double origZ = z;
 
         if (this.canCollide) {
-            List<AxisAlignedBB> list = this.world.getCollisionBoxes((Entity)null, this.getBoundingBox().expand(x, y, z));
+            List<AxisAlignedBB> list = this.world.getCollisionBoxes(null, this.getBoundingBox().expand(x, y, z));
             for (AxisAlignedBB axisalignedbb : list) {
                 y = axisalignedbb.calculateYOffset(this.getBoundingBox(), y);
             }
@@ -226,7 +226,13 @@ public class CommonParticle extends AbstractParticle{
         }
     }
 
-    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks) {
+        float rotationX = particleManager.rotationX;
+        float rotationZ = particleManager.rotationXZ;
+        float rotationYZ = particleManager.rotationZ;
+        float rotationXY = particleManager.rotationYZ;
+        float rotationXZ = particleManager.rotationXY;
+
         float minU = this.particleTextureIndexX * 1F / texturesCount;
         float maxU = minU + 1F / texturesCount;//0.0624375F;
         float minV = this.particleTextureIndexY * 1F / texturesCount;

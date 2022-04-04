@@ -11,6 +11,7 @@ import com.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -45,6 +46,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static com.cleanroommc.multiblocked.util.Vector3.X;
 
 /**
  * Created with IntelliJ IDEA.
@@ -205,8 +208,11 @@ public abstract class WorldSceneRenderer {
         this.worldUp = worldUp;
         if (viewEntity != null) {
             Vector3 xzProduct = new Vector3(lookAt.x - eyePos.x, 0, lookAt.z - eyePos.z);
-            double angleYaw = xzProduct.angle(Vector3.X);
-            double anglePitch = new Vector3(lookAt).subtract(new Vector3(eyePos)).angle(Vector3.Y);
+            double angleYaw = Math.toDegrees(xzProduct.angle(Vector3.Z));
+            if (xzProduct.angle(X) < Math.PI / 2) {
+                angleYaw = -angleYaw;
+            }
+            double anglePitch = Math.toDegrees(new Vector3(lookAt).subtract(new Vector3(eyePos)).angle(Vector3.Y)) - 90;
             viewEntity.setLocationAndAngles(eyePos.x, eyePos.y, eyePos.z, (float) angleYaw, (float) anglePitch);
         }
     }
@@ -216,6 +222,8 @@ public abstract class WorldSceneRenderer {
         Vector3 vecY = new Vector3(0, Math.tan(rotationYaw) * vecX.mag(),0);
         Vector3 pos = vecX.copy().add(vecY).normalize().multiply(radius);
         setCameraLookAt(pos.add(lookAt.x, lookAt.y, lookAt.z).vector3f(), lookAt, worldUp);
+//        viewEntity.setPositionAndRotation(eyePos.x, eyePos.y, eyePos.z, (float) Math.toDegrees(rotationPitch), (float) Math.toDegrees(rotationYaw));
+
     }
 
     protected PositionedRect getPositionedRect(int x, int y, int width, int height) {
@@ -432,6 +440,7 @@ public abstract class WorldSceneRenderer {
 
     private void renderTESR(final int pass, float particle, boolean checkDisabledModel) {
         if (particleManager != null) {
+            ActiveRenderInfo.updateRenderInfo(viewEntity, false);
             particleManager.renderParticles(pass == 0, viewEntity, particle);
         }
         // render TESR

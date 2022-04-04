@@ -35,7 +35,6 @@ public abstract class AbstractParticle implements IParticle {
         this.posX = x;
         this.posY = y;
         this.posZ = z;
-
     }
     
     public AbstractParticle setLife(int life) {

@@ -21,8 +21,10 @@ public class EntityRendererMixin {
                     target = "Lnet/minecraft/client/renderer/RenderGlobal;renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V",
                     ordinal = 0))
     private void passZero(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
+        this.mc.profiler.endStartSection("MBDParticle");
         Entity entity = mc.getRenderViewEntity();
         ParticleManager.INSTANCE.renderParticles(true, entity == null ? mc.player : entity, partialTicks);
+        this.mc.profiler.endStartSection("entities");
     }
 
     @Inject(method = "renderWorldPass",
@@ -30,7 +32,9 @@ public class EntityRendererMixin {
                     target = "Lnet/minecraft/client/renderer/RenderGlobal;renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V",
                     ordinal = 1))
     private void passOne(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
+        this.mc.profiler.endStartSection("MBDParticle");
         Entity entity = mc.getRenderViewEntity();
         ParticleManager.INSTANCE.renderParticles(false, entity == null ? mc.player : entity, partialTicks);
+        this.mc.profiler.endStartSection("entities");
     }
 }

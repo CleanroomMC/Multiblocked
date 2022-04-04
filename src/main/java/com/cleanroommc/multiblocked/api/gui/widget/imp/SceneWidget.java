@@ -289,7 +289,7 @@ public class SceneWidget extends WidgetGroup {
     @Override
     public Widget mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
         if (isMouseOverElement(mouseX, mouseY)) {
-            zoom = (float) MathHelper.clamp(zoom + (wheelDelta < 0 ? 0.5 : -0.5), 1.5, 999);
+            zoom = (float) MathHelper.clamp(zoom + (wheelDelta < 0 ? 0.5 : -0.5), 0.1, 999);
             if (renderer != null) {
                 renderer.setCameraLookAt(center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
             }
@@ -344,5 +344,13 @@ public class SceneWidget extends WidgetGroup {
         super.drawInBackground(mouseX, mouseY, partialTicks);
         currentMouseX = mouseX;
         currentMouseY = mouseY;
+    }
+
+    public SceneWidget setCenter(Vector3f center) {
+        this.center = center;
+        if (renderer != null) {
+            renderer.setCameraLookAt(this.center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
+        }
+        return this;
     }
 }

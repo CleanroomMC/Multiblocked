@@ -2,11 +2,12 @@ package com.cleanroommc.multiblocked.client.particle;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -15,7 +16,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * ParticleManger register, spawn, efficient rendering, update our custom particles.
@@ -34,6 +40,11 @@ public class ParticleManager {
     public double interPosX;
     public double interPosY;
     public double interPosZ;
+    public float rotationX;
+    public float rotationZ;
+    public float rotationYZ;
+    public float rotationXY;
+    public float rotationXZ;
     public Vec3d cameraViewDir;
 
     public void addEffect(IParticle... particles) {
@@ -130,37 +141,46 @@ public class ParticleManager {
     public void renderParticles(boolean back, Entity entityIn, float partialTicks) {
         if (renderQueueBack.isEmpty() && back) return;
         if (renderQueueFront.isEmpty() && !back) return;
-
-        float rotationX = ActiveRenderInfo.getRotationX();
-        float rotationZ = ActiveRenderInfo.getRotationZ();
-        float rotationYZ = ActiveRenderInfo.getRotationYZ();
-        float rotationXY = ActiveRenderInfo.getRotationXY();
-        float rotationXZ = ActiveRenderInfo.getRotationXZ();
+        
+        updateRenderInfo(entityIn);
 
         interPosX = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
         interPosY = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double) partialTicks;
         interPosZ = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double) partialTicks;
         cameraViewDir = entityIn.getLook(partialTicks);
-//
+
 //        GlStateManager.enableBlend();
 //        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0);
-//
+
+        mc.entityRenderer.enableLightmap();
+        RenderHelper.disableStandardItemLighting();
         Tessellator tessellator = Tessellator.getInstance();
 //        GlStateManager.disableLighting();
 
-        if (back) renderGlParticlesInLayer(renderQueueBack, tessellator, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
+        if (back) renderGlParticlesInLayer(renderQueueBack, tessellator, entityIn, partialTicks);
 
 //        GlStateManager.depthMask(false);
 
-        if (!back) renderGlParticlesInLayer(renderQueueFront, tessellator, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
+        if (!back) renderGlParticlesInLayer(renderQueueFront, tessellator, entityIn, partialTicks);
 
+        mc.entityRenderer.disableLightmap();
+        RenderHelper.enableStandardItemLighting();
 //        GlStateManager.depthMask(true);
 //        GlStateManager.disableBlend();
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
     }
 
-    private void renderGlParticlesInLayer(Map<IParticleHandler, ArrayDeque<IParticle>> renderQueue, Tessellator tessellator, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+    private void updateRenderInfo(Entity entityIn) {
+        float radians =0.017453292F;
+        rotationX = MathHelper.cos(entityIn.rotationYaw * radians);
+        rotationZ = MathHelper.sin(entityIn.rotationYaw * radians);
+        rotationYZ = -rotationZ * MathHelper.sin(entityIn.rotationPitch * radians);
+        rotationXY = rotationX * MathHelper.sin(entityIn.rotationPitch * radians);
+        rotationXZ = MathHelper.cos(entityIn.rotationPitch * radians);
+    }
+
+    private void renderGlParticlesInLayer(Map<IParticleHandler, ArrayDeque<IParticle>> renderQueue, Tessellator tessellator, Entity entityIn, float partialTicks) {
         for (IParticleHandler handler : renderQueue.keySet()) {
             ArrayDeque<IParticle> particles = renderQueue.get(handler);
             if (particles.isEmpty()) continue;
@@ -169,7 +189,7 @@ public class ParticleManager {
             for (final IParticle particle : particles) {
                 if (particle.shouldRendered(entityIn, partialTicks)) {
                     try {
-                        particle.renderParticle(buffer, entityIn, partialTicks, rotationX, rotationXZ, rotationZ, rotationYZ, rotationXY);
+                        particle.renderParticle(buffer, entityIn, partialTicks);
                     }
                     catch (Throwable throwable) {
                         Multiblocked.LOGGER.error("particle render error: {}", particle.toString(), throwable);

@@ -282,7 +282,7 @@ public class JsonBlockPattern {
 
         newPattern.aisleRepetitions = new int[aisleRepetitions.length][2];
         for (int i = 0; i < aisleRepetitions.length; i++) {
-            System.arraycopy(aisleRepetitions[i], 0, newPattern.aisleRepetitions[i], 0, pattern[i].length);
+            System.arraycopy(aisleRepetitions[i], 0, newPattern.aisleRepetitions[i], 0, aisleRepetitions[i].length);
         }
 
         predicates.forEach((k, v) -> {

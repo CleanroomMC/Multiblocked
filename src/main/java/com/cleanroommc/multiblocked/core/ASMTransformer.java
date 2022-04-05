@@ -32,7 +32,12 @@ public class ASMTransformer implements IClassTransformer {
             case MEKPacketHandlerVisitor.TARGET_CLASS_NAME: {
                 ClassReader classReader = new ClassReader(basicClass);
                 ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-                classReader.accept(new TargetClassVisitor(classWriter, MEKPacketHandlerVisitor.TARGET_METHOD, MEKPacketHandlerVisitor::new), 0);
+                classReader.accept(new TargetClassVisitor(classWriter, MEKPacketHandlerVisitor.TARGET_METHOD_1, mv -> new MEKPacketHandlerVisitor(mv, 0)), 0);
+
+                classReader = new ClassReader(classWriter.toByteArray());
+                classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+                classReader.accept(new TargetClassVisitor(classWriter, MEKPacketHandlerVisitor.TARGET_METHOD_2, mv -> new MEKPacketHandlerVisitor(mv, 1)), 0);
+
                 return classWriter.toByteArray();
             }
         }

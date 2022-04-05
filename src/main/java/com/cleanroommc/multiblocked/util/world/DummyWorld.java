@@ -24,7 +24,7 @@ public class DummyWorld extends World {
     public DummyWorld() {
         super(new DummySaveHandler(), new WorldInfo(DEFAULT_SETTINGS, "DummyServer"), new WorldProviderSurface(), new Profiler(), false);
         // Guarantee the dimension ID was not reset by the provider
-        this.provider.setDimension(Integer.MAX_VALUE);
+        this.provider.setDimension(Integer.MAX_VALUE - 1024);
         int providerDim = this.provider.getDimension();
         this.provider.setWorld(this);
         this.provider.setDimension(providerDim);

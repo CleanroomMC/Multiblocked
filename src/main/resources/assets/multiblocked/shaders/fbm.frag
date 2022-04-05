@@ -2,8 +2,8 @@
 // Author @patriciogv - 2015
 // http://patriciogonzalezvivo.com
 
-uniform vec2 u_resolution;
-uniform float u_time;
+uniform vec2 iResolution;
+uniform float iTime;
 const vec3 b_color = vec3(.7, .1, .4);
 
 float random (in vec2 _st) {
@@ -49,17 +49,17 @@ float fbm ( in vec2 _st) {
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord) {
-    vec2 st = fragCoord.xy/u_resolution.xy*3.;
-    // st += st * abs(sin(u_time*0.1)*3.0);
+    vec2 st = fragCoord.xy/iResolution.xy*3.;
+    // st += st * abs(sin(iTime*0.1)*3.0);
     vec3 color = vec3(0.0);
 
     vec2 q = vec2(0.);
-    q.x = fbm( st + 0.00*u_time);
+    q.x = fbm( st + 0.00*iTime);
     q.y = fbm( st + vec2(1.0));
 
     vec2 r = vec2(0.);
-    r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*u_time );
-    r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*u_time);
+    r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*iTime );
+    r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*iTime);
 
     float f = fbm(st+r);
 
@@ -79,5 +79,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord) {
 }
 
 void main() {
-    mainImage(gl_FragColor.rgba, vec2(gl_TexCoord[0].x * u_resolution.x, gl_TexCoord[0].y * u_resolution.y));
+//    gl_FragColor.rgba = vec4(1.,0.,0.,1.);
+    mainImage(gl_FragColor.rgba, vec2(gl_TexCoord[0].x * iResolution.x, gl_TexCoord[0].y * iResolution.y));
 }

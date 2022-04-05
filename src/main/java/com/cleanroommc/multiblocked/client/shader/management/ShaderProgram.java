@@ -13,8 +13,8 @@ import java.util.Set;
 public class ShaderProgram {
 
 	public final int programId;
-	private final Set<Shader> loaders;
-	private final UniformCache uniformCache;
+	public final Set<Shader> loaders;
+	public final UniformCache uniformCache;
 
 	public ShaderProgram() {
 		this.programId = GL20.glCreateProgram();
@@ -26,6 +26,7 @@ public class ShaderProgram {
 	}
 
 	public ShaderProgram attach(Shader loader) {
+		if (loader == null) return this;
 		if (this.loaders.contains(loader)) {
 			throw new IllegalStateException(String.format("Unable to attach Shader as it is already attached:\n%s", loader.source));
 		}
@@ -39,6 +40,12 @@ public class ShaderProgram {
 		GL20.glLinkProgram(programId);
 		GL20.glUseProgram(programId);
 		callback.apply(uniformCache);
+	}
+
+	public void use() {
+		this.uniformCache.invalidate();
+		GL20.glLinkProgram(programId);
+		GL20.glUseProgram(programId);
 	}
 
 	public void release() {

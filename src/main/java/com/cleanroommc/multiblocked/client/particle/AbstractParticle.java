@@ -16,6 +16,7 @@ public abstract class AbstractParticle implements IParticle {
     public double posY;
     public double posZ;
     public boolean isBackLayer;
+    public boolean isAddBlend;
     public int particleLife;
     public int squareRenderRange;
     public Consumer<AbstractParticle> onUpdate;
@@ -45,9 +46,19 @@ public abstract class AbstractParticle implements IParticle {
         return this;
     }
 
+    public AbstractParticle setAddBlend(boolean addBlend) {
+        isAddBlend = addBlend;
+        return this;
+    }
+
     @Override
     public boolean isBackLayer() {
         return isBackLayer;
+    }
+
+    @Override
+    public boolean isAddBlend() {
+        return isAddBlend;
     }
 
     @Override

@@ -46,7 +46,7 @@ public class CommonParticle extends AbstractParticle{
     public int lightMap = -1;
     public boolean motionless = false;
 
-    private ResourceLocation customTexture;
+    protected ResourceLocation customTexture;
 
     public CommonParticle(World worldIn, double posXIn, double posYIn, double posZIn) {
         super(worldIn, posXIn, posYIn, posZIn);
@@ -261,9 +261,6 @@ public class CommonParticle extends AbstractParticle{
 
     public void setTexture(ResourceLocation texture) {
         this.customTexture = texture;
-        if (!textureMap.containsKey(texture)) {
-            textureMap.put(texture, new TexturedParticleHandler(texture));
-        }
     }
 
     public void setLightingMap(int block, int sky) {
@@ -271,8 +268,8 @@ public class CommonParticle extends AbstractParticle{
     }
 
     @Override
-    public final IParticleHandler getGLHandler() {
-        return textureMap.get(customTexture);
+    public IParticleHandler getGLHandler() {
+        return textureMap.computeIfAbsent(customTexture, TexturedParticleHandler::new);
     }
 
     private static class TexturedParticleHandler implements IParticleHandler {

@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.client.util.EntityCamera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
@@ -73,14 +74,18 @@ public class ParticleManager {
                 IParticleHandler handler = handlerParticle.getFirst();
                 IParticle particle = handlerParticle.getSecond();
                 Map<IParticleHandler, ArrayDeque<IParticle>> renderQueue = particle.isBackLayer() ? renderQueueBack : renderQueueFront;
-                if (!renderQueue.containsKey(handler)) {
-                    renderQueue.put(handler, new ArrayDeque<>());
+                ArrayDeque<IParticle> arrayDeque = renderQueue.computeIfAbsent(handler, h -> new ArrayDeque<>());
+                if (particle.isAddBlend()) {
+                    if (arrayDeque.size() > 6000) {
+                        arrayDeque.removeFirst().kill();
+                    }
+                    arrayDeque.add(particle);
+                } else {
+                    if (arrayDeque.size() > 6000) {
+                        arrayDeque.removeLast().kill();
+                    }
+                    arrayDeque.addFirst(particle);
                 }
-                ArrayDeque<IParticle> arrayDeque = renderQueue.get(handler);
-                if (arrayDeque.size() > 6000) {
-                    arrayDeque.removeFirst().kill();
-                }
-                arrayDeque.add(particle);
             }
         }
     }
@@ -155,7 +160,7 @@ public class ParticleManager {
         }
         cameraViewDir = entityIn.getLook(partialTicks);
 
-//        GlStateManager.enableBlend();
+        GlStateManager.enableBlend();
 //        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 //        GlStateManager.alphaFunc(GL11.GL_GREATER, 0);
 
@@ -191,10 +196,20 @@ public class ParticleManager {
             ArrayDeque<IParticle> particles = renderQueue.get(handler);
             if (particles.isEmpty()) continue;
             BufferBuilder buffer = tessellator.getBuffer();
+            boolean addBlend = particles.getFirst().isAddBlend();
+            if (addBlend) {
+                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+            }
             handler.preDraw(buffer);
             for (final IParticle particle : particles) {
                 if (particle.shouldRendered(entityIn, partialTicks)) {
                     try {
+                        if (!addBlend && particle.isAddBlend()) {
+                            addBlend = true;
+                            handler.postDraw(buffer);
+                            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+                            handler.preDraw(buffer);
+                        }
                         particle.renderParticle(buffer, entityIn, partialTicks);
                     }
                     catch (Throwable throwable) {
@@ -204,6 +219,9 @@ public class ParticleManager {
                 }
             }
             handler.postDraw(buffer);
+            if (addBlend) {
+                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            }
         }
     }
 

@@ -7,6 +7,20 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import java.util.Collections;
 
 public class IShaderWidget extends DialogWidget {
+    private final static String HELP = "" +
+            "§2#version 120§r\n" +
+            "\n" +
+            "§2uniform§r §3vec2§r iResolution; §7// iResolution as Shadertoy (width, height)§r\n" +
+            "§2uniform§r §3vec2§r iMouse; §7// iMouse as Shadertoy (mouseX, mouseY)§r\n" +
+            "§2uniform§r §3float§r iTime; §7// iTime as Shadertoy (second)§r\n" +
+            "\n" +
+            "§3void§r mainImage( out §3vec4§r fragColor, in §3vec2§r fragCoord) {\n" +
+            "    §7// write shader here like Shadertoy§r\n" +
+            "}\n" +
+            "\n" +
+            "§3void§r main() {\n" +
+            "    mainImage(gl_FragColor.rgba, §3vec2§r(gl_TexCoord[0].x * iResolution.x, gl_TexCoord[0].y * iResolution.y));\n" +
+            "}\n";
     public final ShaderTexture shaderTexture;
 
     public IShaderWidget(WidgetGroup parent, String init) {
@@ -37,6 +51,16 @@ public class IShaderWidget extends DialogWidget {
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("update"));
         tfGroup.addWidget(textBox);
+
+        this.addWidget(new ButtonWidget(305, 15, 40, 20, cd -> {
+            new DialogWidget(this, true)
+                    .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xdf000000)))
+                    .addWidget(new TextBoxWidget(2, 2, getSize().width - 4, Collections.singletonList(HELP)).setFontColor(-1).setShadow(true))
+                    .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorBorderTexture(1, -1)));
+        })
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("help", -1).setDropShadow(true))
+                .setHoverBorderTexture(1, -1)
+                .setHoverTooltip("help"));
     }
 
 }

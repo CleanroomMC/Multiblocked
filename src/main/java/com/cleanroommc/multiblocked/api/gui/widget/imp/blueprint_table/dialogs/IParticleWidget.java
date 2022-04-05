@@ -9,7 +9,10 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.client.particle.CommonParticle;
+import com.cleanroommc.multiblocked.client.particle.IParticle;
 import com.cleanroommc.multiblocked.client.particle.LaserBeamParticle;
+import com.cleanroommc.multiblocked.client.particle.ShaderTextureParticle;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.init.Blocks;
@@ -19,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.vecmath.Vector3f;
 import java.util.Arrays;
+import java.util.Random;
 
 public class IParticleWidget extends DialogWidget {
     public SceneWidget sceneWidget;
@@ -63,12 +67,32 @@ public class IParticleWidget extends DialogWidget {
 //            particle.setTexture(texture);
 //            sceneWidget.getParticleManager().addEffect(particle);
 //        }
+
+//        sceneWidget.getParticleManager().clearAllEffects(true);
+//        IParticle particle = new LaserBeamParticle(sceneWidget.getDummyWorld(), new Vector3(0.5, 1, -1), new Vector3(0.5, 3.5, 2.5))
+//                .setEmit(0.1f)
+//                .setHeadWidth(0.3f)
+//                .setBody(new ResourceLocation(Multiblocked.MODID,"textures/fx/laser.png")) // create a beam particle and set its texture.
+//                .setHead(new ResourceLocation(Multiblocked.MODID,"textures/fx/laser_start.png")) // create a beam particle and set its texture.
+//                .setAddBlend(true);
+//        sceneWidget.getParticleManager().addEffect(particle);
+
         sceneWidget.getParticleManager().clearAllEffects(true);
-        LaserBeamParticle particle = new LaserBeamParticle(sceneWidget.getDummyWorld(), new Vector3(0.5, 1, -1), new Vector3(0.5, 3.5, 2.5))
-                .setEmit(0.1f)
-                .setHeadWidth(0.3f)
-                .setBody(new ResourceLocation(Multiblocked.MODID,"textures/fx/laser.png")) // create a beam particle and set its texture.
-                .setHead(new ResourceLocation(Multiblocked.MODID,"textures/fx/laser_start.png")); // create a beam particle and set its texture.
+        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "start");
+        ShaderTextureParticle particle = new ShaderTextureParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
+        particle.setBackLayer(true);
+        particle.setScale(16);
+        particle.setLightingMap(15, 15);
+        particle.setImmortal();
+        particle.setTexture(texture);
+
+        CommonParticle particle2 = new CommonParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
+        particle2.setBackLayer(true);
+        particle2.setScale(16);
+        particle2.setLightingMap(15, 15);
+        particle2.setImmortal();
+        particle2.setTexture(new ResourceLocation(Multiblocked.MODID, "textures/fx/fx.png"));
+
         sceneWidget.getParticleManager().addEffect(particle);
     }
 

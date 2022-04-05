@@ -2,6 +2,9 @@ package com.cleanroommc.multiblocked.util;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.ITextureObject;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 
@@ -54,5 +57,19 @@ public class ResourceUtils {
         }
         IOUtils.closeQuietly(inputstream);
         return true;
+    }
+
+    public static ITextureObject getTextureObject(ResourceLocation location) {
+        if (location == null) {
+            return null;
+        } else {
+            TextureManager renderEngine = Minecraft.getMinecraft().getRenderManager().renderEngine;
+            ITextureObject texture = renderEngine.getTexture(location);
+            if (texture == null) {
+                texture = new SimpleTexture(location);
+                renderEngine.loadTexture(location, texture);
+            }
+            return texture;
+        }
     }
 }

@@ -20,7 +20,7 @@ public class Shaders {
 	public static void init() {
 		IMAGE_F = load(Shader.ShaderType.FRAGMENT, new ResourceLocation(Multiblocked.MODID, "image"));
 		IMAGE_V = load(Shader.ShaderType.VERTEX, new ResourceLocation(Multiblocked.MODID, "image"));
-		FBM = load(Shader.ShaderType.FRAGMENT, new ResourceLocation(Multiblocked.MODID, "banner"));
+		FBM = load(Shader.ShaderType.FRAGMENT, new ResourceLocation(Multiblocked.MODID, "fbm"));
 	}
 
 	public static Map<ResourceLocation, Shader> CACHE = new HashMap<>();
@@ -40,6 +40,7 @@ public class Shaders {
 			try {
 				return Shader.loadShader(shaderType, key);
 			} catch (IOException e) {
+				Multiblocked.LOGGER.error("load shader {} resource {} failed", shaderType, resourceLocation);
 				return null;
 			}
 		});

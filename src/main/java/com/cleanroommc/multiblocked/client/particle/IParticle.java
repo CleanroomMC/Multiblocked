@@ -15,6 +15,8 @@ public interface IParticle {
 
     boolean isBackLayer();
 
+    boolean isAddBlend();
+
     void setBackLayer(boolean isBackLayer);
 
     void kill();

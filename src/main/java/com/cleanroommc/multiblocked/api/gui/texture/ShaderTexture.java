@@ -94,19 +94,19 @@ public class ShaderTexture implements IGuiTexture {
     @SideOnly(Side.CLIENT)
     public void draw(int mouseX, int mouseY, double x, double y, int width, int height) {
         if (program != null) {
-            Minecraft mc = Minecraft.getMinecraft();
-            final float time;
-            if (mc.player != null) {
-                time = (mc.player.ticksExisted + mc.getRenderPartialTicks()) / 20;
-            } else {
-                time = System.currentTimeMillis() / 1000f;
-            }
             program.use(cache->{
+                Minecraft mc = Minecraft.getMinecraft();
+                float time;
+                if (mc.player != null) {
+                    time = (mc.player.ticksExisted + mc.getRenderPartialTicks()) / 20;
+                } else {
+                    time = System.currentTimeMillis() / 1000f;
+                }
                 float mX = (float) MathHelper.clamp((mouseX - x), 0, width);
                 float mY = (float) MathHelper.clamp((mouseY - y), 0, height);
-                cache.glUniform2F("u_resolution", width * resolution, height * resolution);
-                cache.glUniform2F("u_mouse", mX * resolution, mY * resolution);
-                cache.glUniform1F("u_time", time);
+                cache.glUniform2F("iResolution", width * resolution, height * resolution);
+                cache.glUniform2F("iMouse", mX * resolution, mY * resolution);
+                cache.glUniform1F("iTime", time);
                 if (uniformCache != null) {
                     uniformCache.accept(cache);
                 }

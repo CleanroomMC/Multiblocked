@@ -4,17 +4,23 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.client.shader.Shaders;
 import com.cleanroommc.multiblocked.client.shader.uniform.UniformCache;
 import it.unimi.dsi.fastutil.objects.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.EXTFramebufferObject;
+import org.lwjgl.opengl.GL30;
 
 import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+
+import static org.lwjgl.opengl.GL11.glGetInteger;
 
 @SideOnly(Side.CLIENT)
 public class ShaderManager {
@@ -66,7 +72,8 @@ public class ShaderManager {
 		if (fbo == null || frag == null || !allowedShader()) {
 			return fbo;
 		}
-		// int lastID = glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
+
+//		int lastID = glGetInteger(EXTFramebufferObject.GL_FRAMEBUFFER_BINDING_EXT);
 		fbo.bindFramebuffer(true);
 		ShaderProgram program = programs.get(frag);
 		if (program == null) {
@@ -74,7 +81,7 @@ public class ShaderManager {
 			program.attach(Shaders.IMAGE_V).attach(frag);
 		}
 		program.use(cache -> {
-			cache.glUniform2F("u_resolution", fbo.framebufferWidth, fbo.framebufferHeight);
+			cache.glUniform2F("iResolution", fbo.framebufferWidth, fbo.framebufferHeight);
 			if (consumeCache != null) {
 				consumeCache.accept(cache);
 			}
@@ -88,8 +95,8 @@ public class ShaderManager {
 		buffer.pos(1, 1, 0).tex(1, 0).endVertex();
 		tessellator.draw();
 		program.release();
-		// GlStateManager.viewport(0, 0, mc.displayWidth, mc.displayHeight);
-		// OpenGlHelper.glBindFramebuffer(OpenGlHelper.GL_FRAMEBUFFER, lastID);
+//		GlStateManager.viewport(0, 0, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
+//		OpenGlHelper.glBindFramebuffer(OpenGlHelper.GL_FRAMEBUFFER, lastID);
 		return fbo;
 	}
 

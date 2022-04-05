@@ -33,6 +33,7 @@ public class PredicateStates extends SimplePredicate {
 
     @Override
     public SimplePredicate buildPredicate() {
+        states = Arrays.stream(states).filter(Objects::nonNull).toArray(IBlockState[]::new);
         predicate = state -> ArrayUtils.contains(states, state.getBlockState());
         candidates = () -> Arrays.stream(states).map(state -> new BlockInfo(state, null)).toArray(BlockInfo[]::new);
         return this;

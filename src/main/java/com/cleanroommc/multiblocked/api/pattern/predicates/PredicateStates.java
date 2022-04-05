@@ -11,6 +11,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class PredicateStates extends SimplePredicate {
     @Override
     public SimplePredicate buildPredicate() {
         states = Arrays.stream(states).filter(Objects::nonNull).toArray(IBlockState[]::new);
+        if (states.length == 0) states = new IBlockState[]{Blocks.GLASS.getDefaultState()};
         predicate = state -> ArrayUtils.contains(states, state.getBlockState());
         candidates = () -> Arrays.stream(states).map(state -> new BlockInfo(state, null)).toArray(BlockInfo[]::new);
         return this;

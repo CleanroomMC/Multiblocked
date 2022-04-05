@@ -12,6 +12,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
@@ -35,6 +36,7 @@ public class PredicateBlocks extends SimplePredicate {
     @Override
     public SimplePredicate buildPredicate() {
         blocks = Arrays.stream(blocks).filter(Objects::nonNull).toArray(Block[]::new);
+        if (blocks.length == 0) blocks = new Block[]{Blocks.GLASS};
         predicate = state -> ArrayUtils.contains(blocks, state.getBlockState().getBlock());
         candidates = () -> Arrays.stream(blocks).map(block -> new BlockInfo(block.getDefaultState(), null)).toArray(BlockInfo[]::new);
         return this;

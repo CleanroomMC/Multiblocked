@@ -88,12 +88,13 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
                     AspectStack aspectStack = iterator.next();
                     Aspect aspect = aspectStack.aspect;
                     int amount = aspectStack.amount;
-                    if (!ArrayUtils
-                            .contains(capability.getAspects().getAspects(), aspect)) return left;
+                    if (!ArrayUtils.contains(capability.getAspects().getAspects(), aspect)) continue;
                     int stored = capability.getAspects().getAmount(aspect);
-                    aspectStack.amount = Math.max(0, stored - amount);
+                    aspectStack.amount = Math.max(0, amount - stored);
                     if (!simulate) {
-                        capability.takeFromContainer(aspect, stored - aspectStack.amount);
+                        if (!capability.takeFromContainer(aspect, Math.min(stored, amount))) {
+                            aspectStack.amount = amount;
+                        }
                     }
                     if (aspectStack.amount <= 0) {
                         iterator.remove();

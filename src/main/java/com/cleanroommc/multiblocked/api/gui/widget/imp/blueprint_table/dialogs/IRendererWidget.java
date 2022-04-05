@@ -78,15 +78,16 @@ public class IRendererWidget extends DialogWidget {
                 .setButtonBackground(new ColorBorderTexture(1, -1), new ColorRectTexture(0xff444444))
                 .setBackground(new ColorRectTexture(0xff999999))
                 .setHoverTooltip("renderer"));
+        if (onSave == null) return;
         this.addWidget(new ButtonWidget(285, 30, 40, 20, cd -> {
-            if (onSave != null && tileEntity != null) {
+            if (tileEntity != null) {
                 onSave.accept(tileEntity.getRenderer());
             }
             super.close();
         })
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("save", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("update"));
+                .setHoverTooltip("save"));
     }
 
     @Override

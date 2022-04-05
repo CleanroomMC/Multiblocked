@@ -6,16 +6,21 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nonnull;
 
-public class CommandReload extends CommandBase {
+public class CommandClient extends CommandBase {
+
+    public final String cmd;
+
+    public CommandClient (String cmd) {
+        this.cmd = cmd;
+    }
 
     @Override
     @Nonnull
     public String getName() {
-        return "mbd_reload";
+        return cmd;
     }
 
     @Override
@@ -28,9 +33,8 @@ public class CommandReload extends CommandBase {
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
         if (sender instanceof EntityPlayerMP) {
-            MultiblockedNetworking.sendToPlayer(new SPacketCommand("dddd"), (EntityPlayerMP) sender);
-            sender.sendMessage(new TextComponentString("Reloaded Shaders"));
-        } 
+            MultiblockedNetworking.sendToPlayer(new SPacketCommand(cmd), (EntityPlayerMP) sender);
+        }
     }
 
 

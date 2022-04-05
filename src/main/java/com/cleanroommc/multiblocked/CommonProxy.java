@@ -47,6 +47,7 @@ public class CommonProxy {
         // loadCT
         if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
             CraftTweakerAPI.tweaker.loadScript(false, "multiblocked");
+//            CraftTweakerAPI.tweaker.loadScript(false, "multiblocked");
         }
     }
 

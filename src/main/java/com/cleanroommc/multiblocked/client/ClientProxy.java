@@ -11,6 +11,7 @@ import com.cleanroommc.multiblocked.client.renderer.BlueprintRegionRenderer;
 import com.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import com.cleanroommc.multiblocked.client.renderer.ComponentTESR;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.shader.Shaders;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -37,6 +38,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit() {
         super.preInit();
+        Shaders.init();
         MetadataSerializer metadataSerializer = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), "field_110452_an");
         metadataSerializer.registerMetadataSectionType(new MetadataSectionEmissive.Serializer(), MetadataSectionEmissive.class);
     }

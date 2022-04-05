@@ -7,7 +7,7 @@ import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
-import com.cleanroommc.multiblocked.command.CommandReload;
+import com.cleanroommc.multiblocked.command.CommandClient;
 import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -136,7 +136,8 @@ public class Multiblocked {
 
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-        event.registerServerCommand(new CommandReload());
+        event.registerServerCommand(new CommandClient("mbd_test"));
+        event.registerServerCommand(new CommandClient("mbd_reload_shaders"));
     }
 
     @EventHandler

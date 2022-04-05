@@ -8,6 +8,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiPageButtonList;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.PacketBuffer;
@@ -31,6 +32,7 @@ public class TextFieldWidget extends Widget {
     protected String currentString;
     private IGuiTexture background;
     private boolean enableBackground;
+    private boolean allowEnter;
 
     public TextFieldWidget(int xPosition, int yPosition, int width, int height, boolean enableBackground, Supplier<String> textSupplier, Consumer<String> textResponder) {
         super(new Position(xPosition, yPosition), new Size(width, height));
@@ -63,6 +65,11 @@ public class TextFieldWidget extends Widget {
 
     public TextFieldWidget setBackground(IGuiTexture background) {
         this.background = background;
+        return this;
+    }
+
+    public TextFieldWidget setAllowEnter(boolean allowEnter) {
+        this.allowEnter = allowEnter;
         return this;
     }
 
@@ -137,6 +144,21 @@ public class TextFieldWidget extends Widget {
 
     @Override
     public Widget keyTyped(char charTyped, int keyCode) {
+        if (allowEnter) {
+            if (!this.textField.isFocused()) {
+                return null;
+            } else if (GuiScreen.isKeyComboCtrlV(keyCode)) {
+                String s = GuiScreen.getClipboardString();
+                if (this.textValidator != null) {
+                    s = textValidator.apply(s);
+                }
+                if (textResponder != null) {
+                    textResponder.accept(s);
+                }
+                setCurrentString(s);
+                return this;
+            }
+        }
         return this.textField.textboxKeyTyped(charTyped, keyCode) ? this : null;
     }
 

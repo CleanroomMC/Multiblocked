@@ -3,7 +3,6 @@
 // http://patriciogonzalezvivo.com
 
 uniform vec2 iResolution;
-uniform vec2 iMouse;
 uniform float iTime;
 
 // based on https://www.shadertoy.com/view/lsf3RH by

@@ -1,7 +1,11 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.gui.texture.*;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
@@ -10,11 +14,8 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.client.particle.CommonParticle;
-import com.cleanroommc.multiblocked.client.particle.IParticle;
-import com.cleanroommc.multiblocked.client.particle.LaserBeamParticle;
 import com.cleanroommc.multiblocked.client.particle.ShaderTextureParticle;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
-import com.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -22,7 +23,6 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.vecmath.Vector3f;
 import java.util.Arrays;
-import java.util.Random;
 
 public class IParticleWidget extends DialogWidget {
     public SceneWidget sceneWidget;

@@ -81,7 +81,6 @@ public class ShaderTextureParticle extends CommonParticle {
                     } else {
                         time = System.currentTimeMillis() / 1000f;
                     }
-                    uniformCache.glUniform2F("iMouse", 512, 512);
                     uniformCache.glUniform1F("iTime", time);
                 });
 

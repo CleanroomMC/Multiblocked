@@ -229,11 +229,11 @@ public class CommonParticle extends AbstractParticle{
     }
 
     public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks) {
-        float rotationX = particleManager.rotationX;
-        float rotationZ = particleManager.rotationXZ;
-        float rotationYZ = particleManager.rotationZ;
-        float rotationXY = particleManager.rotationYZ;
-        float rotationXZ = particleManager.rotationXY;
+        float rotationX = ParticleManager.rotationX;
+        float rotationZ = ParticleManager.rotationXZ;
+        float rotationYZ = ParticleManager.rotationZ;
+        float rotationXY = ParticleManager.rotationYZ;
+        float rotationXZ = ParticleManager.rotationXY;
 
         float minU = this.particleTextureIndexX * 1F / texturesCount;
         float maxU = minU + 1F / texturesCount;//0.0624375F;
@@ -241,9 +241,9 @@ public class CommonParticle extends AbstractParticle{
         float maxV = minV + 1F / texturesCount;//0.0624375F;
         float scale = 0.1F * this.particleScale;
 
-        float renderX = (float) (this.prevPosX + (this.posX - this.prevPosX) * (double) partialTicks - particleManager.interPosX);
-        float renderY = (float) (this.prevPosY + (this.posY - this.prevPosY) * (double) partialTicks - particleManager.interPosY);
-        float renderZ = (float) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTicks - particleManager.interPosZ);
+        float renderX = (float) (this.prevPosX + (this.posX - this.prevPosX) * (double) partialTicks - ParticleManager.interPosX);
+        float renderY = (float) (this.prevPosY + (this.posY - this.prevPosY) * (double) partialTicks - ParticleManager.interPosY);
+        float renderZ = (float) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTicks - ParticleManager.interPosZ);
         int brightnessForRender = this.getBrightnessForRender();
         int j = brightnessForRender >> 16 & 0xffff;
         int k = brightnessForRender & 0xffff;

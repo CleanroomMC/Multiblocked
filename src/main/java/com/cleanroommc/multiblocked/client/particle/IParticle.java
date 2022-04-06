@@ -11,8 +11,6 @@ public interface IParticle {
         return IParticleHandler.DEFAULT_FX_HANDLER;
     }
 
-    void setParticleManager(ParticleManager particleManager);
-
     boolean isBackLayer();
 
     boolean isAddBlend();

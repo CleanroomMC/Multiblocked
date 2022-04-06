@@ -112,9 +112,9 @@ public class LaserBeamParticle extends AbstractParticle {
     @Override
     @SideOnly(Side.CLIENT)
     public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks) {
-        double tX = posX - particleManager.interPosX;
-        double tY = posY - particleManager.interPosY;
-        double tZ = posZ - particleManager.interPosZ;
+        double tX = posX - ParticleManager.interPosX;
+        double tY = posY - ParticleManager.interPosY;
+        double tZ = posZ - ParticleManager.interPosZ;
         GlStateManager.translate(tX, tY, tZ);
 
         Vector3 cameraDirection = null;

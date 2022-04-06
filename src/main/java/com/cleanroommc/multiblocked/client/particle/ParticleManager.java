@@ -39,20 +39,19 @@ public class ParticleManager {
     private final Map<IParticleHandler, ArrayDeque<IParticle>> renderQueueFront = new HashMap<>();
     private final Queue<Tuple<IParticleHandler, IParticle>> newParticleQueue = new ArrayDeque<>();
 
-    public double interPosX;
-    public double interPosY;
-    public double interPosZ;
-    public float rotationX;
-    public float rotationZ;
-    public float rotationYZ;
-    public float rotationXY;
-    public float rotationXZ;
-    public Vec3d cameraViewDir;
+    public static double interPosX;
+    public static double interPosY;
+    public static double interPosZ;
+    public static float rotationX;
+    public static float rotationZ;
+    public static float rotationYZ;
+    public static float rotationXY;
+    public static float rotationXZ;
+    public static Vec3d cameraViewDir;
 
     public void addEffect(IParticle... particles) {
         for (IParticle particle : particles) {
             if (particle.getGLHandler() != null) {
-                particle.setParticleManager(this);
                 newParticleQueue.add(new Tuple<>(particle.getGLHandler(), particle));
             } 
         }
@@ -61,7 +60,6 @@ public class ParticleManager {
     public void addEffect(List<IParticle> particles) {
         for (IParticle particle : particles) {
             if (particle.getGLHandler() != null) {
-                particle.setParticleManager(this);
                 newParticleQueue.add(new Tuple<>(particle.getGLHandler(), particle));
             }
         }

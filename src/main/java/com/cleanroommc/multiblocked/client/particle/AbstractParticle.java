@@ -21,18 +21,12 @@ public abstract class AbstractParticle implements IParticle {
     public int squareRenderRange;
     public Consumer<AbstractParticle> onUpdate;
     protected final Random rand;
-    protected ParticleManager particleManager;
 
     public AbstractParticle(World world, double posX, double posY, double posZ) {
         this.world = world;
         this.squareRenderRange = -1;
         this.rand = Multiblocked.RNG;
         setPosition(posX, posY, posZ);
-    }
-
-    @Override
-    public void setParticleManager(ParticleManager particleManager) {
-        this.particleManager = particleManager;
     }
 
     public void setPosition(double x, double y, double z) {

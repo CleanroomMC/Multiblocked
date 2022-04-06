@@ -79,11 +79,11 @@ public class ManaBotainaCapability extends MultiblockCapability<Integer> {
             if (capability == null) return left;
             int sum = left.stream().reduce(0, Integer::sum);
             if (io == IO.IN) {
-                int stored = capability.getCurrentMana();
+                int cost = Math.min(capability.getCurrentMana(), sum);
                 if (!simulate) {
-                    capability.recieveMana(-stored);
+                    capability.recieveMana(-cost);
                 }
-                sum = sum - stored;
+                sum = sum - cost;
             } else if (io == IO.OUT) {
                 if (capability.isFull()) {
                     return left;

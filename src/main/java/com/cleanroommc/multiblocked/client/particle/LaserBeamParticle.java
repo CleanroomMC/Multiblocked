@@ -30,7 +30,6 @@ public class LaserBeamParticle extends AbstractParticle {
     public LaserBeamParticle(World worldIn, Vector3 startPos, Vector3 endPos) {
         super(worldIn, startPos.x, startPos.y, startPos.z);
         this.setImmortal();
-        this.setRenderRange(64);
         this.direction = endPos.copy().subtract(startPos);
     }
 

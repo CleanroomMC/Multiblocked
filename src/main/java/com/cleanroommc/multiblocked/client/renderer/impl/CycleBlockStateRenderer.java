@@ -118,7 +118,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public boolean hasTESR() {
+    public boolean hasTESR(World world, BlockPos pos) {
         return true;
     }
 

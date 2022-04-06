@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -186,9 +187,10 @@ public class SimplePredicate {
                 .addWidget(new SwitchWidget(0, 0, 15, 15, (cd, r)->disableRenderFormed = r)
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
-                        .setHoverTexture(new ColorBorderTexture(1, 0xff545757))
+                        .setHoverTexture(new ColorBorderTexture(1, -1))
                         .setPressed(disableRenderFormed)
                         .setHoverTooltip("disable the original model rendering while the structure formed"))
+                .addWidget(new ImageWidget(2, 2, 11, 11, new ColorBorderTexture(1, -1)))
                 .addWidget(new LabelWidget(20, 3, "disableRenderFormed").setTextColor(-1).setDrop(true));
         group.addWidget(widgetGroup);
         return groups;

@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.json;
 
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.impl.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -10,11 +11,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.client.renderer.impl.B3DRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 
 public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
     public static final IRendererTypeAdapterFactory INSTANCE = new IRendererTypeAdapterFactory();
@@ -45,6 +41,8 @@ public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
                 jsonElement.getAsJsonObject().addProperty("type", "OBJ");
             } else if (value instanceof IModelRenderer) {
                 jsonElement.getAsJsonObject().addProperty("type", "IModel");
+            } else if (value instanceof TextureParticleRenderer) {
+                jsonElement.getAsJsonObject().addProperty("type", "TParticle");
             }
             gson.toJson(jsonElement, out);
         }
@@ -64,6 +62,8 @@ public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
                     return gson.fromJson(jsonElement, IModelRenderer.class).checkRegister();
                 case "OBJ":
                     return gson.fromJson(jsonElement, OBJRenderer.class).checkRegister();
+                case "TParticle":
+                    return gson.fromJson(jsonElement, TextureParticleRenderer.class);
                 case "Geo":
                     return Multiblocked.isModLoaded(Multiblocked.MODID_GEO) ? new GeoComponentRenderer(jsonObj.get("modelName").getAsString()) : null;
                 default:

@@ -1,34 +1,17 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.*;
+import com.cleanroommc.multiblocked.api.gui.util.ClickData;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
-import com.cleanroommc.multiblocked.client.MultiblockedResourceLoader;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.impl.*;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
-import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
-import com.cleanroommc.multiblocked.api.gui.util.ClickData;
-import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.BlockSelectorWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
-import com.cleanroommc.multiblocked.client.renderer.impl.B3DRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -71,8 +54,8 @@ public class IRendererWidget extends DialogWidget {
                         "\n§2Must refresh to display models which have never been loaded before (obj, b3d, and geo).§r" +
                         "\n§3Also need to refresh if the texture is not loaded.§r"));
         this.addWidget(new SelectorWidget(181, 55, 100, 20, Multiblocked.isModLoaded(Multiblocked.MODID_GEO) ?
-                        Arrays.asList("null", "BlockState", "B3D", "OBJ", "IModel", "Geo") :
-                        Arrays.asList("null", "BlockState", "B3D", "OBJ", "IModel"), -1)
+                        Arrays.asList("null", "BlockState", "B3D", "OBJ", "IModel", "TParticle", "Geo") :
+                        Arrays.asList("null", "BlockState", "B3D", "OBJ", "IModel", "TParticle"), -1)
                 .setValue(getType(renderer))
                 .setOnChanged(this::onChangeRenderer)
                 .setButtonBackground(new ColorBorderTexture(1, -1), new ColorRectTexture(0xff444444))
@@ -193,6 +176,66 @@ public class IRendererWidget extends DialogWidget {
                 };
                 break;
             }
+            case "TParticle" : {
+                TextFieldWidget tfw = addModelSettings();
+                TextureParticleRenderer renderer = new TextureParticleRenderer(new ResourceLocation(""));
+                if (current instanceof  TextureParticleRenderer) {
+                    renderer.texture = ((TextureParticleRenderer) current).texture;
+                    renderer.light = ((TextureParticleRenderer) current).light;
+                    renderer.scale = ((TextureParticleRenderer) current).scale;
+                    renderer.isShader =((TextureParticleRenderer) current).isShader;
+                    renderer.isAddBlend = ((TextureParticleRenderer) current).isAddBlend;
+                    renderer.isBackLayer = ((TextureParticleRenderer) current).isBackLayer;
+                    renderer.renderRange = ((TextureParticleRenderer) current).renderRange;
+                }
+                File png = new File(Multiblocked.location, "assets/multiblocked/textures");
+                File shader = new File(Multiblocked.location, "assets/multiblocked/shaders");
+                group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(this, "title", renderer.isShader ? shader : png, true,
+                        renderer.isShader ? DialogWidget.suffixFilter(".frag") : DialogWidget.suffixFilter(".png"), r -> {
+                            if (r != null && r.isFile()) {
+                                if (renderer.isShader) {
+                                    tfw.setCurrentString("multiblocked:" + r.getPath().replace(shader.getPath(), "").substring(1).replace(".frag", "").replace('\\', '/'));
+                                } else {
+                                    tfw.setCurrentString("multiblocked:" + r.getPath().replace(png.getPath(), "textures").replace('\\', '/'));
+                                }
+                            }
+                        })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
+                if (current instanceof IModelRenderer) {
+                    tfw.setCurrentString(((IModelRenderer) current).modelLocation.toString());
+                }
+                group.addWidget(createBoolSwitch(1, 25, "isShader", "use Shader", renderer.isShader, r->{
+                    if (renderer.isShader != r) {
+                        renderer.isShader = r;
+                        tfw.setCurrentString("");
+                    }
+                }));
+                group.addWidget(createBoolSwitch(1, 40, "isAddBlend", "addition blend mode", renderer.isShader, r -> renderer.isAddBlend = r));
+                group.addWidget(createBoolSwitch(1, 55, "isBackLayer", "render in the back layer", renderer.isBackLayer, r -> renderer.isBackLayer = r));
+                group.addWidget(new TextFieldWidget(1,75,70,10,true, null, num->renderer.scale = Float.parseFloat(num))
+                        .setNumbersOnly(0f, 100f).setCurrentString(renderer.scale+"").setHoverTooltip("particle scale: from 0 to 100"));
+                group.addWidget(new LabelWidget(75, 75, "Scale"));
+                group.addWidget(new TextFieldWidget(1,90,70,10,true, null, num->renderer.light = Integer.parseInt(num))
+                        .setNumbersOnly(-1, 15).setCurrentString(renderer.light+"").setHoverTooltip("lighting map \n -1: follow the environment \n 0-15: lighting"));
+                group.addWidget(new LabelWidget(75, 90, "Light"));
+                group.addWidget(new TextFieldWidget(1,105,70,10,true, null, num->renderer.renderRange = Integer.parseInt(num))
+                        .setNumbersOnly(-1, 1000).setCurrentString(renderer.renderRange+"").setHoverTooltip("render range (do not render if out of eye range) \n -1: always range"));
+                group.addWidget(new LabelWidget(75, 105, "Render Range"));
+                onUpdate = () -> {
+                    if (tfw.getCurrentString().isEmpty()) {
+                        setNewRenderer(null);
+                    } else {
+                        TextureParticleRenderer newRenderer = new TextureParticleRenderer(new ResourceLocation(tfw.getCurrentString()));
+                        newRenderer.light = renderer.light;
+                        newRenderer.scale = renderer.scale;
+                        newRenderer.isShader = renderer.isShader;
+                        newRenderer.isAddBlend = renderer.isAddBlend;
+                        newRenderer.isBackLayer = renderer.isBackLayer;
+                        newRenderer.renderRange = renderer.renderRange;
+                        setNewRenderer(newRenderer);
+                    }
+                };
+                break;
+            }
             case "Geo": {
                 TextFieldWidget tfw = new TextFieldWidget(1, 1, 150, 20, true, null, null);
                 File path = new File(Multiblocked.location, "assets/multiblocked/geo");
@@ -213,6 +256,18 @@ public class IRendererWidget extends DialogWidget {
                 break;
             }
         }
+    }
+
+    protected WidgetGroup createBoolSwitch(int x, int y, String text, String tips, boolean init, Consumer<Boolean> onPressed) {
+        WidgetGroup widgetGroup = new WidgetGroup(x, y, 100, 15);
+        widgetGroup.addWidget(new SwitchWidget(0, 0, 15, 15, (cd, r)->onPressed.accept(r))
+                .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
+                .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
+                .setHoverTexture(new ColorBorderTexture(1, 0xff545757))
+                .setPressed(init)
+                .setHoverTooltip(tips));
+        widgetGroup.addWidget(new LabelWidget(20, 3, ()->text).setTextColor(-1).setDrop(true));
+        return widgetGroup;
     }
 
     private TextFieldWidget addModelSettings () {

@@ -54,7 +54,7 @@ public interface IRenderer {
     }
 
     @SideOnly(Side.CLIENT)
-    default boolean hasTESR() {
+    default boolean hasTESR(World world, BlockPos pos) {
         return false;
     }
 

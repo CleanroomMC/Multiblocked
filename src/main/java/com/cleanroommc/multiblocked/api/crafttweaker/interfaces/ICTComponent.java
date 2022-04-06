@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.data.IData;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IFacing;
@@ -108,5 +109,32 @@ public interface ICTComponent {
     @ZenMethod
     default void markAsDirty() {
         getInner().markAsDirty();
+    }
+
+
+    /**
+     * Store extra data for retrieval with {@link #getExtraData()}
+     * <p>
+     * This will be stored in the tile's NBT when the world is saved,
+     * so will persist even through restarts.
+     *
+     * @param data The extra data to store on the controller.
+     * @zenSetter extraData
+     */
+    @ZenMethod
+    @ZenSetter("extraData")
+    default void setExtraData(IData data) {
+        getInner().persistentData = data;
+    }
+
+    /**
+     * Retrieve extra data stored with {@link #setExtraData(IData)}
+     *
+     * @return The extra data stored on this controller.
+     */
+    @ZenMethod
+    @ZenGetter("extraData")
+    default IData getExtraData() {
+        return (IData) getInner().persistentData;
     }
 }

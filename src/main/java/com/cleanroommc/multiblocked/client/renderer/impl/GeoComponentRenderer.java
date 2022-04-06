@@ -97,7 +97,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
 
     @SideOnly(Side.CLIENT)
     @Override
-    public boolean hasTESR() {
+    public boolean hasTESR(World world, BlockPos pos) {
         return true;
     }
 

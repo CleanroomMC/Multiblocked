@@ -80,8 +80,8 @@ public class BlockStateRenderer implements IRenderer {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public boolean hasTESR() {
-        TileEntity tileEntity = getTileEntity(null, null);
+    public boolean hasTESR(World world, BlockPos pos) {
+        TileEntity tileEntity = getTileEntity(world, pos);
         if (tileEntity == null) {
             return false;
         }

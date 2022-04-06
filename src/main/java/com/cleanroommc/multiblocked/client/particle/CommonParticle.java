@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.client.particle;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.util.ResourceUtils;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -58,8 +59,8 @@ public class CommonParticle extends AbstractParticle{
         this.particleRed = 1.0F;
         this.particleGreen = 1.0F;
         this.particleBlue = 1.0F;
-        this.particleScale = (this.rand.nextFloat() * 0.5F + 0.5F) * 2.0F;
-        this.particleLife = (int)(4.0F / (this.rand.nextFloat() * 0.9F + 0.1F));
+        this.particleScale = (Multiblocked.RNG.nextFloat() * 0.5F + 0.5F) * 2.0F;
+        this.particleLife = (int)(4.0F / (Multiblocked.RNG.nextFloat() * 0.9F + 0.1F));
         this.canCollide = true;
     }
 

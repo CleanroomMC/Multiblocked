@@ -9,6 +9,7 @@ import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import crafttweaker.api.data.IData;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import io.netty.buffer.ByteBuf;
@@ -24,21 +25,14 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +50,8 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     protected T definition;
 
     protected IRenderer currentRenderer;
+
+    public Object persistentData; // used for CT
 
     public Object rendererObject; // used for renderer
 
@@ -166,7 +162,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public int getOutputRedstoneSignal(EnumFacing facing) {
         if (definition.getOutputRedstoneSignal != null) {
-//            return definition.getOutputRedstoneSignal.apply(this, new MCFacing(facing));
+            return definition.getOutputRedstoneSignal.apply(this, CraftTweakerMC.getIFacing(facing));
         }
         return 0;
     }
@@ -185,6 +181,16 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         super.markDirty();
     }
 
+    @Override
+    public void setExtraData(IData data) {
+
+    }
+
+    @Override
+    public IData getExtraData() {
+        return null;
+    }
+
     //************* TESR *************//
 
     @Override
@@ -195,7 +201,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public boolean hasTESRRenderer() {
         IRenderer renderer = getRenderer();
-        return renderer != null && renderer.hasTESR();
+        return renderer != null && renderer.hasTESR(getWorld(), getPos());
     }
 
     //************* events *************//
@@ -232,17 +238,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         if (definition.onNeighborChanged != null) {
             definition.onNeighborChanged.apply(this);
         }
-    }
-
-    @Override
-    public boolean hasCapability(@Nullable Capability<?> capability, @Nullable EnumFacing facing) {
-        return super.hasCapability(capability, facing);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nullable Capability<T> capability, @Nullable EnumFacing facing) {
-        return super.getCapability(capability, facing);
     }
 
     //************* gui *************//
@@ -309,6 +304,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         super.readFromNBT(compound);
         setDefinition(MultiblockComponents.DEFINITION_REGISTRY.get(new ResourceLocation(compound.getString("loc"))));
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
+            persistentData = CraftTweakerMC.getIData(compound.getTag("ct_persistent"));
+        }
     }
 
     @Nonnull
@@ -318,6 +316,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         compound.setString("loc", definition.location.toString());
         compound.setByte("frontFacing", (byte) frontFacing.getIndex());
         compound.setString("mbd_def", definition.location.toString());
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_CT) && persistentData instanceof IData) {
+            compound.setTag("ct_persistent", CraftTweakerMC.getNBT((IData) persistentData));
+        }
         return compound;
     }
 

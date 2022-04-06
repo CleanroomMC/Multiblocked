@@ -20,12 +20,10 @@ public abstract class AbstractParticle implements IParticle {
     public int particleLife;
     public int squareRenderRange;
     public Consumer<AbstractParticle> onUpdate;
-    protected final Random rand;
 
     public AbstractParticle(World world, double posX, double posY, double posZ) {
         this.world = world;
         this.squareRenderRange = -1;
-        this.rand = Multiblocked.RNG;
         setPosition(posX, posY, posZ);
     }
 
@@ -61,6 +59,9 @@ public abstract class AbstractParticle implements IParticle {
     }
     
     public AbstractParticle setLife(int life) {
+        if (squareRenderRange == -1 && life > 500) {
+            setRenderRange(64);
+        }
         this.particleLife = life;
         return this;
     }
@@ -128,6 +129,9 @@ public abstract class AbstractParticle implements IParticle {
      * Particles can live forever now.
      */
     public void setImmortal() {
+        if (this.squareRenderRange == -1) {
+            this.setRenderRange(64);
+        }
         this.particleLife = -1;
     }
 

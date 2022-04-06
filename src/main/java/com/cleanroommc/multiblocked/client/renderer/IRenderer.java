@@ -67,4 +67,14 @@ public interface IRenderer {
         return false;
     }
 
+    //************* Event *************//
+
+    default void onPreAccess(TileEntity te) {
+
+    }
+
+    default void onPostAccess(TileEntity te) {
+
+    }
+
 }

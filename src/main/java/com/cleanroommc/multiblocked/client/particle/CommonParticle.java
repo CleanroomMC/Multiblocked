@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -56,9 +55,6 @@ public class CommonParticle extends AbstractParticle{
         this.particleAlpha = 1.0F;
         this.setSize(0.2F, 0.2F);
         this.setPosition(posXIn, posYIn, posZIn);
-        this.prevPosX = posXIn;
-        this.prevPosY = posYIn;
-        this.prevPosZ = posZIn;
         this.particleRed = 1.0F;
         this.particleGreen = 1.0F;
         this.particleBlue = 1.0F;
@@ -82,6 +78,9 @@ public class CommonParticle extends AbstractParticle{
     @Override
     public void setPosition(double x, double y, double z) {
         super.setPosition(x, y, z);
+        this.prevPosX = x;
+        this.prevPosY = y;
+        this.prevPosZ = z;
         float f = this.width / 2.0F;
         float f1 = this.height;
         this.setBoundingBox(new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f));
@@ -228,7 +227,7 @@ public class CommonParticle extends AbstractParticle{
         }
     }
 
-    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks) {
+    public void renderParticle(BufferBuilder buffer, float partialTicks) {
         float rotationX = ParticleManager.rotationX;
         float rotationZ = ParticleManager.rotationXZ;
         float rotationYZ = ParticleManager.rotationZ;

@@ -48,6 +48,7 @@ public class ParticleManager {
     public static float rotationXY;
     public static float rotationXZ;
     public static Vec3d cameraViewDir;
+    public static Entity entity;
 
     public void addEffect(IParticle... particles) {
         for (IParticle particle : particles) {
@@ -143,20 +144,29 @@ public class ParticleManager {
     }
 
     public void renderParticles(boolean back, Entity entityIn, float partialTicks) {
+        if (back) {
+            float radians =0.017453292F;
+            rotationX = MathHelper.cos(entityIn.rotationYaw * radians);
+            rotationZ = MathHelper.sin(entityIn.rotationYaw * radians);
+            rotationYZ = -rotationZ * MathHelper.sin(entityIn.rotationPitch * radians);
+            rotationXY = rotationX * MathHelper.sin(entityIn.rotationPitch * radians);
+            rotationXZ = MathHelper.cos(entityIn.rotationPitch * radians);
+            interPosX = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
+            interPosY = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double) partialTicks;
+            interPosZ = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double) partialTicks;
+            cameraViewDir = entityIn.getLook(partialTicks);
+            entity = entityIn;
+
+            if (entityIn instanceof EntityCamera) {
+                interPosX *= 0.00001; //zNear / zFar
+                interPosY *= 0.00001; //zNear / zFar
+                interPosZ *= 0.00001; //zNear / zFar
+            }
+        }
+
         if (renderQueueBack.isEmpty() && back) return;
         if (renderQueueFront.isEmpty() && !back) return;
-        
-        updateRenderInfo(entityIn);
 
-        interPosX = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double) partialTicks;
-        interPosY = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double) partialTicks;
-        interPosZ = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double) partialTicks;
-        if (entityIn instanceof EntityCamera) {
-            interPosX *= 0.00001; //zNear / zFar
-            interPosY *= 0.00001; //zNear / zFar
-            interPosZ *= 0.00001; //zNear / zFar
-        }
-        cameraViewDir = entityIn.getLook(partialTicks);
 
         GlStateManager.enableBlend();
 //        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -181,12 +191,7 @@ public class ParticleManager {
     }
 
     private void updateRenderInfo(Entity entityIn) {
-        float radians =0.017453292F;
-        rotationX = MathHelper.cos(entityIn.rotationYaw * radians);
-        rotationZ = MathHelper.sin(entityIn.rotationYaw * radians);
-        rotationYZ = -rotationZ * MathHelper.sin(entityIn.rotationPitch * radians);
-        rotationXY = rotationX * MathHelper.sin(entityIn.rotationPitch * radians);
-        rotationXZ = MathHelper.cos(entityIn.rotationPitch * radians);
+
     }
 
     private void renderGlParticlesInLayer(Map<IParticleHandler, ArrayDeque<IParticle>> renderQueue, Tessellator tessellator, Entity entityIn, float partialTicks) {
@@ -208,7 +213,7 @@ public class ParticleManager {
                             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
                             handler.preDraw(buffer);
                         }
-                        particle.renderParticle(buffer, entityIn, partialTicks);
+                        particle.renderParticle(buffer, partialTicks);
                     }
                     catch (Throwable throwable) {
                         Multiblocked.LOGGER.error("particle render error: {}", particle.toString(), throwable);

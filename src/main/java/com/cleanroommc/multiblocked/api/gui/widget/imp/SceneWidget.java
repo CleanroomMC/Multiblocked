@@ -56,7 +56,6 @@ public class SceneWidget extends WidgetGroup {
     protected BiConsumer<BlockPos, EnumFacing> onSelected;
     protected Set<BlockPos> core;
     protected boolean useCache;
-    protected boolean useParticle;
 
 
     public SceneWidget(int x, int y, int width, int height, World world) {
@@ -70,14 +69,6 @@ public class SceneWidget extends WidgetGroup {
         useCache = true;
         if (Multiblocked.isClient() && renderer != null) {
             renderer.useCacheBuffer(true);
-        }
-        return this;
-    }
-
-    public SceneWidget useParticle() {
-        useParticle = true;
-        if (Multiblocked.isClient() && particleManager == null && renderer != null) {
-            renderer.setParticleManager(particleManager = new ParticleManager());
         }
         return this;
     }
@@ -127,7 +118,7 @@ public class SceneWidget extends WidgetGroup {
         renderer.setAfterWorldRender(this::renderBlockOverLay);
         renderer.setCameraLookAt(center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
         renderer.useCacheBuffer(useCache);
-        renderer.setParticleManager(particleManager = (useParticle ? new ParticleManager() : null));
+        renderer.setParticleManager(particleManager = new ParticleManager());
         clickPosFace = null;
         hoverPosFace = null;
         selectedPosFace = null;

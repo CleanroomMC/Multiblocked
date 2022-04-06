@@ -138,14 +138,14 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     }
 
     @Override
-    public IRenderer getRenderer() {
+    public IRenderer updateCurrentRenderer() {
         if (definition.dynamicRenderer != null) {
             return definition.dynamicRenderer.apply(this);
         }
         if (definition.workingRenderer != null && recipeLogic != null && recipeLogic.isWorking && isFormed()) {
             return definition.workingRenderer;
         }
-        return super.getRenderer();
+        return super.updateCurrentRenderer();
     }
 
     @Override

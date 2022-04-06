@@ -48,7 +48,7 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
     }
 
     @Override
-    public IRenderer getRenderer() {
+    public IRenderer updateCurrentRenderer() {
         if (definition.dynamicRenderer != null) {
             return definition.dynamicRenderer.apply(this);
         }
@@ -57,7 +57,7 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
                 return definition.workingRenderer;
             }
         }
-        return super.getRenderer();
+        return super.updateCurrentRenderer();
     }
 
     public boolean canShared() {

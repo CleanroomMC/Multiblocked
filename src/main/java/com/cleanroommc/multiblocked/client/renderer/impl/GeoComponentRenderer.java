@@ -101,12 +101,28 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
         return true;
     }
 
+    @Override
+    public void onPreAccess(TileEntity te) {
+        if (te instanceof ComponentTileEntity<?>) {
+            ComponentTileEntity<?> component = (ComponentTileEntity<?>) te;
+            component.rendererObject = new GeoComponentRenderer.ComponentFactory(component, this);
+        }
+    }
+
+    @Override
+    public void onPostAccess(TileEntity te) {
+        if (te instanceof ComponentTileEntity<?>) {
+            ComponentTileEntity<?> component = (ComponentTileEntity<?>) te;
+            component.rendererObject = null;
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        if (te instanceof ComponentTileEntity<?>) {
+        if (te instanceof ComponentTileEntity<?> && ((ComponentTileEntity<?>) te).rendererObject instanceof  ComponentFactory) {
             ComponentTileEntity<?> controller = (ComponentTileEntity<?>) te;
-            ComponentFactory factory = controller.getFactory(this);
+            ComponentFactory factory = (ComponentFactory) controller.rendererObject;
             GeoModel model = this.getModel(this.getModelLocation(factory));
             this.setLivingAnimations(factory, this.getUniqueID(factory));
 

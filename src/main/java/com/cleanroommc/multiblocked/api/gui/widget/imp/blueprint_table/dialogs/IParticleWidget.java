@@ -42,7 +42,6 @@ public class IParticleWidget extends DialogWidget {
         this.addWidget(new ImageWidget(35, 59, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
         this.addWidget(sceneWidget = new SceneWidget(35, 59,  138, 138, world)
                 .setRenderedCore(Arrays.asList(poses.clone()), null)
-                .useParticle()
                 .setCenter(new Vector3f(0.5f, 2.5f, 0.5f))
                 .setRenderSelect(false)
                 .setRenderFacing(false));

@@ -111,7 +111,7 @@ public class LaserBeamParticle extends AbstractParticle {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks) {
+    public void renderParticle(BufferBuilder buffer, float partialTicks) {
         double tX = posX - ParticleManager.interPosX;
         double tY = posY - ParticleManager.interPosY;
         double tZ = posZ - ParticleManager.interPosZ;
@@ -119,7 +119,7 @@ public class LaserBeamParticle extends AbstractParticle {
 
         Vector3 cameraDirection = null;
         if (!doubleVertical) {
-            cameraDirection = new Vector3(posX, posY, posZ).subtract(new Vector3(entityIn.getPositionEyes(partialTicks)));
+            cameraDirection = new Vector3(posX, posY, posZ).subtract(new Vector3(ParticleManager.entity.getPositionEyes(partialTicks)));
         }
         float offset = - emit * (MINECRAFT.player.ticksExisted + partialTicks);
         LaserBeamRenderer.renderRawBeam(body, head, direction, cameraDirection, beamHeight, headWidth, alpha, offset);

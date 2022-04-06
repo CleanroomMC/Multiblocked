@@ -29,6 +29,31 @@ public abstract class AbstractParticle implements IParticle {
         setPosition(posX, posY, posZ);
     }
 
+    @Override
+    public World getWorld() {
+        return world;
+    }
+
+    @Override
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    @Override
+    public double getX() {
+        return posX;
+    }
+
+    @Override
+    public double getY() {
+        return posY;
+    }
+
+    @Override
+    public double getZ() {
+        return posZ;
+    }
+
     public void setPosition(double x, double y, double z) {
         this.posX = x;
         this.posY = y;
@@ -40,9 +65,8 @@ public abstract class AbstractParticle implements IParticle {
         return this;
     }
 
-    public AbstractParticle setAddBlend(boolean addBlend) {
+    public void setAddBlend(boolean addBlend) {
         isAddBlend = addBlend;
-        return this;
     }
 
     @Override

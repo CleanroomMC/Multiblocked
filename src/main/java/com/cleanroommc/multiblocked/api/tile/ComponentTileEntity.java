@@ -8,8 +8,6 @@ import com.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer.ComponentFactory;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
@@ -38,9 +36,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.Optional.Method;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,6 +54,10 @@ import java.util.function.Consumer;
 public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity implements IUIHolder, ICTComponent {
     // is good to write down all CT code here? or move them to @ZenExpansion.
     protected T definition;
+
+    protected IRenderer currentRenderer;
+
+    public Object rendererObject; // used for renderer
 
     private EnumFacing frontFacing = EnumFacing.NORTH; // 0
 
@@ -133,7 +132,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         rotate(mirrorIn.toRotation(getFrontFacing()));
     }
 
-    public IRenderer getRenderer() {
+    public IRenderer updateCurrentRenderer() {
         if (definition.dynamicRenderer != null) {
             return definition.dynamicRenderer.apply(this);
         }
@@ -141,6 +140,20 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             return definition.formedRenderer == null ? definition.baseRenderer : definition.formedRenderer;
         }
         return definition.baseRenderer;
+    }
+
+    public IRenderer getRenderer() {
+        IRenderer lastRenderer = currentRenderer;
+        currentRenderer = updateCurrentRenderer();
+        if (lastRenderer != currentRenderer) {
+            if (lastRenderer != null) {
+                lastRenderer.onPostAccess(this);
+            }
+            if (currentRenderer != null) {
+                currentRenderer.onPreAccess(this);
+            }
+        }
+        return currentRenderer;
     }
 
     public boolean isValidFrontFacing(EnumFacing facing) {
@@ -365,22 +378,4 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         receiveInitialSyncData(new PacketBuffer(backedBuffer));
     }
 
-    //************* geo *************//
-
-    private Object factory;
-
-    @Method(modid = "geckolib3")
-    @SideOnly(Side.CLIENT)
-    public ComponentFactory getFactory(GeoComponentRenderer renderer) {
-        if (factory == null) {
-            return (GeoComponentRenderer.ComponentFactory) (factory = new GeoComponentRenderer.ComponentFactory(this, renderer));
-        } else {
-            GeoComponentRenderer.ComponentFactory cf = (GeoComponentRenderer.ComponentFactory) factory;
-            if (cf.renderer == getRenderer()) {
-                return cf;
-            } else {
-                return (GeoComponentRenderer.ComponentFactory) (factory = new GeoComponentRenderer.ComponentFactory(this, renderer));
-            }
-        }
-    }
 }

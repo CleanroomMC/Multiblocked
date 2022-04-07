@@ -81,6 +81,7 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
             if (definition.partAddedToMulti != null) {
                 definition.partAddedToMulti.apply(this, controller);
             }
+            setStatus("idle");
         }
     }
 
@@ -89,6 +90,9 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
             writeCustomData(-1, this::writeControllersToBuffer);
             if (definition.partRemovedFromMulti != null) {
                 definition.partRemovedFromMulti.apply(this, controller);
+            }
+            if (getControllers().isEmpty()) {
+                setStatus("unformed");
             }
         }
     }

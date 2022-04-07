@@ -60,7 +60,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     private int timer = Multiblocked.RNG.nextInt();
 
-    protected String status = "idle";
+    protected String status = "unformed";
 
     public final void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;

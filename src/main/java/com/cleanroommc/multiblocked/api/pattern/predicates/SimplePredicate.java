@@ -200,7 +200,7 @@ public class SimplePredicate {
         jsonObject.add("type", new JsonPrimitive(type));
         jsonObject.add("toolTips", Multiblocked.GSON.toJsonTree(toolTips));
         if (disableRenderFormed) {
-            jsonObject.add("shouldRenderFormed", new JsonPrimitive(true));
+            jsonObject.add("disableRenderFormed", new JsonPrimitive(true));
         }
         if (minCount > -1) {
             jsonObject.add("minCount", new JsonPrimitive(minCount));

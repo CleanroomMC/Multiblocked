@@ -203,10 +203,10 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             definition.structureFormed.apply(this);
         }
     }
-
+    
     public void onStructureInvalid() {
         recipeLogic = null;
-        setStatus("idle");
+        setStatus("unformed");
         // invalid parts
         if (parts != null) {
             for (Long pos : parts) {

@@ -14,6 +14,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
 @ZenClass("mods.multiblocked.definition.PartDefinition")
 @ZenRegister
 public class PartDefinition extends ComponentDefinition {
+    
     @ZenProperty
     public boolean canShared = true;
     @ZenProperty

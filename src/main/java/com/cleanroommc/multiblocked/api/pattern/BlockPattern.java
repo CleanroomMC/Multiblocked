@@ -113,7 +113,7 @@ public class BlockPattern {
                         if (tileEntity instanceof PartTileEntity) { // add detected parts
                             if (!predicate.isAny()) {
                                 PartTileEntity<?> partTileEntity = (PartTileEntity<?>) tileEntity;
-                                if (partTileEntity.isFormed() && !partTileEntity.canShared()) { // check part can be shared
+                                if (partTileEntity.isFormed() && !partTileEntity.canShared() && !partTileEntity.controllerPos.contains(worldState.controllerPos)) { // check part can be shared
                                     canPartShared = false;
                                     worldState.setError(new PatternStringError("multiblocked.pattern.error.share"));
                                 } else {

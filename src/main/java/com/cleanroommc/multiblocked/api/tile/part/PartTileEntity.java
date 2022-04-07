@@ -52,9 +52,11 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
         if (definition.dynamicRenderer != null) {
             return definition.dynamicRenderer.apply(this);
         }
-        for (ControllerTileEntity controller : getControllers()) {
-            if (definition.workingRenderer != null && controller.getRecipeLogic() != null && controller.getRecipeLogic().isWorking && controller.isFormed()) {
-                return definition.workingRenderer;
+        if (definition.workingRenderer != null) {
+            for (ControllerTileEntity controller : getControllers()) {
+                if (controller.isFormed() && controller.getStatus().equals("working")) {
+                    return definition.workingRenderer;
+                }
             }
         }
         return super.updateCurrentRenderer();

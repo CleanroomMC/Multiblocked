@@ -92,6 +92,11 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     }
 
     @Override
+    public boolean isGlobalRenderer(@Nonnull TileEntity te) {
+        return true;
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public boolean isRaw() {
         return !GeckoLibCache.getInstance().getGeoModels().containsKey(this.getModelLocation(null));

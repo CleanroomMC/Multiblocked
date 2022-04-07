@@ -124,7 +124,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (definition.dynamicRenderer != null) {
             return definition.dynamicRenderer.apply(this);
         }
-        if (definition.workingRenderer != null && recipeLogic != null && recipeLogic.isWorking && isFormed()) {
+        if (definition.workingRenderer != null && isFormed() && status.equals("working")) {
             return definition.workingRenderer;
         }
         return super.updateCurrentRenderer();

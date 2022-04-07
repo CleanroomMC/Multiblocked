@@ -328,6 +328,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             scheduleChunkForRenderUpdate();
         } else if (dataId == 1) {
             status = buf.readString(Short.MAX_VALUE);
+            scheduleChunkForRenderUpdate();
         } else if (dataId == 2) {
             int id = buf.readVarInt();
             try {
@@ -436,4 +437,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         receiveInitialSyncData(new PacketBuffer(backedBuffer));
     }
 
+    @Override
+    @Nonnull
+    public AxisAlignedBB getRenderBoundingBox() {
+        return getRenderer().isGlobalRenderer(this) ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox();
+    }
 }

@@ -12,6 +12,7 @@ import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.world.MCBlockPos;
 import crafttweaker.mc1120.world.MCFacing;
 import crafttweaker.mc1120.world.MCWorld;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -26,25 +27,26 @@ import stanhebben.zenscript.annotations.ZenSetter;
 public interface ICTComponent {
     ComponentTileEntity<?> getInner();
 
-    @ZenMethod
     @ZenGetter("definition")
     default ComponentDefinition getDefinition() {
         return getInner().getDefinition();
     }
 
-    @ZenMethod
     @ZenGetter
     default IWorld world(){
         World world = getInner().getWorld();
         return world == null ? null : new MCWorld(world);
     }
 
-
-    @ZenMethod
     @ZenGetter
     default IBlockPos pos(){
         BlockPos pos = getInner().getPos();
         return pos == null ? null : new MCBlockPos(pos);
+    }
+
+    @ZenGetter
+    default boolean isRemote() {
+        return getInner().isRemote();
     }
 
     @ZenMethod
@@ -73,6 +75,16 @@ public interface ICTComponent {
     @ZenMethod
     default void update(){
         getInner().update();
+    }
+
+    @ZenGetter("status")
+    default String getStatus() {
+        return getInner().getStatus();
+    }
+
+    @ZenSetter("status")
+    default void setStatus(String status) {
+        getInner().setStatus(status);
     }
 
     @ZenGetter
@@ -111,7 +123,6 @@ public interface ICTComponent {
         getInner().markAsDirty();
     }
 
-
     /**
      * Store extra data for retrieval with {@link #getExtraData()}
      * <p>
@@ -136,5 +147,17 @@ public interface ICTComponent {
     @ZenGetter("extraData")
     default IData getExtraData() {
         return (IData) getInner().persistentData;
+    }
+
+    //************* data sync *************//
+
+    @ZenMethod
+    default void sendCustomData(int id, IData data) {
+        getInner().writeCustomData(2, packetBuffer -> {
+            packetBuffer.writeVarInt(id);
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.setTag("data", CraftTweakerMC.getNBT(data));
+            packetBuffer.writeCompoundTag(tag);
+        });
     }
 }

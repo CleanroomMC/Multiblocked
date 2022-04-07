@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.definition;
 
+import com.cleanroommc.multiblocked.api.crafttweaker.functions.*;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.util.RayTraceUtils;
 import crafttweaker.annotations.ZenRegister;
@@ -9,13 +10,6 @@ import crafttweaker.api.util.IAxisAlignedBB;
 import crafttweaker.mc1120.item.MCItemStack;
 import crafttweaker.mc1120.util.MCAxisAlignedBB;
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.IDrops;
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.IDynamicRenderer;
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.IGetOutputRedstoneSignal;
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.ILeftClick;
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.INeighborChanged;
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.IRightClick;
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.IUpdateTick;
 import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import net.minecraft.block.Block;
@@ -74,6 +68,14 @@ public class ComponentDefinition {
     public transient IGetOutputRedstoneSignal getOutputRedstoneSignal;
     @ZenProperty
     public transient IUpdateTick updateTick;
+    @ZenProperty
+    public transient IStatusChanged statusChanged;
+    @ZenProperty
+    public transient IReceiveCustomData receiveCustomData;
+    @ZenProperty
+    public transient IWriteInitialData writeInitialData;
+    @ZenProperty
+    public transient IReadInitialData readInitialData;
 
     public ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
         this.location = location;

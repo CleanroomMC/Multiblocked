@@ -1,16 +1,18 @@
 package com.cleanroommc.multiblocked.client.particle;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTParticle;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Random;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
-public abstract class AbstractParticle implements IParticle {
+@Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTParticle")
+public abstract class AbstractParticle implements IParticle, ICTParticle {
     public World world;
     public double posX;
     public double posY;
@@ -58,16 +60,24 @@ public abstract class AbstractParticle implements IParticle {
         this.posZ = z;
     }
     
-    public AbstractParticle setLife(int life) {
+    public void setLife(int life) {
         if (squareRenderRange == -1 && life > 500) {
             setRenderRange(64);
         }
         this.particleLife = life;
-        return this;
+    }
+
+    public int getLife() {
+        return particleLife;
     }
 
     public void setAddBlend(boolean addBlend) {
         isAddBlend = addBlend;
+    }
+
+    @Override
+    public AbstractParticle getInner() {
+        return this;
     }
 
     @Override

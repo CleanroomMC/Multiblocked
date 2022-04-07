@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.client.particle;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTTextureParticle;
 import com.cleanroommc.multiblocked.util.ResourceUtils;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,6 +12,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -19,7 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 @SideOnly(Side.CLIENT)
-public class CommonParticle extends AbstractParticle{
+@Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTTextureParticle")
+public class CommonParticle extends AbstractParticle implements ICTTextureParticle {
     private static final AxisAlignedBB EMPTY_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
     private static final Map<ResourceLocation, IParticleHandler> textureMap = new HashMap<>();
 
@@ -64,8 +67,8 @@ public class CommonParticle extends AbstractParticle{
         this.canCollide = true;
     }
 
-    public CommonParticle(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn) {
-        this(worldIn, xCoordIn, yCoordIn, zCoordIn);
+    public CommonParticle(World worldIn, double posXIn, double posYIn, double posZIn, double xSpeedIn, double ySpeedIn, double zSpeedIn) {
+        this(worldIn, posXIn, posYIn, posZIn);
         this.motionX = xSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
         this.motionY = ySpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
         this.motionZ = zSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
@@ -74,6 +77,11 @@ public class CommonParticle extends AbstractParticle{
         this.motionX = this.motionX / (double)f1 * (double)f * 0.4000000059604645D;
         this.motionY = this.motionY / (double)f1 * (double)f * 0.4000000059604645D + 0.10000000149011612D;
         this.motionZ = this.motionZ / (double)f1 * (double)f * 0.4000000059604645D;
+    }
+
+    @Override
+    public CommonParticle getInner() {
+        return this;
     }
 
     @Override

@@ -64,12 +64,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
     private Map<Long, Map<MultiblockCapability<?>, IO>> settings;
     protected LongOpenHashSet parts;
-    protected String status;
     protected RecipeLogic recipeLogic;
-
-    public ControllerTileEntity() {
-        status = "idle";
-    }
 
     public BlockPattern getPattern() {
         if (definition.dynamicPattern != null) {
@@ -99,19 +94,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     public boolean isFormed() {
         return state != null && state.isFormed();
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        if (!isRemote()) {
-            if (!this.status.equals(status)) {
-                this.status = status;
-                writeCustomData(-2, buffer->buffer.writeString(this.status));
-            }
-        }
     }
 
     @Override
@@ -248,8 +230,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (dataId == -1) {
             readState(buf);
             scheduleChunkForRenderUpdate();
-        } else if (dataId == -2) {
-            status = buf.readString(Short.MAX_VALUE);
         } else {
             super.receiveCustomData(dataId, buf);
         }
@@ -259,14 +239,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public void writeInitialSyncData(PacketBuffer buf) {
         super.writeInitialSyncData(buf);
         writeState(buf);
-        buf.writeString(status);
     }
 
     @Override
     public void receiveInitialSyncData(PacketBuffer buf) {
         super.receiveInitialSyncData(buf);
         readState(buf);
-        status = buf.readString(Short.MAX_VALUE);
         scheduleChunkForRenderUpdate();
     }
 

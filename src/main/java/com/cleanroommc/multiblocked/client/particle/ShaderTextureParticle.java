@@ -36,6 +36,10 @@ public class ShaderTextureParticle extends CommonParticle {
         super(worldIn, posXIn, posYIn, posZIn);
     }
 
+    public ShaderTextureParticle(World worldIn, double posXIn, double posYIn, double posZIn, double xSpeedIn, double ySpeedIn, double zSpeedIn) {
+        super(worldIn, posXIn, posYIn, posZIn, xSpeedIn, ySpeedIn, zSpeedIn);
+    }
+
     public static void clearShaders(){
         textureMap.values().forEach(handler -> handler.shader.deleteShader());
         textureMap.clear();

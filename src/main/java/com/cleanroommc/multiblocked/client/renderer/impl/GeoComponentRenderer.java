@@ -1,9 +1,8 @@
 package com.cleanroommc.multiblocked.client.renderer.impl;
 
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
-import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -23,11 +22,13 @@ import org.lwjgl.opengl.GL11;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.file.AnimationFile;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoCube;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
@@ -37,6 +38,7 @@ import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 import software.bernie.geckolib3.resource.GeckoLibCache;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.ComponentFactory> implements IRenderer, IGeoRenderer<GeoComponentRenderer.ComponentFactory> {
@@ -263,20 +265,32 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     public static class ComponentFactory implements IAnimatable {
         public final ComponentTileEntity<?> component;
         public final GeoComponentRenderer renderer;
+        public final AnimationFile animationFile;
+        public String currentStatus;
 
         public ComponentFactory(ComponentTileEntity<?> component, GeoComponentRenderer renderer) {
             this.component = component;
             this.renderer = renderer;
+            animationFile = GeckoLibCache.getInstance().getAnimations().get(renderer.getAnimationFileLocation(this));
         }
 
         private final AnimationFactory factory = new AnimationFactory(this);
 
         private PlayState predicate(AnimationEvent<ComponentFactory> event) {
             AnimationController<ComponentFactory> controller = event.getController();
-            if (component instanceof ControllerTileEntity) {
-                controller.setAnimation(new AnimationBuilder().addAnimation(((ControllerTileEntity)component).getStatus()));
-            } else {
-                controller.setAnimation(new AnimationBuilder().addAnimation("idle"));
+            String lastStatus = currentStatus;
+            currentStatus = component.getStatus();
+            if (!Objects.equals(lastStatus, currentStatus)) {
+                if (currentStatus == null) return PlayState.STOP;
+                AnimationBuilder animationBuilder = new AnimationBuilder();
+                if (lastStatus != null) {
+                    Animation trans = animationFile.getAnimation(lastStatus + "-" + currentStatus);
+                    if (trans != null) animationBuilder.addAnimation(trans.animationName);
+                }
+                if (animationFile.getAnimation(currentStatus) != null) {
+                    animationBuilder.addAnimation(currentStatus);
+                }
+                controller.setAnimation(animationBuilder);
             }
             return PlayState.CONTINUE;
         }

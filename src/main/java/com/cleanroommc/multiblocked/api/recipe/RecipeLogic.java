@@ -82,12 +82,16 @@ public class RecipeLogic {
                 return;
             }
         }
-        isWorking = false;
-        controller.setStatus("idle");
-        progress = 0;
-        duration = 0;
         lastRecipe.handleOutput(this.controller);
-        markDirty();
+        if (lastRecipe.match(this.controller)) {
+            setupRecipe(lastRecipe);
+        } else {
+            isWorking = false;
+            controller.setStatus("idle");
+            progress = 0;
+            duration = 0;
+            markDirty();
+        }
     }
 
     @ZenMethod

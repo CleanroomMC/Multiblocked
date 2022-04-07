@@ -1,27 +1,22 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
+import com.google.gson.*;
 import mekanism.api.IHeatTransfer;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 public class HeatMekanismCapability extends MultiblockCapability<Double> {
     public static final HeatMekanismCapability CAP = new HeatMekanismCapability();
@@ -37,15 +32,7 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
 
     @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return getCapability(tileEntity) != null;
-    }
-
-    public IHeatTransfer getCapability(TileEntity tileEntity) {
-        for (EnumFacing facing : EnumFacing.values()) {
-            IHeatTransfer heatTransfer = tileEntity.getCapability(Capabilities.HEAT_TRANSFER_CAPABILITY, facing);
-            if (heatTransfer != null) return heatTransfer;
-        }
-        return tileEntity.getCapability(Capabilities.HEAT_TRANSFER_CAPABILITY, null);
+        return !getCapability(Capabilities.HEAT_TRANSFER_CAPABILITY, tileEntity).isEmpty();
     }
 
     @Override
@@ -73,36 +60,30 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
         return new JsonPrimitive(aDouble);
     }
 
-    public static class HeatMekanismCapabilityProxy extends CapabilityProxy<Double> {
+    public static class HeatMekanismCapabilityProxy extends CapCapabilityProxy<IHeatTransfer, Double> {
 
         public HeatMekanismCapabilityProxy(TileEntity tileEntity) {
-            super(HeatMekanismCapability.CAP, tileEntity);
-        }
-
-        public IHeatTransfer getCapability() {
-            return HeatMekanismCapability.CAP.getCapability(getTileEntity());
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof HeatMekanismCapabilityProxy && Objects.equals(getCapability(), ((HeatMekanismCapabilityProxy) obj).getCapability());
+            super(HeatMekanismCapability.CAP, tileEntity, Capabilities.HEAT_TRANSFER_CAPABILITY);
         }
 
         @Override
         protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, boolean simulate) {
-            IHeatTransfer capability = getCapability();
-            if (capability == null || capability.getTemp() <= 0) return left;
+            Set<IHeatTransfer> capabilities = getCapability();
             double sum = left.stream().reduce(0d, Double::sum);
-            if (io == IO.IN) {
-                if (!simulate) {
-                    capability.transferHeatTo(-sum);
+            for (IHeatTransfer capability : capabilities) {
+                if (capability.getTemp() <= 0) continue;
+                if (io == IO.IN) {
+                    if (!simulate) {
+                        capability.transferHeatTo(-sum);
+                    }
+                } else if (io == IO.OUT) {
+                    if (!simulate) {
+                        capability.transferHeatTo(sum);
+                    }
                 }
-            } else if (io == IO.OUT) {
-                if (!simulate) {
-                    capability.transferHeatTo(sum);
-                }
+                return null;
             }
-            return null;
+            return left;
         }
 
     }

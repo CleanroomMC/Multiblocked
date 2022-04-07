@@ -1,5 +1,7 @@
 package com.cleanroommc.multiblocked.client.particle;
 
+import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTLaserParticle;
 import com.cleanroommc.multiblocked.client.renderer.fx.LaserBeamRenderer;
 import com.cleanroommc.multiblocked.util.ResourceUtils;
 import com.cleanroommc.multiblocked.util.Vector3;
@@ -12,11 +14,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LaserBeamParticle extends AbstractParticle {
+@Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTLaserParticle")
+public class LaserBeamParticle extends AbstractParticle implements ICTLaserParticle {
     private static final Minecraft MINECRAFT = Minecraft.getMinecraft();
     private int body = -1;
     private int head = -1;
@@ -25,12 +29,16 @@ public class LaserBeamParticle extends AbstractParticle {
     private float headWidth;
     private float alpha = 1;
     private float emit;
-    private boolean doubleVertical;
+    private boolean verticalMode;
 
     public LaserBeamParticle(World worldIn, Vector3 startPos, Vector3 endPos) {
         super(worldIn, startPos.x, startPos.y, startPos.z);
-        this.setImmortal();
         this.direction = endPos.copy().subtract(startPos);
+    }
+
+    @Override
+    public LaserBeamParticle getInner() {
+        return this;
     }
 
     @Override
@@ -46,10 +54,9 @@ public class LaserBeamParticle extends AbstractParticle {
      * 
      * @param location texture resource.
      */
-    public LaserBeamParticle setBody(ResourceLocation location) {
+    public void setBody(ResourceLocation location) {
         ITextureObject texture = ResourceUtils.getTextureObject(location);
         body = texture == null ? -1 : texture.getGlTextureId();
-        return this;
     }
 
     /**
@@ -57,44 +64,37 @@ public class LaserBeamParticle extends AbstractParticle {
      * 
      * @param location texture resource.
      */
-    public LaserBeamParticle setHead(ResourceLocation location) {
+    public void setHead(ResourceLocation location) {
         ITextureObject texture = ResourceUtils.getTextureObject(location);
         head = texture == null ? -1 : texture.getGlTextureId();
-        return this;
     }
 
-    public LaserBeamParticle setStartPos(Vector3 startPos) {
+    public void setStartPos(Vector3 startPos) {
         this.direction.add(posX, posY, posZ).subtract(startPos);
-        return this;
     }
 
-    public LaserBeamParticle setEndPos(Vector3 endPos) {
+    public void setEndPos(Vector3 endPos) {
         this.direction = endPos.copy().subtract(posX, posY, posZ);
-        return this;
     }
 
-    public LaserBeamParticle setBeamHeight(float beamHeight) {
+    public void setBeamHeight(float beamHeight) {
         this.beamHeight = beamHeight;
-        return this;
     }
 
-    public LaserBeamParticle setHeadWidth(float headWidth) {
+    public void setHeadWidth(float headWidth) {
         this.headWidth = headWidth;
-        return this;
     }
 
-    public LaserBeamParticle setAlpha(float alpha) {
+    public void setAlpha(float alpha) {
         this.alpha = alpha;
-        return this;
     }
 
     /**
      * Set emit speed.
      * @param emit emit speed. from start to end.
      */
-    public LaserBeamParticle setEmit(float emit) {
+    public void setEmit(float emit) {
         this.emit = emit;
-        return this;
     }
 
     /**
@@ -103,9 +103,8 @@ public class LaserBeamParticle extends AbstractParticle {
      *     It is not about performance, some textures are suitable for this, some are not, please choose according to the texture used.
      * </P>
      */
-    public LaserBeamParticle setDoubleVertical(boolean doubleVertical) {
-        this.doubleVertical = doubleVertical;
-        return this;
+    public void setVerticalMode(boolean verticalMode) {
+        this.verticalMode = verticalMode;
     }
 
     @Override
@@ -117,7 +116,7 @@ public class LaserBeamParticle extends AbstractParticle {
         GlStateManager.translate(tX, tY, tZ);
 
         Vector3 cameraDirection = null;
-        if (!doubleVertical) {
+        if (!verticalMode) {
             cameraDirection = new Vector3(posX, posY, posZ).subtract(new Vector3(ParticleManager.entity.getPositionEyes(partialTicks)));
         }
         float offset = - emit * (MINECRAFT.player.ticksExisted + partialTicks);

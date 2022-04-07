@@ -6,7 +6,7 @@ import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @FunctionalInterface
-@ZenClass("mods.multiblocked.function.ISetupRecipe")
+@ZenClass("mods.multiblocked.functions.ISetupRecipe")
 @ZenRegister
 public interface ISetupRecipe {
     /**

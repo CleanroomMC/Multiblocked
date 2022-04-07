@@ -2,9 +2,9 @@ package com.cleanroommc.multiblocked.api.capability;
 
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.capabilities.Capability;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +25,11 @@ public abstract class CapabilityProxy<K> {
             tileEntity = tileEntity.getWorld().getTileEntity(tileEntity.getPos());
         }
         return tileEntity;
+    }
+
+    public <C> Set<C> getCapability(Capability<C> capability) {
+        TileEntity tileEntity = getTileEntity();
+        return tileEntity == null ? Collections.emptySet() : this.capability.getCapability(capability, getTileEntity());
     }
 
     @Override

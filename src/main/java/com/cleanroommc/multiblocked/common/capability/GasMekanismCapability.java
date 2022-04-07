@@ -1,16 +1,12 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.GasStackWidget;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
+import com.google.gson.*;
 import mekanism.api.gas.GasRegistry;
 import mekanism.api.gas.GasStack;
 import mekanism.api.gas.IGasHandler;
@@ -19,11 +15,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     public static final GasMekanismCapability CAP = new GasMekanismCapability();
@@ -39,15 +35,7 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
 
     @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return getCapability(tileEntity) != null;
-    }
-
-    public IGasHandler getCapability(TileEntity tileEntity) {
-        for (EnumFacing facing : EnumFacing.values()) {
-            IGasHandler gasHandler = tileEntity.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, facing);
-            if (gasHandler != null) return gasHandler;
-        }
-        return tileEntity.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null);
+        return !getCapability(Capabilities.GAS_HANDLER_CAPABILITY, tileEntity).isEmpty();
     }
 
     @Override
@@ -78,54 +66,47 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
         return jsonObj;
     }
 
-    public static class GasMekanismCapabilityProxy extends CapabilityProxy<GasStack> {
+    public static class GasMekanismCapabilityProxy extends CapCapabilityProxy<IGasHandler, GasStack> {
 
         public GasMekanismCapabilityProxy(TileEntity tileEntity) {
-            super(GasMekanismCapability.CAP, tileEntity);
-        }
-
-        public IGasHandler getCapability() {
-            return GasMekanismCapability.CAP.getCapability(getTileEntity());
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof GasMekanismCapabilityProxy && Objects.equals(getCapability(), ((GasMekanismCapabilityProxy) obj).getCapability());
+            super(GasMekanismCapability.CAP, tileEntity, Capabilities.GAS_HANDLER_CAPABILITY);
         }
 
         @Override
         protected List<GasStack> handleRecipeInner(IO io, Recipe recipe, List<GasStack> left, boolean simulate) {
-            IGasHandler capability = getCapability();
-            if (capability == null) return left;
-            Iterator<GasStack> iterator = left.iterator();
-            if (io == IO.IN) {
-                while (iterator.hasNext()) {
-                    GasStack gasStack = iterator.next();
-                    for (EnumFacing facing : EnumFacing.values()) {
-                        if (capability.canDrawGas(facing, gasStack.getGas())) {
-                            GasStack drain = capability.drawGas(facing, gasStack.amount, !simulate);
-                            if (drain == null) continue;
-                            gasStack.amount -= drain.amount;
+            Set<IGasHandler> capabilities = getCapability();
+            for (IGasHandler capability : capabilities) {
+                Iterator<GasStack> iterator = left.iterator();
+                if (io == IO.IN) {
+                    while (iterator.hasNext()) {
+                        GasStack gasStack = iterator.next();
+                        for (EnumFacing facing : EnumFacing.values()) {
+                            if (capability.canDrawGas(facing, gasStack.getGas())) {
+                                GasStack drain = capability.drawGas(facing, gasStack.amount, !simulate);
+                                if (drain == null) continue;
+                                gasStack.amount -= drain.amount;
+                            }
+                            if (gasStack.amount <= 0) break;
                         }
-                        if (gasStack.amount <= 0) break;
+                        if (gasStack.amount <= 0) {
+                            iterator.remove();
+                        }
                     }
-                    if (gasStack.amount <= 0) {
-                        iterator.remove();
+                } else if (io == IO.OUT){
+                    while (iterator.hasNext()) {
+                        GasStack gasStack = iterator.next();
+                        for (EnumFacing facing : EnumFacing.values()) {
+                            if (capability.canReceiveGas(facing, gasStack.getGas())) {
+                                gasStack.amount -= capability.receiveGas(facing, gasStack, !simulate);
+                            }
+                            if (gasStack.amount <= 0) break;
+                        }
+                        if (gasStack.amount <= 0) {
+                            iterator.remove();
+                        }
                     }
                 }
-            } else if (io == IO.OUT){
-                while (iterator.hasNext()) {
-                    GasStack gasStack = iterator.next();
-                    for (EnumFacing facing : EnumFacing.values()) {
-                        if (capability.canReceiveGas(facing, gasStack.getGas())) {
-                            gasStack.amount -= capability.receiveGas(facing, gasStack, !simulate);
-                        }
-                        if (gasStack.amount <= 0) break;
-                    }
-                    if (gasStack.amount <= 0) {
-                        iterator.remove();
-                    }
-                }
+                if (left.isEmpty()) break;
             }
             return left.isEmpty() ? null : left;
         }

@@ -7,7 +7,6 @@ import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenSetter;
 
 @ZenClass("mods.multiblocked.tile.Controller")
 @ZenRegister
@@ -18,16 +17,6 @@ public interface ICTController extends ICTComponent, ICapabilityProxyHolder {
     @ZenMethod
     default boolean checkPattern() { 
         return getInner().checkPattern();
-    }
-
-    @ZenGetter("status")
-    default String getStatus() {
-        return getInner().getStatus();
-    }
-
-    @ZenSetter("status")
-    default void setStatus(String status) {
-        getInner().setStatus(status);
     }
 
     @ZenGetter

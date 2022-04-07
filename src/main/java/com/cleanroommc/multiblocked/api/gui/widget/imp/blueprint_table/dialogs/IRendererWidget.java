@@ -102,7 +102,7 @@ public class IRendererWidget extends DialogWidget {
             case "BlockState":
                 BlockSelectorWidget blockSelectorWidget = new BlockSelectorWidget(0, 1, true);
                 if (current instanceof BlockStateRenderer) {
-                    blockSelectorWidget.setBlock(((BlockStateRenderer) current).state);
+                    blockSelectorWidget.setBlock(((BlockStateRenderer) current).getState());
                 }
                 group.addWidget(blockSelectorWidget);
                 onUpdate = () -> {

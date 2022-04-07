@@ -42,7 +42,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
 
     public CycleBlockStateRenderer(IBlockState[] states) {
         super(Blocks.AIR.getDefaultState());
-        if (states.length == 0) states = new IBlockState[]{super.state};
+        if (states.length == 0) states = new IBlockState[]{Blocks.AIR.getDefaultState()};
         this.states = states;
         this.tileEntities = new TileEntity[states.length];
     }
@@ -53,9 +53,8 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(renderItem, null, null);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    protected IBlockState getState() {
+    public IBlockState getState() {
         long time = System.currentTimeMillis();
         if (time - lastTime > 1000) {
             lastTime = time;

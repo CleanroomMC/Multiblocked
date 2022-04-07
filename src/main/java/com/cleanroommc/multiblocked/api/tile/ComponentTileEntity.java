@@ -33,6 +33,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,6 +59,8 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     private EnumFacing frontFacing = EnumFacing.NORTH; // 0
 
     private int timer = Multiblocked.RNG.nextInt();
+
+    protected String status = "idle";
 
     public final void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
@@ -97,6 +100,23 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         timer++;
         if (definition.updateTick != null) {
             definition.updateTick.apply(this);
+        }
+    }
+
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        if (!isRemote()) {
+            if (definition.statusChanged != null) {
+                status = definition.statusChanged.apply(this, status);
+            }
+            if (!this.status.equals(status)) {
+                this.status = status;
+                writeCustomData(1, buffer->buffer.writeString(this.status));
+            }
         }
     }
 
@@ -270,17 +290,54 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public void writeInitialSyncData(PacketBuffer buf) {
         buf.writeString(getLocation().toString());
         buf.writeByte(this.frontFacing.getIndex());
+        buf.writeString(status);
+        if (definition.writeInitialData != null) { // ct
+            IData data = definition.writeInitialData.apply(this);
+            if (data != null) {
+                buf.writeBoolean(true);
+                NBTTagCompound tag = new NBTTagCompound();
+                tag.setTag("data", CraftTweakerMC.getNBT(data));
+                buf.writeCompoundTag(tag);
+            } else {
+                buf.writeBoolean(false);
+            }
+        } else {
+            buf.writeBoolean(false);
+        }
     }
 
     public void receiveInitialSyncData(PacketBuffer buf) {
         setDefinition(MultiblockComponents.DEFINITION_REGISTRY.get(new ResourceLocation(buf.readString(Short.MAX_VALUE))));
         this.frontFacing = EnumFacing.VALUES[buf.readByte()];
+        status = buf.readString(Short.MAX_VALUE);
+        if (buf.readBoolean()) { // ct
+            try {
+                NBTTagCompound nbt = buf.readCompoundTag();
+                if (nbt != null && definition.readInitialData != null) {
+                    definition.readInitialData.apply(this, CraftTweakerMC.getIData(nbt.getTag("data")));
+                }
+            } catch (IOException e) {
+                Multiblocked.LOGGER.error("handling ct initial data error");
+            }
+        }
     }
 
     public void receiveCustomData(int dataId, PacketBuffer buf) {
         if (dataId == 0) {
             this.frontFacing = EnumFacing.VALUES[buf.readByte()];
             scheduleChunkForRenderUpdate();
+        } else if (dataId == 1) {
+            status = buf.readString(Short.MAX_VALUE);
+        } else if (dataId == 2) {
+            int id = buf.readVarInt();
+            try {
+                NBTTagCompound nbt = buf.readCompoundTag();
+                if (nbt != null && definition.receiveCustomData != null) {
+                    definition.receiveCustomData.apply(this, id, CraftTweakerMC.getIData(nbt.getTag("data")));
+                }
+            } catch (IOException e) {
+                Multiblocked.LOGGER.error("handling ct custom data error id:{}", id);
+            }
         }
     }
 

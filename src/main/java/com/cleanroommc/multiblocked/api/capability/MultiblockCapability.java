@@ -1,29 +1,29 @@
 package com.cleanroommc.multiblocked.api.capability;
 
+import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.block.BlockComponent;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializer;
 import crafttweaker.annotations.ZenRegister;
-import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.block.BlockComponent;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Used to detect whether a machine has a certain capability. And provide its capability in proxy {@link CapabilityProxy}.
@@ -32,6 +32,7 @@ import java.util.Map;
 @ZenClass("mods.multiblocked.capability.capability")
 @ZenRegister
 public abstract class MultiblockCapability<T> implements JsonSerializer<T>, JsonDeserializer<T> {
+    protected static EnumFacing[] FACINGS = new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.WEST, EnumFacing.SOUTH, null};
     protected IBlockState[] scannedStates;
     @ZenProperty
     public final String name;
@@ -86,6 +87,15 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
             }
 
         }.setBackground(new ColorRectTexture(color));
+    }
+
+    public <C> Set<C> getCapability(Capability<C> capability, @Nonnull TileEntity tileEntity) {
+        Set<C> found = new HashSet<>();
+        for (EnumFacing facing : FACINGS) {
+            C cap = tileEntity.getCapability(capability, facing);
+            if (cap != null) found.add(cap);
+        }
+        return found;
     }
 
     public IBlockState[] getCandidates() {

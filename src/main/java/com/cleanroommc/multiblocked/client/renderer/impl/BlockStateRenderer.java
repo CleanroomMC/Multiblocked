@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -25,8 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 
 public class BlockStateRenderer implements IRenderer {
-
-    public final IBlockState state;
+    private final IBlockState state;
     @SideOnly(Side.CLIENT)
     private transient IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
@@ -36,8 +36,8 @@ public class BlockStateRenderer implements IRenderer {
         this.state = state;
     }
 
-    protected IBlockState getState() {
-        return state;
+    public IBlockState getState() {
+        return state == null ? Blocks.STONE.getDefaultState() : state;
     }
 
     @SideOnly(Side.CLIENT)
@@ -97,8 +97,8 @@ public class BlockStateRenderer implements IRenderer {
                 }
                 return tileEntity;
             }
-            if (!state.getBlock().hasTileEntity(state)) return null;
-            tileEntity = state.getBlock().createTileEntity(world, state);
+            if (!getState().getBlock().hasTileEntity(getState())) return null;
+            tileEntity = getState().getBlock().createTileEntity(world, getState());
             if (tileEntity != null) {
                 tileEntity.setPos(pos);
                 tileEntity.setWorld(world);

@@ -5,8 +5,8 @@ import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @FunctionalInterface
-@ZenClass("mods.multiblocked.functions.INeighborChanged")
+@ZenClass("mods.multiblocked.functions.IStatusChanged")
 @ZenRegister
-public interface INeighborChanged {
-    void apply(ICTComponent componentTileEntity);
+public interface IStatusChanged {
+    String apply(ICTComponent componentTileEntity, String newStatus);
 }

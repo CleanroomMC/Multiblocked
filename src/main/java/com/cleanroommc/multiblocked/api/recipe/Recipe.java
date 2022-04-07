@@ -43,7 +43,7 @@ public class Recipe {
     /**
      * Does the recipe match the owned proxy.
      *
-     * @param capabilityProxies proxies
+     * @param holder proxies
      * @return result
      */
     public boolean match(ICapabilityProxyHolder holder) {
@@ -108,6 +108,9 @@ public class Recipe {
                     if (content == null) break;
                 }
             }
+            if (content != null) {
+                Multiblocked.LOGGER.warn("io error while handling a recipe {} inputs. holder: {}", uid, holder);
+            }
         }
     }
 
@@ -140,6 +143,9 @@ public class Recipe {
                     content = proxy.handleRecipeOutput(this, content);
                     if (content == null) break;
                 }
+            }
+            if (content != null) {
+                Multiblocked.LOGGER.warn("io error while handling a recipe {} outputs. holder: {}", uid, holder);
             }
         }
     }

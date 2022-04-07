@@ -29,7 +29,7 @@ import java.util.*;
  * Used to detect whether a machine has a certain capability. And provide its capability in proxy {@link CapabilityProxy}.
  *
  */
-@ZenClass("mods.multiblocked.capability.capability")
+@ZenClass("mods.multiblocked.capability.Capability")
 @ZenRegister
 public abstract class MultiblockCapability<T> implements JsonSerializer<T>, JsonDeserializer<T> {
     protected static EnumFacing[] FACINGS = new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.WEST, EnumFacing.SOUTH, null};

@@ -12,13 +12,10 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.util.Tuple;
 import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ZenClass("mods.multiblocked.recipe.Recipe")
@@ -28,6 +25,7 @@ public class Recipe {
     public final String uid;
     public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputs;
     public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> outputs;
+    @ZenProperty
     public final int duration;
 
     public Recipe(String uid,
@@ -38,6 +36,24 @@ public class Recipe {
         this.inputs = inputs;
         this.outputs = outputs;
         this.duration = duration;
+    }
+
+    @ZenMethod
+    public List<Content> getInputContents(MultiblockCapability<?> capability) {
+        if (inputs.containsKey(capability)) {
+            return inputs.get(capability).stream().map(Content::new).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    @ZenMethod
+    public List<Content> getOutputContents(MultiblockCapability<?> capability) {
+        if (outputs.containsKey(capability)) {
+            return outputs.get(capability).stream().map(Content::new).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**

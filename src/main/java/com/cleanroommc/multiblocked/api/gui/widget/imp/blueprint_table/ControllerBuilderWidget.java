@@ -30,7 +30,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,16 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
     public ControllerBuilderWidget(BlueprintTableTileEntity table) {
         super(table);
         templateButton.setHoverTooltip("Create a controller from a blueprint");
+        this.addWidget(new ButtonWidget(330, 96, 20, 20, new ResourceTexture("multiblocked:textures/gui/save.png"), cd->{
+            if (cd.isRemote) {
+                try {
+                    File dir = new File(Multiblocked.location, "definition/controller");
+                    Desktop.getDesktop().open(dir.isDirectory() ? dir : dir.getParentFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("open folder"));
     }
 
     @Override

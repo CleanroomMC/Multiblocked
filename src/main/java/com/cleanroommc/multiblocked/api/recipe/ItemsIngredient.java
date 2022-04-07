@@ -36,6 +36,9 @@ public class ItemsIngredient extends Ingredient {
 
     public ItemsIngredient(int amount, ItemStack... matchingStacks) {
         super(matchingStacks);
+        for (ItemStack matchingStack : matchingStacks) {
+            matchingStack.setCount(amount);
+        }
         this.amount = amount;
     }
 

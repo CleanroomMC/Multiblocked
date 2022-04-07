@@ -214,6 +214,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
             for (Widget widget : predicatesContainer.widgets) {
                 if (found) {
                     widget.addSelfPosition(0, -21);
+                    widget.setVisible(true);
                 } else if (widget == selectedPredicate.get()) {
                     predicatesContainer.waitToRemoved(widget);
                     found = true;

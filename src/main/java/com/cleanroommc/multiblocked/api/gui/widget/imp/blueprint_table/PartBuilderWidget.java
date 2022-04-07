@@ -14,13 +14,14 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidget
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.components.PartWidget;
-import com.cleanroommc.multiblocked.client.MultiblockedResourceLoader;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.JsonElement;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +37,17 @@ public class PartBuilderWidget extends WidgetGroup {
         this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_page.png")));
         this.addWidget(new ImageWidget(200 - 4, 30 - 4, 150 + 8, 190 + 8, ResourceBorderTexture.BORDERED_BACKGROUND_BLUE));
         this.addWidget(containers = new DraggableScrollableWidgetGroup(200, 30, 150, 190));
-        this.addWidget(new ButtonWidget(200 - 4 - 20, 30, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> {
+        this.addWidget(new ButtonWidget(200 - 4 - 20, 30, 20, 20, new ResourceTexture("multiblocked:textures/gui/save.png"), cd -> {
+            if (cd.isRemote) {
+                try {
+                    File dir = new File(Multiblocked.location, "definition/part");
+                    Desktop.getDesktop().open(dir.isDirectory() ? dir : dir.getParentFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("open folder"));
+        this.addWidget(new ButtonWidget(200 - 4 - 20, 51, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> {
             for (Widget widget : widgets) {
                 widget.setVisible(false);
                 widget.setActive(false);

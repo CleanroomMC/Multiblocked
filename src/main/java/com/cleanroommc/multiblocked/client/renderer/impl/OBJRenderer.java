@@ -33,7 +33,7 @@ public class OBJRenderer extends IModelRenderer {
 
     @Override
     public String getType() {
-        return "OBJ";
+        return "obj";
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.client;
 
 import com.cleanroommc.multiblocked.CommonProxy;
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.registry.MbdItems;
@@ -16,6 +17,7 @@ import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.data.MetadataSerializer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -48,6 +50,9 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public static void registerTextures(TextureStitchEvent.Pre event) {
         TextureMap map = event.getMap();
+        map.registerSprite(new ResourceLocation("multiblocked:void"));
+        map.registerSprite(new ResourceLocation("multiblocked:blocks/gregtech_base"));
+        map.registerSprite(new ResourceLocation("multiblocked:blocks/gregtech_front"));
         for (IRenderer renderer : IRenderer.registerNeeds) {
             renderer.onTextureSwitchEvent(map);
         }

@@ -51,6 +51,7 @@ public class IRendererWidget extends DialogWidget {
         this.addWidget(new ImageWidget(35, 59, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
         this.addWidget(new SceneWidget(35, 59,  138, 138, world)
                 .setRenderedCore(Collections.singleton(BlockPos.ORIGIN), null)
+                .setCameraYawAndPitch(25, -135)
                 .setRenderSelect(false)
                 .setRenderFacing(false));
         this.addWidget(group = new DraggableScrollableWidgetGroup(181, 80, 180, 120));
@@ -70,6 +71,7 @@ public class IRendererWidget extends DialogWidget {
                 .setButtonBackground(new ColorBorderTexture(1, -1), new ColorRectTexture(0xff444444))
                 .setBackground(new ColorRectTexture(0xff999999))
                 .setHoverTooltip("renderer"));
+        onChangeRenderer(getType(renderer));
         if (onSave == null) return;
         this.addWidget(new ButtonWidget(285, 30, 40, 20, cd -> {
             if (tileEntity != null) {
@@ -79,13 +81,13 @@ public class IRendererWidget extends DialogWidget {
         })
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("save", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("save"));
+                .setHoverTooltip("NOTE!! update before save"));
     }
 
     private List<String> getRendererList() {
         List<String> list = new ArrayList<>();
-        list.add("null");
-        list.addAll(MbdRenderers.RENDERER_REGISTRY.keySet());
+        list.add("multiblocked.renderer.null");
+        MbdRenderers.RENDERER_REGISTRY.values().stream().map(ICustomRenderer::getUnlocalizedName).forEach(list::add);
         return list;
     }
 
@@ -111,22 +113,26 @@ public class IRendererWidget extends DialogWidget {
         group.clearAllWidgets();
         onUpdate = null;
         IRenderer current = tileEntity.getRenderer();
+        String[] split = s.split("\\.");
+        s = split[split.length - 1];
         if (s.equals("null")) {
             onUpdate = () -> setNewRenderer(null);
         } else {
-            ICustomRenderer renderer = MbdRenderers.RENDERER_REGISTRY.get(s);
+            ICustomRenderer renderer = MbdRenderers.getRenderer(s);
             if (renderer != null) {
                 Supplier<IRenderer> supplier = renderer.createConfigurator(this, group, current);
-                onUpdate = () -> setNewRenderer(supplier.get());
+                if (supplier != null) {
+                    onUpdate = () -> setNewRenderer(supplier.get());
+                }
             }
         }
     }
 
     public static String getType(IRenderer renderer) {
         if (renderer instanceof ICustomRenderer) {
-            return ((ICustomRenderer) renderer).getType();
+            return ((ICustomRenderer) renderer).getUnlocalizedName();
         }
-        return "null";
+        return "multiblocked.renderer.null";
     }
 
 }

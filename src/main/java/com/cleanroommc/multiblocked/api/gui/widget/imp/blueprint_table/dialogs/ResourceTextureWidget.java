@@ -31,7 +31,7 @@ public class ResourceTextureWidget extends DialogWidget {
         Size size = parent.getSize();
         int x = 130 + (size.width - 133 - WIDTH) / 2;
         int y = (size.height - HEIGHT) / 2;
-        File dir = new File(Multiblocked.location, "assets/multiblocked");
+        File dir = new File(Multiblocked.location, "assets/multiblocked/textures");
         if (!dir.isDirectory()) {
             if (!dir.mkdirs()) {
                 close();
@@ -70,6 +70,6 @@ public class ResourceTextureWidget extends DialogWidget {
     }
 
     private ResourceTexture getTextureFromFile(File path, File r){
-        return new ResourceTexture("multiblocked:" + r.getPath().replace(path.getPath(), "").substring(1).replace('\\', '/'));
+        return new ResourceTexture("multiblocked:" + r.getPath().replace(path.getPath(), "textures").replace('\\', '/'));
     }
 }

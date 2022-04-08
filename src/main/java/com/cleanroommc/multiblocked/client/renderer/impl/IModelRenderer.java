@@ -34,6 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -69,17 +70,6 @@ public class IModelRenderer implements ICustomRenderer {
             }
             blockModels = new EnumMap<>(EnumFacing.class);
         }
-    }
-
-    public IModelRenderer checkRegister() {
-        if (Multiblocked.isClient()) {
-            if (isRaw()) {
-                registerTextureSwitchEvent();
-                CACHE.add(modelLocation);
-            }
-            blockModels = new EnumMap<>(EnumFacing.class);
-        }
-        return this;
     }
 
     @SideOnly(Side.CLIENT)
@@ -118,7 +108,7 @@ public class IModelRenderer implements ICustomRenderer {
             itemModel = getModel().bake(
                     TRSRTransformation.identity(),
                     DefaultVertexFormats.ITEM,
-                    location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
+                    ModelLoader.defaultTextureGetter());
         }
         return itemModel;
     }
@@ -133,7 +123,7 @@ public class IModelRenderer implements ICustomRenderer {
         return blockModels.computeIfAbsent(frontFacing, facing -> new CustomBakedModel(getModel().bake(
                 TRSRTransformation.from(facing),
                 DefaultVertexFormats.BLOCK,
-                location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()))));
+                ModelLoader.defaultTextureGetter())));
     }
 
     @Override
@@ -158,7 +148,7 @@ public class IModelRenderer implements ICustomRenderer {
 
     @Override
     public String getType() {
-        return "IModel";
+        return "imodel";
     }
 
     @Override
@@ -183,7 +173,7 @@ public class IModelRenderer implements ICustomRenderer {
                         tfw.setCurrentString("multiblocked:" + r.getPath().replace(path.getPath(), "").substring(1).replace(".json", "").replace('\\', '/'));
                     }
                 })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
-        if (current instanceof IModelRenderer) {
+        if (current instanceof IModelRenderer && ((IModelRenderer) current).modelLocation != null) {
             tfw.setCurrentString(((IModelRenderer) current).modelLocation.toString());
         }
         return () -> {

@@ -32,7 +32,7 @@ public class B3DRenderer extends IModelRenderer {
 
     @Override
     public String getType() {
-        return "B3D";
+        return "b3d";
     }
 
     @Override

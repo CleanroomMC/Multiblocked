@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.client.model;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.renderer.block.model.FaceBakery;
@@ -118,8 +119,12 @@ public class ModelFactory {
         return this;
     }
 
+    public IModel getMappedModel() {
+        return template.model.retexture(ImmutableMap.copyOf(sprites));
+    }
+
     public IBakedModel bake() {
-        IModel mapped = template.model.retexture(ImmutableMap.copyOf(sprites));
+        IModel mapped = getMappedModel();
         if (mutation != null) {
             mutation.apply(mapped);
         }
@@ -127,7 +132,7 @@ public class ModelFactory {
     }
 
     public static class ModelTemplate {
-
+        public static final ModelTemplate CUBE_2_LAYER = new ModelTemplate(Multiblocked.MODID, "block/cube_2_layer");
         public static final ModelTemplate BLOCK = new ModelTemplate("minecraft", "block/block");
         public static final ModelTemplate NORMAL_ITEM = new ModelTemplate("minecraft", "item/generated");
         public static final ModelTemplate HANDHELD_ITEM = new ModelTemplate("minecraft", "item/handheld");

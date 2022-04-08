@@ -50,7 +50,7 @@ public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
             if (jsonElement.isJsonNull()) return null;
             JsonObject jsonObj = jsonElement.getAsJsonObject();
             final String type = jsonObj.get("type").getAsString();
-            ICustomRenderer renderer = MbdRenderers.RENDERER_REGISTRY.get(type);
+            ICustomRenderer renderer = MbdRenderers.getRenderer(type);
             if (renderer != null) {
                 return renderer.fromJson(gson, jsonObj);
             }

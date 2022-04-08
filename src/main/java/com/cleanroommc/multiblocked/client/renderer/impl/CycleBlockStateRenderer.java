@@ -42,7 +42,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
 
     @Override
     public String getType() {
-        return "CycleBlockState";
+        return "cycleblockstate";
     }
 
     public CycleBlockStateRenderer(IBlockState[] states) {

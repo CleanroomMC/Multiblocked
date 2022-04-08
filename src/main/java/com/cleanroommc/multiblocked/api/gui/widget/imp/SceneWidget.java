@@ -344,4 +344,13 @@ public class SceneWidget extends WidgetGroup {
         }
         return this;
     }
+
+    public SceneWidget setCameraYawAndPitch(float rotationYaw, float rotationPitch) {
+        this.rotationYaw = rotationYaw;
+        this.rotationPitch = rotationPitch;
+        if (renderer != null) {
+            renderer.setCameraLookAt(this.center, zoom, Math.toRadians(rotationPitch), Math.toRadians(rotationYaw));
+        }
+        return this;
+    }
 }

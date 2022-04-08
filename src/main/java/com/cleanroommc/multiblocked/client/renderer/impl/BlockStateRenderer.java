@@ -171,7 +171,7 @@ public class BlockStateRenderer implements ICustomRenderer {
 
     @Override
     public String getType() {
-        return "BlockState";
+        return "blockstate";
     }
 
     @Override

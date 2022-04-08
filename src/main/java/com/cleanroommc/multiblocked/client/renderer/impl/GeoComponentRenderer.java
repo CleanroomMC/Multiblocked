@@ -115,7 +115,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
 
     @Override
     public String getType() {
-        return "Geo";
+        return "geo";
     }
 
     @Override

@@ -50,7 +50,7 @@ public class TextureParticleRenderer extends ParticleRenderer implements ICustom
 
     @Override
     public String getType() {
-        return "TParticle";
+        return "tparticle";
     }
 
     @Override

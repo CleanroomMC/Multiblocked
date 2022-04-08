@@ -21,6 +21,10 @@ public interface ICustomRenderer extends IRenderer {
      */
     String getType();
 
+    default String getUnlocalizedName() {
+        return "multiblocked.renderer." + getType();
+    }
+
     /**
      * deserialize.
      */

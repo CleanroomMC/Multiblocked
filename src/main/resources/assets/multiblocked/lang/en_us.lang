@@ -59,3 +59,12 @@ multiblocked.recipe.status.true=status: §cworking§r
 multiblocked.recipe.status.false=status: §aidle§r
 multiblocked.recipe.remaining=remaining time: %ds
 
+multiblocked.renderer.null=Null
+multiblocked.renderer.imodel=Java Model
+multiblocked.renderer.geo=GeckoLib Model
+multiblocked.renderer.b3d=B3D Model
+multiblocked.renderer.obj=OBJ Model
+multiblocked.renderer.tparticle=Textured Particle
+multiblocked.renderer.blockstate=BlockState Model
+multiblocked.renderer.gregtech=GregTech Model
+

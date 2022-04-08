@@ -10,11 +10,11 @@ import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.pattern.util.PatternMatchContext;
 import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
+import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import crafttweaker.annotations.ZenRegister;
-import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
-import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
-import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.state.IBlockState;
@@ -31,13 +31,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import stanhebben.zenscript.annotations.ZenClass;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 @ZenClass("mods.multiblocked.pattern.BlockPattern")
@@ -76,26 +70,36 @@ public class BlockPattern {
     }
 
     public boolean checkPatternAt(MultiblockState worldState, boolean savePredicate) {
+        ControllerTileEntity controller = worldState.getController();
+        if (controller == null) {
+            worldState.setError(new PatternStringError("no controller found"));
+            return false;
+        }
+        BlockPos centerPos = controller.getPos();
+        EnumFacing frontFacing = controller.getFrontFacing();
+        Set<MultiblockCapability<?>> inputCapabilities = controller.getDefinition().recipeMap.inputCapabilities;
+        Set<MultiblockCapability<?>> outputCapabilities = controller.getDefinition().recipeMap.outputCapabilities;
+        EnumFacing[] facings = controller.getDefinition().allowRotate ? new EnumFacing[]{frontFacing} : new EnumFacing[]{EnumFacing.SOUTH, EnumFacing.NORTH, EnumFacing.EAST, EnumFacing.WEST};
+        for (EnumFacing facing : facings) {
+            if (checkPatternAt(worldState, centerPos, facing, savePredicate, inputCapabilities, outputCapabilities)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkPatternAt(MultiblockState worldState, BlockPos centerPos, EnumFacing facing, boolean savePredicate, Set<MultiblockCapability<?>> inputCapabilities, Set<MultiblockCapability<?>> outputCapabilities) {
         boolean findFirstAisle = false;
         int minZ = -centerOffset[4];
         worldState.clean();
         PatternMatchContext matchContext = worldState.matchContext;
         Map<SimplePredicate, Integer> globalCount = worldState.globalCount;
-        if (worldState.getController() == null) {
-            worldState.setError(new PatternStringError("no controller found"));
-            return false;
-        }
-        BlockPos centerPos = worldState.getController().getPos();
-        EnumFacing facing = worldState.getController().getFrontFacing();
-        Set<MultiblockCapability<?>> inputCapabilities = worldState.getController().getDefinition().recipeMap.inputCapabilities;
-        Set<MultiblockCapability<?>> outputCapabilities = worldState.getController().getDefinition().recipeMap.outputCapabilities;
         //Checking aisles
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             //Checking repeatable slices
             loop:
             for (r = 0; (findFirstAisle ? r < aisleRepetitions[c][1] : z <= -centerOffset[3]); r++) {
                 //Checking single slice
-
                 for (int b = 0, y = -centerOffset[1]; b < this.thumbLength; b++, y++) {
                     for (int a = 0, x = -centerOffset[0]; a < this.palmLength; a++, x++) {
                         worldState.setError(null);
@@ -192,11 +196,12 @@ public class BlockPattern {
         World world = player.world;
         int minZ = -centerOffset[4];
         worldState.clean();
-        BlockPos centerPos = worldState.getController().getPos();
-        EnumFacing facing = worldState.getController().getFrontFacing();
+        ControllerTileEntity controller = worldState.getController();
+        BlockPos centerPos = controller.getPos();
+        EnumFacing facing = controller.getFrontFacing();
         Map<SimplePredicate, Integer> cacheGlobal = worldState.globalCount;
         Map<BlockPos, Object> blocks = new HashMap<>();
-        blocks.put(centerPos, worldState.getController());
+        blocks.put(centerPos, controller);
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             for (r = 0; r < aisleRepetitions[c][0]; r++) {
                 for (int b = 0, y = -centerOffset[1]; b < this.thumbLength; b++, y++) {

@@ -3,6 +3,7 @@ package com.cleanroommc.multiblocked.client.renderer.impl;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.client.util.FacadeBlockAccess;
+import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -142,12 +143,13 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
             int i = Math.abs(index) % states.length;
             IBlockState state = states[i];
             if (!state.getBlock().hasTileEntity(state)) return null;
-            if (tileEntities[i] == null) {
-                tileEntities[i] = state.getBlock().createTileEntity(world, state);
-                if (tileEntities[i] != null) {
-                    tileEntities[i].setPos(pos);
-                    tileEntities[i].setWorld(world);
-                }
+            TrackedDummyWorld dummyWorld = new TrackedDummyWorld(world);
+            tileEntities[i] = tileEntities[i] == null ? state.getBlock().createTileEntity(dummyWorld, state) : tileEntities[i];
+            dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(pos) ? state : iBlockState);
+            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tile : tileEntities[i]);
+            if (tileEntities[i] != null) {
+                tileEntities[i].setPos(pos);
+                tileEntities[i].setWorld(dummyWorld);
             }
             return tileEntities[i];
         } catch (Throwable throwable) {

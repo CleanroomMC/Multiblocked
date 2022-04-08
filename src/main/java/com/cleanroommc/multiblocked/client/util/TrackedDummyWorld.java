@@ -15,6 +15,7 @@ import javax.vecmath.Vector3f;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 /**
@@ -29,6 +30,8 @@ public class TrackedDummyWorld extends DummyWorld {
 
     public final Set<BlockPos> renderedBlocks = new HashSet<>();
     private Predicate<BlockPos> renderFilter;
+    private BiFunction<BlockPos, IBlockState, IBlockState> hookBlockState;
+    private BiFunction<BlockPos, TileEntity, TileEntity> hookTileEntity;
     public final World proxyWorld;
 
     private final Vector3f minPos = new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -36,6 +39,14 @@ public class TrackedDummyWorld extends DummyWorld {
 
     public void setRenderFilter(Predicate<BlockPos> renderFilter) {
         this.renderFilter = renderFilter;
+    }
+
+    public void setBlockStateHook(BiFunction<BlockPos, IBlockState, IBlockState> hookBlockState) {
+        this.hookBlockState = hookBlockState;
+    }
+
+    public void setTileEntityHook(BiFunction<BlockPos, TileEntity, TileEntity> hookTileEntity) {
+        this.hookTileEntity = hookTileEntity;
     }
 
     public TrackedDummyWorld(){
@@ -61,7 +72,11 @@ public class TrackedDummyWorld extends DummyWorld {
     public TileEntity getTileEntity(@Nonnull BlockPos pos) {
         if (renderFilter != null && !renderFilter.test(pos))
             return null;
-        return proxyWorld != null ? proxyWorld.getTileEntity(pos) : super.getTileEntity(pos);
+        TileEntity tileEntity = proxyWorld != null ? proxyWorld.getTileEntity(pos) : super.getTileEntity(pos);
+        if (hookTileEntity != null) {
+            return hookTileEntity.apply(pos, tileEntity);
+        }
+        return tileEntity;
     }
 
     @Nonnull
@@ -69,7 +84,11 @@ public class TrackedDummyWorld extends DummyWorld {
     public IBlockState getBlockState(@Nonnull BlockPos pos) {
         if (renderFilter != null && !renderFilter.test(pos))
             return Blocks.AIR.getDefaultState(); //return air if not rendering this block
-        return proxyWorld != null ? proxyWorld.getBlockState(pos) : super.getBlockState(pos);
+        IBlockState blockState =  proxyWorld != null ? proxyWorld.getBlockState(pos) : super.getBlockState(pos);
+        if (hookBlockState != null) {
+            return hookBlockState.apply(pos, blockState);
+        }
+        return blockState;
     }
 
     @Override

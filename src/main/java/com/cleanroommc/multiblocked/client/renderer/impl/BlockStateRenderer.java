@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidget
 import com.cleanroommc.multiblocked.client.renderer.ICustomRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.util.FacadeBlockAccess;
+import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
@@ -106,20 +107,18 @@ public class BlockStateRenderer implements ICustomRenderer {
         return TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass()) != null;
     }
 
+    @SideOnly(Side.CLIENT)
     public TileEntity getTileEntity(World world, BlockPos pos) {
         try {
-            if (tileEntity != null) {
-                if (world != null && pos != null) {
-                    tileEntity.setPos(pos);
-                    tileEntity.setWorld(world);
-                }
-                return tileEntity;
-            }
-            if (!getState().getBlock().hasTileEntity(getState())) return null;
-            tileEntity = getState().getBlock().createTileEntity(world, getState());
+            IBlockState state = getState();
+            if (!state.getBlock().hasTileEntity(state)) return null;
+            TrackedDummyWorld dummyWorld = new TrackedDummyWorld(world);
+            tileEntity = tileEntity == null ? state.getBlock().createTileEntity(world, state) : tileEntity;
+            dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(pos) ? state : iBlockState);
+            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tile : tileEntity);
             if (tileEntity != null) {
                 tileEntity.setPos(pos);
-                tileEntity.setWorld(world);
+                tileEntity.setWorld(dummyWorld);
             }
             return tileEntity;
         } catch (Throwable throwable) {

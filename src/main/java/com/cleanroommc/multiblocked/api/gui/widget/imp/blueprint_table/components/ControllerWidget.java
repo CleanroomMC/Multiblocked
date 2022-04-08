@@ -17,7 +17,7 @@ import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
@@ -154,7 +154,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                 for (int k = 0; k < pattern[0][0].length(); k++) {
                     char symbol = pattern[i][j].charAt(k);
                     BlockPos pos = this.pattern.getActualPosOffset(k - centerOffset[2], j - centerOffset[1], i - centerOffset[0], EnumFacing.NORTH).add(offset, offset, offset);
-                    world.addBlock(pos, new BlockInfo(MultiblockComponents.DummyComponentBlock));
+                    world.addBlock(pos, new BlockInfo(MbdComponents.DummyComponentBlock));
                     DummyComponentTileEntity  tileEntity = (DummyComponentTileEntity) world.getTileEntity(pos);
                     ComponentDefinition definition = null;
                     assert tileEntity != null;

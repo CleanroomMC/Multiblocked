@@ -6,7 +6,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.FluidContentWidget;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -70,7 +70,7 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
     public static class FluidCapabilityProxy extends CapCapabilityProxy<IFluidHandler, FluidStack> {
 
         public FluidCapabilityProxy(TileEntity tileEntity) {
-            super(MultiblockCapabilities.FLUID, tileEntity, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+            super(MbdCapabilities.FLUID, tileEntity, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
         }
 
         @Override

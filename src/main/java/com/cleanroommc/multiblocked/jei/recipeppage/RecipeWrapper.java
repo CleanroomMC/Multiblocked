@@ -8,7 +8,7 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.jei.ModularWrapper;
 import com.cleanroommc.multiblocked.jei.ingredient.AspectListIngredient;
 import lach_01298.qmd.jei.ingredient.ParticleType;
@@ -35,30 +35,34 @@ public class RecipeWrapper extends ModularWrapper {
 
     @Override
     public void getIngredients(@Nonnull IIngredients ingredients) {
-        if (recipe.inputs.containsKey(MultiblockCapabilities.ITEM)) {
-            ingredients.setInputs(VanillaTypes.ITEM, recipe.inputs.get(MultiblockCapabilities.ITEM).stream()
+        if (recipe.inputs.containsKey(MbdCapabilities.ITEM)) {
+            ingredients.setInputs(VanillaTypes.ITEM, recipe.inputs.get(
+                    MbdCapabilities.ITEM).stream()
                     .map(Tuple::getFirst)
                     .map(ItemsIngredient.class::cast)
                     .flatMap(r-> Arrays.stream(r.getMatchingStacks()))
                     .collect(Collectors.toList()));
         }
-        if (recipe.outputs.containsKey(MultiblockCapabilities.ITEM)) {
-            ingredients.setOutputs(VanillaTypes.ITEM, recipe.outputs.get(MultiblockCapabilities.ITEM).stream()
+        if (recipe.outputs.containsKey(MbdCapabilities.ITEM)) {
+            ingredients.setOutputs(VanillaTypes.ITEM, recipe.outputs.get(
+                    MbdCapabilities.ITEM).stream()
                     .map(Tuple::getFirst)
                     .map(ItemsIngredient.class::cast)
                     .flatMap(r -> Arrays.stream(r.getMatchingStacks()))
                     .collect(Collectors.toList()));
         }
 
-        if (recipe.inputs.containsKey(MultiblockCapabilities.FLUID)) {
+        if (recipe.inputs.containsKey(MbdCapabilities.FLUID)) {
 
-            ingredients.setInputs(VanillaTypes.FLUID, recipe.inputs.get(MultiblockCapabilities.FLUID).stream()
+            ingredients.setInputs(VanillaTypes.FLUID, recipe.inputs.get(
+                    MbdCapabilities.FLUID).stream()
                     .map(Tuple::getFirst)
                     .map(FluidStack.class::cast)
                     .collect(Collectors.toList()));
         }
-        if (recipe.outputs.containsKey(MultiblockCapabilities.FLUID)) {
-            ingredients.setOutputs(VanillaTypes.FLUID, recipe.outputs.get(MultiblockCapabilities.FLUID).stream()
+        if (recipe.outputs.containsKey(MbdCapabilities.FLUID)) {
+            ingredients.setOutputs(VanillaTypes.FLUID, recipe.outputs.get(
+                    MbdCapabilities.FLUID).stream()
                     .map(Tuple::getFirst)
                     .map(FluidStack.class::cast)
                     .collect(Collectors.toList()));

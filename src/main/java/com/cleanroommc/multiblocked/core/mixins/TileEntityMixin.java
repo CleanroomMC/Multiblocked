@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.core.mixins;
 
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -25,7 +25,7 @@ public class TileEntityMixin {
 	private static void preventDataLoss(World world, NBTTagCompound nbt, CallbackInfoReturnable<TileEntity> cir, TileEntity tile, String s, Class<? extends TileEntity> oclass) {
 		if (oclass == null) {
 			if (nbt.hasKey("mbd_def")) {
-				ComponentDefinition definition = MultiblockComponents.DEFINITION_REGISTRY.get(new ResourceLocation(nbt.getString("mbd_def")));
+				ComponentDefinition definition = MbdComponents.DEFINITION_REGISTRY.get(new ResourceLocation(nbt.getString("mbd_def")));
 				if (definition != null) {
 					try {
 						oclass = definition.clazz;

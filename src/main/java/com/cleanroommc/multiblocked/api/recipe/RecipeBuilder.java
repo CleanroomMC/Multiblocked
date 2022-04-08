@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.api.recipe;
 
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.EnergyGTCECapability;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import com.google.common.collect.ImmutableList;
@@ -93,14 +93,14 @@ public class RecipeBuilder {
 
     @ZenMethod
     public RecipeBuilder inputFE(float chance, int forgeEnergy) {
-        keyBuilder.append(MultiblockCapabilities.FE.name).append(forgeEnergy);
-        return input(MultiblockCapabilities.FE, chance, forgeEnergy);
+        keyBuilder.append(MbdCapabilities.FE.name).append(forgeEnergy);
+        return input(MbdCapabilities.FE, chance, forgeEnergy);
     }
 
     @ZenMethod
     public RecipeBuilder outputFE(float chance, int forgeEnergy) {
-        keyBuilder.append(MultiblockCapabilities.FE.name).append(forgeEnergy);
-        return output(MultiblockCapabilities.FE, chance, forgeEnergy);
+        keyBuilder.append(MbdCapabilities.FE.name).append(forgeEnergy);
+        return output(MbdCapabilities.FE, chance, forgeEnergy);
     }
 
     public RecipeBuilder inputItems(ItemsIngredient... inputs) {
@@ -112,21 +112,21 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder inputItems(float chance, ItemsIngredient... inputs) {
-        keyBuilder.append(MultiblockCapabilities.ITEM.name);
+        keyBuilder.append(MbdCapabilities.ITEM.name);
         for (ItemsIngredient input : inputs) {
             keyBuilder.append(input.hashCode());
         }
-        return input(MultiblockCapabilities.ITEM, chance, (Object[]) inputs);
+        return input(MbdCapabilities.ITEM, chance, (Object[]) inputs);
     }
 
     public RecipeBuilder outputItems(float chance, ItemStack... outputs) {
-        keyBuilder.append(MultiblockCapabilities.ITEM.name);
+        keyBuilder.append(MbdCapabilities.ITEM.name);
         for (ItemStack output : outputs) {
             keyBuilder.append(output.getCount());
             ResourceLocation name = output.getItem().getRegistryName();
             keyBuilder.append(name == null ? "" : name.hashCode());
         }
-        return output(MultiblockCapabilities.ITEM, chance, Arrays.stream(outputs).map(ItemsIngredient::new).toArray());
+        return output(MbdCapabilities.ITEM, chance, Arrays.stream(outputs).map(ItemsIngredient::new).toArray());
     }
 
     public RecipeBuilder inputFluids(FluidStack... inputs) {
@@ -138,21 +138,21 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder inputFluids(float chance, FluidStack... inputs) {
-        keyBuilder.append(MultiblockCapabilities.FLUID.name);
+        keyBuilder.append(MbdCapabilities.FLUID.name);
         for (FluidStack input : inputs) {
             keyBuilder.append(input.amount);
             keyBuilder.append(input.getUnlocalizedName());
         }
-        return input(MultiblockCapabilities.FLUID, chance, (Object[]) inputs);
+        return input(MbdCapabilities.FLUID, chance, (Object[]) inputs);
     }
 
     public RecipeBuilder outputFluids(float chance, FluidStack... outputs) {
-        keyBuilder.append(MultiblockCapabilities.FLUID.name);
+        keyBuilder.append(MbdCapabilities.FLUID.name);
         for (FluidStack output : outputs) {
             keyBuilder.append(output.amount);
             keyBuilder.append(output.getUnlocalizedName());
         }
-        return output(MultiblockCapabilities.FLUID, chance, (Object[]) outputs);
+        return output(MbdCapabilities.FLUID, chance, (Object[]) outputs);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BOT)

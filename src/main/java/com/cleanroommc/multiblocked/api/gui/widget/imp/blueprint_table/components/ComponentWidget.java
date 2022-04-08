@@ -8,7 +8,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.Multiblocked;
@@ -138,7 +138,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
     @SideOnly(Side.CLIENT)
     protected WidgetGroup createScene(int x, int y, String text, String tips, IRenderer init, Consumer<IRenderer> onUpdate) {
         TrackedDummyWorld world = new TrackedDummyWorld();
-        world.addBlock(BlockPos.ORIGIN, new BlockInfo(MultiblockComponents.DummyComponentBlock));
+        world.addBlock(BlockPos.ORIGIN, new BlockInfo(MbdComponents.DummyComponentBlock));
         DummyComponentTileEntity tileEntity = (DummyComponentTileEntity) world.getTileEntity(BlockPos.ORIGIN);
         tileEntity.setDefinition(new PartDefinition(new ResourceLocation(Multiblocked.MODID, "component_widget")));
         tileEntity.getDefinition().baseRenderer = init;

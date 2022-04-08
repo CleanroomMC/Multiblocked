@@ -4,8 +4,8 @@ package com.cleanroommc.multiblocked.api.crafttweaker;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import crafttweaker.annotations.ZenRegister;
 import net.minecraft.util.ResourceLocation;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -17,7 +17,7 @@ public class CTRegistry {
 
     @ZenMethod
     public static ComponentDefinition getDefinition(String name) {
-        return MultiblockComponents.DEFINITION_REGISTRY.get(new ResourceLocation(name));
+        return MbdComponents.DEFINITION_REGISTRY.get(new ResourceLocation(name));
     }
 
     @ZenMethod
@@ -27,7 +27,7 @@ public class CTRegistry {
 
     @ZenMethod
     public static MultiblockCapability<?> getCapability(String name) {
-        return MultiblockCapabilities.get(name);
+        return MbdCapabilities.get(name);
     }
 
 }

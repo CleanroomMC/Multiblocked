@@ -2,7 +2,7 @@ package com.cleanroommc.multiblocked.api.item;
 
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
-import com.cleanroommc.multiblocked.api.registry.MultiblockedItems;
+import com.cleanroommc.multiblocked.api.registry.MbdItems;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import com.cleanroommc.multiblocked.Multiblocked;
 import net.minecraft.client.resources.I18n;
@@ -99,14 +99,14 @@ public class ItemMultiblockBuilder extends Item {
         private static final Ingredient blueprint;
 
         static {
-            resultStack = new ItemStack(MultiblockedItems.BUILDER);
+            resultStack = new ItemStack(MbdItems.BUILDER);
             ItemMultiblockBuilder.setPattern(resultStack);
-            ItemStack stack = new ItemStack(MultiblockedItems.BLUEPRINT);
+            ItemStack stack = new ItemStack(MbdItems.BLUEPRINT);
             ItemBlueprint.setPattern(stack);
             blueprint = Ingredient.fromStacks(stack);
-            stack = new ItemStack(MultiblockedItems.BUILDER);
+            stack = new ItemStack(MbdItems.BUILDER);
             ItemMultiblockBuilder.setPattern(stack);
-            builder = Ingredient.fromStacks(new ItemStack(MultiblockedItems.BUILDER), stack);
+            builder = Ingredient.fromStacks(new ItemStack(MbdItems.BUILDER), stack);
         }
 
         public BuilderRecipeLogic() {
@@ -149,7 +149,7 @@ public class ItemMultiblockBuilder extends Item {
                 }
             }
             if (a== null || b == null) return ItemStack.EMPTY;
-            ItemStack builder = new ItemStack(MultiblockedItems.BUILDER);
+            ItemStack builder = new ItemStack(MbdItems.BUILDER);
             ItemMultiblockBuilder.setPattern(builder);
             if (ItemBlueprint.isItemBlueprint(a) && !ItemBlueprint.isRaw(a)) {
                 builder.getOrCreateSubCompound("pattern").setString("json", a.getOrCreateSubCompound("pattern").getString("json"));

@@ -9,7 +9,7 @@ import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiHandler;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
@@ -76,7 +76,7 @@ public class JeiPlugin implements IModPlugin {
     public void onRuntimeAvailable(@Nonnull IJeiRuntime jeiRuntime) {
         JeiPlugin.jeiRuntime = jeiRuntime;
         List<ItemStack> removed = new ArrayList<>();
-        for (ComponentDefinition definition : MultiblockComponents.DEFINITION_REGISTRY.values()) {
+        for (ComponentDefinition definition : MbdComponents.DEFINITION_REGISTRY.values()) {
             if (!definition.showInJei) {
                 removed.add(definition.getStackForm());
             }

@@ -6,7 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
-import com.cleanroommc.multiblocked.api.registry.MultiblockedItems;
+import com.cleanroommc.multiblocked.api.registry.MbdItems;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import net.minecraft.init.Items;
 
@@ -17,7 +17,8 @@ public class BlueprintTableWidget extends WidgetGroup {
         super(0, 0, 384, 256);
         this.table = table;
         this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_table.png")));
-        this.addWidget(new ButtonWidget(40, 40, 40, 40, new ItemStackTexture(MultiblockedItems.BUILDER), this::templateBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("builder template"));
+        this.addWidget(new ButtonWidget(40, 40, 40, 40, new ItemStackTexture(
+                MbdItems.BUILDER), this::templateBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("builder template"));
         this.addWidget(new ButtonWidget(90, 40, 40, 40, new ItemStackTexture(Items.PAPER), this::recipeMapBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("recipe map"));
         this.addWidget(new ButtonWidget(140, 40, 40, 40, new ItemStackTexture(BlueprintTableTileEntity.tableDefinition.getStackForm()), this::controllerBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("controller block"));
         this.addWidget(new ButtonWidget(40, 90, 40, 40, new ItemStackTexture(BlueprintTableTileEntity.partDefinition.getStackForm()), this::partBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("part block"));

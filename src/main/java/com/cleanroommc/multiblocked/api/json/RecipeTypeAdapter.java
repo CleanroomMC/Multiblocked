@@ -2,7 +2,7 @@ package com.cleanroommc.multiblocked.api.json;
 
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
@@ -45,7 +45,7 @@ public class RecipeTypeAdapter implements JsonSerializer<Recipe>, JsonDeserializ
         JsonObject json = jsonElement.getAsJsonObject();
         ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> builder = new ImmutableMap.Builder<>();
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-            MultiblockCapability<?> capability = MultiblockCapabilities.get(entry.getKey());
+            MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
             if (capability != null) {
                 ImmutableList.Builder<Tuple<Object, Float>> listBuilder = new ImmutableList.Builder<>();
                 for (JsonElement element : entry.getValue().getAsJsonArray()) {

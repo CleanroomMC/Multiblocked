@@ -10,7 +10,7 @@ import crafttweaker.api.util.IAxisAlignedBB;
 import crafttweaker.mc1120.item.MCItemStack;
 import crafttweaker.mc1120.util.MCAxisAlignedBB;
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -112,7 +112,7 @@ public class ComponentDefinition {
     }
 
     public ItemStack getStackForm() {
-        return new ItemStack(MultiblockComponents.COMPONENT_ITEMS_REGISTRY.get(location), 1);
+        return new ItemStack(MbdComponents.COMPONENT_ITEMS_REGISTRY.get(location), 1);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_CT)

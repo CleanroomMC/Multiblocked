@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MultiblockCapabilities {
+public class MbdCapabilities {
     public static FEMultiblockCapability FE;
 
     public static ItemMultiblockCapability ITEM;
@@ -86,7 +86,7 @@ public class MultiblockCapabilities {
                 x = !x;
             }
         }
-        for (MultiblockCapability<?> capability : MultiblockCapabilities.CAPABILITY_REGISTRY.values()) {
+        for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
             capability.initCandidates(tileMap);
             for (IO io : IO.values()) {
                 ComponentDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, capability.name + "." + io.name()));
@@ -94,8 +94,8 @@ public class MultiblockCapabilities {
                 definition.isOpaqueCube = false;
                 definition.allowRotate = false;
                 definition.showInJei = false;
-                MultiblockComponents.registerComponent(definition);
-                MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).setCreativeTab(null);
+                MbdComponents.registerComponent(definition);
+                MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).setCreativeTab(null);
             }
         }
     }

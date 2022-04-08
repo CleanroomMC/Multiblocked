@@ -40,6 +40,11 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     public int index;
     public long lastTime;
 
+    @Override
+    public String getType() {
+        return "CycleBlockState";
+    }
+
     public CycleBlockStateRenderer(IBlockState[] states) {
         super(Blocks.AIR.getDefaultState());
         if (states.length == 0) states = new IBlockState[]{Blocks.AIR.getDefaultState()};

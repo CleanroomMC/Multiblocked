@@ -2,8 +2,8 @@ package com.cleanroommc.multiblocked.client;
 
 import com.cleanroommc.multiblocked.CommonProxy;
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
-import com.cleanroommc.multiblocked.api.registry.MultiblockedItems;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdItems;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.client.model.custommodel.MetadataSectionEmissive;
 import com.cleanroommc.multiblocked.client.particle.ParticleManager;
@@ -26,14 +26,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
-
-    public static List<IRenderer> registerNeeds = new ArrayList<>();
 
     @Override
     public void preInit() {
@@ -45,16 +40,16 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event) {
-        MultiblockComponents.registerModels();
-        MultiblockedItems.registerModels();
+        MbdComponents.registerModels();
+        MbdItems.registerModels();
         ClientRegistry.bindTileEntitySpecialRenderer(ComponentTileEntity.class, new ComponentTESR());
     }
 
     @SubscribeEvent
     public static void registerTextures(TextureStitchEvent.Pre event) {
         TextureMap map = event.getMap();
-        for (IRenderer renderer : registerNeeds) {
-            renderer.register(map);
+        for (IRenderer renderer : IRenderer.registerNeeds) {
+            renderer.onTextureSwitchEvent(map);
         }
     }
 

@@ -11,7 +11,6 @@ import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
-import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
@@ -26,8 +25,8 @@ import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
-import com.cleanroommc.multiblocked.api.registry.MultiblockedItems;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdItems;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
@@ -73,7 +72,8 @@ public class TemplateBuilderWidget extends WidgetGroup {
         this.addWidget(new LabelWidget(200, 34, this::status).setTextColor(-1).setDrop(true));
         this.addWidget(new LabelWidget(200, 49, this::size).setTextColor(-1).setDrop(true));
         this.addWidget(new LabelWidget(200, 64, this::description).setTextColor(-1).setDrop(true));
-        this.addWidget(templateButton = new ButtonWidget(200, 100, 20, 20, new ItemStackTexture(MultiblockedItems.BUILDER), this::onBuildTemplate));
+        this.addWidget(templateButton = new ButtonWidget(200, 100, 20, 20, new ItemStackTexture(
+                MbdItems.BUILDER), this::onBuildTemplate));
         this.addWidget(sceneWidget = (SceneWidget) new SceneWidget(30, 34, 160, 180, null)
                 .useCacheBuffer()
                 .setOnSelected(((pos, facing) -> {
@@ -302,7 +302,7 @@ public class TemplateBuilderWidget extends WidgetGroup {
                             for (int k = 0; k < patternString[0][0].length(); k++) {
                                 char symbol = patternString[i][j].charAt(k);
                                 BlockPos pos = pattern.getActualPosOffset(k - centerOffset[2], j - centerOffset[1], i - centerOffset[0], EnumFacing.NORTH).add(offset, offset, offset);
-                                world.addBlock(pos, new BlockInfo(MultiblockComponents.DummyComponentBlock));
+                                world.addBlock(pos, new BlockInfo(MbdComponents.DummyComponentBlock));
                                 DummyComponentTileEntity tileEntity = (DummyComponentTileEntity) world.getTileEntity(pos);
                                 ComponentDefinition definition = null;
                                 assert tileEntity != null;

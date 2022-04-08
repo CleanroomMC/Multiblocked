@@ -1,10 +1,20 @@
 package com.cleanroommc.multiblocked.client.renderer.impl;
 
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
+import com.cleanroommc.multiblocked.client.renderer.ICustomRenderer;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.client.model.ModelFactory;
 import com.cleanroommc.multiblocked.client.model.custommodel.CustomBakedModel;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelRenderer;
@@ -28,32 +38,43 @@ import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.io.File;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
-import static com.cleanroommc.multiblocked.client.ClientProxy.registerNeeds;
-
-public class IModelRenderer implements IRenderer {
+public class IModelRenderer implements ICustomRenderer {
+    public static final IModelRenderer INSTANCE = new IModelRenderer();
 
     protected static final Set<ResourceLocation> CACHE = new HashSet<>();
 
     public final ResourceLocation modelLocation;
     @SideOnly(Side.CLIENT)
-    protected transient IBakedModel itemModel;
+    protected IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
-    protected transient Map<EnumFacing, CustomBakedModel> blockModels;
+    protected Map<EnumFacing, CustomBakedModel> blockModels;
+
+    protected IModelRenderer() {
+        modelLocation = null;
+    }
 
     public IModelRenderer(ResourceLocation modelLocation) {
         this.modelLocation = modelLocation;
-        checkRegister();
+        if (Multiblocked.isClient()) {
+            if (isRaw()) {
+                registerTextureSwitchEvent();
+                CACHE.add(modelLocation);
+            }
+            blockModels = new EnumMap<>(EnumFacing.class);
+        }
     }
 
     public IModelRenderer checkRegister() {
         if (Multiblocked.isClient()) {
             if (isRaw()) {
-                registerNeeds.add(this);
+                registerTextureSwitchEvent();
                 CACHE.add(modelLocation);
             }
             blockModels = new EnumMap<>(EnumFacing.class);
@@ -121,7 +142,7 @@ public class IModelRenderer implements IRenderer {
     }
 
     @Override
-    public void register(TextureMap map) {
+    public void onTextureSwitchEvent(TextureMap map) {
         blockModels.clear();
         itemModel = null;
         IModel model = getModel();
@@ -133,5 +154,44 @@ public class IModelRenderer implements IRenderer {
     @Override
     public TextureAtlasSprite getParticleTexture() {
         return getItemBakedModel().getParticleTexture();
+    }
+
+    @Override
+    public String getType() {
+        return "IModel";
+    }
+
+    @Override
+    public IRenderer fromJson(Gson gson, JsonObject jsonObject) {
+        return new IModelRenderer(gson.fromJson(jsonObject.get("modelLocation"), ResourceLocation.class));
+    }
+
+    @Override
+    public JsonObject toJson(Gson gson, JsonObject jsonObject) {
+        jsonObject.add("modelLocation", gson.toJsonTree(modelLocation, ResourceLocation.class));
+        return jsonObject;
+    }
+
+    @Override
+    public Supplier<IRenderer> createConfigurator(WidgetGroup parent, DraggableScrollableWidgetGroup group, IRenderer current) {
+        TextFieldWidget tfw = new TextFieldWidget(1,1,150,20,true, null, null);
+        group.addWidget(tfw);
+        File path = new File(Multiblocked.location, "assets/multiblocked/models");
+        group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(parent, "select a java model", path, true,
+                DialogWidget.suffixFilter(".json"), r -> {
+                    if (r != null && r.isFile()) {
+                        tfw.setCurrentString("multiblocked:" + r.getPath().replace(path.getPath(), "").substring(1).replace(".json", "").replace('\\', '/'));
+                    }
+                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
+        if (current instanceof IModelRenderer) {
+            tfw.setCurrentString(((IModelRenderer) current).modelLocation.toString());
+        }
+        return () -> {
+            if (tfw.getCurrentString().isEmpty()) {
+                return null;
+            } else {
+                return new IModelRenderer(new ResourceLocation(tfw.getCurrentString()));
+            }
+        };
     }
 }

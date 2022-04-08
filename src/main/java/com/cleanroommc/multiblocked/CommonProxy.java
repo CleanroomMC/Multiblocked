@@ -8,9 +8,10 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.J
 import com.cleanroommc.multiblocked.api.item.ItemMultiblockBuilder.BuilderRecipeLogic;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
-import com.cleanroommc.multiblocked.api.registry.MultiblockedItems;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdItems;
+import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.events.Listeners;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
@@ -34,14 +35,15 @@ public class CommonProxy {
     public void preInit() {
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.init();
-        MultiblockCapabilities.registerCapabilities();
+        MbdCapabilities.registerCapabilities();
+        MbdRenderers.registerRenderers();
     }
 
     public void init() {
         // register recipe map
         RecipeMap.registerRecipeFromFile(Multiblocked.GSON, new File(Multiblocked.location, "recipe_map"));
         // execute init handler
-        MultiblockComponents.executeInitHandler();
+        MbdComponents.executeInitHandler();
         // register ui
         UIFactory.register(TileEntityUIFactory.INSTANCE);
         // loadCT
@@ -60,13 +62,13 @@ public class CommonProxy {
         if (init) return;
         init = true;
         // register any capability block
-        MultiblockCapabilities.registerAnyCapabilityBlocks();
+        MbdCapabilities.registerAnyCapabilityBlocks();
         // register blueprint table
         BlueprintTableTileEntity.registerBlueprintTable();
         // register JsonBlockPatternBlock
         JsonBlockPatternWidget.registerBlock();
         // register JsonFiles
-        MultiblockComponents.registerComponentFromFile(
+        MbdComponents.registerComponentFromFile(
                 Multiblocked.GSON, 
                 new File(Multiblocked.location, "definition/controller"),
                 ControllerDefinition.class, 
@@ -74,7 +76,7 @@ public class CommonProxy {
                     definition.basePattern = Multiblocked.GSON.fromJson(config.get("basePattern"), JsonBlockPattern.class).build();
                     definition.recipeMap = RecipeMap.RECIPE_MAP_REGISTRY.getOrDefault(config.get("recipeMap").getAsString(), RecipeMap.EMPTY);
                 });
-        MultiblockComponents.registerComponentFromFile(
+        MbdComponents.registerComponentFromFile(
                 Multiblocked.GSON,
                 new File(Multiblocked.location, "definition/part"),
                 PartDefinition.class, null);
@@ -148,14 +150,14 @@ public class CommonProxy {
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         registerComponents();
         IForgeRegistry<Block> registry = event.getRegistry();
-        MultiblockComponents.registerBlocks(registry);
+        MbdComponents.registerBlocks(registry);
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
-        MultiblockComponents.COMPONENT_ITEMS_REGISTRY.values().forEach(registry::register);
-        MultiblockedItems.registerItems(registry);
+        MbdComponents.COMPONENT_ITEMS_REGISTRY.values().forEach(registry::register);
+        MbdItems.registerItems(registry);
     }
 
     @SubscribeEvent

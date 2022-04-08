@@ -1,16 +1,17 @@
 package com.cleanroommc.multiblocked.api.json;
 
+import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
+import com.cleanroommc.multiblocked.client.renderer.ICustomRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.cleanroommc.multiblocked.Multiblocked;
 
 public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
     public static final IRendererTypeAdapterFactory INSTANCE = new IRendererTypeAdapterFactory();
@@ -18,8 +19,10 @@ public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-        if (!IRenderer.class.equals(type.getRawType())) return null;
-        return (TypeAdapter<T>) new IRendererTypeAdapter(gson);
+        if (IRenderer.class.isAssignableFrom(type.getRawType())) {
+            return (TypeAdapter<T>) new IRendererTypeAdapter(gson);
+        }
+        return null;
     }
 
     private static final class IRendererTypeAdapter extends TypeAdapter<IRenderer> {
@@ -32,19 +35,13 @@ public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
 
         @Override
         public void write(final JsonWriter out, final IRenderer value) {
-            JsonElement jsonElement = gson.toJsonTree(value);
-            if (value instanceof BlockStateRenderer) {
-                jsonElement.getAsJsonObject().addProperty("type", "BlockState");
-            } else if (value instanceof B3DRenderer) {
-                jsonElement.getAsJsonObject().addProperty("type", "B3D");
-            } else if (value instanceof OBJRenderer) {
-                jsonElement.getAsJsonObject().addProperty("type", "OBJ");
-            } else if (value instanceof IModelRenderer) {
-                jsonElement.getAsJsonObject().addProperty("type", "IModel");
-            } else if (value instanceof TextureParticleRenderer) {
-                jsonElement.getAsJsonObject().addProperty("type", "TParticle");
+            if (value instanceof ICustomRenderer) {
+                JsonObject jsonObject = ((ICustomRenderer) value).toJson(gson, new JsonObject());
+                jsonObject.addProperty("type", ((ICustomRenderer) value).getType());
+                gson.toJson(jsonObject, out);
+            } else {
+                gson.toJson(JsonNull.INSTANCE, out);
             }
-            gson.toJson(jsonElement, out);
         }
 
         @Override
@@ -52,23 +49,12 @@ public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
             final JsonElement jsonElement = gson.fromJson(in, JsonElement.class);
             if (jsonElement.isJsonNull()) return null;
             JsonObject jsonObj = jsonElement.getAsJsonObject();
-            final String className = jsonObj.get("type").getAsString();
-            switch ( className ) {
-                case "BlockState":
-                    return gson.fromJson(jsonElement, BlockStateRenderer.class);
-                case "B3D":
-                    return gson.fromJson(jsonElement, B3DRenderer.class).checkRegister();
-                case "IModel":
-                    return gson.fromJson(jsonElement, IModelRenderer.class).checkRegister();
-                case "OBJ":
-                    return gson.fromJson(jsonElement, OBJRenderer.class).checkRegister();
-                case "TParticle":
-                    return gson.fromJson(jsonElement, TextureParticleRenderer.class);
-                case "Geo":
-                    return Multiblocked.isModLoaded(Multiblocked.MODID_GEO) ? new GeoComponentRenderer(jsonObj.get("modelName").getAsString()) : null;
-                default:
-                    return null;
+            final String type = jsonObj.get("type").getAsString();
+            ICustomRenderer renderer = MbdRenderers.RENDERER_REGISTRY.get(type);
+            if (renderer != null) {
+                return renderer.fromJson(gson, jsonObj);
             }
+            return null;
         }
 
     }

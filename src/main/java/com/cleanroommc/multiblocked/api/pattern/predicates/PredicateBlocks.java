@@ -36,7 +36,7 @@ public class PredicateBlocks extends SimplePredicate {
     @Override
     public SimplePredicate buildPredicate() {
         blocks = Arrays.stream(blocks).filter(Objects::nonNull).toArray(Block[]::new);
-        if (blocks.length == 0) blocks = new Block[]{Blocks.GLASS};
+        if (blocks.length == 0) blocks = new Block[]{Blocks.BARRIER};
         predicate = state -> ArrayUtils.contains(blocks, state.getBlockState().getBlock());
         candidates = () -> Arrays.stream(blocks).map(block -> new BlockInfo(block.getDefaultState(), null)).toArray(BlockInfo[]::new);
         return this;

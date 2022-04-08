@@ -1,7 +1,14 @@
 package com.cleanroommc.multiblocked.client.renderer.impl;
 
+import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.BlockSelectorWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
+import com.cleanroommc.multiblocked.client.renderer.ICustomRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.util.FacadeBlockAccess;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -10,6 +17,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.init.Blocks;
@@ -24,20 +32,30 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
-public class BlockStateRenderer implements IRenderer {
-    private final IBlockState state;
+public class BlockStateRenderer implements ICustomRenderer {
+    public final static BlockStateRenderer INSTANCE = new BlockStateRenderer();
+
+    public final IBlockState state;
     @SideOnly(Side.CLIENT)
-    private transient IBakedModel itemModel;
+    private IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
-    private transient TileEntity tileEntity;
+    private TileEntity tileEntity;
+
+    private BlockStateRenderer() {
+        state = null;
+    }
 
     public BlockStateRenderer(IBlockState state) {
-        this.state = state;
+        this.state = state == null ? Blocks.BARRIER.getDefaultState() : state;
+        if (Multiblocked.isClient()) {
+            registerTextureSwitchEvent();
+        }
     }
 
     public IBlockState getState() {
-        return state == null ? Blocks.STONE.getDefaultState() : state;
+        return state == null ? Blocks.BARRIER.getDefaultState() : state;
     }
 
     @SideOnly(Side.CLIENT)
@@ -140,9 +158,46 @@ public class BlockStateRenderer implements IRenderer {
     }
 
     @Override
+    public void onTextureSwitchEvent(TextureMap map) {
+        itemModel = null;
+    }
+
+    @Override
     public TextureAtlasSprite getParticleTexture() {
         IBlockState state = getState();
         ItemStack renderItem = new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, state.getBlock().damageDropped(state));
         return getItemModel(renderItem).getParticleTexture();
+    }
+
+    @Override
+    public String getType() {
+        return "BlockState";
+    }
+
+    @Override
+    public IRenderer fromJson(Gson gson, JsonObject jsonObject) {
+        return new BlockStateRenderer(gson.fromJson(jsonObject.get("state"), IBlockState.class));
+    }
+
+    @Override
+    public JsonObject toJson(Gson gson, JsonObject jsonObject) {
+        jsonObject.add("state", gson.toJsonTree(state, IBlockState.class));
+        return jsonObject;
+    }
+
+    @Override
+    public Supplier<IRenderer> createConfigurator(WidgetGroup parent, DraggableScrollableWidgetGroup group, IRenderer current) {
+        BlockSelectorWidget blockSelectorWidget = new BlockSelectorWidget(0, 1, true);
+        if (current instanceof BlockStateRenderer) {
+            blockSelectorWidget.setBlock(((BlockStateRenderer) current).getState());
+        }
+        group.addWidget(blockSelectorWidget);
+        return () -> {
+            if (blockSelectorWidget.getBlock() == null) {
+                return null;
+            } else {
+                return new BlockStateRenderer(blockSelectorWidget.getBlock());
+            }
+        };
     }
 }

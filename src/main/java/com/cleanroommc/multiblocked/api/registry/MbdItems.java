@@ -7,7 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class MultiblockedItems {
+public class MbdItems {
     public static ItemBlueprint BLUEPRINT = new ItemBlueprint();
     public static ItemMultiblockBuilder BUILDER = new ItemMultiblockBuilder();
 

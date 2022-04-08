@@ -20,7 +20,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.GlStateManager;
@@ -293,7 +293,7 @@ public class RecipeMapWidget extends DialogWidget {
 
         private void addContent(Map<MultiblockCapability<?>, List<ContentWidget<?>>> contents, int mouseX, int mouseY) {
             if (contentCandidates != null) RecipeMapWidget.this.waitToRemoved(contentCandidates);
-            Collection<MultiblockCapability<?>> capabilities = MultiblockCapabilities.CAPABILITY_REGISTRY.values();
+            Collection<MultiblockCapability<?>> capabilities = MbdCapabilities.CAPABILITY_REGISTRY.values();
             int size = capabilities.size();
             contentCandidates = new WidgetGroup(mouseX + 10 - Math.min(size, 5) * 10, mouseY + 25, Math.min(size, 5) * 20, (1 + size / 5) * 20);
             contentCandidates.addWidget(new ImageWidget(-2, -2, contentCandidates.getSize().width + 4, contentCandidates.getSize().height + 4,

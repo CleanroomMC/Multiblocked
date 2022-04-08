@@ -6,7 +6,7 @@ import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
 import com.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import crafttweaker.api.data.IData;
@@ -161,7 +161,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public IRenderer getRenderer() {
         IRenderer lastRenderer = currentRenderer;
         currentRenderer = updateCurrentRenderer();
-        if (lastRenderer != currentRenderer) {
+        if (lastRenderer != currentRenderer && Multiblocked.isClient()) {
             if (lastRenderer != null) {
                 lastRenderer.onPostAccess(this);
             }
@@ -307,7 +307,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public void receiveInitialSyncData(PacketBuffer buf) {
-        setDefinition(MultiblockComponents.DEFINITION_REGISTRY.get(new ResourceLocation(buf.readString(Short.MAX_VALUE))));
+        setDefinition(MbdComponents.DEFINITION_REGISTRY.get(new ResourceLocation(buf.readString(Short.MAX_VALUE))));
         this.frontFacing = EnumFacing.VALUES[buf.readByte()];
         status = buf.readString(Short.MAX_VALUE);
         if (buf.readBoolean()) { // ct
@@ -360,7 +360,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @Override
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
-        setDefinition(MultiblockComponents.DEFINITION_REGISTRY.get(new ResourceLocation(compound.getString("loc"))));
+        setDefinition(MbdComponents.DEFINITION_REGISTRY.get(new ResourceLocation(compound.getString("loc"))));
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
         if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
             persistentData = CraftTweakerMC.getIData(compound.getTag("ct_persistent"));

@@ -6,7 +6,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
 import net.minecraft.tileentity.TileEntity;
@@ -64,7 +64,7 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
     public static class FECapabilityProxy extends CapCapabilityProxy<IEnergyStorage, Integer> {
 
         public FECapabilityProxy(TileEntity tileEntity) {
-            super(MultiblockCapabilities.FE, tileEntity, CapabilityEnergy.ENERGY);
+            super(MbdCapabilities.FE, tileEntity, CapabilityEnergy.ENERGY);
         }
 
         @Override

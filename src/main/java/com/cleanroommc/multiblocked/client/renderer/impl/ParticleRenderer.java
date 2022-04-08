@@ -3,8 +3,10 @@ package com.cleanroommc.multiblocked.client.renderer.impl;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.client.particle.AbstractParticle;
 import com.cleanroommc.multiblocked.client.particle.IParticle;
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.ICustomRenderer;
 import com.cleanroommc.multiblocked.util.world.DummyWorld;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
@@ -18,7 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-public abstract class ParticleRenderer implements IRenderer {
+public abstract class ParticleRenderer implements ICustomRenderer {
 
     public boolean isBackLayer = true;
     public boolean isAddBlend;
@@ -125,4 +127,11 @@ public abstract class ParticleRenderer implements IRenderer {
         RenderHelper.enableStandardItemLighting();
     }
 
+    @Override
+    public JsonObject toJson(Gson gson, JsonObject jsonObject) {
+        jsonObject.addProperty("isBackLayer", isBackLayer);
+        jsonObject.addProperty("isAddBlend", isAddBlend);
+        jsonObject.addProperty("renderRange", renderRange);
+        return jsonObject;
+    }
 }

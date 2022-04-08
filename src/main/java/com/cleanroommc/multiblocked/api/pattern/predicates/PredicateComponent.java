@@ -8,7 +8,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import net.minecraft.util.ResourceLocation;
 
@@ -38,13 +38,14 @@ public class PredicateComponent extends SimplePredicate {
     public SimplePredicate buildPredicate() {
         predicate = state -> state.getBlockState().getBlock() instanceof BlockComponent && ((BlockComponent) state.getBlockState().getBlock()).definition.location.equals(location);
         candidates = () -> {
-            if (MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.containsKey(location)) {
-                return new BlockInfo[]{new BlockInfo(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(location).getDefaultState(), MultiblockComponents.DEFINITION_REGISTRY.get(location).createNewTileEntity(null))};
+            if (MbdComponents.COMPONENT_BLOCKS_REGISTRY.containsKey(location)) {
+                return new BlockInfo[]{new BlockInfo(
+                        MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(location).getDefaultState(), MbdComponents.DEFINITION_REGISTRY.get(location).createNewTileEntity(null))};
             } else {
                 if (definition == null) return new BlockInfo[0];
                 DummyComponentTileEntity te = new DummyComponentTileEntity();
                 te.setDefinition(definition);
-                return new BlockInfo[]{new BlockInfo(MultiblockComponents.DummyComponentBlock.getDefaultState(), te)};
+                return new BlockInfo[]{new BlockInfo(MbdComponents.DummyComponentBlock.getDefaultState(), te)};
             }
         };
         return this;

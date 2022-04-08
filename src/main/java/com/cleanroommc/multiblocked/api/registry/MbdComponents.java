@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public class MultiblockComponents {
+public class MbdComponents {
     public static final Set<Class <? extends TileEntity>> CLASS_SET = new HashSet<>();
     public static final BiMap<ResourceLocation, ComponentDefinition> DEFINITION_REGISTRY = HashBiMap.create();
     public static final BiMap<ResourceLocation, BlockComponent> COMPONENT_BLOCKS_REGISTRY = HashBiMap.create();

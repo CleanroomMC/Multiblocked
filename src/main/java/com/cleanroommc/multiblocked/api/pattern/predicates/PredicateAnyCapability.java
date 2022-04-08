@@ -7,13 +7,12 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
@@ -44,7 +43,7 @@ public class PredicateAnyCapability extends SimplePredicate {
 
     @Override
     public SimplePredicate buildPredicate() {
-        MultiblockCapability<?> capability = MultiblockCapabilities.get(this.capability);
+        MultiblockCapability<?> capability = MbdCapabilities.get(this.capability);
         predicate = state -> state.getBlockState().getBlock() == capability.getAnyBlock(io) || checkCapability(io, capability, state);
         candidates = () -> new BlockInfo[]{new BlockInfo(capability.getAnyBlock(io))};
         return this;
@@ -73,7 +72,7 @@ public class PredicateAnyCapability extends SimplePredicate {
         super.getConfigWidget(groups);
         WidgetGroup group = new WidgetGroup(0, 0, 100, 20);
         groups.add(group);
-        group.addWidget(new SelectorWidget(0, 0, 40, 20, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), 0xff333333)
+        group.addWidget(new SelectorWidget(0, 0, 40, 20, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
                 .setValue(io.name())
                 .setOnChanged(io-> {
                     this.io = IO.valueOf(io);
@@ -82,7 +81,8 @@ public class PredicateAnyCapability extends SimplePredicate {
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
                 .setHoverTooltip("IO"));
-        group.addWidget(new SelectorWidget(50, 0, 40, 20, new ArrayList<>(MultiblockCapabilities.CAPABILITY_REGISTRY.keySet()), 0xff333333)
+        group.addWidget(new SelectorWidget(50, 0, 120, 20, new ArrayList<>(
+                MbdCapabilities.CAPABILITY_REGISTRY.keySet()), -1)
                 .setValue(capability)
                 .setOnChanged(capability-> {
                     this.capability = capability;

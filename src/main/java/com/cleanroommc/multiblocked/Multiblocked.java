@@ -6,7 +6,6 @@ import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
-import com.cleanroommc.multiblocked.client.renderer.impl.GeoComponentRenderer;
 import com.cleanroommc.multiblocked.command.CommandClient;
 import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.google.gson.Gson;
@@ -14,7 +13,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
 import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
-import com.cleanroommc.multiblocked.api.json.GeoComponentRendererTypeAdapter;
 import com.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
 import com.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
 import com.cleanroommc.multiblocked.api.json.ItemStackTypeAdapter;
@@ -64,8 +62,18 @@ public class Multiblocked {
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
+    public static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
+            .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
+            .registerTypeAdapterFactory(BlockTypeAdapterFactory.INSTANCE)
+            .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
+            .registerTypeAdapter(FluidStack.class, FluidStackTypeAdapter.INSTANCE)
+            .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
+            .registerTypeAdapter(Recipe.class, RecipeTypeAdapter.INSTANCE)
+            .registerTypeAdapter(RecipeMap.class, RecipeMapTypeAdapter.INSTANCE)
+            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+            .create();
     public static File location;
-    public static Gson GSON;
 
     @Mod.Instance(Multiblocked.MODID)
     public static Multiblocked instance;
@@ -107,20 +115,6 @@ public class Multiblocked {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        GsonBuilder gsonBuilder = new GsonBuilder()
-                .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
-                .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
-                .registerTypeAdapterFactory(BlockTypeAdapterFactory.INSTANCE)
-                .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
-                .registerTypeAdapter(FluidStack.class, FluidStackTypeAdapter.INSTANCE)
-                .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
-                .registerTypeAdapter(Recipe.class, RecipeTypeAdapter.INSTANCE)
-                .registerTypeAdapter(RecipeMap.class, RecipeMapTypeAdapter.INSTANCE)
-                .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
-        if (isModLoaded(MODID_GEO)) {
-            gsonBuilder.registerTypeAdapter(GeoComponentRenderer.class, GeoComponentRendererTypeAdapter.INSTANCE);
-        }
-        GSON = gsonBuilder.setLenient().create();
         proxy.preInit();
     }
 

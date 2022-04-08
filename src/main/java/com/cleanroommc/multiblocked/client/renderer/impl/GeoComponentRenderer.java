@@ -1,8 +1,18 @@
 package com.cleanroommc.multiblocked.client.renderer.impl;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import com.cleanroommc.multiblocked.client.renderer.ICustomRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -11,6 +21,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -38,10 +49,14 @@ import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 import software.bernie.geckolib3.resource.GeckoLibCache;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
-public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.ComponentFactory> implements IRenderer, IGeoRenderer<GeoComponentRenderer.ComponentFactory> {
+public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.ComponentFactory> implements ICustomRenderer, IGeoRenderer<GeoComponentRenderer.ComponentFactory> {
+    public final static GeoComponentRenderer INSTANCE = new GeoComponentRenderer(null, false);
 
     static {
         if (Multiblocked.isClient()) {
@@ -56,11 +71,13 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     }
 
     public final String modelName;
+    public final boolean isGlobal;
     @SideOnly(Side.CLIENT)
     private ComponentFactory itemFactory;
 
-    public GeoComponentRenderer(String modelName) {
+    public GeoComponentRenderer(String modelName, boolean isGlobal) {
         this.modelName = modelName;
+        this.isGlobal = isGlobal;
     }
 
     @SideOnly(Side.CLIENT)
@@ -93,7 +110,52 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
 
     @Override
     public boolean isGlobalRenderer(@Nonnull TileEntity te) {
-        return true;
+        return isGlobal;
+    }
+
+    @Override
+    public String getType() {
+        return "Geo";
+    }
+
+    @Override
+    public IRenderer fromJson(Gson gson, JsonObject jsonObject) {
+        return new GeoComponentRenderer(jsonObject.get("modelName").getAsString(), JsonUtils.getBoolean(jsonObject, "isGlobal", false));
+    }
+
+    @Override
+    public JsonObject toJson(Gson gson, JsonObject jsonObject) {
+        jsonObject.addProperty("modelName", modelName);
+        if (isGlobal) {
+            jsonObject.addProperty("isGlobal", true);
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public Supplier<IRenderer> createConfigurator(WidgetGroup parent, DraggableScrollableWidgetGroup group, IRenderer current) {
+        TextFieldWidget tfw = new TextFieldWidget(1, 1, 150, 20, true, null, null);
+        File path = new File(Multiblocked.location, "assets/multiblocked/geo");
+        AtomicBoolean isGlobal = new AtomicBoolean(false);
+        if (current instanceof GeoComponentRenderer) {
+            tfw.setCurrentString(((GeoComponentRenderer) current).modelName);
+            isGlobal.set(((GeoComponentRenderer) current).isGlobal);
+        }
+        group.addWidget(new ButtonWidget(155, 1, 20, 20, cd -> DialogWidget.showFileDialog(parent, "select a geo file", path, true,
+                DialogWidget.suffixFilter(".geo.json"), r -> {
+                    if (r != null && r.isFile()) {
+                        tfw.setCurrentString(r.getName().replace(".geo.json", ""));
+                    }
+                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
+        group.addWidget(tfw);
+        group.addWidget(createBoolSwitch(1,25, "isGlobal", "Whether global rendering is required. Do it if your model is large enough", isGlobal.get(), isGlobal::set));
+        return () -> {
+            if (tfw.getCurrentString().isEmpty()) {
+                return null;
+            } else {
+                return new GeoComponentRenderer(tfw.getCurrentString(), isGlobal.get());
+            }
+        };
     }
 
     @Override

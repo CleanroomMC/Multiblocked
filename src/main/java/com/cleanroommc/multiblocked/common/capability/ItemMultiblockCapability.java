@@ -7,7 +7,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.ItemsContentWidget;
 import com.google.gson.*;
 import net.minecraft.init.Items;
@@ -79,7 +79,7 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
     public static class ItemCapabilityProxy extends CapCapabilityProxy<IItemHandler, ItemsIngredient> {
 
         public ItemCapabilityProxy(TileEntity tileEntity) {
-            super(MultiblockCapabilities.ITEM, tileEntity, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+            super(MbdCapabilities.ITEM, tileEntity, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         }
 
         @Override

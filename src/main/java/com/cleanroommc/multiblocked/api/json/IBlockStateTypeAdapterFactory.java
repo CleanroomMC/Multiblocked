@@ -18,8 +18,10 @@ public class IBlockStateTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-        if (!IBlockState.class.equals(type.getRawType())) return null;
-        return (TypeAdapter<T>) new IBlockStateTypeAdapter(gson);
+        if (IBlockState.class.isAssignableFrom(type.getRawType())) {
+            return (TypeAdapter<T>) new IBlockStateTypeAdapter(gson);
+        }
+        return null;
     }
 
     private static final class IBlockStateTypeAdapter extends TypeAdapter<IBlockState> {

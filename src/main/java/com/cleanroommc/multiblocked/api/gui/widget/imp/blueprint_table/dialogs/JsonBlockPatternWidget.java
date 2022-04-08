@@ -9,7 +9,7 @@ import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
@@ -362,8 +362,8 @@ public class JsonBlockPatternWidget extends DialogWidget {
         PartDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "symbol"), SymbolTileEntity.class);
         definition.isOpaqueCube = false;
         definition.showInJei = false;
-        MultiblockComponents.registerComponent(definition);
-        symbolBlock = MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location);
+        MbdComponents.registerComponent(definition);
+        symbolBlock = MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location);
         symbolBlock.setCreativeTab(null);
     }
 

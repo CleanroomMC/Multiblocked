@@ -18,7 +18,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
@@ -291,7 +291,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             for (NBTBase base : tagList) {
                 NBTTagCompound tag = (NBTTagCompound) base;
                 settings.computeIfAbsent(tag.getLong("pos"), l->new HashMap<>())
-                        .put(MultiblockCapabilities.get(tag.getString("cap")),
+                        .put(MbdCapabilities.get(tag.getString("cap")),
                                 IO.VALUES[tag.getInteger("io")]);
             }
         }

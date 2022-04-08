@@ -6,7 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializer;
@@ -133,7 +133,7 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     }
 
     public final BlockComponent getAnyBlock(IO io) {
-        return MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation(Multiblocked.MODID, name + "." + io.name()));
+        return MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation(Multiblocked.MODID, name + "." + io.name()));
     }
 
     public final JsonElement serialize(Object obj) {

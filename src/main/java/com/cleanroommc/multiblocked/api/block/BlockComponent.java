@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.api.block;
 
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.model.IModelSupplier;
 import com.cleanroommc.multiblocked.client.model.SimpleStateMapper;
 import com.cleanroommc.multiblocked.client.particle.MCParticleHandler;
@@ -220,7 +220,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public void getSubBlocks(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-        items.add(new ItemStack(MultiblockComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location), 1));
+        items.add(new ItemStack(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location), 1));
     }
 
     @Override

@@ -6,8 +6,8 @@ import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.BlueprintTableWidget;
 import com.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.Predicates;
-import com.cleanroommc.multiblocked.api.registry.MultiblockCapabilities;
-import com.cleanroommc.multiblocked.api.registry.MultiblockComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
@@ -50,7 +50,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
 
     public static void registerBlueprintTable() {
         tableDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table"), BlueprintTableTileEntity.class);
-        tableDefinition.recipeMap.inputCapabilities.add(MultiblockCapabilities.ITEM);
+        tableDefinition.recipeMap.inputCapabilities.add(MbdCapabilities.ITEM);
         tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"));
         tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"));
         tableDefinition.isOpaqueCube = false;
@@ -68,9 +68,9 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .where(' ', Predicates.any())
                 .where('T', Predicates.component(tableDefinition))
                 .where('P', Predicates.component(partDefinition).disableRenderFormed())
-                .where('C', Predicates.anyCapability(IO.BOTH, MultiblockCapabilities.ITEM).disableRenderFormed())
+                .where('C', Predicates.anyCapability(IO.BOTH, MbdCapabilities.ITEM).disableRenderFormed())
                 .build();
-        MultiblockComponents.registerComponent(tableDefinition);
-        MultiblockComponents.registerComponent(partDefinition);
+        MbdComponents.registerComponent(tableDefinition);
+        MbdComponents.registerComponent(partDefinition);
     }
 }

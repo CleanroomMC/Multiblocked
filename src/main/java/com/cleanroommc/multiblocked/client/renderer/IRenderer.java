@@ -15,10 +15,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 @ZenClass("mods.multiblocked.client.IRenderer")
 @ZenRegister
 public interface IRenderer {
+
+    List<IRenderer> registerNeeds = new ArrayList<>();
+
+    @SideOnly(Side.CLIENT)
+    default void registerTextureSwitchEvent() {
+        registerNeeds.add(this);
+    }
 
     @SideOnly(Side.CLIENT)
     default boolean isRaw() {
@@ -37,7 +46,7 @@ public interface IRenderer {
     boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer);
 
     @SideOnly(Side.CLIENT)
-    default void register(TextureMap map) {
+    default void onTextureSwitchEvent(TextureMap map) {
 
     }
 
@@ -69,10 +78,12 @@ public interface IRenderer {
 
     //************* Event *************//
 
+    @SideOnly(Side.CLIENT)
     default void onPreAccess(TileEntity te) {
 
     }
 
+    @SideOnly(Side.CLIENT)
     default void onPostAccess(TileEntity te) {
 
     }

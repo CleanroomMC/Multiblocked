@@ -47,8 +47,8 @@ public class SceneWidget extends WidgetGroup {
     protected int currentMouseX;
     protected int currentMouseY;
     protected Vector3f center;
-    protected float rotationYaw = 45;
-    protected float rotationPitch = 45;
+    protected float rotationYaw = 25;
+    protected float rotationPitch = -135;
     protected float zoom = 5;
     protected BlockPosFace clickPosFace;
     protected BlockPosFace hoverPosFace;

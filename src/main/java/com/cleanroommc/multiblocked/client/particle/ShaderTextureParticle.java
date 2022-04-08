@@ -52,7 +52,7 @@ public class ShaderTextureParticle extends CommonParticle {
 
     public static class FBOShaderHandler implements IParticleHandler {
         protected final Shader shader;
-        private final static Framebuffer FBO = new Framebuffer(1024, 1024, false);
+        public final static Framebuffer FBO = new Framebuffer(1024, 1024, false);
         private static final IntBuffer VIEWPORT_BUFFER = ByteBuffer.allocateDirect(16 * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
 
         static {

@@ -72,8 +72,11 @@ public class SPacketCommand implements IPacket {
             ParticleManager.INSTANCE.addEffect(particle2);
 
         } else if (cmd.equals("mbd_reload_shaders")) {
+
             Shaders.reload();
             ShaderTextureParticle.clearShaders();
+            ShaderTextureParticle.FBOShaderHandler.FBO.deleteFramebuffer();
+            ShaderTextureParticle.FBOShaderHandler.FBO.createFramebuffer(1024, 1024);
         }
         return null;
     }

@@ -34,7 +34,6 @@ public class MultiblockState {
     public Map<SimplePredicate, Integer> globalCount;
     public TraceabilityPredicate predicate;
     public PatternError error;
-    public ControllerTileEntity controller;
     public final World world;
     public final BlockPos controllerPos;
 
@@ -62,12 +61,11 @@ public class MultiblockState {
     }
 
     public ControllerTileEntity getController() {
-        if (controller != null && !controller.isInvalid()) return controller;
         TileEntity tileEntity = world.getTileEntity(controllerPos);
         if (tileEntity instanceof ControllerTileEntity) {
-            controller = (ControllerTileEntity) tileEntity;
+            return (ControllerTileEntity) tileEntity;
         }
-        return controller;
+        return null;
     }
 
     public boolean isFormed() {
@@ -134,25 +132,27 @@ public class MultiblockState {
     }
 
     public void onBlockStateChanged(BlockPos pos) {
-        if (pos.equals(controllerPos)) {
-            if (getController() != null) {
+        ControllerTileEntity controller = getController();
+        if (controller != null) {
+            if (pos.equals(controllerPos)) {
                 MultiblockState state = controller.state;
                 if (state != null && state.getMatchContext().containsKey("renderMask")) {
                     MultiblockedNetworking.sendToWorld(new SPacketRemoveDisabledRendering(state.controllerPos), controller.getWorld());
                 }
                 controller.onStructureInvalid();
-            }
-            MultiblockWorldSavedData.getOrCreate(world).removeMapping(this);
-        } else if (getController() != null && error != UNLOAD_ERROR) {
-            if (!controller.checkPattern()) {
-                controller.onStructureInvalid();
                 MultiblockWorldSavedData.getOrCreate(world).removeMapping(this);
+            } else if (error != UNLOAD_ERROR) {
+                if (!controller.checkPattern()) {
+                    controller.onStructureInvalid();
+                    MultiblockWorldSavedData.getOrCreate(world).removeMapping(this);
+                }
             }
         }
     }
 
     public void onChunkLoad() {
-        if (getController() != null) {
+        ControllerTileEntity controller = getController();
+        if (controller != null) {
             if (controller.checkPattern()) {
                 MultiblockWorldSavedData.getOrCreate(world).addLoading(controller);
                 if (controller.getCapabilities() == null) {
@@ -165,7 +165,8 @@ public class MultiblockState {
     }
 
     public void onChunkUnload() {
-        if (getController() != null) {
+        ControllerTileEntity controller = getController();
+        if (controller != null) {
             error = UNLOAD_ERROR;
             MultiblockWorldSavedData.getOrCreate(world).removeLoading(controller);
         }

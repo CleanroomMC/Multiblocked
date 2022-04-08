@@ -15,9 +15,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -219,6 +218,17 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     @Override
     @SideOnly(Side.CLIENT)
     public void renderRecursively(BufferBuilder builder, GeoBone bone, float red, float green, float blue, float alpha) {
+        boolean isEmissive = bone.name.equals("emissive");
+        float lastBrightnessX = 0;
+        float lastBrightnessY = 0;
+        if (isEmissive) {
+            Tessellator.getInstance().draw();
+            lastBrightnessX = OpenGlHelper.lastBrightnessX;
+            lastBrightnessY = OpenGlHelper.lastBrightnessY;
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+            builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+
+        }
         int pass = MinecraftForgeClient.getRenderPass();
         if (pass < 0) {
             rawRenderRecursively(builder, bone, red, green, blue, alpha);
@@ -259,6 +269,11 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
                 }
             }
             MATRIX_STACK.pop();
+        }
+        if (isEmissive) {
+            Tessellator.getInstance().draw();
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastBrightnessX, lastBrightnessY);
+            builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
         }
     }
 

@@ -51,7 +51,6 @@ public class IRendererWidget extends DialogWidget {
         this.addWidget(new ImageWidget(35, 59, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
         this.addWidget(new SceneWidget(35, 59,  138, 138, world)
                 .setRenderedCore(Collections.singleton(BlockPos.ORIGIN), null)
-                .setCameraYawAndPitch(25, -135)
                 .setRenderSelect(false)
                 .setRenderFacing(false));
         this.addWidget(group = new DraggableScrollableWidgetGroup(181, 80, 180, 120));

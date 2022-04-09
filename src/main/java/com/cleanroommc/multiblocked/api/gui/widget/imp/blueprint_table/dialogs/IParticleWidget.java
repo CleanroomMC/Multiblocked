@@ -1,6 +1,6 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
-import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.crafttweaker.CTHelper;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
@@ -10,23 +10,51 @@ import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.client.particle.CommonParticle;
-import com.cleanroommc.multiblocked.client.particle.ShaderTextureParticle;
+import com.cleanroommc.multiblocked.client.particle.ParticleManager;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import com.cleanroommc.multiblocked.util.FileUtility;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.vecmath.Vector3f;
+import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.Collections;
 
 public class IParticleWidget extends DialogWidget {
-    public SceneWidget sceneWidget;
+    private final static String HELP =
+            "import mods.multiblocked.MBDParticle;\n" +
+                    "\n" +
+                    "§2import§r crafttweaker.world.IWorld;\n" +
+                    "§2import§r crafttweaker.util.IRandom;\n" +
+                    "\n" +
+                    "§3val§r world = MBDParticle.getWorld();\n" +
+                    "§3val§r rand = world.random;\n" +
+                    "\n" +
+                    "§3val§r particle = MBDParticle.texture(world, 0.5, 2, 0.5, true);\n" +
+                    "particle.setTexture(\"multiblocked:start\");\n" +
+                    "particle.setBackLayer(true);\n" +
+                    "particle.setScale(16);\n" +
+                    "particle.setLightingMap(15, 15);\n" +
+                    "particle.setImmortal();\n" +
+                    "particle.create();\n";
+
+    @SideOnly(Side.CLIENT)
+    private static SceneWidget GLOBAL;
+    private final SceneWidget sceneWidget;
+    private final TextFieldWidget textFieldWidget;
+    private final TextBoxWidget textBox;
+    private final DraggableScrollableWidgetGroup tfGroup;
 
     public IParticleWidget(WidgetGroup parent) {
         super(parent, true);
@@ -46,62 +74,59 @@ public class IParticleWidget extends DialogWidget {
                 .setCenter(new Vector3f(0.5f, 2.5f, 0.5f))
                 .setRenderSelect(false)
                 .setRenderFacing(false));
-        this.addWidget(new ButtonWidget(285, 55, 40, 20, this::onUpdate)
+        this.addWidget(new ButtonWidget(305, 55, 40, 20, this::execute)
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("update"));
+                .setHoverTooltip("execute"));
+
+        String init = "import mods.multiblocked.MBDRegistry;";
+        try {
+            InputStream inputstream = IParticleWidget.class.getResourceAsStream("/assets/multiblocked/demo/particle.zs");
+            init = FileUtility.readInputStream(inputstream);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        textFieldWidget = new TextFieldWidget(181, 55, 120, 20, true, null, null)
+                .setAllowEnter(true)
+                .setCurrentString(init);
+        tfGroup = new DraggableScrollableWidgetGroup(181, 80, 170, 120)
+                .setBackground(new ColorRectTexture(0x3faaaaaa))
+                .setYScrollBarWidth(4)
+                .setYBarStyle(null, new ColorRectTexture(-1));
+        textBox = new TextBoxWidget(0, 0, 165, Collections.singletonList(init)).setFontColor(-1).setShadow(true);
+        tfGroup.addWidget(textBox);
+        this.addWidget(tfGroup);
+        this.addWidget(textFieldWidget);
+
+        this.addWidget(new ButtonWidget(305, 15, 40, 20, cd -> new DialogWidget(this, true)
+                .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xdf000000)))
+                .addWidget(new TextBoxWidget(2, 2, getSize().width - 4, Collections.singletonList(HELP)).setFontColor(-1).setShadow(true))
+                .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorBorderTexture(1, -1))))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("help", -1).setDropShadow(true))
+                .setHoverBorderTexture(1, -1)
+                .setHoverTooltip("help"));
     }
 
-    private void onUpdate(ClickData clickData) {
-        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "textures/fx/fx.png");
-        Random rand = Multiblocked.RNG;
-        for (int i = 0; i < 20; i++) {
-            CommonParticle particle = new CommonParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
-            particle.setMotion(
-                    (rand.nextFloat() * 2 - 1) * 0.1,
-                    (rand.nextFloat() * 2 - 1) * 0.1,
-                    (rand.nextFloat() * 2 - 1) * 0.1);
-            particle.setBackLayer(true);
-            particle.setMotionless(true);
-            particle.setAddBlend(true);
-            int color = 0x5FFFFF;
-            int alpha = rand.nextInt(100) + 100;
-            particle.setColor((alpha << 24 | color));
-            particle.setScale(1);
-            particle.setTexturesCount(2);
-            particle.setTexturesIndex(1, 1);
-            particle.setLightingMap(15, 15);
-            particle.setLife(40);
-            particle.setTexture(texture);
-            sceneWidget.getParticleManager().addEffect(particle);
+    public static ParticleManager getParticleManager() {
+        return GLOBAL == null ? null : GLOBAL.getParticleManager();
+    }
+
+    public static World getWorld() {
+        return GLOBAL == null ? null : GLOBAL.getDummyWorld();
+    }
+
+    private void execute(ClickData clickData) {
+        sceneWidget.getParticleManager().clearAllEffects(true);
+        String script = textFieldWidget.getCurrentString();
+
+        GLOBAL = sceneWidget;
+        if (!CTHelper.executeDynamicScript(script)) {
+            script = CTHelper.getError() == null ? "error" : CTHelper.getError();
         }
+        GLOBAL = null;
 
-//        sceneWidget.getParticleManager().clearAllEffects(true);
-//        IParticle particle = new LaserBeamParticle(sceneWidget.getDummyWorld(), new Vector3(0.5, 1, -1), new Vector3(0.5, 3.5, 2.5))
-//                .setEmit(0.1f)
-//                .setHeadWidth(0.3f)
-//                .setBody(new ResourceLocation(Multiblocked.MODID,"textures/fx/laser.png")) // create a beam particle and set its texture.
-//                .setHead(new ResourceLocation(Multiblocked.MODID,"textures/fx/laser_start.png")) // create a beam particle and set its texture.
-//                .setAddBlend(true);
-//        sceneWidget.getParticleManager().addEffect(particle);
-
-//        sceneWidget.getParticleManager().clearAllEffects(true);
-//        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "start");
-//        ShaderTextureParticle particle = new ShaderTextureParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
-//        particle.setBackLayer(true);
-//        particle.setScale(16);
-//        particle.setLightingMap(15, 15);
-//        particle.setImmortal();
-//        particle.setTexture(texture);
-//
-//        CommonParticle particle2 = new CommonParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
-//        particle2.setBackLayer(true);
-//        particle2.setScale(16);
-//        particle2.setLightingMap(15, 15);
-//        particle2.setImmortal();
-//        particle2.setTexture(new ResourceLocation(Multiblocked.MODID, "textures/fx/fx.png"));
-//
-//        sceneWidget.getParticleManager().addEffect(particle);
+        textBox.setContent(Collections.singletonList(script));
+        tfGroup.computeMax();
     }
 
 }

@@ -1,6 +1,8 @@
 package com.cleanroommc.multiblocked.api.crafttweaker.interfaces;
 
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.IParticleWidget;
 import com.cleanroommc.multiblocked.client.particle.AbstractParticle;
+import com.cleanroommc.multiblocked.client.particle.ParticleManager;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.world.IWorld;
@@ -90,7 +92,12 @@ public interface ICTParticle {
 
     @ZenMethod
     default void create() {
-        getInner().addParticle();
+        ParticleManager manager = IParticleWidget.getParticleManager();
+        if (manager != null) {
+            manager.addEffect(getInner());
+        } else {
+            getInner().addParticle();
+        }
     }
 
 }

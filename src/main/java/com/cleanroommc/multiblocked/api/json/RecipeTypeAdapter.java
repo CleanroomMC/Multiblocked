@@ -50,7 +50,10 @@ public class RecipeTypeAdapter implements JsonSerializer<Recipe>, JsonDeserializ
                 ImmutableList.Builder<Tuple<Object, Float>> listBuilder = new ImmutableList.Builder<>();
                 for (JsonElement element : entry.getValue().getAsJsonArray()) {
                     JsonObject recipe = element.getAsJsonObject();
-                    listBuilder.add(new Tuple<>(capability.deserialize(recipe.get("content")), recipe.get("chance").getAsFloat()));
+                    Object content = capability.deserialize(recipe.get("content"));
+                    if (content != null) {
+                        listBuilder.add(new Tuple<>(content, recipe.get("chance").getAsFloat()));
+                    }
                 }
                 builder.put(capability, listBuilder.build());
             }

@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.pattern;
 
+import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternError;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
@@ -33,6 +34,7 @@ public class MultiblockState {
     public PatternMatchContext matchContext;
     public Map<SimplePredicate, Integer> globalCount;
     public TraceabilityPredicate predicate;
+    public IO io;
     public PatternError error;
     public final World world;
     public final BlockPos controllerPos;

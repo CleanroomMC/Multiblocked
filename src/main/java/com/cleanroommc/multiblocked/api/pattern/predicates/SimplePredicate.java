@@ -1,7 +1,11 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -45,6 +49,7 @@ public class SimplePredicate {
     public int maxCount = -1;
     public int previewCount = -1;
     public boolean disableRenderFormed = false;
+    public IO io = IO.BOTH;
     
     public final String type;
 
@@ -109,6 +114,13 @@ public class SimplePredicate {
             if (disableRenderFormed) {
                 blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new).add(blockWorldState.getPos().toLong());
             }
+            if (io != IO.BOTH) {
+                if (blockWorldState.io == IO.BOTH) {
+                    blockWorldState.io = io;
+                } else if (blockWorldState.io != io) {
+                    blockWorldState.io = null;
+                }
+            }
             return true;
         }
         return false;
@@ -118,6 +130,13 @@ public class SimplePredicate {
         if (testGlobal(blockWorldState)) {
             if (disableRenderFormed) {
                 blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new).add(blockWorldState.getPos().toLong());
+            }
+            if (io != IO.BOTH) {
+                if (blockWorldState.io == IO.BOTH) {
+                    blockWorldState.io = io;
+                } else if (blockWorldState.io != io) {
+                    blockWorldState.io = null;
+                }
             }
             return true;
         }
@@ -193,6 +212,14 @@ public class SimplePredicate {
                 .addWidget(new ImageWidget(2, 2, 11, 11, new ColorBorderTexture(1, -1)))
                 .addWidget(new LabelWidget(20, 3, "disableRenderFormed").setTextColor(-1).setDrop(true));
         group.addWidget(widgetGroup);
+        group.addWidget(new SelectorWidget(130, 70, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
+                .setValue(io.name())
+                .setOnChanged(io-> {
+                    this.io = IO.valueOf(io);
+                })
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setHoverTooltip("IO"));
         return groups;
     }
 
@@ -210,6 +237,9 @@ public class SimplePredicate {
         }
         if (previewCount > -1) {
             jsonObject.add("previewCount", new JsonPrimitive(previewCount));
+        }
+        if (io != IO.BOTH) {
+            jsonObject.add("io", new JsonPrimitive(io.name()));
         }
         return jsonObject;
     }

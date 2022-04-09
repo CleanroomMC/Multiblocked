@@ -25,8 +25,8 @@ public class Predicates {
     /**
      * Use it when you require that a position must have a specific capability.
      */
-    public static TraceabilityPredicate anyCapability(IO io, MultiblockCapability<?> capability) {
-        return new TraceabilityPredicate(new PredicateAnyCapability(io, capability));
+    public static TraceabilityPredicate anyCapability(MultiblockCapability<?> capability) {
+        return new TraceabilityPredicate(new PredicateAnyCapability(capability));
     }
 
     public static TraceabilityPredicate component(ComponentDefinition definition) {

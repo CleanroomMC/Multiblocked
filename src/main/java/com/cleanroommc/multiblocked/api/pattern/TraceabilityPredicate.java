@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.pattern;
 
+import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 
@@ -134,6 +135,7 @@ public class TraceabilityPredicate {
     }
 
     public boolean test(MultiblockState blockWorldState) {
+        blockWorldState.io = IO.BOTH;
         boolean flag = false;
         for (SimplePredicate predicate : limited) {
             if (predicate.testLimited(blockWorldState)) {

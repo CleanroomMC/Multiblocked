@@ -1,9 +1,14 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.texture.*;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
+import com.cleanroommc.multiblocked.util.FileUtility;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collections;
 
 public class IShaderWidget extends DialogWidget {
@@ -50,17 +55,26 @@ public class IShaderWidget extends DialogWidget {
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("update"));
-        this.addWidget(new ButtonWidget(350, 55, 20, 20, null)
+        File path = new File(Multiblocked.location, "assets/multiblocked/shaders");
+        this.addWidget(new ButtonWidget(350, 55, 20, 20, cd -> DialogWidget.showFileDialog(this, "select a shader file", path, true,
+                DialogWidget.suffixFilter(".frag"), r -> {
+                    if (r != null && r.isFile()) {
+                        try {
+                            String result = FileUtility.readInputStream(new FileInputStream(r));
+                            textFieldWidget.setCurrentString(result);
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                        }
+                    }
+                }))
                 .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1))
                 .setHoverTooltip("open a shader file"));
         tfGroup.addWidget(textBox);
 
-        this.addWidget(new ButtonWidget(305, 15, 40, 20, cd -> {
-            new DialogWidget(this, true)
-                    .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xdf000000)))
-                    .addWidget(new TextBoxWidget(2, 2, getSize().width - 4, Collections.singletonList(HELP)).setFontColor(-1).setShadow(true))
-                    .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorBorderTexture(1, -1)));
-        })
+        this.addWidget(new ButtonWidget(305, 15, 40, 20, cd -> new DialogWidget(this, true)
+                .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xdf000000)))
+                .addWidget(new TextBoxWidget(2, 2, getSize().width - 4, Collections.singletonList(HELP)).setFontColor(-1).setShadow(true))
+                .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorBorderTexture(1, -1))))
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("help", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("help"));

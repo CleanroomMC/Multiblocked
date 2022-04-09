@@ -68,7 +68,7 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
                 .where(' ', Predicates.any())
                 .where('T', Predicates.component(tableDefinition))
                 .where('P', Predicates.component(partDefinition).disableRenderFormed())
-                .where('C', Predicates.anyCapability(IO.BOTH, MbdCapabilities.ITEM).disableRenderFormed())
+                .where('C', Predicates.anyCapability(MbdCapabilities.ITEM).disableRenderFormed())
                 .build();
         MbdComponents.registerComponent(tableDefinition);
         MbdComponents.registerComponent(partDefinition);

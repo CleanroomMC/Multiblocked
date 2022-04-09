@@ -142,26 +142,28 @@ public class BlockPattern {
                         }
                         if (tileEntity != null && !predicate.isAny()) {
                             Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilities = worldState.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
-                            if (!capabilities.containsKey(worldState.getPos().toLong())) {
+                            if (!capabilities.containsKey(worldState.getPos().toLong()) && worldState.io != null) {
                                 // if predicate has no specific capability requirements. we will check abilities of every blocks
                                 Set<MultiblockCapability<?>> bothFound = new HashSet<>();
                                 for (MultiblockCapability<?> capability : inputCapabilities) { // IN
-                                    if (outputCapabilities.contains(capability) && capability.isBlockHasCapability(IO.BOTH, tileEntity)) {
+                                    if (worldState.io == IO.BOTH && outputCapabilities.contains(capability) && capability.isBlockHasCapability(IO.BOTH, tileEntity)) {
                                         bothFound.add(capability);
                                         capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
                                                 .computeIfAbsent(IO.BOTH, xx->new HashSet<>())
                                                 .add(capability);
-                                    } else if (capability.isBlockHasCapability(IO.IN, tileEntity)) {
+                                    } else if (worldState.io != IO.OUT && capability.isBlockHasCapability(IO.IN, tileEntity)) {
                                         capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
                                                 .computeIfAbsent(IO.IN, xx->new HashSet<>())
                                                 .add(capability);
                                     }
                                 }
-                                for (MultiblockCapability<?> capability : outputCapabilities) { // OUT
-                                    if (!bothFound.contains(capability) && capability.isBlockHasCapability(IO.OUT, tileEntity)) {
-                                        capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
-                                                .computeIfAbsent(IO.OUT, xx->new HashSet<>())
-                                                .add(capability);
+                                if (worldState.io != IO.IN) {
+                                    for (MultiblockCapability<?> capability : outputCapabilities) { // OUT
+                                        if (!bothFound.contains(capability) && capability.isBlockHasCapability(IO.OUT, tileEntity)) {
+                                            capabilities.computeIfAbsent(worldState.getPos().toLong(), l-> new EnumMap<>(IO.class))
+                                                    .computeIfAbsent(IO.OUT, xx->new HashSet<>())
+                                                    .add(capability);
+                                        }
                                     }
                                 }
                             }

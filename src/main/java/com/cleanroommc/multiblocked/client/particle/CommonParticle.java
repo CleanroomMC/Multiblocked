@@ -67,16 +67,10 @@ public class CommonParticle extends AbstractParticle implements ICTTexturePartic
         this.canCollide = true;
     }
 
-    public CommonParticle(World worldIn, double posXIn, double posYIn, double posZIn, double xSpeedIn, double ySpeedIn, double zSpeedIn) {
-        this(worldIn, posXIn, posYIn, posZIn);
-        this.motionX = xSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
-        this.motionY = ySpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
-        this.motionZ = zSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
-        float f = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
-        float f1 = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-        this.motionX = this.motionX / (double)f1 * (double)f * 0.4000000059604645D;
-        this.motionY = this.motionY / (double)f1 * (double)f * 0.4000000059604645D + 0.10000000149011612D;
-        this.motionZ = this.motionZ / (double)f1 * (double)f * 0.4000000059604645D;
+    public void setMotion(double xSpeedIn, double ySpeedIn, double zSpeedIn) {
+        this.motionX = xSpeedIn;
+        this.motionY = ySpeedIn;
+        this.motionZ = zSpeedIn;
     }
 
     @Override
@@ -166,13 +160,14 @@ public class CommonParticle extends AbstractParticle implements ICTTexturePartic
     public void onUpdate() {
         super.onUpdate();
 
-        if (!motionless) {
-            this.prevPosX = this.posX;
-            this.prevPosY = this.posY;
-            this.prevPosZ = this.posZ;
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
 
+        this.move(this.motionX, this.motionY, this.motionZ);
+
+        if (!motionless) {
             this.motionY -= 0.04D * (double)this.particleGravity;
-            this.move(this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.9800000190734863D;
             this.motionY *= 0.9800000190734863D;
             this.motionZ *= 0.9800000190734863D;

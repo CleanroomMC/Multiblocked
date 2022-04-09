@@ -50,6 +50,9 @@ public class IShaderWidget extends DialogWidget {
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("update"));
+        this.addWidget(new ButtonWidget(350, 55, 20, 20, null)
+                .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1))
+                .setHoverTooltip("open a shader file"));
         tfGroup.addWidget(textBox);
 
         this.addWidget(new ButtonWidget(305, 15, 40, 20, cd -> {

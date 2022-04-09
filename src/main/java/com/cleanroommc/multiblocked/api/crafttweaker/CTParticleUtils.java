@@ -35,23 +35,6 @@ public class CTParticleUtils {
     }
 
     @ZenMethod
-    public static ICTTextureParticle texture(IWorld world, double x, double y, double z, double xSpeedIn, double ySpeedIn, double zSpeedIn, @Optional boolean isShader) {
-        if (world.isRemote()) {
-            return isShader ? new ShaderTextureParticle(CraftTweakerMC.getWorld(world), x, y, z, xSpeedIn, ySpeedIn, zSpeedIn) : new CommonParticle(CraftTweakerMC.getWorld(world), x, y, z, xSpeedIn, ySpeedIn, zSpeedIn);
-        }
-        return null;
-    }
-
-    @ZenMethod
-    public static ICTTextureParticle texture(IWorld world, Position3f position, Position3f speed, @Optional boolean isShader) {
-        if (world.isRemote()) {
-            return isShader ? new ShaderTextureParticle(CraftTweakerMC.getWorld(world), position.getX(), position.getY(), position.getZ(), speed.getX(), speed.getY(), speed.getZ()) :
-                    new CommonParticle(CraftTweakerMC.getWorld(world), position.getX(), position.getY(), position.getZ(), speed.getX(), speed.getY(), speed.getZ());
-        }
-        return null;
-    }
-
-    @ZenMethod
     public static ICTLaserParticle laser(IWorld world, double sX, double sY, double sZ, double eX, double eY, double eZ) {
         if (world.isRemote()) {
             return new LaserBeamParticle(CraftTweakerMC.getWorld(world), new Vector3(sX, sX, sZ), new Vector3(eX, eY, eZ));

@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.vecmath.Vector3f;
 import java.util.Arrays;
+import java.util.Random;
 
 public class IParticleWidget extends DialogWidget {
     public SceneWidget sceneWidget;
@@ -52,20 +53,28 @@ public class IParticleWidget extends DialogWidget {
     }
 
     private void onUpdate(ClickData clickData) {
-//        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "textures/fx/fx.png");
-//        Random rand = Multiblocked.RNG;
-//        for (int i = 0; i < 20; i++) {
-//            CommonParticle particle = new CommonParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5, (rand.nextFloat() * 2 - 1) * 0, 1, (rand.nextFloat() * 2 - 1)*0);
-//            particle.isBackLayer = true;
-//            particle.setScale(1);
-//            particle.setTexturesCount(2);
-//            particle.setGravity(0.3f);
-//            particle.setTexturesIndex(rand.nextInt(2), rand.nextInt(2));
-//            particle.setLightingMap(15, 15);
-//            particle.setLife(60);
-//            particle.setTexture(texture);
-//            sceneWidget.getParticleManager().addEffect(particle);
-//        }
+        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "textures/fx/fx.png");
+        Random rand = Multiblocked.RNG;
+        for (int i = 0; i < 20; i++) {
+            CommonParticle particle = new CommonParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
+            particle.setMotion(
+                    (rand.nextFloat() * 2 - 1) * 0.1,
+                    (rand.nextFloat() * 2 - 1) * 0.1,
+                    (rand.nextFloat() * 2 - 1) * 0.1);
+            particle.setBackLayer(true);
+            particle.setMotionless(true);
+            particle.setAddBlend(true);
+            int color = 0x5FFFFF;
+            int alpha = rand.nextInt(100) + 100;
+            particle.setColor((alpha << 24 | color));
+            particle.setScale(1);
+            particle.setTexturesCount(2);
+            particle.setTexturesIndex(1, 1);
+            particle.setLightingMap(15, 15);
+            particle.setLife(40);
+            particle.setTexture(texture);
+            sceneWidget.getParticleManager().addEffect(particle);
+        }
 
 //        sceneWidget.getParticleManager().clearAllEffects(true);
 //        IParticle particle = new LaserBeamParticle(sceneWidget.getDummyWorld(), new Vector3(0.5, 1, -1), new Vector3(0.5, 3.5, 2.5))
@@ -76,23 +85,23 @@ public class IParticleWidget extends DialogWidget {
 //                .setAddBlend(true);
 //        sceneWidget.getParticleManager().addEffect(particle);
 
-        sceneWidget.getParticleManager().clearAllEffects(true);
-        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "start");
-        ShaderTextureParticle particle = new ShaderTextureParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
-        particle.setBackLayer(true);
-        particle.setScale(16);
-        particle.setLightingMap(15, 15);
-        particle.setImmortal();
-        particle.setTexture(texture);
-
-        CommonParticle particle2 = new CommonParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
-        particle2.setBackLayer(true);
-        particle2.setScale(16);
-        particle2.setLightingMap(15, 15);
-        particle2.setImmortal();
-        particle2.setTexture(new ResourceLocation(Multiblocked.MODID, "textures/fx/fx.png"));
-
-        sceneWidget.getParticleManager().addEffect(particle);
+//        sceneWidget.getParticleManager().clearAllEffects(true);
+//        ResourceLocation texture = new ResourceLocation(Multiblocked.MODID, "start");
+//        ShaderTextureParticle particle = new ShaderTextureParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
+//        particle.setBackLayer(true);
+//        particle.setScale(16);
+//        particle.setLightingMap(15, 15);
+//        particle.setImmortal();
+//        particle.setTexture(texture);
+//
+//        CommonParticle particle2 = new CommonParticle(sceneWidget.getDummyWorld(), 0.5, 2, 0.5);
+//        particle2.setBackLayer(true);
+//        particle2.setScale(16);
+//        particle2.setLightingMap(15, 15);
+//        particle2.setImmortal();
+//        particle2.setTexture(new ResourceLocation(Multiblocked.MODID, "textures/fx/fx.png"));
+//
+//        sceneWidget.getParticleManager().addEffect(particle);
     }
 
 }

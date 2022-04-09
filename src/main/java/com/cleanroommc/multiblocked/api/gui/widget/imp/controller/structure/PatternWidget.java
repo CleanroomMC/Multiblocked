@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
@@ -281,6 +282,8 @@ public class PatternWidget extends WidgetGroup {
             } else {
                 sceneWidget.setRenderedCore(poses, null);
             }
+        } else {
+            Multiblocked.LOGGER.warn("Pattern formed checking failed: {}", controllerBase.getDefinition().location);
         }
     }
 

@@ -84,7 +84,7 @@ dependencies {
     compile files("libs/QMD-1.0.4-1.12.2.jar")
     compile files("libs/ThaumicJEI-1.12.2-1.6.0-27.jar")
     compile files("libs/gregtech-1.12.2-2.1.4-beta.jar")
-    compile files("CodeChickenLib-1.12.2-3.2.3.358-universal.jar")
+    compile files("libs/CodeChickenLib-1.12.2-3.2.3.358-universal.jar")
 }
 
 sourceSets {

@@ -3,6 +3,7 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ShaderTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
@@ -10,10 +11,10 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.IParticleWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.IRendererWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.IShaderWidget;
-import com.cleanroommc.multiblocked.api.registry.MbdItems;
-import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.client.shader.Shaders;
-import net.minecraft.init.Items;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 public class RendererBuilderWidget extends WidgetGroup {
 
@@ -22,10 +23,9 @@ public class RendererBuilderWidget extends WidgetGroup {
         setClientSideWidget();
         if (!Multiblocked.isClient()) return;
         this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_page.png")));
-        this.addWidget(new ButtonWidget(40, 40, 40, 40, new ItemStackTexture(
-                MbdItems.BUILDER), this::renderer).setHoverBorderTexture(1, -1).setHoverTooltip("IRenderer Helper"));
-        this.addWidget(new ButtonWidget(90, 40, 40, 40, new ItemStackTexture(Items.PAPER), this::particle).setHoverBorderTexture(1, -1).setHoverTooltip("Particle Helper"));
-        this.addWidget(new ButtonWidget(140, 40, 40, 40, new ItemStackTexture(BlueprintTableTileEntity.tableDefinition.getStackForm()), this::shader).setHoverBorderTexture(1, -1).setHoverTooltip("Shader Helper"));
+        this.addWidget(new ButtonWidget(40, 40, 40, 40, new ItemStackTexture(new ItemStack(Blocks.BEACON)), this::renderer).setHoverBorderTexture(1, -1).setHoverTooltip("IRenderer Helper"));
+        this.addWidget(new ButtonWidget(90, 40, 40, 40, new ResourceTexture("multiblocked:textures/fx/fx.png"), this::particle).setHoverBorderTexture(1, -1).setHoverTooltip("Particle Helper"));
+        this.addWidget(new ButtonWidget(140, 40, 40, 40, ShaderTexture.createShader(new ResourceLocation(Multiblocked.MODID, "fbm")), this::shader).setHoverBorderTexture(1, -1).setHoverTooltip("Shader Helper"));
     }
 
     private void shader(ClickData clickData) {

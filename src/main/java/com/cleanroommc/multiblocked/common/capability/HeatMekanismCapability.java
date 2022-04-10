@@ -5,16 +5,19 @@ import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
 import mekanism.api.IHeatTransfer;
+import mekanism.common.block.states.BlockStateMachine;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +51,12 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
     @Override
     public ContentWidget<? super Double> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new TextTexture("HE", color)).setUnit("Heat");
+    }
+
+    @Override
+    public BlockInfo[] getCandidates() {
+        BlockStateMachine.MachineType[] machineTypes = new BlockStateMachine.MachineType[]{BlockStateMachine.MachineType.FUELWOOD_HEATER, BlockStateMachine.MachineType.RESISTIVE_HEATER};
+        return Arrays.stream(machineTypes).map(type -> new BlockInfo(type.typeBlock.getBlock().getStateFromMeta(type.meta), type.create(), type.getStack())).toArray(BlockInfo[]::new);
     }
 
     @Override

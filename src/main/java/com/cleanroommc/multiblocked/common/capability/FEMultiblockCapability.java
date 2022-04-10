@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
@@ -49,6 +50,11 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new TextTexture("FE", color)).setUnit("FE");
+    }
+
+    @Override
+    public BlockInfo[] getCandidates() {
+        return new BlockInfo[0];
     }
 
     @Override

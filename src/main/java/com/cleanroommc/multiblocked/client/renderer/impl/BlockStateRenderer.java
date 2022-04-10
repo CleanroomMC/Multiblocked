@@ -115,7 +115,7 @@ public class BlockStateRenderer implements ICustomRenderer {
             TrackedDummyWorld dummyWorld = new TrackedDummyWorld(world);
             tileEntity = tileEntity == null ? state.getBlock().createTileEntity(world, state) : tileEntity;
             dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(pos) ? state : iBlockState);
-            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tile : tileEntity);
+            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tileEntity : tile);
             if (tileEntity != null) {
                 tileEntity.setPos(pos);
                 tileEntity.setWorld(dummyWorld);

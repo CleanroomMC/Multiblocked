@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.pattern.util;
 
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -33,6 +34,18 @@ public class BlockInfo {
         this.blockState = blockState;
         this.tileEntity = tileEntity;
         this.itemStack = itemStack;
+    }
+
+    public static BlockInfo fromBlockState(IBlockState state) {
+        try {
+            if (state.getBlock().hasTileEntity(state)) {
+                TileEntity tileEntity = state.getBlock().createTileEntity(new DummyWorld(), state);
+                if (tileEntity != null) {
+                    return new BlockInfo(state, tileEntity);
+                }
+            }
+        } catch (Exception ignored){ }
+        return new BlockInfo(state);
     }
 
     public IBlockState getBlockState() {

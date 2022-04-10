@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.common.capability;
 
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.common.capability.widget.AspectStackWidget;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -16,6 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IAspectContainer;
+import thaumcraft.api.blocks.BlocksTC;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
@@ -53,6 +55,11 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
     @Override
     public ContentWidget<AspectStack> createContentWidget() {
         return new AspectStackWidget();
+    }
+
+    @Override
+    public BlockInfo[] getCandidates() {
+        return new BlockInfo[]{BlockInfo.fromBlockState(BlocksTC.jarNormal.getDefaultState()), BlockInfo.fromBlockState(BlocksTC.jarVoid.getDefaultState())};
     }
 
     @Override

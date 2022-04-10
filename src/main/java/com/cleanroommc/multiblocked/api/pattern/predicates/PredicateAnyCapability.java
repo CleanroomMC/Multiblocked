@@ -40,8 +40,10 @@ public class PredicateAnyCapability extends SimplePredicate {
     @Override
     public SimplePredicate buildPredicate() {
         MultiblockCapability<?> capability = MbdCapabilities.get(this.capability);
-        predicate = state -> state.getBlockState().getBlock() == capability.getAnyBlock(io) || checkCapability(io, capability, state);
-        candidates = () -> new BlockInfo[]{new BlockInfo(capability.getAnyBlock(io))};
+        predicate = state -> state.getBlockState().getBlock() == capability.getAnyBlock() || checkCapability(io, capability, state);
+        candidates = () -> new BlockInfo[]{new BlockInfo(capability.getAnyBlock())};
+        toolTips = new ArrayList<>();
+        toolTips.add(String.format("Any Capability: %s IO: %s", capability.name, io.name()));
         return this;
     }
 
@@ -55,8 +57,7 @@ public class PredicateAnyCapability extends SimplePredicate {
             return true;
         }
         if (Multiblocked.isClient()) {
-            state.setError(new PatternStringError(
-                    I18n.format("multiblocked.pattern.error.capability", I18n.format(capability.getUnlocalizedName()), io.name())));
+            state.setError(new PatternStringError(I18n.format("multiblocked.pattern.error.capability", I18n.format(capability.getUnlocalizedName()), io.name())));
         } else {
             state.setError(new PatternStringError("find no io_capability: " + io.name() + "_" + capability.name));
         }

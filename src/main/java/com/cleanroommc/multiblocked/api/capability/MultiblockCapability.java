@@ -6,6 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -33,7 +34,6 @@ import java.util.*;
 @ZenRegister
 public abstract class MultiblockCapability<T> implements JsonSerializer<T>, JsonDeserializer<T> {
     protected static EnumFacing[] FACINGS = new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.WEST, EnumFacing.SOUTH, null};
-    protected IBlockState[] scannedStates;
     @ZenProperty
     public final String name;
     @ZenProperty
@@ -93,47 +93,23 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
         Set<C> found = new LinkedHashSet<>();
         for (EnumFacing facing : FACINGS) {
             C cap = tileEntity.getCapability(capability, facing);
-            if (cap != null) found.add(cap);
+            if (cap != null) return Collections.singleton(cap);
         }
         return found;
     }
 
-    public IBlockState[] getCandidates() {
-        return scannedStates == null ? scannedStates = scanForCandidates() : scannedStates;
-    }
-
-    public void initCandidates(Map<Block, TileEntity> tiles) {
-        List<IBlockState> states = new ArrayList<>();
-        tiles.forEach(((block, tile) -> {
-            try {
-                if (tile != null && (isBlockHasCapability(IO.OUT, tile) || isBlockHasCapability(IO.IN, tile) || isBlockHasCapability(IO.BOTH, tile))) {
-                    states.add(block.getDefaultState());
-                }
-            } catch (Exception ignored) { }
-        }));
-        scannedStates = states.toArray(new IBlockState[0]);
-    }
-
-    protected final IBlockState[] scanForCandidates(){
-        List<IBlockState> states = new ArrayList<>();
-        for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
-            try {
-                TileEntity tile = block.createTileEntity(null, block.getDefaultState());
-                if (tile != null && (isBlockHasCapability(IO.OUT, tile) || isBlockHasCapability(IO.IN, tile) || isBlockHasCapability(IO.BOTH, tile))) {
-                    states.add(block.getDefaultState());
-                }
-            } catch (Exception ignored) { }
-        }
-        return states.toArray(new IBlockState[0]);
-    }
+    /**
+     * Get candidate blocks for display in JEI as well as automated builds
+     */
+    public abstract BlockInfo[] getCandidates();
 
     @Override
     public int hashCode() {
         return name.hashCode();
     }
 
-    public final BlockComponent getAnyBlock(IO io) {
-        return MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation(Multiblocked.MODID, name + "." + io.name()));
+    public final BlockComponent getAnyBlock() {
+        return MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation(Multiblocked.MODID, name + ".any"));
     }
 
     public final JsonElement serialize(Object obj) {

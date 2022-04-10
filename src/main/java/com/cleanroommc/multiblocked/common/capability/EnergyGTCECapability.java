@@ -5,16 +5,24 @@ import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
+import gregtech.api.GregTechAPI;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IEnergyContainer;
+import gregtech.api.metatileentity.MetaTileEntityHolder;
+import gregtech.common.metatileentities.MetaTileEntities;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityEnergyHatch;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +57,27 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
     @Override
     public ContentWidget<? super Long> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new TextTexture("EU", color)).setUnit("EU");
+    }
+
+    @Override
+    public BlockInfo[] getCandidates() {
+        List<BlockInfo> list = new ArrayList<>();
+        IBlockState blockState = GregTechAPI.MACHINE.getDefaultState();
+        for (MetaTileEntityEnergyHatch energyInputHatch : MetaTileEntities.ENERGY_INPUT_HATCH) {
+            if (energyInputHatch == null) continue;
+            MetaTileEntityHolder holder = new MetaTileEntityHolder();
+            ItemStack itemStack = energyInputHatch.getStackForm();
+            holder.setMetaTileEntity(GregTechAPI.MTE_REGISTRY.getObjectById(itemStack.getItemDamage()));
+            list.add(new BlockInfo(blockState, holder, itemStack));
+        }
+        for (MetaTileEntityEnergyHatch energyOutputHatch : MetaTileEntities.ENERGY_OUTPUT_HATCH) {
+            if (energyOutputHatch == null) continue;
+            MetaTileEntityHolder holder = new MetaTileEntityHolder();
+            ItemStack itemStack = energyOutputHatch.getStackForm();
+            holder.setMetaTileEntity(GregTechAPI.MTE_REGISTRY.getObjectById(itemStack.getItemDamage()));
+            list.add(new BlockInfo(blockState, holder, itemStack));
+        }
+        return list.toArray(new BlockInfo[0]);
     }
 
     @Override

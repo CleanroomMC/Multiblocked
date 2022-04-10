@@ -5,11 +5,13 @@ import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.ItemsContentWidget;
 import com.google.gson.*;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -52,6 +54,14 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
     @Override
     public ContentWidget<? super ItemsIngredient> createContentWidget() {
         return new ItemsContentWidget();
+    }
+
+    @Override
+    public BlockInfo[] getCandidates() {
+        return new BlockInfo[] {
+                BlockInfo.fromBlockState(Blocks.CHEST.getDefaultState()),
+                new BlockInfo(Blocks.WHITE_SHULKER_BOX.getDefaultState(), Blocks.WHITE_SHULKER_BOX.createTileEntity(null, Blocks.WHITE_SHULKER_BOX.getDefaultState()), new ItemStack(Blocks.WHITE_SHULKER_BOX))
+        };
     }
 
     @Override

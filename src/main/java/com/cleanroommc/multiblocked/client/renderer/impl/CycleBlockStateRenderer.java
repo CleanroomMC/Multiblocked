@@ -16,6 +16,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -46,20 +48,6 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     @Override
     public String getType() {
         return "cycleblockstate";
-    }
-
-    public CycleBlockStateRenderer(IBlockState[] states) {
-        this(Arrays.stream(states).map(state->{
-            try {
-                if (state.getBlock().hasTileEntity(state)) {
-                    TileEntity tileEntity = state.getBlock().createTileEntity(new DummyWorld(), state);
-                    if (tileEntity != null) {
-                        return new BlockInfo(state, tileEntity);
-                    }
-                }
-            } catch (Throwable ignored) { }
-            return new BlockInfo(state);
-        }).toArray(BlockInfo[]::new));
     }
 
     public CycleBlockStateRenderer(BlockInfo[] blockInfos) {
@@ -96,9 +84,19 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     @Override
     public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         IBlockState state = getState();
+        TileEntity tileEntity = getTileEntity(te.getWorld(), te.getPos());
+
         int pass = MinecraftForgeClient.getRenderPass();
         BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
-        IBlockAccess access = new FacadeBlockAccess(te.getWorld(), te.getPos(), null, state);
+
+        TrackedDummyWorld dummyWorld = new TrackedDummyWorld(te.getWorld());
+        dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(te.getPos()) ? state : iBlockState);
+        if (tileEntity != null) {
+            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(te.getPos()) ? tileEntity : tile);
+            tileEntity.setPos(te.getPos());
+            tileEntity.setWorld(dummyWorld);
+        }
+
         BlockRenderLayer oldRenderLayer = MinecraftForgeClient.getRenderLayer();
 
         Minecraft mc = Minecraft.getMinecraft();
@@ -119,7 +117,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
                 BufferBuilder buffer = Tessellator.getInstance().getBuffer();
                 buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-                brd.renderBlock(state, te.getPos(), access, buffer);
+                brd.renderBlock(state, te.getPos(), dummyWorld, buffer);
 
                 Tessellator.getInstance().draw();
             }
@@ -132,7 +130,11 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         GlStateManager.depthMask(true);
         ForgeHooksClient.setRenderLayer(oldRenderLayer);
 
-        super.renderTESR(te, x, y, z, partialTicks, destroyStage, alpha);
+        if (tileEntity == null) return;
+        TileEntitySpecialRenderer<TileEntity> tesr = TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass());
+        if (tesr != null) {
+            tesr.render(tileEntity, x, y, z, partialTicks, destroyStage, alpha);
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -155,14 +157,6 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     @SideOnly(Side.CLIENT)
     public TileEntity getTileEntity(World world, BlockPos pos) {
         BlockInfo blockInfo = blockInfos[Math.abs(index) % blockInfos.length];
-        TileEntity tileEntity = blockInfo.getTileEntity();
-        if (tileEntity != null) {
-            TrackedDummyWorld dummyWorld = new TrackedDummyWorld(world);
-            dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(pos) ? blockInfo.getBlockState() : iBlockState);
-            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tileEntity : tile);
-            tileEntity.setPos(pos);
-            tileEntity.setWorld(dummyWorld);
-        }
-        return tileEntity;
+        return blockInfo.getTileEntity();
     }
 }

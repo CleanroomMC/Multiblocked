@@ -1,16 +1,14 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.common.capability.widget.ParticleStackWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.common.capability.widget.ParticleStackWidget;
+import com.google.gson.*;
+import lach_01298.qmd.block.QMDBlocks;
 import lach_01298.qmd.particle.ITileParticleStorage;
 import lach_01298.qmd.particle.ParticleStack;
 import lach_01298.qmd.particle.ParticleStorage;
@@ -18,7 +16,7 @@ import lach_01298.qmd.particle.Particles;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +51,16 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
     @Override
     public ContentWidget<ParticleStack> createContentWidget() {
         return new ParticleStackWidget();
+    }
+
+    @Override
+    public BlockInfo[] getCandidates() {
+        return new BlockInfo[]{
+                BlockInfo.fromBlockState(QMDBlocks.acceleratorBeamPort.getDefaultState()),
+                BlockInfo.fromBlockState(QMDBlocks.acceleratorSynchrotronPort.getDefaultState()),
+                BlockInfo.fromBlockState(QMDBlocks.beamline.getDefaultState()),
+                BlockInfo.fromBlockState(QMDBlocks.particleChamberBeamPort.getDefaultState()),
+        };
     }
 
     @Override

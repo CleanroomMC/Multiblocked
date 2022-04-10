@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.JsonDeserializationContext;
@@ -14,6 +15,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.tileentity.TileEntity;
 import vazkii.botania.api.mana.IManaReceiver;
+import vazkii.botania.common.block.ModBlocks;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
@@ -51,6 +53,16 @@ public class ManaBotainaCapability extends MultiblockCapability<Integer> {
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new TextTexture("MN", color)).setUnit("mana");
+    }
+
+    @Override
+    public BlockInfo[] getCandidates() {
+        return new BlockInfo[]{
+                BlockInfo.fromBlockState(ModBlocks.pool.getDefaultState()),
+                BlockInfo.fromBlockState(ModBlocks.spreader.getDefaultState()),
+                BlockInfo.fromBlockState(ModBlocks.manaVoid.getDefaultState()),
+                BlockInfo.fromBlockState(ModBlocks.terraPlate.getDefaultState())
+        };
     }
 
     @Override

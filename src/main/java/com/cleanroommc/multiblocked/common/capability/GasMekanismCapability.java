@@ -4,12 +4,14 @@ import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.GasStackWidget;
 import com.google.gson.*;
 import mekanism.api.gas.GasRegistry;
 import mekanism.api.gas.GasStack;
 import mekanism.api.gas.IGasHandler;
+import mekanism.common.MekanismBlocks;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -51,6 +53,11 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     @Override
     public ContentWidget<? super GasStack> createContentWidget() {
         return new GasStackWidget();
+    }
+
+    @Override
+    public BlockInfo[] getCandidates() {
+        return new BlockInfo[] {BlockInfo.fromBlockState(MekanismBlocks.GasTank.getDefaultState())};
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.FluidContentWidget;
@@ -17,6 +18,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -58,6 +60,11 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
     }
 
     @Override
+    public BlockInfo[] getCandidates() {
+        return new BlockInfo[0];
+    }
+
+    @Override
     public FluidStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         return FluidStackTypeAdapter.INSTANCE.deserialize(jsonElement, type, jsonDeserializationContext);
     }
@@ -81,6 +88,15 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
                 if (io == IO.IN) {
                     while (iterator.hasNext()) {
                         FluidStack fluidStack = iterator.next();
+                        boolean found = false;
+                        for (IFluidTankProperties tankProperty : capability.getTankProperties()) {
+                            FluidStack stored = tankProperty.getContents();
+                            if (stored == null || !stored.isFluidEqual(fluidStack)) {
+                                continue;
+                            }
+                            found = true;
+                        }
+                        if (!found) continue;
                         FluidStack drained = capability.drain(fluidStack, !simulate);
                         if (drained == null) continue;
                         fluidStack.amount = fluidStack.amount - drained.amount;

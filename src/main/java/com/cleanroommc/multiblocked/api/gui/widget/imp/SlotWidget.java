@@ -268,7 +268,7 @@ public class SlotWidget extends Widget implements IIngredientSlot {
                 if (block instanceof BlockComponent) {
                     if (((BlockComponent) block).definition.baseRenderer instanceof CycleBlockStateRenderer) {
                         CycleBlockStateRenderer renderer = ((CycleBlockStateRenderer) ((BlockComponent) block).definition.baseRenderer);
-                        IBlockState blockState = renderer.states[Math.abs(renderer.index) % renderer.states.length];
+                        IBlockState blockState = renderer.blockInfos[Math.abs(renderer.index) % renderer.blockInfos.length].getBlockState();
                         itemStack = new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState));
                     }
                 }

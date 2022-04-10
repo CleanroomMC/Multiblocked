@@ -4,6 +4,8 @@ import com.cleanroommc.multiblocked.client.particle.LaserBeamParticle;
 import com.cleanroommc.multiblocked.util.Vector3;
 import crafttweaker.annotations.ZenRegister;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -11,6 +13,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenClass("mods.multiblocked.client.LaserParticle")
 public interface ICTLaserParticle extends ICTParticle{
 
+    @SideOnly(Side.CLIENT)
     LaserBeamParticle getInner();
 
     @ZenMethod

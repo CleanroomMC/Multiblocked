@@ -1,9 +1,10 @@
 package com.cleanroommc.multiblocked.api.pattern.util;
 
-import com.google.common.base.Preconditions;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,7 +15,7 @@ public class BlockInfo {
 
     private final IBlockState blockState;
     private final TileEntity tileEntity;
-    private final Object info;
+    private final ItemStack itemStack;
 
     public BlockInfo(Block block) {
         this(block.getDefaultState());
@@ -28,12 +29,10 @@ public class BlockInfo {
         this(blockState, tileEntity, null);
     }
 
-    public BlockInfo(IBlockState blockState, TileEntity tileEntity, Object info) {
+    public BlockInfo(IBlockState blockState, TileEntity tileEntity, ItemStack itemStack) {
         this.blockState = blockState;
         this.tileEntity = tileEntity;
-        this.info = info;
-        Preconditions.checkArgument(tileEntity == null || blockState.getBlock().hasTileEntity(blockState),
-                "Cannot create block info with tile entity for block not having it");
+        this.itemStack = itemStack;
     }
 
     public IBlockState getBlockState() {
@@ -44,8 +43,8 @@ public class BlockInfo {
         return tileEntity;
     }
 
-    public Object getInfo() {
-        return info;
+    public ItemStack getItemStackForm() {
+        return itemStack == null ? new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState)) : itemStack;
     }
 
     public void apply(World world, BlockPos pos) {

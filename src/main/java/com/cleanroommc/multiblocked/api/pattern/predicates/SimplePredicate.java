@@ -214,9 +214,7 @@ public class SimplePredicate {
         group.addWidget(widgetGroup);
         group.addWidget(new SelectorWidget(130, 70, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
                 .setValue(io.name())
-                .setOnChanged(io-> {
-                    this.io = IO.valueOf(io);
-                })
+                .setOnChanged(io-> this.io = IO.valueOf(io))
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
                 .setHoverTooltip("IO"));

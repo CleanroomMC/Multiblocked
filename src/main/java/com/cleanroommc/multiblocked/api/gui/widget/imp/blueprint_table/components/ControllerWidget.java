@@ -45,6 +45,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -160,7 +161,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                     assert tileEntity != null;
                     boolean disableFormed = false;
                     if (this.pattern.symbolMap.containsKey(symbol)) {
-                        Set<IBlockState> candidates = new HashSet<>();
+                        Set<BlockInfo> candidates = new HashSet<>();
                         for (String s : this.pattern.symbolMap.get(symbol)) {
                             SimplePredicate predicate = this.pattern.predicates.get(s);
                             if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
@@ -168,18 +169,16 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                                 disableFormed |= predicate.disableRenderFormed;
                                 break;
                             } else if (predicate != null && predicate.candidates != null) {
-                                for (BlockInfo blockInfo : predicate.candidates.get()) {
-                                    candidates.add(blockInfo.getBlockState());
-                                }
+                                candidates.addAll(Arrays.asList(predicate.candidates.get()));
                                 disableFormed |= predicate.disableRenderFormed;
                             }
                         }
                         if (candidates.size() == 1) {
                             definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                            definition.baseRenderer = new BlockStateRenderer((IBlockState) candidates.toArray()[0]);
+                            definition.baseRenderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0].getBlockState());
                         } else if (!candidates.isEmpty()) {
                             definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                            definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new IBlockState[0]));
+                            definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
                         }
                     }
                     if (definition != null) {

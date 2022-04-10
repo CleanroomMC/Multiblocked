@@ -6,6 +6,8 @@ import com.cleanroommc.multiblocked.client.particle.ParticleManager;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.world.IWorld;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -15,6 +17,7 @@ import stanhebben.zenscript.annotations.ZenSetter;
 @ZenClass("mods.multiblocked.client.Particle")
 public interface ICTParticle {
 
+    @SideOnly(Side.CLIENT)
     AbstractParticle getInner();
 
     @ZenGetter

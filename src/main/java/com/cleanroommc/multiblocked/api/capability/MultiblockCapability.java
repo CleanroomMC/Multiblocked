@@ -90,7 +90,7 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     }
 
     public <C> Set<C> getCapability(Capability<C> capability, @Nonnull TileEntity tileEntity) {
-        Set<C> found = new HashSet<>();
+        Set<C> found = new LinkedHashSet<>();
         for (EnumFacing facing : FACINGS) {
             C cap = tileEntity.getCapability(capability, facing);
             if (cap != null) found.add(cap);

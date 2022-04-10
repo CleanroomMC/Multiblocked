@@ -5,6 +5,8 @@ import com.cleanroommc.multiblocked.client.particle.ShaderTextureParticle;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.util.Position3f;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -12,6 +14,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenClass("mods.multiblocked.client.TextureParticle")
 public interface ICTTextureParticle extends ICTParticle{
 
+    @SideOnly(Side.CLIENT)
     CommonParticle getInner();
 
     @ZenMethod

@@ -31,6 +31,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -67,16 +69,19 @@ public class GTRenderer extends IModelRenderer {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public String getType() {
         return "gregtech";
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean isRaw() {
         return false;
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         TileEntity te = blockAccess.getTileEntity(pos);
         if (te instanceof PartTileEntity) {
@@ -98,6 +103,7 @@ public class GTRenderer extends IModelRenderer {
         return super.renderBlock(state, pos, blockAccess, buffer);
     }
 
+    @SideOnly(Side.CLIENT)
     protected IModel getModel(ResourceLocation baseTexture) {
         ModelFactory factory = new ModelFactory(ModelFactory.ModelTemplate.CUBE_2_LAYER)
                 .addSprite("bot_down", baseTexture)
@@ -126,6 +132,7 @@ public class GTRenderer extends IModelRenderer {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     protected IModel getModel() {
         return getModel(baseTexture);
     }
@@ -194,7 +201,7 @@ public class GTRenderer extends IModelRenderer {
         addTextureSelector(1 + 64 + 34, 34, 30, 30, "up overlay", parent, group, renderer.upOverlay, r -> renderer.upOverlay = r);
         addTextureSelector(1 + 64 + 34 * 2, 34, 30, 30, "down overlay", parent, group, renderer.downOverlay, r -> renderer.downOverlay = r);
 
-        group.addWidget(createBoolSwitch(1, 70, "formedAsController", "When the multi formed, if its true and the controller also uses the GregTech Model, it will change the base texture to follow the controller.", renderer.formedAsController, r -> renderer.formedAsController = r));
+        group.addWidget(createBoolSwitch(1, 70, "formedAsController", "When the multi formed, if its true and the controller also uses the GregTech Model, it will change the base texture to the controller’s base texture.", renderer.formedAsController, r -> renderer.formedAsController = r));
         return () -> {
             GTRenderer result = new GTRenderer(renderer.baseTexture, renderer.frontOverlay);
             result.backOverlay = renderer.backOverlay;

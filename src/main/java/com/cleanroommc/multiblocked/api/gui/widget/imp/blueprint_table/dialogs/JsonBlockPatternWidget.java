@@ -732,7 +732,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
 
         public void updateRenderer() {
             if (widget.pattern.symbolMap.containsKey(symbol)) {
-                Set<IBlockState> candidates = new HashSet<>();
+                Set<BlockInfo> candidates = new HashSet<>();
                 for (String s : widget.pattern.symbolMap.get(symbol)) {
                     SimplePredicate predicate = widget.pattern.predicates.get(s);
                     if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
@@ -740,16 +740,14 @@ public class JsonBlockPatternWidget extends DialogWidget {
                         candidates = null;
                         break;
                     } else if (predicate != null && predicate.candidates != null) {
-                        for (BlockInfo blockInfo : predicate.candidates.get()) {
-                            candidates.add(blockInfo.getBlockState());
-                        }
+                        candidates.addAll(Arrays.asList(predicate.candidates.get()));
                     }
                 }
                 if (candidates != null) {
                     if (candidates.size() == 1) {
-                        renderer = new BlockStateRenderer((IBlockState) candidates.toArray()[0]);
+                        renderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0].getBlockState());
                     } else if (!candidates.isEmpty()){
-                        renderer = new CycleBlockStateRenderer(candidates.toArray(new IBlockState[0]));
+                        renderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
                     } else {
                         renderer = null;
                     }

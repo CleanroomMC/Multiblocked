@@ -2,8 +2,10 @@ package com.cleanroommc.multiblocked.client.renderer.impl;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.client.util.FacadeBlockAccess;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -29,6 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 /**
  * It will toggles the rendered block each second, mainly for rendering of the Any Capability. {@link MultiblockCapability#getCandidates()}}
@@ -36,8 +39,7 @@ import javax.annotation.Nonnull;
  * Because you did not schedule the chunk compiling. So please don't use it in the world. Just for JEI or such dynamic rendering.
  */
 public class CycleBlockStateRenderer extends BlockStateRenderer {
-    public final IBlockState[] states;
-    public final TileEntity[] tileEntities;
+    public final BlockInfo[] blockInfos;
     public int index;
     public long lastTime;
 
@@ -47,10 +49,23 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     }
 
     public CycleBlockStateRenderer(IBlockState[] states) {
+        this(Arrays.stream(states).map(state->{
+            try {
+                if (state.getBlock().hasTileEntity(state)) {
+                    TileEntity tileEntity = state.getBlock().createTileEntity(new DummyWorld(), state);
+                    if (tileEntity != null) {
+                        return new BlockInfo(state, tileEntity);
+                    }
+                }
+            } catch (Throwable ignored) { }
+            return new BlockInfo(state);
+        }).toArray(BlockInfo[]::new));
+    }
+
+    public CycleBlockStateRenderer(BlockInfo[] blockInfos) {
         super(Blocks.AIR.getDefaultState());
-        if (states.length == 0) states = new IBlockState[]{Blocks.AIR.getDefaultState()};
-        this.states = states;
-        this.tileEntities = new TileEntity[states.length];
+        if (blockInfos.length == 0) blockInfos = new BlockInfo[]{new BlockInfo(Blocks.AIR)};
+        this.blockInfos = blockInfos;
     }
 
     @SideOnly(Side.CLIENT)
@@ -66,7 +81,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
             lastTime = time;
             index = Multiblocked.RNG.nextInt();
         }
-        return states[Math.abs(index) % states.length];
+        return blockInfos[Math.abs(index) % blockInfos.length].getBlockState();
     }
 
     @Override
@@ -107,7 +122,6 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
                 brd.renderBlock(state, te.getPos(), access, buffer);
 
                 Tessellator.getInstance().draw();
-                Tessellator.getInstance().getBuffer();
             }
         }
 
@@ -138,22 +152,17 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         return true;
     }
 
+    @SideOnly(Side.CLIENT)
     public TileEntity getTileEntity(World world, BlockPos pos) {
-        try {
-            int i = Math.abs(index) % states.length;
-            IBlockState state = states[i];
-            if (!state.getBlock().hasTileEntity(state)) return null;
+        BlockInfo blockInfo = blockInfos[Math.abs(index) % blockInfos.length];
+        TileEntity tileEntity = blockInfo.getTileEntity();
+        if (tileEntity != null) {
             TrackedDummyWorld dummyWorld = new TrackedDummyWorld(world);
-            tileEntities[i] = tileEntities[i] == null ? state.getBlock().createTileEntity(dummyWorld, state) : tileEntities[i];
-            dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(pos) ? state : iBlockState);
-            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tile : tileEntities[i]);
-            if (tileEntities[i] != null) {
-                tileEntities[i].setPos(pos);
-                tileEntities[i].setWorld(dummyWorld);
-            }
-            return tileEntities[i];
-        } catch (Throwable throwable) {
-            return null;
+            dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(pos) ? blockInfo.getBlockState() : iBlockState);
+            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tileEntity : tile);
+            tileEntity.setPos(pos);
+            tileEntity.setWorld(dummyWorld);
         }
+        return tileEntity;
     }
 }

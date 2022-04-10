@@ -117,7 +117,7 @@ public class TextureParticleRenderer extends ParticleRenderer implements ICustom
                 .setNumbersOnly(-1, 15).setCurrentString(renderer.light+"").setHoverTooltip("lighting map \n -1: follow the environment \n 0-15: lighting"));
         group.addWidget(new LabelWidget(75, 90, "Light"));
         group.addWidget(new TextFieldWidget(1,105,70,10,true, null, num->renderer.renderRange = Integer.parseInt(num))
-                .setNumbersOnly(-1, 1000).setCurrentString(renderer.renderRange+"").setHoverTooltip("render range (do not render if out of eye range) \n -1: always range"));
+                .setNumbersOnly(-1, 1000).setCurrentString(renderer.renderRange+"").setHoverTooltip("render range (do not render if out of eye range) \n -1: always render"));
         group.addWidget(new LabelWidget(75, 105, "Render Range"));
         return () -> {
             if (tfw.getCurrentString().isEmpty()) {

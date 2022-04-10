@@ -68,7 +68,7 @@ public class PredicateAnyCapability extends SimplePredicate {
         super.getConfigWidget(groups);
         WidgetGroup group = new WidgetGroup(0, 0, 100, 20);
         groups.add(group);
-        group.addWidget(new SelectorWidget(50, 0, 120, 20, new ArrayList<>(
+        group.addWidget(new SelectorWidget(0, 0, 120, 20, new ArrayList<>(
                 MbdCapabilities.CAPABILITY_REGISTRY.keySet()), -1)
                 .setValue(capability)
                 .setOnChanged(capability-> {

@@ -20,18 +20,24 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.ArrayUtils;
 import stanhebben.zenscript.annotations.ZenClass;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @ZenClass("mods.multiblocked.pattern.BlockPattern")
@@ -259,14 +265,14 @@ public class BlockPattern {
                                         if (blockState.getBlock() instanceof BlockComponent && ((BlockComponent) blockState.getBlock()).definition != null) {
                                             if (((BlockComponent) blockState.getBlock()).definition.baseRenderer instanceof CycleBlockStateRenderer) {
                                                 CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((BlockComponent) blockState.getBlock()).definition.baseRenderer;
-                                                for (IBlockState state : renderer.states) {
-                                                    candidates.add(new ItemStack(Item.getItemFromBlock(state.getBlock()), 1, blockState.getBlock().damageDropped(state)));
+                                                for (BlockInfo blockInfo : renderer.blockInfos) {
+                                                    candidates.add(blockInfo.getItemStackForm());
                                                 }
                                             } else {
-                                                candidates.add(new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState)));
+                                                candidates.add(info.getItemStackForm());
                                             }
                                         } else {
-                                            candidates.add(new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState)));
+                                            candidates.add(info.getItemStackForm());
                                         }
                                     }
                                 }
@@ -282,7 +288,6 @@ public class BlockPattern {
                                         break;
                                     }
                                 }
-                                if (found == null) continue;
                             } else {
                                 for (ItemStack candidate : candidates) {
                                     found = candidate.copy();
@@ -291,12 +296,15 @@ public class BlockPattern {
                                     }
                                     found = null;
                                 }
-                                if (found == null) continue;
                             }
+                            if (found == null) continue;
                             ItemBlock itemBlock = (ItemBlock) found.getItem();
-                            IBlockState state = itemBlock.getBlock().getStateFromMeta(itemBlock.getMetadata(found.getMetadata()));
-                            blocks.put(pos, state);
-                            world.setBlockState(pos, state);
+                            int meta = itemBlock.getMetadata(found.getMetadata());
+                            float hitX = pos.getX() + 0.5f;
+                            float hitY = pos.getY();
+                            float hitZ = pos.getZ() + 0.5f;
+                            IBlockState newState = itemBlock.getBlock().getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, player, EnumHand.MAIN_HAND);
+                            itemBlock.placeBlockAt(found, player, world, pos, player.getHorizontalFacing(), hitX, hitY, hitZ, newState);
                             TileEntity tileEntity = world.getTileEntity(pos);
                             if (tileEntity instanceof ComponentTileEntity) {
                                 blocks.put(pos, tileEntity);

@@ -25,13 +25,14 @@ public class ShaderTexture implements IGuiTexture {
     private Shader shader;
     private float resolution = 2;
     private Consumer<UniformCache> uniformCache;
+    private final boolean isRaw;
 
-    private ShaderTexture() {
-
+    private ShaderTexture(boolean isRaw) {
+        this.isRaw = isRaw;
     }
 
     public void dispose() {
-        if (shader != null) {
+        if (isRaw && shader != null) {
             shader.deleteShader();
         }
         if (program != null) {
@@ -51,7 +52,8 @@ public class ShaderTexture implements IGuiTexture {
     }
 
     @SideOnly(Side.CLIENT)
-    private ShaderTexture(Shader shader) {
+    private ShaderTexture(Shader shader, boolean isRaw) {
+        this.isRaw = isRaw;
         if (shader == null) return;
         this.program = new ShaderProgram();
         this.shader = shader;
@@ -61,18 +63,18 @@ public class ShaderTexture implements IGuiTexture {
     public static ShaderTexture createShader(ResourceLocation location) {
         if (Multiblocked.isClient() && ShaderManager.allowedShader()) {
             Shader shader = Shaders.load(Shader.ShaderType.FRAGMENT, location);
-            return new ShaderTexture(shader);
+            return new ShaderTexture(shader, false);
         } else {
-            return new ShaderTexture();
+            return new ShaderTexture(false);
         }
     }
 
     public static ShaderTexture createRawShader(String rawShader) {
         if (Multiblocked.isClient() && ShaderManager.allowedShader()) {
             Shader shader = new Shader(Shader.ShaderType.FRAGMENT, rawShader).compileShader();
-            return new ShaderTexture(shader);
+            return new ShaderTexture(shader, true);
         } else {
-            return new ShaderTexture();
+            return new ShaderTexture(true);
         }
     }
 

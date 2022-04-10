@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.api.gui.texture.*;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
@@ -80,4 +81,11 @@ public class IShaderWidget extends DialogWidget {
                 .setHoverTooltip("help"));
     }
 
+    @Override
+    public void setGui(ModularUI gui) {
+        super.setGui(gui);
+        if (gui != null && shaderTexture != null) {
+            gui.registerCloseListener(shaderTexture::dispose);
+        }
+    }
 }

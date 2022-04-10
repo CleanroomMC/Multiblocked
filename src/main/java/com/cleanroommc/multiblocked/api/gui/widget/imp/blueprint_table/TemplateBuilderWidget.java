@@ -49,6 +49,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -307,24 +308,22 @@ public class TemplateBuilderWidget extends WidgetGroup {
                                 ComponentDefinition definition = null;
                                 assert tileEntity != null;
                                 if (pattern.symbolMap.containsKey(symbol)) {
-                                    Set<IBlockState> candidates = new HashSet<>();
+                                    Set<BlockInfo> candidates = new HashSet<>();
                                     for (String s : pattern.symbolMap.get(symbol)) {
                                         SimplePredicate predicate = pattern.predicates.get(s);
                                         if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
                                             definition = ((PredicateComponent) predicate).definition;
                                             break;
                                         } else if (predicate != null && predicate.candidates != null) {
-                                            for (BlockInfo blockInfo : predicate.candidates.get()) {
-                                                candidates.add(blockInfo.getBlockState());
-                                            }
+                                            candidates.addAll(Arrays.asList(predicate.candidates.get()));
                                         }
                                     }
                                     if (candidates.size() == 1) {
                                         definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                                        definition.baseRenderer = new BlockStateRenderer((IBlockState) candidates.toArray()[0]);
+                                        definition.baseRenderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0].getBlockState());
                                     } else if (!candidates.isEmpty()) {
                                         definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                                        definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new IBlockState[0]));
+                                        definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
                                     }
                                 }
                                 if (definition != null) {

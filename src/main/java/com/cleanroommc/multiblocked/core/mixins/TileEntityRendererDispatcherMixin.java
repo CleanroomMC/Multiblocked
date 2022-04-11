@@ -19,7 +19,7 @@ public class TileEntityRendererDispatcherMixin {
     @Inject(method = "getRenderer(Lnet/minecraft/tileentity/TileEntity;)Lnet/minecraft/client/renderer/tileentity/TileEntitySpecialRenderer;", at = @At(value = "HEAD"), cancellable = true)
     private <T extends TileEntity> void injectGetRenderer(TileEntity tileEntityIn, CallbackInfoReturnable<TileEntitySpecialRenderer<T>> cir) {
         if (tileEntityIn != null) {
-            if (tileEntityIn.getWorld() == Minecraft.getMinecraft().world && MultiblockWorldSavedData.isModelDisabled(tileEntityIn.getPos())) {
+            if (tileEntityIn.getWorld() == Minecraft.getMinecraft().world && MultiblockWorldSavedData.modelDisabled.contains(tileEntityIn.getPos())) {
                 cir.setReturnValue(null);
             } else if (tileEntityIn instanceof ComponentTileEntity && !((ComponentTileEntity<?>) tileEntityIn).hasTESRRenderer()) {
                 cir.setReturnValue(null);

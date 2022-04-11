@@ -35,6 +35,8 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     @SideOnly(Side.CLIENT)
     public static Map<BlockPos, Collection<BlockPos>> multiDisabled;
 
+    public final static ThreadLocal<Boolean> isBuildingChunk = ThreadLocal.withInitial(()-> Boolean.FALSE);
+
     static {
         if (Multiblocked.isClient()) {
             modelDisabled = new HashSet<>();
@@ -141,7 +143,10 @@ public class MultiblockWorldSavedData extends WorldSavedData {
 
     @SideOnly(Side.CLIENT)
     public static boolean isModelDisabled(BlockPos pos) {
-        return modelDisabled.contains(pos);
+        if (isBuildingChunk.get()) {
+            return modelDisabled.contains(pos);
+        }
+        return false;
     }
 
     @Override

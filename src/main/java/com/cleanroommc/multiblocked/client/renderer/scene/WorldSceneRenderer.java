@@ -417,7 +417,7 @@ public abstract class WorldSceneRenderer {
 
     private void renderBlocks(boolean checkDisabledModel, BlockRendererDispatcher blockrendererdispatcher, BlockRenderLayer layer, BufferBuilder buffer, Collection<BlockPos> renderedBlocks) {
         for (BlockPos pos : renderedBlocks) {
-            if (checkDisabledModel && MultiblockWorldSavedData.isModelDisabled(pos)) {
+            if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
                 continue;
             }
             IBlockState state = world.getBlockState(pos);
@@ -453,7 +453,7 @@ public abstract class WorldSceneRenderer {
                 setDefaultPassRenderState(pass);
             }
             for (BlockPos pos : renderedBlocks) {
-                if (checkDisabledModel && MultiblockWorldSavedData.isModelDisabled(pos)) {
+                if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
                     continue;
                 }
                 TileEntity tile = world.getTileEntity(pos);

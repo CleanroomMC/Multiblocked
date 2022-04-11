@@ -124,13 +124,21 @@ public class TraceabilityPredicate {
         return this;
     }
 
-
     /**
      * Set renderMask.
      */
     public TraceabilityPredicate disableRenderFormed() {
         common.forEach(predicate -> predicate.disableRenderFormed = true);
         limited.forEach(predicate -> predicate.disableRenderFormed = true);
+        return this;
+    }
+
+    /**
+     * Set io.
+     */
+    public TraceabilityPredicate setIO(IO io) {
+        common.forEach(predicate -> predicate.io = io);
+        limited.forEach(predicate -> predicate.io = io);
         return this;
     }
 

@@ -18,6 +18,7 @@ import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityEnerg
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -58,23 +59,31 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
         return new NumberContentWidget().setContentTexture(new TextTexture("EU", color)).setUnit("EU");
     }
 
+    public boolean isCEu() {
+        String version = Loader.instance().getIndexedModList().get("gregtech").getVersion();
+        return Integer.parseInt(version.split("\\.")[0]) >= 2;
+    }
+
     @Override
     public BlockInfo[] getCandidates() {
         List<BlockInfo> list = new ArrayList<>();
-        IBlockState blockState = GregTechAPI.MACHINE.getDefaultState();
-        for (MetaTileEntityEnergyHatch energyInputHatch : MetaTileEntities.ENERGY_INPUT_HATCH) {
-            if (energyInputHatch == null) continue;
-            MetaTileEntityHolder holder = new MetaTileEntityHolder();
-            ItemStack itemStack = energyInputHatch.getStackForm();
-            holder.setMetaTileEntity(GregTechAPI.MTE_REGISTRY.getObjectById(itemStack.getItemDamage()));
-            list.add(new BlockInfo(blockState, holder, itemStack));
-        }
-        for (MetaTileEntityEnergyHatch energyOutputHatch : MetaTileEntities.ENERGY_OUTPUT_HATCH) {
-            if (energyOutputHatch == null) continue;
-            MetaTileEntityHolder holder = new MetaTileEntityHolder();
-            ItemStack itemStack = energyOutputHatch.getStackForm();
-            holder.setMetaTileEntity(GregTechAPI.MTE_REGISTRY.getObjectById(itemStack.getItemDamage()));
-            list.add(new BlockInfo(blockState, holder, itemStack));
+        if (isCEu()) {
+            IBlockState blockState = GregTechAPI.MACHINE.getDefaultState();
+            for (MetaTileEntityEnergyHatch energyInputHatch : MetaTileEntities.ENERGY_INPUT_HATCH) {
+                if (energyInputHatch == null) continue;
+                MetaTileEntityHolder holder = new MetaTileEntityHolder();
+                ItemStack itemStack = energyInputHatch.getStackForm();
+                holder.setMetaTileEntity(GregTechAPI.MTE_REGISTRY.getObjectById(itemStack.getItemDamage()));
+                list.add(new BlockInfo(blockState, holder, itemStack));
+            }
+            for (MetaTileEntityEnergyHatch energyOutputHatch : MetaTileEntities.ENERGY_OUTPUT_HATCH) {
+                if (energyOutputHatch == null) continue;
+                MetaTileEntityHolder holder = new MetaTileEntityHolder();
+                ItemStack itemStack = energyOutputHatch.getStackForm();
+                holder.setMetaTileEntity(GregTechAPI.MTE_REGISTRY.getObjectById(itemStack.getItemDamage()));
+                list.add(new BlockInfo(blockState, holder, itemStack));
+            }
+        } else { // time to get rid of the gtce
         }
         return list.toArray(new BlockInfo[0]);
     }

@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
+import software.bernie.geckolib3.GeckoLib;
 
 import java.io.File;
 
@@ -35,6 +36,9 @@ import java.io.File;
 public class CommonProxy {
 
     public void preInit() {
+        if (Multiblocked.isModLoaded(Multiblocked.MODID_GEO)) {
+            GeckoLib.initialize();
+        }
         MinecraftForge.EVENT_BUS.register(Listeners.class);
         MultiblockedNetworking.init();
         MbdCapabilities.registerCapabilities();

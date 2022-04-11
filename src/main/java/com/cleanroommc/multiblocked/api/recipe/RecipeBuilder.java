@@ -13,11 +13,14 @@ import com.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import com.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import com.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import com.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
+import crafttweaker.api.data.IData;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import lach_01298.qmd.particle.ParticleStack;
 import mekanism.api.gas.GasStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -38,8 +41,10 @@ public class RecipeBuilder {
     public final RecipeMap recipeMap;
     public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> inputBuilder = new HashMap<>();
     public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> outputBuilder = new HashMap<>();
+    public final Map<String, Object> data = new HashMap<>();
     @ZenProperty
     protected int duration;
+    protected ITextComponent text;
     protected StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name yourself.
 
     @ZenConstructor
@@ -58,6 +63,7 @@ public class RecipeBuilder {
             ImmutableList.Builder<Tuple<Object, Float>> builder = ImmutableList.builder();
             copy.outputBuilder.put(k, builder.addAll(v.build()));
         });
+        data.forEach(copy.data::put);
         copy.duration = this.duration;
         copy.keyBuilder = new StringBuilder(keyBuilder.toString());
         return copy;
@@ -66,6 +72,30 @@ public class RecipeBuilder {
     @ZenMethod
     public RecipeBuilder duration(int duration) {
         this.duration = duration;
+        return this;
+    }
+
+    public RecipeBuilder data(String key, Object object) {
+        this.data.put(key, object);
+        return this;
+    }
+
+    @ZenMethod
+    @Optional.Method(modid = Multiblocked.MODID_CT)
+    public RecipeBuilder data(String key, IData object) {
+        this.data.put(key, object);
+        return this;
+    }
+
+    public RecipeBuilder text(ITextComponent text) {
+        this.text = text;
+        return this;
+    }
+
+    @ZenMethod
+    @Optional.Method(modid = Multiblocked.MODID_CT)
+    public RecipeBuilder text(crafttweaker.api.text.ITextComponent text) {
+        this.text = CraftTweakerMC.getITextComponent(text);
         return this;
     }
 
@@ -337,8 +367,7 @@ public class RecipeBuilder {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> entry : this.outputBuilder.entrySet()) {
             outputBuilder.put(entry.getKey(), entry.getValue().build());
         }
-
-        return new Recipe(keyBuilder.toString(), inputBuilder.build(), outputBuilder.build(), duration);
+        return new Recipe(keyBuilder.toString(), inputBuilder.build(), outputBuilder.build(), data.isEmpty() ? Recipe.EMPTY : ImmutableMap.copyOf(data), text, duration);
     }
 
     @ZenMethod

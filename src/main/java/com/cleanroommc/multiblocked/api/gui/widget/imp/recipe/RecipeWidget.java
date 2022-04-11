@@ -39,6 +39,9 @@ public class RecipeWidget extends WidgetGroup {
         this.addWidget(outputs);
         this.addWidget(new ProgressWidget(doubleSupplier, 78, 27, 20, 20, progress));
         this.addWidget(new LabelWidget(5, 73, () -> I18n.format("multiblocked.recipe.duration", this.recipe.duration / 20.)));
+        if (recipe.text != null) {
+            this.addWidget(new LabelWidget(80, 73, recipe.text.getFormattedText()));
+        }
         int index = 0;
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.inputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();

@@ -19,10 +19,13 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -108,6 +111,7 @@ public class RecipeMap {
         outputCapabilities.addAll(recipe.outputs.keySet());
     }
 
+    @ZenMethod
     public Recipe searchRecipe(ICapabilityProxyHolder holder) {
         if (!holder.hasProxies()) return null;
         for (Recipe recipe : recipes.values()) {
@@ -116,6 +120,16 @@ public class RecipeMap {
             }
         }
         return null;
+    }
+
+    @ZenMethod
+    public Recipe getRecipe(String uid) {
+        return recipes.get(uid);
+    }
+
+    @ZenMethod
+    public List<Recipe> allRecipes() {
+        return new ArrayList<>(recipes.values());
     }
 
 }

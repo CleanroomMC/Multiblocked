@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.recipe;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.ICapabilityProxyHolder;
 import com.cleanroommc.multiblocked.api.capability.IO;
@@ -8,34 +9,60 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Table;
 import crafttweaker.annotations.ZenRegister;
-import com.cleanroommc.multiblocked.Multiblocked;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.text.ITextComponent;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ZenClass("mods.multiblocked.recipe.Recipe")
 @ZenRegister
 public class Recipe {
+    public static final ImmutableMap<String, Object> EMPTY = ImmutableMap.of();
     @ZenProperty
     public final String uid;
     public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputs;
     public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> outputs;
+    public final ImmutableMap<String, Object> data;
     @ZenProperty
     public final int duration;
+    public final ITextComponent text;
 
     public Recipe(String uid,
                   ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputs,
                   ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> outputs,
                   int duration) {
+        this(uid, inputs, outputs, EMPTY, null, duration);
+    }
+
+    public Recipe(String uid,
+                  ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputs,
+                  ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> outputs,
+                  ImmutableMap<String, Object> data,
+                  ITextComponent text,
+                  int duration) {
         this.uid = uid;
         this.inputs = inputs;
         this.outputs = outputs;
         this.duration = duration;
+        this.data = data;
+        this.text = text;
+    }
+
+    public <T> T getData(String key) {
+        if (data.containsKey(key)) {
+            return (T) data.get(key);
+        }
+        return null;
     }
 
     @ZenMethod
@@ -62,6 +89,7 @@ public class Recipe {
      * @param holder proxies
      * @return result
      */
+    @ZenMethod
     public boolean match(ICapabilityProxyHolder holder) {
         if (!holder.hasProxies()) return false;
         if (!match(IO.IN, holder.getCapabilities())) return false;
@@ -95,6 +123,7 @@ public class Recipe {
     }
 
     @SuppressWarnings("ALL")
+    @ZenMethod
     public void handleInput(ICapabilityProxyHolder holder) {
         if (!holder.hasProxies()) return;
         Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();
@@ -131,6 +160,7 @@ public class Recipe {
     }
 
     @SuppressWarnings("ALL")
+    @ZenMethod
     public void handleOutput(ICapabilityProxyHolder holder) {
         if (!holder.hasProxies()) return;
         Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();

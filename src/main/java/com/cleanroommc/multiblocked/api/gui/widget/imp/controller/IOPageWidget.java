@@ -140,7 +140,7 @@ public class IOPageWidget extends PageWidget {
                 MultiblockCapability<?> capability = values.get(i + index);
                 if (capabilitySettings.get(capability) != null && capabilitySettings.get(capability).getFirst() != null) {
                     capabilitySettings.put(capability, new Tuple<>(capabilitySettings.get(capability).getFirst(), facing));
-                    buttons[i - index].setButtonTexture(new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture(capabilitySettings.get(capability).getSecond().getName().substring(0,1))));
+                    buttons[i - index].setButtonTexture(new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture(capabilitySettings.get(capability).getSecond().getName().substring(0,1)))).setHoverBorderTexture(1, capability.color).setVisible(true);
                     writeClientAction(-2, buffer -> {
                         Tuple<IO, EnumFacing> tuple = capabilitySettings.get(capability);
                         buffer.writeString(capability.name);

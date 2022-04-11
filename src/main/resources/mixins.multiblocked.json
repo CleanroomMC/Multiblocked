@@ -11,8 +11,10 @@
     "WorldMixin"
   ],
   "client": [
+    "BlockModelRendererMixin",
     "BlockRendererDispatcherMixin",
     "EntityRendererMixin",
+    "ForgeBlockModelRendererMixin",
     "MinecraftMixin",
     "RenderItemMixin",
     "TileEntityRendererDispatcherMixin"

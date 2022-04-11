@@ -9,14 +9,18 @@ import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.gson.*;
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,7 +57,24 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
     @Override
     public BlockInfo[] getCandidates() {
-        return new BlockInfo[0];
+        List<BlockInfo> list = new ArrayList<>();
+        DummyWorld dummyWorld = new DummyWorld();
+        for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
+            if (block.getRegistryName() != null) {
+                String path = block.getRegistryName().getPath();
+                if (path.contains("energy") || path.contains("rf")) {
+                    try {
+                        if (block.hasTileEntity(block.getDefaultState())) {
+                            TileEntity tileEntity = block.createTileEntity(dummyWorld, block.getDefaultState());
+                            if (tileEntity != null && isBlockHasCapability(IO.BOTH, tileEntity)) {
+                                list.add(new BlockInfo(block.getDefaultState(), tileEntity));
+                            }
+                        }
+                    } catch (Throwable ignored) { }
+                }
+            }
+        }
+        return list.toArray(new BlockInfo[0]);
     }
 
     @Override

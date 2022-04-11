@@ -3,9 +3,7 @@ package com.cleanroommc.multiblocked.client.renderer.impl;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.client.util.FacadeBlockAccess;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
-import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -33,7 +31,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 
 /**
  * It will toggles the rendered block each second, mainly for rendering of the Any Capability. {@link MultiblockCapability#getCandidates()}}
@@ -62,14 +59,18 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         return Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(renderItem, null, null);
     }
 
-    @Override
-    public IBlockState getState() {
+    public BlockInfo getBlockInfo() {
         long time = System.currentTimeMillis();
         if (time - lastTime > 1000) {
             lastTime = time;
             index = Multiblocked.RNG.nextInt();
         }
-        return blockInfos[Math.abs(index) % blockInfos.length].getBlockState();
+        return blockInfos[Math.abs(index) % blockInfos.length];
+    }
+
+    @Override
+    public IBlockState getState() {
+        return getBlockInfo().getBlockState();
     }
 
     @Override
@@ -156,7 +157,6 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
 
     @SideOnly(Side.CLIENT)
     public TileEntity getTileEntity(World world, BlockPos pos) {
-        BlockInfo blockInfo = blockInfos[Math.abs(index) % blockInfos.length];
-        return blockInfo.getTileEntity();
+        return getBlockInfo().getTileEntity();
     }
 }

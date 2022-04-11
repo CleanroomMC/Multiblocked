@@ -4,14 +4,13 @@ import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.gui.ingredient.IIngredientSlot;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiContainer;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
+import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
-import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
-import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -21,7 +20,6 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -94,7 +92,7 @@ public class SlotWidget extends Widget implements IIngredientSlot {
         if (backgroundTexture != null) {
             backgroundTexture.draw(mouseX, mouseY, pos.x, pos.y, size.width, size.height);
         }
-        ItemStack itemStack = slotReference.getStack();
+        ItemStack itemStack = getRealStack(slotReference.getStack());
         ModularUIGuiContainer modularUIGui = gui == null ? null : gui.getModularUIGui();
         if (itemStack.isEmpty() && modularUIGui!= null && modularUIGui.getDragSplitting() && modularUIGui.getDragSplittingSlots().contains(slotReference)) { // draw split
             int splitSize = modularUIGui.getDragSplittingSlots().size();
@@ -263,9 +261,22 @@ public class SlotWidget extends Widget implements IIngredientSlot {
     @Override
     public Object getIngredientOverMouse(int mouseX, int mouseY) {
         if (isMouseOverElement(mouseX, mouseY)) {
-            return getHandle().getStack();
+            return getRealStack(getHandle().getStack());
         }
         return null;
+    }
+
+    public ItemStack getRealStack(ItemStack itemStack) {
+        if (itemStack.getItem() instanceof ItemBlock) {
+            Block block = ((ItemBlock) itemStack.getItem()).getBlock();
+            if (block instanceof BlockComponent) {
+                if (((BlockComponent) block).definition.baseRenderer instanceof CycleBlockStateRenderer) {
+                    CycleBlockStateRenderer renderer = ((CycleBlockStateRenderer) ((BlockComponent) block).definition.baseRenderer);
+                    itemStack = renderer.getBlockInfo().getItemStackForm();
+                }
+            }
+        }
+        return itemStack;
     }
 
     public interface ISlotWidget {
@@ -279,23 +290,6 @@ public class SlotWidget extends Widget implements IIngredientSlot {
 
         public WidgetSlot(IInventory inventory, int index, int xPosition, int yPosition) {
             super(inventory, index, xPosition, yPosition);
-        }
-
-        @Override
-        @Nonnull
-        public ItemStack getStack() {
-            ItemStack itemStack = super.getStack();
-            if (itemStack.getItem() instanceof ItemBlock) {
-                Block block = ((ItemBlock) itemStack.getItem()).getBlock();
-                if (block instanceof BlockComponent) {
-                    if (((BlockComponent) block).definition.baseRenderer instanceof CycleBlockStateRenderer) {
-                        CycleBlockStateRenderer renderer = ((CycleBlockStateRenderer) ((BlockComponent) block).definition.baseRenderer);
-                        BlockInfo blockInfo = renderer.blockInfos[Math.abs(renderer.index) % renderer.blockInfos.length];
-                        itemStack = blockInfo.getItemStackForm();
-                    }
-                }
-            }
-            return itemStack;
         }
 
         @Override
@@ -355,23 +349,6 @@ public class SlotWidget extends Widget implements IIngredientSlot {
 
         public WidgetSlotItemHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);
-        }
-
-        @Override
-        @Nonnull
-        public ItemStack getStack() {
-            ItemStack itemStack = super.getStack();
-            if (itemStack.getItem() instanceof ItemBlock) {
-                Block block = ((ItemBlock) itemStack.getItem()).getBlock();
-                if (block instanceof BlockComponent) {
-                    if (((BlockComponent) block).definition.baseRenderer instanceof CycleBlockStateRenderer) {
-                        CycleBlockStateRenderer renderer = ((CycleBlockStateRenderer) ((BlockComponent) block).definition.baseRenderer);
-                        BlockInfo blockInfo = renderer.blockInfos[Math.abs(renderer.index) % renderer.blockInfos.length];
-                        itemStack = blockInfo.getItemStackForm();
-                    }
-                }
-            }
-            return itemStack;
         }
 
         @Override

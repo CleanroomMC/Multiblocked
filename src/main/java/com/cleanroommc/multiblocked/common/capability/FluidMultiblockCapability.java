@@ -9,20 +9,24 @@ import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.widget.FluidContentWidget;
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,7 +64,24 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
 
     @Override
     public BlockInfo[] getCandidates() {
-        return new BlockInfo[0];
+        List<BlockInfo> list = new ArrayList<>();
+        DummyWorld dummyWorld = new DummyWorld();
+        for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
+            if (block.getRegistryName() != null) {
+                String path = block.getRegistryName().getPath();
+                if (path.contains("tank") || path.contains("fluid") || path.contains("liquid")) {
+                    try {
+                        if (block.hasTileEntity(block.getDefaultState())) {
+                            TileEntity tileEntity = block.createTileEntity(dummyWorld, block.getDefaultState());
+                            if (tileEntity != null  && isBlockHasCapability(IO.BOTH, tileEntity)) {
+                                list.add(new BlockInfo(block.getDefaultState(), tileEntity));
+                            }
+                        }
+                    } catch (Throwable ignored) { }
+                }
+            }
+        }
+        return list.toArray(new BlockInfo[0]);
     }
 
     @Override

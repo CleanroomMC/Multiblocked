@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 
 import java.util.ArrayList;
@@ -40,6 +41,11 @@ public class PredicateAnyCapability extends SimplePredicate {
     @Override
     public SimplePredicate buildPredicate() {
         MultiblockCapability<?> capability = MbdCapabilities.get(this.capability);
+        if (capability == null) {
+            predicate = state -> false;
+            candidates = () -> new BlockInfo[] {new BlockInfo(Blocks.BARRIER)};
+            return this;
+        }
         predicate = state -> state.getBlockState().getBlock() == capability.getAnyBlock() || checkCapability(io, capability, state);
         candidates = () -> new BlockInfo[]{new BlockInfo(capability.getAnyBlock())};
         toolTips = new ArrayList<>();

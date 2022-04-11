@@ -218,7 +218,6 @@ public class SceneWidget extends WidgetGroup {
         }
         BlockPosFace tmp = dragging ? clickPosFace : hoverPosFace;
         if (selectedPosFace != null || tmp != null) {
-            GlStateManager.pushMatrix();
             RenderUtils.useLightMap(240, 240, () -> {
                 GlStateManager.disableDepth();
                 if (selectedPosFace != null) {
@@ -229,7 +228,6 @@ public class SceneWidget extends WidgetGroup {
                 }
                 GlStateManager.enableDepth();
             });
-            GlStateManager.popMatrix();
         }
         if (selectedPosFace == null) return;
         if (renderSelect) {
@@ -237,14 +235,20 @@ public class SceneWidget extends WidgetGroup {
         }
     }
 
-    protected void drawFacingBorder(BlockPosFace posFace, int color) {
+    @SideOnly(Side.CLIENT)
+    public void drawFacingBorder(BlockPosFace posFace, int color) {
+        drawFacingBorder(posFace, color, 0);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void drawFacingBorder(BlockPosFace posFace, int color, int inner) {
         if (!renderFacing) return;
         GlStateManager.pushMatrix();
         RenderUtils.moveToFace(posFace.pos.getX(), posFace.pos.getY(), posFace.pos.getZ(), posFace.facing);
         RenderUtils.rotateToFace(posFace.facing, null);
         GlStateManager.scale(1f / 16, 1f / 16, 0);
         GlStateManager.translate(-8, -8, 0);
-        DrawerHelper.drawBorder(1, 1, 14, 14, color, 1);
+        DrawerHelper.drawBorder(1 + inner * 2, 1 + inner * 2, 14 - 4 * inner, 14 - 4 * inner, color, 1);
         GlStateManager.popMatrix();
     }
 

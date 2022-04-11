@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class EnergyGTCECapability extends MultiblockCapability<Long> {
     public static final EnergyGTCECapability CAP = new EnergyGTCECapability();
@@ -98,22 +97,20 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
 
         @Override
         protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, boolean simulate) {
-            Set<IEnergyContainer> capabilities = getCapability();
+            IEnergyContainer capability = getCapability();
+            if (capability == null) return left;
             long sum = left.stream().reduce(0L, Long::sum);
-            for (IEnergyContainer capability : capabilities) {
-                if (io == IO.IN) {
-                    if (!simulate) {
-                        capability.addEnergy(-Math.min(capability.getEnergyStored(), sum));
-                    }
-                    sum = sum - capability.getEnergyStored();
-                } else if (io == IO.OUT) {
-                    long canInput = capability.getEnergyCapacity() - capability.getEnergyStored();
-                    if (!simulate) {
-                        capability.addEnergy(Math.min(canInput, sum));
-                    }
-                    sum = sum - canInput;
+            if (io == IO.IN) {
+                if (!simulate) {
+                    capability.addEnergy(-Math.min(capability.getEnergyStored(), sum));
                 }
-                if (sum <= 0) break;
+                sum = sum - capability.getEnergyStored();
+            } else if (io == IO.OUT) {
+                long canInput = capability.getEnergyCapacity() - capability.getEnergyStored();
+                if (!simulate) {
+                    capability.addEnergy(Math.min(canInput, sum));
+                }
+                sum = sum - canInput;
             }
             return sum <= 0 ? null : Collections.singletonList(sum);
         }

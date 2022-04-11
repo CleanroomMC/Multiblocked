@@ -33,7 +33,6 @@ import java.util.*;
 @ZenClass("mods.multiblocked.capability.Capability")
 @ZenRegister
 public abstract class MultiblockCapability<T> implements JsonSerializer<T>, JsonDeserializer<T> {
-    protected static EnumFacing[] FACINGS = new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.WEST, EnumFacing.SOUTH, null};
     @ZenProperty
     public final String name;
     @ZenProperty
@@ -91,7 +90,7 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
 
     public <C> Set<C> getCapability(Capability<C> capability, @Nonnull TileEntity tileEntity) {
         Set<C> found = new LinkedHashSet<>();
-        for (EnumFacing facing : FACINGS) {
+        for (EnumFacing facing : EnumFacing.VALUES) {
             C cap = tileEntity.getCapability(capability, facing);
             if (cap != null) return Collections.singleton(cap);
         }

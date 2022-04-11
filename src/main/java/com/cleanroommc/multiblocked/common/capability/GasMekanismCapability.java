@@ -21,7 +21,6 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     public static final GasMekanismCapability CAP = new GasMekanismCapability();
@@ -81,39 +80,37 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
 
         @Override
         protected List<GasStack> handleRecipeInner(IO io, Recipe recipe, List<GasStack> left, boolean simulate) {
-            Set<IGasHandler> capabilities = getCapability();
-            for (IGasHandler capability : capabilities) {
-                Iterator<GasStack> iterator = left.iterator();
-                if (io == IO.IN) {
-                    while (iterator.hasNext()) {
-                        GasStack gasStack = iterator.next();
-                        for (EnumFacing facing : EnumFacing.values()) {
-                            if (capability.canDrawGas(facing, gasStack.getGas())) {
-                                GasStack drain = capability.drawGas(facing, gasStack.amount, !simulate);
-                                if (drain == null) continue;
-                                gasStack.amount -= drain.amount;
-                            }
-                            if (gasStack.amount <= 0) break;
+            IGasHandler capability = getCapability();
+            if (capability == null) return left;
+            Iterator<GasStack> iterator = left.iterator();
+            if (io == IO.IN) {
+                while (iterator.hasNext()) {
+                    GasStack gasStack = iterator.next();
+                    for (EnumFacing facing : EnumFacing.values()) {
+                        if (capability.canDrawGas(facing, gasStack.getGas())) {
+                            GasStack drain = capability.drawGas(facing, gasStack.amount, !simulate);
+                            if (drain == null) continue;
+                            gasStack.amount -= drain.amount;
                         }
-                        if (gasStack.amount <= 0) {
-                            iterator.remove();
-                        }
+                        if (gasStack.amount <= 0) break;
                     }
-                } else if (io == IO.OUT){
-                    while (iterator.hasNext()) {
-                        GasStack gasStack = iterator.next();
-                        for (EnumFacing facing : EnumFacing.values()) {
-                            if (capability.canReceiveGas(facing, gasStack.getGas())) {
-                                gasStack.amount -= capability.receiveGas(facing, gasStack, !simulate);
-                            }
-                            if (gasStack.amount <= 0) break;
-                        }
-                        if (gasStack.amount <= 0) {
-                            iterator.remove();
-                        }
+                    if (gasStack.amount <= 0) {
+                        iterator.remove();
                     }
                 }
-                if (left.isEmpty()) break;
+            } else if (io == IO.OUT){
+                while (iterator.hasNext()) {
+                    GasStack gasStack = iterator.next();
+                    for (EnumFacing facing : EnumFacing.values()) {
+                        if (capability.canReceiveGas(facing, gasStack.getGas())) {
+                            gasStack.amount -= capability.receiveGas(facing, gasStack, !simulate);
+                        }
+                        if (gasStack.amount <= 0) break;
+                    }
+                    if (gasStack.amount <= 0) {
+                        iterator.remove();
+                    }
+                }
             }
             return left.isEmpty() ? null : left;
         }

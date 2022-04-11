@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.api.capability;
 
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 
 import java.util.*;
@@ -12,12 +13,14 @@ import java.util.stream.Collectors;
  */
 public abstract class CapabilityProxy<K> {
     public final MultiblockCapability<? super K> capability;
+    public EnumFacing facing;
 
     private TileEntity tileEntity;
 
     public CapabilityProxy(MultiblockCapability<? super K> capability, TileEntity tileEntity) {
         this.capability = capability;
         this.tileEntity = tileEntity;
+        this.facing = EnumFacing.UP;
     }
 
     public TileEntity getTileEntity() {
@@ -27,9 +30,9 @@ public abstract class CapabilityProxy<K> {
         return tileEntity;
     }
 
-    public <C> Set<C> getCapability(Capability<C> capability) {
+    public <C> C getCapability(Capability<C> capability) {
         TileEntity tileEntity = getTileEntity();
-        return tileEntity == null ? Collections.emptySet() : this.capability.getCapability(capability, getTileEntity());
+        return tileEntity == null ? null : tileEntity.getCapability(capability, facing);
     }
 
     @Override

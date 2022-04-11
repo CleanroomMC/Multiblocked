@@ -17,7 +17,7 @@ public abstract class CapCapabilityProxy<C, K> extends CapabilityProxy<K>{
         CAP = cap;
     }
 
-    public Set<C> getCapability() {
+    public C getCapability() {
         return super.getCapability(CAP);
     }
 

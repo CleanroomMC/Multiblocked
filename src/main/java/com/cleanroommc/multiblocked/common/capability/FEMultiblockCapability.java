@@ -19,7 +19,6 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
@@ -75,15 +74,13 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
         @Override
         protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, boolean simulate) {
-            Set<IEnergyStorage> capabilities = getCapability();
+            IEnergyStorage capability = getCapability();
+            if (capability == null) return left;
             int sum = left.stream().reduce(0, Integer::sum);
-            for (IEnergyStorage capability : capabilities) {
-                if (io == IO.IN) {
-                    sum = sum - capability.extractEnergy(sum, simulate);
-                } else if (io == IO.OUT) {
-                    sum = sum - capability.receiveEnergy(sum, simulate);
-                }
-                if (sum <= 0) break;
+            if (io == IO.IN) {
+                sum = sum - capability.extractEnergy(sum, simulate);
+            } else if (io == IO.OUT) {
+                sum = sum - capability.receiveEnergy(sum, simulate);
             }
             return sum <= 0 ? null : Collections.singletonList(sum);
         }

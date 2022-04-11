@@ -23,7 +23,6 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredient> {
 
@@ -94,37 +93,35 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
 
         @Override
         protected List<ItemsIngredient> handleRecipeInner(IO io, Recipe recipe, List<ItemsIngredient> left, boolean simulate) {
-            Set<IItemHandler> capabilities = getCapability();
-            for (IItemHandler capability : capabilities) {
-                Iterator<ItemsIngredient> iterator = left.iterator();
-                if (io == IO.IN) {
-                    while (iterator.hasNext()) {
-                        ItemsIngredient ingredient = iterator.next();
-                        for (int i = 0; i < capability.getSlots(); i++) {
-                            ItemStack itemStack = capability.getStackInSlot(i);
-                            if (ingredient.apply(itemStack)) {
-                                ItemStack extracted = capability.extractItem(i, ingredient.getAmount(), simulate);
-                                ingredient.setAmount(ingredient.getAmount() - extracted.getCount());
-                                if (ingredient.getAmount() <= 0) {
-                                    iterator.remove();
-                                    break;
-                                }
+            IItemHandler capability = getCapability();
+            if (capability == null) return left;
+            Iterator<ItemsIngredient> iterator = left.iterator();
+            if (io == IO.IN) {
+                while (iterator.hasNext()) {
+                    ItemsIngredient ingredient = iterator.next();
+                    for (int i = 0; i < capability.getSlots(); i++) {
+                        ItemStack itemStack = capability.getStackInSlot(i);
+                        if (ingredient.apply(itemStack)) {
+                            ItemStack extracted = capability.extractItem(i, ingredient.getAmount(), simulate);
+                            ingredient.setAmount(ingredient.getAmount() - extracted.getCount());
+                            if (ingredient.getAmount() <= 0) {
+                                iterator.remove();
+                                break;
                             }
                         }
                     }
-                } else if (io == IO.OUT){
-                    while (iterator.hasNext()) {
-                        ItemsIngredient ingredient = iterator.next();
-                        ItemStack output = ingredient.getOutputStack();
-                        for (int i = 0; i < capability.getSlots(); i++) {
-                            output = capability.insertItem(i, output, simulate);
-                            if (output.isEmpty()) break;
-                        }
-                        if (output.isEmpty()) iterator.remove();
-                        else ingredient.setAmount(output.getCount());
-                    }
                 }
-                if (left.isEmpty()) break;
+            } else if (io == IO.OUT){
+                while (iterator.hasNext()) {
+                    ItemsIngredient ingredient = iterator.next();
+                    ItemStack output = ingredient.getOutputStack();
+                    for (int i = 0; i < capability.getSlots(); i++) {
+                        output = capability.insertItem(i, output, simulate);
+                        if (output.isEmpty()) break;
+                    }
+                    if (output.isEmpty()) iterator.remove();
+                    else ingredient.setAmount(output.getCount());
+                }
             }
             return left.isEmpty() ? null : left;
         }

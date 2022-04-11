@@ -41,6 +41,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -62,7 +63,7 @@ import java.util.Set;
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition> implements ICapabilityProxyHolder, ICTController {
     public MultiblockState state;
     protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
-    private Map<Long, Map<MultiblockCapability<?>, IO>> settings;
+    private Map<Long, Map<MultiblockCapability<?>, Tuple<IO, EnumFacing>>> settings;
     protected LongOpenHashSet parts;
     protected RecipeLogic recipeLogic;
 
@@ -155,17 +156,21 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 TileEntity tileEntity = world.getTileEntity(BlockPos.fromLong(entry.getKey()));
                 if (tileEntity != null) {
                     if (settings != null) {
-                        Map<MultiblockCapability<?>, IO> caps = settings.get(entry.getKey());
+                        Map<MultiblockCapability<?>, Tuple<IO, EnumFacing>> caps = settings.get(entry.getKey());
                         if (caps != null) {
-                            for (Map.Entry<MultiblockCapability<?>, IO> ioEntry : caps.entrySet()) {
-                                IO io = ioEntry.getValue();
+                            for (Map.Entry<MultiblockCapability<?>, Tuple<IO, EnumFacing>> ioEntry : caps.entrySet()) {
                                 MultiblockCapability<?> capability = ioEntry.getKey();
-                                if (io == null || capability == null) continue;
+                                Tuple<IO, EnumFacing> tuple = ioEntry.getValue();
+                                if (tuple == null || capability == null) continue;
+                                IO io = tuple.getFirst();
+                                EnumFacing facing = tuple.getSecond();
                                 if (capability.isBlockHasCapability(io, tileEntity)) {
                                     if (!capabilities.contains(io, capability)) {
                                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                                     }
-                                    capabilities.get(io, capability).put(entry.getKey().longValue(), capability.createProxy(io, tileEntity));
+                                    CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity);
+                                    proxy.facing = facing;
+                                    capabilities.get(io, capability).put(entry.getKey().longValue(), proxy);
                                 }
                             }
                         }
@@ -176,7 +181,8 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                     if (!capabilities.contains(io, capability)) {
                                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                                     }
-                                    capabilities.get(io, capability).put(entry.getKey().longValue(), capability.createProxy(io, tileEntity));
+                                    CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity);
+                                    capabilities.get(io, capability).put(entry.getKey().longValue(), proxy);
                                 }
                             }
                         });
@@ -291,8 +297,8 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             for (NBTBase base : tagList) {
                 NBTTagCompound tag = (NBTTagCompound) base;
                 settings.computeIfAbsent(tag.getLong("pos"), l->new HashMap<>())
-                        .put(MbdCapabilities.get(tag.getString("cap")),
-                                IO.VALUES[tag.getInteger("io")]);
+                        .put(MbdCapabilities.get(tag.getString("cap")), 
+                                new Tuple<>(IO.VALUES[tag.getInteger("io")], EnumFacing.VALUES[tag.getInteger("facing")]));
             }
         }
         state = MultiblockWorldSavedData.getOrCreate(world).mapping.get(pos);
@@ -310,11 +316,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 MultiblockCapability<?> cap = cell.getColumnKey();
                 Long2ObjectOpenHashMap<CapabilityProxy<?>> value = cell.getValue();
                 if (io != null && cap != null && value != null) {
-                    for (long posLong : value.keySet()) {
+                    for (Map.Entry<Long, CapabilityProxy<?>> entry : value.entrySet()) {
                         NBTTagCompound tag = new NBTTagCompound();
                         tag.setInteger("io", io.ordinal());
+                        tag.setInteger("facing", entry.getValue().facing.getIndex());
                         tag.setString("cap", cap.name);
-                        tag.setLong("pos", posLong);
+                        tag.setLong("pos", entry.getKey());
                         tagList.appendTag(tag);
                     }
                 }

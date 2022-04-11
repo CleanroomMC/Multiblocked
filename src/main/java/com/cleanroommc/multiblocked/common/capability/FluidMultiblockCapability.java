@@ -25,7 +25,6 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
 
@@ -82,39 +81,37 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
 
         @Override
         protected List<FluidStack> handleRecipeInner(IO io, Recipe recipe, List<FluidStack> left, boolean simulate) {
-            Set<IFluidHandler> capabilities = getCapability();
-            for (IFluidHandler capability : capabilities) {
-                Iterator<FluidStack> iterator = left.iterator();
-                if (io == IO.IN) {
-                    while (iterator.hasNext()) {
-                        FluidStack fluidStack = iterator.next();
-                        boolean found = false;
-                        for (IFluidTankProperties tankProperty : capability.getTankProperties()) {
-                            FluidStack stored = tankProperty.getContents();
-                            if (stored == null || !stored.isFluidEqual(fluidStack)) {
-                                continue;
-                            }
-                            found = true;
+            IFluidHandler capability = getCapability();
+            if (capability == null) return left;
+            Iterator<FluidStack> iterator = left.iterator();
+            if (io == IO.IN) {
+                while (iterator.hasNext()) {
+                    FluidStack fluidStack = iterator.next();
+                    boolean found = false;
+                    for (IFluidTankProperties tankProperty : capability.getTankProperties()) {
+                        FluidStack stored = tankProperty.getContents();
+                        if (stored == null || !stored.isFluidEqual(fluidStack)) {
+                            continue;
                         }
-                        if (!found) continue;
-                        FluidStack drained = capability.drain(fluidStack, !simulate);
-                        if (drained == null) continue;
-                        fluidStack.amount = fluidStack.amount - drained.amount;
-                        if (fluidStack.amount <= 0) {
-                            iterator.remove();
-                        }
+                        found = true;
                     }
-                } else if (io == IO.OUT){
-                    while (iterator.hasNext()) {
-                        FluidStack fluidStack = iterator.next();
-                        int filled = capability.fill(fluidStack, !simulate);
-                        fluidStack.amount = fluidStack.amount - filled;
-                        if (fluidStack.amount <= 0) {
-                            iterator.remove();
-                        }
+                    if (!found) continue;
+                    FluidStack drained = capability.drain(fluidStack, !simulate);
+                    if (drained == null) continue;
+                    fluidStack.amount = fluidStack.amount - drained.amount;
+                    if (fluidStack.amount <= 0) {
+                        iterator.remove();
                     }
                 }
-                if (left.isEmpty()) break;
+            } else if (io == IO.OUT){
+                while (iterator.hasNext()) {
+                    FluidStack fluidStack = iterator.next();
+                    int filled = capability.fill(fluidStack, !simulate);
+                    fluidStack.amount = fluidStack.amount - filled;
+                    if (fluidStack.amount <= 0) {
+                        iterator.remove();
+                    }
+                }
             }
             return left.isEmpty() ? null : left;
         }

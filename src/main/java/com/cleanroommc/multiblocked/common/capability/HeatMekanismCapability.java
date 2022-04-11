@@ -19,7 +19,6 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class HeatMekanismCapability extends MultiblockCapability<Double> {
     public static final HeatMekanismCapability CAP = new HeatMekanismCapability();
@@ -77,22 +76,19 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
 
         @Override
         protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, boolean simulate) {
-            Set<IHeatTransfer> capabilities = getCapability();
+            IHeatTransfer capability = getCapability();
+            if (capability == null || capability.getTemp() <= 0) return left;
             double sum = left.stream().reduce(0d, Double::sum);
-            for (IHeatTransfer capability : capabilities) {
-                if (capability.getTemp() <= 0) continue;
-                if (io == IO.IN) {
-                    if (!simulate) {
-                        capability.transferHeatTo(-sum);
-                    }
-                } else if (io == IO.OUT) {
-                    if (!simulate) {
-                        capability.transferHeatTo(sum);
-                    }
+            if (io == IO.IN) {
+                if (!simulate) {
+                    capability.transferHeatTo(-sum);
                 }
-                return null;
+            } else if (io == IO.OUT) {
+                if (!simulate) {
+                    capability.transferHeatTo(sum);
+                }
             }
-            return left;
+            return null;
         }
 
     }

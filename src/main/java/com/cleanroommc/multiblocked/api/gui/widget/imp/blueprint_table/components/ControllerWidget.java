@@ -34,7 +34,6 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.J
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.google.gson.JsonObject;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -53,8 +52,8 @@ import java.util.function.Consumer;
 
 public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
     protected JsonBlockPattern pattern;
-    protected final WidgetGroup S2;
     protected final WidgetGroup S3;
+    protected final WidgetGroup S4;
     protected final SceneWidget sceneWidget;
     protected final Set<DummyComponentTileEntity> tiles = new HashSet<>();
     protected boolean isFormed;
@@ -90,13 +89,13 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
             labelWidget.setVisible(r);
         }));
 
-        tabContainer.addTab(new TabButton(65, 26, 20, 20)
-                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S2"))
-                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S2"))
-                        .setHoverTooltip("Step 2: structure pattern setup"),
-                S2 = new WidgetGroup(0, 0, getSize().width, getSize().height));
-        S2.addWidget(new ImageWidget(50, 66, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
-        S2.addWidget(sceneWidget = new SceneWidget(50, 66, 138, 138, null)
+        tabContainer.addTab(new TabButton(88, 26, 20, 20)
+                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S3"))
+                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S3"))
+                        .setHoverTooltip("Step 3: structure pattern setup"),
+                S3 = new WidgetGroup(0, 0, getSize().width, getSize().height));
+        S3.addWidget(new ImageWidget(50, 66, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
+        S3.addWidget(sceneWidget = new SceneWidget(50, 66, 138, 138, null)
                 .useCacheBuffer()
                 .setRenderFacing(false)
                 .setRenderSelect(false));
@@ -105,8 +104,8 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                 .setPressed(isFormed)
                 .setTexture(PAGE.getSubTexture(176 / 256.0, 184 / 256.0, 16 / 256.0, 16 / 256.0), PAGE.getSubTexture(176 / 256.0, 200 / 256.0, 16 / 256.0, 16 / 256.0))
                 .setHoverTooltip("multiblocked.structure_page.switch"));
-        S2.addWidget(new TextBoxWidget(200, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
-        S2.addWidget(new ButtonWidget(200, 66, 100, 20,
+        S3.addWidget(new TextBoxWidget(200, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
+        S3.addWidget(new ButtonWidget(200, 66, 100, 20,
                 new GuiTextureGroup(ResourceBorderTexture.BAR, new TextTexture("Pattern Setting", -1).setDropShadow(true)), cd -> {
             sceneWidget.setActive(false);
             sceneWidget.setVisible(false);
@@ -114,14 +113,14 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         }).setHoverBorderTexture(1, -1));
         updateScene();
 
-        tabContainer.addTab(new TabButton(88, 26, 20, 20)
-                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S3"))
-                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S3"))
-                        .setHoverTooltip("Step 3: machine recipe map"),
-                S3 = new WidgetGroup(0, 0, getSize().width, getSize().height));
-        S3.addWidget(new LabelWidget(80, 55, "RecipeMap: "));
-        S3.addWidget(new TextFieldWidget(80, 70, 100, 15, true, () -> this.recipeMap, s -> this.recipeMap = s));
-        S3.addWidget(new RecipeMapBuilderWidget(this, 188, 50, 150, 170).setOnRecipeMapSelected(recipeMap1 -> this.recipeMap = recipeMap1.name));
+        tabContainer.addTab(new TabButton(111, 26, 20, 20)
+                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S4"))
+                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S4"))
+                        .setHoverTooltip("Step 4: machine recipe map"),
+                S4 = new WidgetGroup(0, 0, getSize().width, getSize().height));
+        S4.addWidget(new LabelWidget(80, 55, "RecipeMap: "));
+        S4.addWidget(new TextFieldWidget(80, 70, 100, 15, true, () -> this.recipeMap, s -> this.recipeMap = s));
+        S4.addWidget(new RecipeMapBuilderWidget(this, 188, 50, 150, 170).setOnRecipeMapSelected(recipeMap1 -> this.recipeMap = recipeMap1.name));
     }
 
     @Override

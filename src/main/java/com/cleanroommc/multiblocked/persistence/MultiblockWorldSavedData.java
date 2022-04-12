@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,12 +79,8 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         multiDisabled.clear();
     }
 
-    public Set<MultiblockState> getControllerInChunk(ChunkPos chunkPos) {
-        return chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet());
-    }
-
-    public Collection<MultiblockState> getInstances() {
-        return mapping.values();
+    public Collection<MultiblockState> getControllerInChunk(ChunkPos chunkPos) {
+        return new ArrayList<>(chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet()));
     }
 
     public Collection<ComponentTileEntity<?>> getLoadings() {

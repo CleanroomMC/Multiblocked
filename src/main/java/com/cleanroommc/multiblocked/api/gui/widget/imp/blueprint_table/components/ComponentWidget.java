@@ -1,33 +1,38 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.components;
 
+import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
-import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.api.registry.MbdComponents;
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
-import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
-import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.IRendererWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.ResourceTextureWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,6 +46,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
     protected ResourceLocation location;
     protected final TabContainer tabContainer;
     protected final WidgetGroup S1;
+    protected final WidgetGroup S2;
     protected final WidgetGroup JSON;
     private final DraggableScrollableWidgetGroup tfGroup;
     private final TextBoxWidget textBox;
@@ -68,6 +74,72 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
         S1.addWidget(createScene(x - 2, 125, "baseRenderer", "basic renderer", definition.baseRenderer, r -> definition.baseRenderer = r));
         S1.addWidget(createScene(x + 98, 125, "formedRenderer", "formed renderer", definition.formedRenderer, r -> definition.formedRenderer = r));
         S1.addWidget(createScene(x + 198, 125, "workingRenderer", "working renderer", definition.workingRenderer, r -> definition.workingRenderer = r));
+
+        tabContainer.addTab(new TabButton(65, 26, 20, 20)
+                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S2"))
+                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S2"))
+                        .setHoverTooltip("Step 2: trait setup"),
+                S2 = new WidgetGroup(0, 0, getSize().width, getSize().height));
+        int y = 55;
+        for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
+            if (capability.hasTrait()) {
+                WidgetGroup widgetGroup = new WidgetGroup(47, y, 100, 15);
+                Runnable configurator = () -> {
+                    DialogWidget dialog = new DialogWidget(group, true);
+                    CapabilityTrait trait = capability.createTrait();
+                    trait.serialize(definition.traits.get(capability.name));
+                    
+                    // set background
+                    int xOffset = (384 - 176) / 2;
+                    dialog.addWidget(new ImageWidget(0, 0, 384, 256, new ColorRectTexture(0xaf000000)));
+                    ImageWidget imageWidget;
+                    dialog.addWidget(imageWidget = new ImageWidget(xOffset, 0, 176, 256, null));
+                    imageWidget.setImage(new ResourceTexture(JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png")));
+                    dialog.addWidget(new ButtonWidget(xOffset - 20,10, 20, 20, new ResourceTexture("multiblocked:textures/gui/option.png"), cd2 -> {
+                        new ResourceTextureWidget(dialog, texture -> {
+                            if (texture != null) {
+                                imageWidget.setImage(texture);
+                            }
+                        });
+                    }).setHoverTooltip("set background texture"));
+                    
+                    // open trait settings
+                    trait.openConfigurator(dialog);
+                    
+                    // save when closed
+                    dialog.setOnClosed(() -> {
+                        String background = ((ResourceTexture)imageWidget.getImage()).imageLocation.toString();
+                        if (!background.equals("multiblocked:textures/gui/custom_gui.png")) {
+                            definition.traits.addProperty("background", background);
+                        }
+                        definition.traits.add(capability.name, trait.deserialize());
+                    });
+                };
+                ButtonWidget buttonWidget = new ButtonWidget(20, 0, 15, 15, new ResourceTexture("multiblocked:textures/gui/option.png"), cd -> {
+                    if (definition.traits.has(capability.name)) {
+                        configurator.run();
+                    }
+                });
+                buttonWidget.setVisible(definition.traits.has(capability.name));
+                widgetGroup.addWidget(buttonWidget);
+                widgetGroup.addWidget(new SwitchWidget(0, 0, 15, 15, (cd, r)-> {
+                    if (r) {
+                        configurator.run();
+                    } else {
+                        definition.traits.remove(capability.name);
+                    }
+                    buttonWidget.setVisible(r);
+                })
+                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
+                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
+                        .setHoverTexture(new ColorBorderTexture(1, 0xff545757))
+                        .setPressed(definition.traits.has(capability.name))
+                        .setHoverTooltip(capability.name));
+                widgetGroup.addWidget(new LabelWidget(40, 3, capability.getUnlocalizedName()));
+                S2.addWidget(widgetGroup);
+                y += 15;
+            }
+        }
 
         tabContainer.addTab(new TabButton(235, 26, 20, 20)
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("J"))
@@ -131,7 +203,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
                 .setHoverTexture(new ColorBorderTexture(1, 0xff545757))
                 .setPressed(init)
                 .setHoverTooltip(tips));
-        widgetGroup.addWidget(new LabelWidget(20, 3, ()->text).setTextColor(-1).setDrop(true));
+        widgetGroup.addWidget(new LabelWidget(20, 3, text));
         return widgetGroup;
     }
 
@@ -143,7 +215,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
         tileEntity.setDefinition(new PartDefinition(new ResourceLocation(Multiblocked.MODID, "component_widget")));
         tileEntity.getDefinition().baseRenderer = init;
         WidgetGroup widgetGroup = new WidgetGroup(x, y, 90, 90);
-        widgetGroup.addWidget(new LabelWidget(0, 0, ()->text).setTextColor(-1).setDrop(true));
+        widgetGroup.addWidget(new LabelWidget(0, 0, text));
         widgetGroup.addWidget(new ImageWidget(0, 12,  90, 80, new ColorBorderTexture(2, 0xff4A82F7)));
         widgetGroup.addWidget(new SceneWidget(0, 12,  90, 80, world)
                 .setRenderedCore(Collections.singleton(BlockPos.ORIGIN), null)

@@ -88,6 +88,14 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
         }.setBackground(new ColorRectTexture(color));
     }
 
+    public boolean hasTrait() {
+        return false;
+    }
+
+    public CapabilityTrait createTrait() {
+        return null;
+    }
+
     public <C> Set<C> getCapability(Capability<C> capability, @Nonnull TileEntity tileEntity) {
         Set<C> found = new LinkedHashSet<>();
         for (EnumFacing facing : EnumFacing.VALUES) {

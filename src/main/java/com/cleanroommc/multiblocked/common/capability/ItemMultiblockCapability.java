@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.common.capability;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
@@ -9,6 +10,7 @@ import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.common.capability.trait.ItemCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.ItemsContentWidget;
 import com.google.gson.*;
 import net.minecraft.init.Blocks;
@@ -25,8 +27,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredient> {
+    public static final ItemMultiblockCapability CAP = new ItemMultiblockCapability();
 
-    public ItemMultiblockCapability() {
+    private ItemMultiblockCapability() {
         super("item", new Color(0xD96106).getRGB());
     }
 
@@ -48,6 +51,15 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
     @Override
     public ItemCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new ItemCapabilityProxy(tileEntity);
+    }
+
+    @Override
+    public boolean hasTrait() {
+        return true;
+    }
+
+    public CapabilityTrait createTrait() {
+        return new ItemCapabilityTrait();
     }
 
     @Override

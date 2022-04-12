@@ -366,6 +366,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
         TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
+        if (!traits.isEmpty()) initTraitUI(tabContainer, entityPlayer);
         if (isFormed()) {
             new RecipePage(this, tabContainer);
             new IOPageWidget(this, tabContainer);

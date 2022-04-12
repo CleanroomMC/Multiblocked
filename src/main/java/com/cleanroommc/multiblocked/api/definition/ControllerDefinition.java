@@ -66,13 +66,13 @@ public class ControllerDefinition extends ComponentDefinition {
         this.recipeMap = RecipeMap.EMPTY;
     }
 
-    public List<MultiblockShapeInfo> getDesigns(World world) {
+    public List<MultiblockShapeInfo> getDesigns() {
         if (designs != null) return designs;
         // auto gen
         if (basePattern != null) {
             return autoGenDFS(basePattern, new ArrayList<>(), new Stack<>());
         } else if (dynamicPattern != null) {
-            return autoGenDFS(dynamicPattern.apply((ControllerTileEntity) createNewTileEntity(world)), new ArrayList<>(), new Stack<>());
+            return autoGenDFS(dynamicPattern.apply((ControllerTileEntity) createNewTileEntity(null)), new ArrayList<>(), new Stack<>());
         }
         return Collections.emptyList();
     }

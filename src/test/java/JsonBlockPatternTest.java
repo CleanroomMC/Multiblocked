@@ -1,12 +1,22 @@
+import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 class JsonBlockPatternTest {
+
+    public static <T extends Enum<T>> T[] getEnumArray(Class<T> enumClass) {
+        return (T[]) Array.newInstance(enumClass, 10) ;
+    }
+
     public static void main(String[] args) {
+        IO ios[] = getEnumArray(IO.class);
         JsonBlockPattern pattern = new JsonBlockPattern();
         pattern.pattern = new String[][] {
                 {"TXX", " E "},

@@ -313,8 +313,14 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
                     if (widget instanceof IDraggable && ((IDraggable) widget).allowDrag(mouseX, mouseY, button)) {
                         draggedWidget = widget;
                         ((IDraggable) widget).startDrag(mouseX, mouseY);
+                        if (selectedWidget != null && selectedWidget != widget) {
+                            ((ISelected) selectedWidget).onUnSelected();
+                        }
+                        selectedWidget = widget;
+                        ((ISelected) selectedWidget).onSelected();
                         return w != null ? w : widget;
-                    } else if (widget instanceof ISelected && ((ISelected) widget).allowSelected(mouseX, mouseY, button)) {
+                    }
+                    if (widget instanceof ISelected && ((ISelected) widget).allowSelected(mouseX, mouseY, button)) {
                         if (selectedWidget != null && selectedWidget != widget) {
                             ((ISelected) selectedWidget).onUnSelected();
                         }
@@ -361,6 +367,16 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
             return this;
         } else if (draggedWidget != null) {
             if (((IDraggable)draggedWidget).dragging(mouseX, mouseY, deltaX, deltaY)) {
+                if (draggedWidget.getPosition().x < getPosition().x) {
+                    deltaX = getPosition().x - draggedWidget.getPosition().x;
+                } else if (draggedWidget.getPosition().x + draggedWidget.getSize().width + scrollXOffset > getPosition().x + getSize().width) {
+                    deltaX = (getPosition().x + getSize().width) - (draggedWidget.getPosition().x + draggedWidget.getSize().width + scrollXOffset);
+                }
+                if (draggedWidget.getPosition().y < getPosition().y) {
+                    deltaY = getPosition().y - draggedWidget.getPosition().y;
+                } else if (draggedWidget.getPosition().y + draggedWidget.getSize().height + scrollYOffset > getPosition().y + getSize().height) {
+                    deltaY = (getPosition().y + getSize().height) - (draggedWidget.getPosition().y + draggedWidget.getSize().height + scrollYOffset);
+                }
                 draggedWidget.addSelfPosition(deltaX, deltaY);
             }
             computeMax();

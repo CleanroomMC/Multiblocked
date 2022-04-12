@@ -16,7 +16,7 @@ public class ButtonWidget extends Widget {
 
     protected IGuiTexture[] buttonTexture;
     protected IGuiTexture[] hoverTexture;
-    protected final Consumer<ClickData> onPressCallback;
+    protected Consumer<ClickData> onPressCallback;
 
     public ButtonWidget(int xPosition, int yPosition, int width, int height, IGuiTexture buttonTexture, Consumer<ClickData> onPressed) {
         super(xPosition, yPosition, width, height);
@@ -27,6 +27,11 @@ public class ButtonWidget extends Widget {
     public ButtonWidget(int xPosition, int yPosition, int width, int height, Consumer<ClickData> onPressed) {
         super(xPosition, yPosition, width, height);
         this.onPressCallback = onPressed;
+    }
+
+    public ButtonWidget setOnPressCallback(Consumer<ClickData> onPressCallback) {
+        this.onPressCallback = onPressCallback;
+        return this;
     }
 
     public ButtonWidget setButtonTexture(IGuiTexture... buttonTexture) {

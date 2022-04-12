@@ -29,6 +29,10 @@ public class ImageWidget extends Widget {
         return this;
     }
 
+    public IGuiTexture getImage() {
+        return area;
+    }
+
     public ImageWidget setBorder(int border, int color) {
         this.border = border;
         this.borderColor = color;

@@ -1,14 +1,26 @@
 package com.cleanroommc.multiblocked.api.tile;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTComponent;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
 import com.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
+import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import com.google.gson.JsonElement;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
@@ -29,14 +41,18 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -62,9 +78,22 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     protected String status = "unformed";
 
+    protected Map<MultiblockCapability<?>, CapabilityTrait> traits = new HashMap<>();
+
     public final void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
-        if (!isRemote() && definition.needUpdateTick()) {
+        for (Map.Entry<String, JsonElement> entry : this.definition.traits.entrySet()) {
+            MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
+            if (capability != null) {
+                CapabilityTrait trait = capability.createTrait();
+                trait.init(entry.getValue().getAsJsonObject());
+                traits.put(capability, trait);
+            }
+        }
+    }
+
+    public final void checkUpdate() {
+        if (world != null && !isRemote() && (definition.needUpdateTick() || traits.values().stream().anyMatch(trait -> trait instanceof ITickable))) {
             MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
         }
     }
@@ -100,6 +129,13 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         timer++;
         if (definition.updateTick != null) {
             definition.updateTick.apply(this);
+        }
+        if (!traits.isEmpty()) {
+            for (CapabilityTrait trait : traits.values()) {
+                if (trait instanceof ITickable) {
+                    ((ITickable) trait).update();
+                }
+            }
         }
     }
 
@@ -259,6 +295,25 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             definition.onNeighborChanged.apply(this);
         }
     }
+    //************* capability *************//
+
+    @Override
+    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
+        return traits.values().stream().anyMatch(trait -> trait.hasCapability(capability, facing));
+    }
+
+    @Override
+    @Nullable
+    public <K> K getCapability(@Nonnull Capability<K> capability, @Nullable EnumFacing facing) {
+        for (CapabilityTrait trait : traits.values()) {
+            K result = trait.getCapability(capability, facing);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
 
     //************* gui *************//
 
@@ -269,7 +324,30 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
-        return null;
+        if (traits.isEmpty()) return null;
+        TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
+        initTraitUI(tabContainer, entityPlayer);
+        return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
+                .widget(tabContainer)
+                .build(this, entityPlayer);
+    }
+
+    protected void initTraitUI(TabContainer tabContainer, EntityPlayer entityPlayer) {
+        WidgetGroup group = new WidgetGroup(20, 0, 176, 256);
+        tabContainer.addTab(new TabButton(0, tabContainer.containerGroup.widgets.size() * 20, 20, 20)
+                        .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xffff0000)), group);
+        group.addWidget(new ImageWidget(0, 0, 176, 256, new ResourceTexture(JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png"))));
+        for (CapabilityTrait trait : traits.values()) {
+            trait.createUI(group, entityPlayer);
+        }
+    }
+
+    public final void writeTraitData(CapabilityTrait trait, int internalId, Consumer<PacketBuffer> dataWriter) {
+        this.writeCustomData(3, (buffer) -> {
+            buffer.writeString(trait.capability.name);
+            buffer.writeVarInt(internalId);
+            dataWriter.accept(buffer);
+        });
     }
 
 
@@ -339,6 +417,11 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             } catch (IOException e) {
                 Multiblocked.LOGGER.error("handling ct custom data error id:{}", id);
             }
+        } else if (dataId == 3) {
+            MultiblockCapability<?> capability = MbdCapabilities.get(buf.readString(Short.MAX_VALUE));
+            if (traits.containsKey(capability)) {
+                traits.get(capability).receiveCustomData(buf.readVarInt(), buf);
+            }
         }
     }
 
@@ -361,9 +444,14 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
         setDefinition(MbdComponents.DEFINITION_REGISTRY.get(new ResourceLocation(compound.getString("loc"))));
+        checkUpdate();
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
         if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
             persistentData = CraftTweakerMC.getIData(compound.getTag("ct_persistent"));
+        }
+        NBTTagCompound traitTag = compound.getCompoundTag("trait");
+        for (Map.Entry<MultiblockCapability<?>, CapabilityTrait> entry : traits.entrySet()) {
+            entry.getValue().readFromNBT(traitTag.getCompoundTag(entry.getKey().name));
         }
     }
 
@@ -377,6 +465,13 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         if (Multiblocked.isModLoaded(Multiblocked.MODID_CT) && persistentData instanceof IData) {
             compound.setTag("ct_persistent", CraftTweakerMC.getNBT((IData) persistentData));
         }
+        NBTTagCompound traitTag = new NBTTagCompound();
+        for (Map.Entry<MultiblockCapability<?>, CapabilityTrait> entry : traits.entrySet()) {
+            NBTTagCompound tag = new NBTTagCompound();
+            entry.getValue().writeToNBT(tag);
+            traitTag.setTag(entry.getKey().name, tag);
+        }
+        compound.setTag("trait", traitTag);
         return compound;
     }
 

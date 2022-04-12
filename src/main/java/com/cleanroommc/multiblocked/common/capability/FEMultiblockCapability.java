@@ -25,8 +25,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class FEMultiblockCapability extends MultiblockCapability<Integer> {
+    public static final FEMultiblockCapability CAP = new FEMultiblockCapability();
 
-    public FEMultiblockCapability() {
+    private FEMultiblockCapability() {
         super("forge_energy", new Color(0xCB0000).getRGB());
     }
 

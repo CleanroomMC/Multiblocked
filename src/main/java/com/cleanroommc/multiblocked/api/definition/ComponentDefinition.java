@@ -3,6 +3,7 @@ package com.cleanroommc.multiblocked.api.definition;
 import com.cleanroommc.multiblocked.api.crafttweaker.functions.*;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.util.RayTraceUtils;
+import com.google.gson.JsonObject;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
@@ -42,6 +43,7 @@ public class ComponentDefinition {
     public transient final Class<? extends ComponentTileEntity<?>> clazz;
     public transient final EnumMap<EnumFacing, List<AxisAlignedBB>> baseAABB;
     public transient final EnumMap<EnumFacing, List<AxisAlignedBB>> formedAABB;
+    public JsonObject traits;
     @ZenProperty
     public boolean allowRotate;
     @ZenProperty
@@ -86,6 +88,7 @@ public class ComponentDefinition {
         this.showInJei = true;
         baseAABB = new EnumMap<>(EnumFacing.class);
         formedAABB = new EnumMap<>(EnumFacing.class);
+        traits = new JsonObject();
     }
 
     public ComponentTileEntity<?> createNewTileEntity(World world){
@@ -93,6 +96,7 @@ public class ComponentDefinition {
             ComponentTileEntity<?> component = clazz.newInstance();
             component.setWorld(world);
             component.setDefinition(this);
+            component.checkUpdate();
             return component;
         } catch (InstantiationException | IllegalAccessException e) {
             Multiblocked.LOGGER.error(e);

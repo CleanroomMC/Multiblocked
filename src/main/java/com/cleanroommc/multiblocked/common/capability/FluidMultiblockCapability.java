@@ -31,8 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
+    public static final FluidMultiblockCapability CAP = new FluidMultiblockCapability();
 
-    public FluidMultiblockCapability() {
+    private  FluidMultiblockCapability() {
         super("fluid", new Color(0x3C70EE).getRGB());
     }
 

@@ -86,7 +86,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
             if (capability != null) {
                 CapabilityTrait trait = capability.createTrait();
-                trait.init(entry.getValue().getAsJsonObject());
+                trait.serialize(entry.getValue());
                 traits.put(capability, trait);
             }
         }

@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.common.capability;
 
 import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
@@ -8,6 +9,7 @@ import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.common.capability.trait.FluidCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.FluidContentWidget;
 import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.gson.JsonDeserializationContext;
@@ -61,6 +63,16 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
     @Override
     public ContentWidget<? super FluidStack> createContentWidget() {
         return new FluidContentWidget();
+    }
+
+    @Override
+    public boolean hasTrait() {
+        return true;
+    }
+
+    @Override
+    public CapabilityTrait createTrait() {
+        return new FluidCapabilityTrait();
     }
 
     @Override

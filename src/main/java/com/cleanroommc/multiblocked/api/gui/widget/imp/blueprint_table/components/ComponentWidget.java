@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.components;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
@@ -20,6 +21,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.IRendererWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.ResourceTextureWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
@@ -38,7 +40,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Collections;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget {
     protected final T definition;
@@ -83,36 +84,47 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
         for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
             if (capability.hasTrait()) {
                 WidgetGroup widgetGroup = new WidgetGroup(47, y, 100, 15);
-                ButtonWidget buttonWidget = new ButtonWidget(20, 0, 15, 15, new ResourceTexture("multiblocked:textures/gui/option.png"), cd -> {
-                    if (definition.traits.has(capability.name)) {
-                        DialogWidget dialog = new DialogWidget(group, true);
-                        JsonObject jsonObject = definition.traits.get(capability.name).getAsJsonObject();
-                        jsonObject.addProperty("background", JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png"));
-                        Function<JsonObject, JsonObject> config = capability.createTrait().getConfigurator(jsonObject, dialog);
-                        dialog.setOnClosed(()->{
-                            if (config != null) {
-                                JsonObject result = config.apply(new JsonObject());
-                                definition.traits.addProperty("background", result.get("background").getAsString());
-                                result.remove("background");
-                                definition.traits.add(capability.name, result);
+                Runnable configurator = () -> {
+                    DialogWidget dialog = new DialogWidget(group, true);
+                    CapabilityTrait trait = capability.createTrait();
+                    trait.serialize(definition.traits.get(capability.name));
+                    
+                    // set background
+                    int xOffset = (384 - 176) / 2;
+                    dialog.addWidget(new ImageWidget(0, 0, 384, 256, new ColorRectTexture(0xaf000000)));
+                    ImageWidget imageWidget;
+                    dialog.addWidget(imageWidget = new ImageWidget(xOffset, 0, 176, 256, null));
+                    imageWidget.setImage(new ResourceTexture(JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png")));
+                    dialog.addWidget(new ButtonWidget(xOffset - 20,10, 20, 20, new ResourceTexture("multiblocked:textures/gui/option.png"), cd2 -> {
+                        new ResourceTextureWidget(dialog, texture -> {
+                            if (texture != null) {
+                                imageWidget.setImage(texture);
                             }
                         });
+                    }).setHoverTooltip("set background texture"));
+                    
+                    // open trait settings
+                    trait.openConfigurator(dialog);
+                    
+                    // save when closed
+                    dialog.setOnClosed(() -> {
+                        String background = ((ResourceTexture)imageWidget.getImage()).imageLocation.toString();
+                        if (!background.equals("multiblocked:textures/gui/custom_gui.png")) {
+                            definition.traits.addProperty("background", background);
+                        }
+                        definition.traits.add(capability.name, trait.deserialize());
+                    });
+                };
+                ButtonWidget buttonWidget = new ButtonWidget(20, 0, 15, 15, new ResourceTexture("multiblocked:textures/gui/option.png"), cd -> {
+                    if (definition.traits.has(capability.name)) {
+                        configurator.run();
                     }
                 });
                 buttonWidget.setVisible(definition.traits.has(capability.name));
                 widgetGroup.addWidget(buttonWidget);
                 widgetGroup.addWidget(new SwitchWidget(0, 0, 15, 15, (cd, r)-> {
                     if (r) {
-                        DialogWidget dialog = new DialogWidget(group, true);
-                        Function<JsonObject, JsonObject> config = capability.createTrait().getConfigurator(null, dialog);
-                        dialog.setOnClosed(()->{
-                            if (config != null) {
-                                JsonObject result = config.apply(new JsonObject());
-                                definition.traits.addProperty("background", result.get("background").getAsString());
-                                result.remove("background");
-                                definition.traits.add(capability.name, result);
-                            }
-                        });
+                        configurator.run();
                     } else {
                         definition.traits.remove(capability.name);
                     }

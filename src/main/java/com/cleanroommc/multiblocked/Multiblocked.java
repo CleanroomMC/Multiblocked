@@ -58,7 +58,7 @@ public class Multiblocked {
     public static final String MODID_GEO = "geckolib3";
     public static final String MODID_GTCE = "gregtech";
     public static final String NAME = "Multiblocked";
-    public static final String VERSION = "0.2";
+    public static final String VERSION = "0.3";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();

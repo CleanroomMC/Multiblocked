@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.api.recipe;
 
 import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import crafttweaker.annotations.ZenRegister;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
@@ -49,23 +50,29 @@ public class RecipeLogic {
         } else if (lastRecipe != null) {
             findAndHandleRecipe();
         } else if (timer % 5 == 0) {
-            boolean needSearch = false;
-            if (controller.hasProxies()) {
-                for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
-                    if (map != null) {
-                        for (CapabilityProxy<?> proxy : map.values()) {
-                            if (proxy != null) {
-                                if (proxy.getLatestPeriodID() > lastPeriod) {
-                                    lastPeriod = proxy.getLatestPeriodID();
-                                    needSearch = true;
-                                    break;
+            long latestPeriod = MultiblockWorldSavedData.getOrCreate(controller.getWorld()).getPeriodID();
+            if (latestPeriod < lastPeriod) {
+                lastPeriod = latestPeriod;
+                findAndHandleRecipe();
+            } else {
+                boolean needSearch = false;
+                if (controller.hasProxies()) {
+                    for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
+                        if (map != null) {
+                            for (CapabilityProxy<?> proxy : map.values()) {
+                                if (proxy != null) {
+                                    if (proxy.getLatestPeriodID() > lastPeriod) {
+                                        lastPeriod = proxy.getLatestPeriodID();
+                                        needSearch = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        if (needSearch) break;
                     }
-                    if (needSearch) break;
+                    if (needSearch) findAndHandleRecipe();
                 }
-                if (needSearch) findAndHandleRecipe();
             }
         }
     }

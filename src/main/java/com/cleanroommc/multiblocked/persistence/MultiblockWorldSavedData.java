@@ -197,20 +197,21 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     private void searchingTask() {
         while (!Thread.interrupted()) {
             for (ControllerTileEntity controller : controllers) {
-                if (controller.hasProxies()) {
-                    for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
-                        if (map != null) {
-                            for (CapabilityProxy<?> proxy : map.values()) {
-                                if (proxy != null) {
-                                    try {
+                try {
+                    if (controller.hasProxies()) {
+                        // should i do lock for proxies?
+                        for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
+                            if (map != null) {
+                                for (CapabilityProxy<?> proxy : map.values()) {
+                                    if (proxy != null) {
                                         proxy.updateChangedState(periodID);
-                                    } catch (Throwable ignored) {
-                                        Multiblocked.LOGGER.error("something run while checking proxy changes");
                                     }
                                 }
                             }
                         }
                     }
+                } catch (Exception e) {
+                    Multiblocked.LOGGER.error("something run while checking proxy changes");
                 }
             }
             periodID++;
@@ -227,5 +228,9 @@ public class MultiblockWorldSavedData extends WorldSavedData {
             thread.interrupt();
         }
         thread = null;
+    }
+
+    public long getPeriodID() {
+        return periodID;
     }
 }

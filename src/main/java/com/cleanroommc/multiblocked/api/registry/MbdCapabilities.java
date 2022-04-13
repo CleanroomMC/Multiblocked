@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.common.capability.*;
 import com.google.common.collect.Maps;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 
 import java.util.Map;
 
@@ -27,20 +28,20 @@ public class MbdCapabilities {
         registerCapability(FE = FEMultiblockCapability.CAP);
         registerCapability(ITEM = ItemMultiblockCapability.CAP);
         registerCapability(FLUID = FluidMultiblockCapability.CAP);
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_BOT)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_BOT)) {
             registerCapability(ManaBotainaCapability.CAP);
         }
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_TC6)) {
             registerCapability(AspectThaumcraftCapability.CAP);
         }
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_MEK)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_MEK)) {
             registerCapability(HeatMekanismCapability.CAP);
             registerCapability(GasMekanismCapability.CAP);
         }
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_QMD)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_QMD)) {
             registerCapability(ParticleQMDCapability.CAP);
         }
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_GTCE)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_GTCE)) {
             registerCapability(EnergyGTCECapability.CAP);
         }
     }

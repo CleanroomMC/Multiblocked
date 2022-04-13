@@ -24,6 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -37,7 +38,7 @@ import java.io.File;
 public class CommonProxy {
 
     public void preInit() {
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_GEO)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_GEO)) {
             GeckoLib.initialize();
         }
         MinecraftForge.EVENT_BUS.register(Listeners.class);
@@ -55,7 +56,7 @@ public class CommonProxy {
         // register ui
         UIFactory.register(TileEntityUIFactory.INSTANCE);
         // loadCT
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
             CraftTweakerAPI.tweaker.loadScript(false, "multiblocked");
         }
     }

@@ -20,7 +20,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -30,6 +29,7 @@ import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -88,8 +88,6 @@ public class Multiblocked {
         }
     };
 
-    private static Boolean isClient;
-
     static {
         location = new File(Loader.instance().getConfigDir(), "multiblocked");
         location.mkdir();
@@ -98,18 +96,11 @@ public class Multiblocked {
 
 
     public static boolean isClient() {
-        if (isClient == null) isClient = FMLCommonHandler.instance().getSide().isClient();
-        return isClient;
+        return FMLLaunchHandler.side().isClient();
     }
 
     public static String prettyJson(String uglyJson) {
         return GSON_PRETTY.toJson(new JsonParser().parse(uglyJson));
-    }
-
-    private static final ConcurrentMap<String, Boolean> loadedCache = new ConcurrentHashMap<>();
-
-    public static boolean isModLoaded(String modid) {
-        return loadedCache.computeIfAbsent(modid, id -> Loader.instance().getIndexedModList().containsKey(modid));
     }
 
     @EventHandler
@@ -136,7 +127,7 @@ public class Multiblocked {
 
     @EventHandler
     public void loadComplete(FMLLoadCompleteEvent event) {
-        if (Multiblocked.isClient() && Multiblocked.isModLoaded(Multiblocked.MODID_JEI)) {
+        if (Multiblocked.isClient() && Loader.isModLoaded(Multiblocked.MODID_JEI)) {
             JeiPlugin.setupInputHandler();
         }
     }

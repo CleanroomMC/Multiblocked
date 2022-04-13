@@ -78,15 +78,18 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         return false;
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         IBlockState state = getState();
         TileEntity tileEntity = getTileEntity(te.getWorld(), te.getPos());

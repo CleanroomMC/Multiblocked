@@ -20,6 +20,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,14 +113,15 @@ public class RecipeMap {
     }
 
     @ZenMethod
-    public Recipe searchRecipe(ICapabilityProxyHolder holder) {
-        if (!holder.hasProxies()) return null;
+    public List<Recipe> searchRecipe(ICapabilityProxyHolder holder) {
+        if (!holder.hasProxies()) return Collections.emptyList();
+        List<Recipe> matches = new ArrayList<>();
         for (Recipe recipe : recipes.values()) {
             if (recipe.match(holder)) {
-                return recipe;
+                matches.add(recipe);
             }
         }
-        return null;
+        return matches;
     }
 
     @ZenMethod

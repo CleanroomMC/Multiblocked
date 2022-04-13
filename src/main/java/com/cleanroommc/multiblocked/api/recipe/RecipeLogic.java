@@ -9,6 +9,8 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
+import java.util.List;
+
 @ZenClass("mods.multiblocked.recipe.RecipeLogic")
 @ZenRegister
 public class RecipeLogic {
@@ -52,11 +54,18 @@ public class RecipeLogic {
         Recipe recipe;
         if (lastRecipe != null && lastRecipe.match(this.controller)) {
             recipe = lastRecipe;
+            lastRecipe = null;
+            setupRecipe(recipe);
         } else {
-            recipe = this.definition.recipeMap.searchRecipe(this.controller);
+            List<Recipe> matches = this.definition.recipeMap.searchRecipe(this.controller);
+            lastRecipe = null;
+            for (Recipe match : matches) {
+                setupRecipe(match);
+                if (lastRecipe != null && isWorking) {
+                    break;
+                }
+            }
         }
-        lastRecipe = null;
-        if (recipe != null) setupRecipe(recipe);
     }
 
     @ZenMethod

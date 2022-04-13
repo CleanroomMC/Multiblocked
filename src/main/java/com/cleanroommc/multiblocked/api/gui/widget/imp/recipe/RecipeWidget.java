@@ -37,10 +37,11 @@ public class RecipeWidget extends WidgetGroup {
         outputs = new DraggableScrollableWidgetGroup(176 - 64 - 5, 5, 64, 64).setBackground(background);
         this.addWidget(inputs);
         this.addWidget(outputs);
-        this.addWidget(new ProgressWidget(doubleSupplier, 78, 27, 20, 20, progress));
-        this.addWidget(new LabelWidget(5, 73, () -> I18n.format("multiblocked.recipe.duration", this.recipe.duration / 20.)));
+        String duration = I18n.format("multiblocked.recipe.duration", this.recipe.duration / 20.);
+        this.addWidget(new ProgressWidget(doubleSupplier, 78, 27, 20, 20, progress).setHoverTooltip(duration));
+        this.addWidget(new LabelWidget(5, 73, duration).setTextColor(0xff000000).setDrop(false));
         if (recipe.text != null) {
-            this.addWidget(new LabelWidget(80, 73, recipe.text.getFormattedText()));
+            this.addWidget(new LabelWidget(80, 73, recipe.text.getFormattedText()).setTextColor(0xff000000).setDrop(false));
         }
         int index = 0;
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.inputs.entrySet()) {

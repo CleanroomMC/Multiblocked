@@ -1,17 +1,12 @@
 package com.cleanroommc.multiblocked.network.s2c;
 
-import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.crafttweaker.CTHelper;
-import com.cleanroommc.multiblocked.api.gui.texture.ShaderTexture;
-import com.cleanroommc.multiblocked.client.particle.*;
+import com.cleanroommc.multiblocked.client.particle.ShaderTextureParticle;
 import com.cleanroommc.multiblocked.client.shader.Shaders;
 import com.cleanroommc.multiblocked.network.IPacket;
-import com.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

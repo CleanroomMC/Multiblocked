@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.command;
 
+import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import com.cleanroommc.multiblocked.network.s2c.SPacketCommand;
 import net.minecraft.command.CommandBase;

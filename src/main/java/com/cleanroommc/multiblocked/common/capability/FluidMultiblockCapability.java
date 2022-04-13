@@ -173,7 +173,7 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
                         if (lastContent == null) {
                             same = false;
                             break;
-                        } else if (!content.isFluidEqual(lastContent)) {
+                        } else if (!content.isFluidEqual(lastContent) || content.amount != lastContent.amount) {
                             same = false;
                             break;
                         }

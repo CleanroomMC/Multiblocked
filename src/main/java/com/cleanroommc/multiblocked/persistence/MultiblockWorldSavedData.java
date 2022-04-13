@@ -1,10 +1,13 @@
 package com.cleanroommc.multiblocked.persistence;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Minecraft;
@@ -104,12 +107,22 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         setDirty(true);
     }
 
-    public void addLoading(ComponentTileEntity<?> state) {
-        loading.add(state);
+    public void addLoading(ComponentTileEntity<?> tileEntity) {
+        loading.add(tileEntity);
+        if (tileEntity instanceof ControllerTileEntity) {
+            controllers.add((ControllerTileEntity) tileEntity);
+            createSearchingThread();
+        }
     }
 
-    public void removeLoading(ComponentTileEntity<?> state) {
-        loading.remove(state);
+    public void removeLoading(ComponentTileEntity<?> tileEntity) {
+        loading.remove(tileEntity);
+        if (tileEntity instanceof ControllerTileEntity) {
+            controllers.remove(tileEntity);
+            if (controllers.isEmpty()) {
+                releaseSearchingThread();
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -168,5 +181,51 @@ public class MultiblockWorldSavedData extends WorldSavedData {
             compound.setByteArray(String.valueOf(pos.toLong()), Arrays.copyOfRange(byteBuf.array(), 0, byteBuf.writerIndex()));
         });
         return compound;
+    }
+
+    // ********************************* thread for searching ********************************* //
+    private final Set<ControllerTileEntity> controllers = Collections.synchronizedSet(new HashSet<>());
+    private Thread thread;
+    private long periodID = Multiblocked.RNG.nextLong();
+
+    public void createSearchingThread() {
+        if (thread != null && !thread.isInterrupted()) return;
+        thread = new Thread(this::searchingTask);
+        thread.start();
+    }
+
+    private void searchingTask() {
+        while (!Thread.interrupted()) {
+            for (ControllerTileEntity controller : controllers) {
+                if (controller.hasProxies()) {
+                    for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
+                        if (map != null) {
+                            for (CapabilityProxy<?> proxy : map.values()) {
+                                if (proxy != null) {
+                                    try {
+                                        proxy.updateChangedState(periodID);
+                                    } catch (Throwable ignored) {
+                                        Multiblocked.LOGGER.error("something run while checking proxy changes");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            periodID++;
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
+
+    public void releaseSearchingThread() {
+        if (thread != null) {
+            thread.interrupt();
+        }
+        thread = null;
     }
 }

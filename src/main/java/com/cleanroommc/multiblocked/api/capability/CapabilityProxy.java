@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public abstract class CapabilityProxy<K> {
     public final MultiblockCapability<? super K> capability;
     public EnumFacing facing;
+    private long latestPeriodID;
 
     private TileEntity tileEntity;
 
@@ -33,6 +34,10 @@ public abstract class CapabilityProxy<K> {
     public <C> C getCapability(Capability<C> capability) {
         TileEntity tileEntity = getTileEntity();
         return tileEntity == null ? null : tileEntity.getCapability(capability, facing);
+    }
+
+    public long getLatestPeriodID() {
+        return latestPeriodID;
     }
 
     @Override
@@ -79,5 +84,11 @@ public abstract class CapabilityProxy<K> {
 
     public final List<K> handleRecipeOutput(Recipe recipe, List<?> left) {
         return handleRecipeInner(IO.OUT, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), false);
+    }
+
+    public final void updateChangedState(long periodID) {
+        if (hasInnerChanged() || periodID < latestPeriodID) {
+            latestPeriodID = periodID;
+        }
     }
 }

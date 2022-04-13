@@ -157,6 +157,8 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
                     if (lastContent == null) {
                         same = false;
                         break;
+                    } else if (lastContent.isEmpty() && content.isEmpty()) {
+
                     } else if (!content.isItemEqual(lastContent)) {
                         same = false;
                         break;

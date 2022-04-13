@@ -11,7 +11,14 @@ public class Listeners {
     @SubscribeEvent
     public static void onWorldLoad(WorldEvent.Load event) {
         if (!event.getWorld().isRemote) {
-            MultiblockWorldSavedData.getOrCreate(event.getWorld()); // Pre-load
+            MultiblockWorldSavedData.getOrCreate(event.getWorld());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onWorldUnLoad(WorldEvent.Unload event) {
+        if (!event.getWorld().isRemote) {
+            MultiblockWorldSavedData.getOrCreate(event.getWorld()).releaseSearchingThread();
         }
     }
 

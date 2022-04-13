@@ -1,8 +1,6 @@
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 

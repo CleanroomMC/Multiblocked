@@ -1,9 +1,11 @@
 package com.cleanroommc.multiblocked.api.recipe;
 
+import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import crafttweaker.annotations.ZenRegister;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.nbt.NBTTagCompound;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -27,11 +29,13 @@ public class RecipeLogic {
     public int duration;
     @ZenProperty
     public int timer;
+    private long lastPeriod;
 
     public RecipeLogic(ControllerTileEntity controller) {
         this.controller = controller;
         this.definition = controller.getDefinition();
         this.timer = Multiblocked.RNG.nextInt();
+        this.lastPeriod = Long.MIN_VALUE;
     }
 
     @ZenMethod
@@ -45,7 +49,24 @@ public class RecipeLogic {
         } else if (lastRecipe != null) {
             findAndHandleRecipe();
         } else if (timer % 5 == 0) {
-            findAndHandleRecipe();
+            boolean needSearch = false;
+            if (controller.hasProxies()) {
+                for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
+                    if (map != null) {
+                        for (CapabilityProxy<?> proxy : map.values()) {
+                            if (proxy != null) {
+                                if (proxy.getLatestPeriodID() > lastPeriod) {
+                                    lastPeriod = proxy.getLatestPeriodID();
+                                    needSearch = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (needSearch) break;
+                }
+                if (needSearch) findAndHandleRecipe();
+            }
         }
     }
 

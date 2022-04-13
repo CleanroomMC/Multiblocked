@@ -1,8 +1,11 @@
 package com.cleanroommc.multiblocked.client.renderer.impl;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -21,6 +24,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -117,8 +121,14 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
                 ForgeHooksClient.setRenderLayer(layer);
                 BufferBuilder buffer = Tessellator.getInstance().getBuffer();
                 buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-
-                brd.renderBlock(state, te.getPos(), dummyWorld, buffer);
+                if (state.getBlock() instanceof BlockComponent) {
+                    IRenderer renderer = ((BlockComponent) state.getBlock()).definition.baseRenderer;
+                    if (renderer != null) {
+                        renderer.renderBlock(state, te.getPos(), dummyWorld, buffer);
+                    }
+                } else {
+                    brd.renderBlock(state, te.getPos(), dummyWorld, buffer);
+                }
 
                 Tessellator.getInstance().draw();
             }

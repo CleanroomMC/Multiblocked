@@ -8,7 +8,6 @@ import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
 import com.cleanroommc.multiblocked.api.gui.modular.IUIHolder;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
@@ -37,7 +36,14 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.JsonUtils;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -279,6 +285,8 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         if (!player.isSneaking()) {
             if (!world.isRemote && player instanceof EntityPlayerMP) {
                 return TileEntityUIFactory.INSTANCE.openUI(this, (EntityPlayerMP) player);
+            } else {
+                return !traits.isEmpty();
             }
         }
         return false;
@@ -335,7 +343,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     protected void initTraitUI(TabContainer tabContainer, EntityPlayer entityPlayer) {
         WidgetGroup group = new WidgetGroup(20, 0, 176, 256);
         tabContainer.addTab(new TabButton(0, tabContainer.containerGroup.widgets.size() * 20, 20, 20)
-                        .setTexture(new ColorRectTexture(-1), new ColorRectTexture(0xffff0000)), group);
+                        .setTexture(
+                                new ResourceTexture("multiblocked:textures/gui/custom_gui_tab_button.png").getSubTexture(0, 0, 1, 0.5),
+                                new ResourceTexture("multiblocked:textures/gui/custom_gui_tab_button.png").getSubTexture(0, 0.5, 1, 0.5)), group);
         group.addWidget(new ImageWidget(0, 0, 176, 256, new ResourceTexture(JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png"))));
         for (CapabilityTrait trait : traits.values()) {
             trait.createUI(group, entityPlayer);

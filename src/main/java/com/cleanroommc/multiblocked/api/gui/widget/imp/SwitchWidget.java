@@ -10,6 +10,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public class SwitchWidget extends Widget {
 
@@ -18,6 +19,7 @@ public class SwitchWidget extends Widget {
     protected IGuiTexture[] hoverTexture;
     protected boolean isPressed;
     protected BiConsumer<ClickData, Boolean> onPressCallback;
+    protected Supplier<Boolean> supplier;
 
     public SwitchWidget(int xPosition, int yPosition, int width, int height, BiConsumer<ClickData, Boolean> onPressed) {
         super(xPosition, yPosition, width, height);
@@ -70,6 +72,27 @@ public class SwitchWidget extends Widget {
             for (IGuiTexture texture : hoverTexture) {
                 texture.updateTick();
             }
+        }
+        if (isClientSideWidget && supplier != null) {
+            setPressed(supplier.get());
+        }
+    }
+
+    @Override
+    public void writeInitialData(PacketBuffer buffer) {
+        buffer.writeBoolean(isPressed);
+    }
+
+    @Override
+    public void readInitialData(PacketBuffer buffer) {
+        isPressed = buffer.readBoolean();
+    }
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        if (!isClientSideWidget && supplier != null) {
+            setPressed(supplier.get());
         }
     }
 
@@ -146,5 +169,10 @@ public class SwitchWidget extends Widget {
         } else {
             super.readUpdateInfo(id, buffer);
         }
+    }
+
+    public SwitchWidget setSupplier(Supplier<Boolean> supplier) {
+        this.supplier = supplier;
+        return this;
     }
 }

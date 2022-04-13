@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.*;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
@@ -28,6 +29,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class IOPageWidget extends PageWidget {
     private static final ResourceTexture PAGE = new ResourceTexture("multiblocked:textures/gui/io_page.png");
@@ -60,13 +63,12 @@ public class IOPageWidget extends PageWidget {
     private final ControllerTileEntity controller;
     private final ImageWidget[][] lines;
     private final TextTexture[] labels;
-    private final ButtonWidget[] buttons;
+    private final SelectorWidget[] selectors;
 
     private Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap;
     @SideOnly(Side.CLIENT)
     private Map<MultiblockCapability<?>, Tuple<IO, EnumFacing>> capabilitySettings;
     private BlockPos pos;
-    private EnumFacing facing;
     int index;
 
     public IOPageWidget(ControllerTileEntity controller, TabContainer container) {
@@ -90,10 +92,11 @@ public class IOPageWidget extends PageWidget {
         addWidget(lines[1][2] = new ImageWidget(138, 202, 4, 35));
 
         SceneWidget sceneWidget;
-        addWidget(sceneWidget = new SceneWidget(6, 6, 164, 143, Multiblocked.isClient() ? getWorld() : null)
+        addWidget(sceneWidget = new SceneWidget(6, 6, 164, 132, Multiblocked.isClient() ? getWorld() : null)
                 .useCacheBuffer()
                 .setRenderedCore(controller.state.getCache(), null)
-                .setOnSelected(this::onPosSelected));
+                .setOnSelected(this::onPosSelected)
+                .setRenderFacing(false));
         addWidget(new ButtonWidget(4, 156, 5, 17, LEFT_BUTTON, this::onLeftClick).setHoverTexture(LEFT_BUTTON_HOVER));
         addWidget(new ButtonWidget(167, 156, 5, 17, RIGHT_BUTTON, this::onRightClick).setHoverTexture(RIGHT_BUTTON_HOVER));
         labels = new TextTexture[3];
@@ -109,15 +112,16 @@ public class IOPageWidget extends PageWidget {
                 .setType(TextTexture.TextType.ROLL)
                 .setWidth(50)
                 .setDropShadow(true)));
-        buttons = new ButtonWidget[3];
+        selectors = new SelectorWidget[3];
 
-        addWidget(buttons[0] = new ButtonWidget(11 + 35, 156 + 34, 12, 12, new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("F")), cd -> this.setFacing(cd, 0)));
-        addWidget(buttons[1] = new ButtonWidget(63 + 35, 156 + 34, 12, 12, new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("F")), cd -> this.setFacing(cd, 1)));
-        addWidget(buttons[2] = new ButtonWidget(115 + 35, 156 + 34, 12, 12  , new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("F")), cd -> this.setFacing(cd, 2)));
+        List<String> facings = Arrays.stream(EnumFacing.VALUES).map(EnumFacing::name).collect(Collectors.toList());;
+        addWidget(selectors[0] = new SelectorWidget(11, 142, 50, 12, facings, -1).setIsUp(true).setOnChanged(facing -> setFacing(EnumFacing.valueOf(facing), 0)));
+        addWidget(selectors[1] = new SelectorWidget(63, 142, 50, 12, facings, -1).setIsUp(true).setOnChanged(facing -> setFacing(EnumFacing.valueOf(facing), 1)));
+        addWidget(selectors[2] = new SelectorWidget(115, 142, 50, 12, facings, -1).setIsUp(true).setOnChanged(facing -> setFacing(EnumFacing.valueOf(facing), 2)));
 
-        buttons[0].setHoverBorderTexture(1, -1).setHoverTooltip("set the io facing").setVisible(false);
-        buttons[1].setHoverBorderTexture(1, -1).setHoverTooltip("set the io facing").setVisible(false);
-        buttons[2].setHoverBorderTexture(1, -1).setHoverTooltip("set the io facing").setVisible(false);
+        selectors[0].setHoverTooltip("set the io facing").setVisible(false);
+        selectors[1].setHoverTooltip("set the io facing").setVisible(false);
+        selectors[2].setHoverTooltip("set the io facing").setVisible(false);
 
         if (Multiblocked.isClient()) {
             setupSceneWidget(sceneWidget);
@@ -133,14 +137,13 @@ public class IOPageWidget extends PageWidget {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void setFacing(ClickData cd, int i) {
-        if (cd.isRemote) {
+    private void setFacing(EnumFacing facing, int i) {
+        if (isRemote()) {
             List<MultiblockCapability<?>> values = new ArrayList<>(capabilitySettings.keySet());
             if (values.size() > (i + index)) {
                 MultiblockCapability<?> capability = values.get(i + index);
                 if (capabilitySettings.get(capability) != null && capabilitySettings.get(capability).getFirst() != null) {
                     capabilitySettings.put(capability, new Tuple<>(capabilitySettings.get(capability).getFirst(), facing));
-                    buttons[i - index].setButtonTexture(new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture(capabilitySettings.get(capability).getSecond().getName().substring(0,1)))).setHoverBorderTexture(1, capability.color).setVisible(true);
                     writeClientAction(-2, buffer -> {
                         Tuple<IO, EnumFacing> tuple = capabilitySettings.get(capability);
                         buffer.writeString(capability.name);
@@ -163,13 +166,16 @@ public class IOPageWidget extends PageWidget {
             sceneWidget.renderBlockOverLay(renderer);
             RenderUtils.useLightMap(240, 240, () -> {
                 GlStateManager.disableDepth();
-                int inner = 1;
+                GlStateManager.disableCull();
+                int inner = 0;
                 for (Map.Entry<MultiblockCapability<?>, Tuple<IO, EnumFacing>> entry : capabilitySettings.entrySet()) {
                     if (entry.getValue() != null) {
                         sceneWidget.drawFacingBorder(new BlockPosFace(pos, entry.getValue().getSecond()), entry.getKey().color, inner);
                         inner++;
                     }
                 }
+
+                GlStateManager.enableCull();
                 GlStateManager.enableDepth();
             });
         });
@@ -183,13 +189,13 @@ public class IOPageWidget extends PageWidget {
                 capability = values.get(i);
                 labels[i - index].setBackgroundColor(capability.color).updateText(capability.getUnlocalizedName());
                 if (capabilitySettings.get(capability) != null && capabilitySettings.get(capability).getFirst() != null) {
-                    buttons[i - index].setButtonTexture(new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture(capabilitySettings.get(capability).getSecond().getName().substring(0,1)))).setHoverBorderTexture(1, capability.color).setVisible(true);
+                    selectors[i - index].setValue(capabilitySettings.get(capability).getSecond().name()).setVisible(true);
                 } else {
-                    buttons[i - index].setVisible(false);
+                    selectors[i - index].setVisible(false);
                 }
             } else {
                 labels[i - index].setBackgroundColor(0).updateText("Empty");
-                buttons[i - index].setVisible(false);
+                selectors[i - index].setVisible(false);
             }
             IO io = capabilitySettings.get(capability) == null ?  null : capabilitySettings.get(capability).getFirst();
             lines[0][i - index].setImage(LINE_0_MAP.get(io));
@@ -267,7 +273,6 @@ public class IOPageWidget extends PageWidget {
     }
 
     private void onPosSelected(BlockPos pos, EnumFacing facing) {
-        this.facing = facing;
         if (Objects.equals(pos, this.pos)) return;
         this.pos = pos;
         if (!isRemote()) {

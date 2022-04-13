@@ -31,12 +31,14 @@ public class RecipeLogic {
     @ZenProperty
     public int timer;
     private long lastPeriod;
+    private final MultiblockWorldSavedData mbwsd;
 
     public RecipeLogic(ControllerTileEntity controller) {
         this.controller = controller;
         this.definition = controller.getDefinition();
         this.timer = Multiblocked.RNG.nextInt();
         this.lastPeriod = Long.MIN_VALUE;
+        this.mbwsd = MultiblockWorldSavedData.getOrCreate(controller.getWorld());
     }
 
     @ZenMethod
@@ -50,29 +52,32 @@ public class RecipeLogic {
         } else if (lastRecipe != null) {
             findAndHandleRecipe();
         } else if (timer % 5 == 0) {
-            long latestPeriod = MultiblockWorldSavedData.getOrCreate(controller.getWorld()).getPeriodID();
-            if (latestPeriod < lastPeriod) {
-                lastPeriod = latestPeriod;
-                findAndHandleRecipe();
-            } else {
-                boolean needSearch = false;
-                if (controller.hasProxies()) {
-                    for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
-                        if (map != null) {
-                            for (CapabilityProxy<?> proxy : map.values()) {
-                                if (proxy != null) {
-                                    if (proxy.getLatestPeriodID() > lastPeriod) {
-                                        lastPeriod = proxy.getLatestPeriodID();
-                                        needSearch = true;
-                                        break;
+            if (controller.asyncRecipeSearching) {
+                if (mbwsd.getPeriodID() < lastPeriod) {
+                    lastPeriod = mbwsd.getPeriodID();
+                    findAndHandleRecipe();
+                } else {
+                    boolean needSearch = false;
+                    if (controller.hasProxies()) {
+                        for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
+                            if (map != null) {
+                                for (CapabilityProxy<?> proxy : map.values()) {
+                                    if (proxy != null) {
+                                        if (proxy.getLatestPeriodID() > lastPeriod) {
+                                            lastPeriod = proxy.getLatestPeriodID();
+                                            needSearch = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
+                            if (needSearch) break;
                         }
-                        if (needSearch) break;
+                        if (needSearch) findAndHandleRecipe();
                     }
-                    if (needSearch) findAndHandleRecipe();
                 }
+            } else {
+                findAndHandleRecipe();
             }
         }
     }

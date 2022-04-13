@@ -62,6 +62,7 @@ import java.util.Set;
 @Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTController")
 public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition> implements ICapabilityProxyHolder, ICTController {
     public MultiblockState state;
+    public boolean asyncRecipeSearching = true;
     protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
     private Map<Long, Map<MultiblockCapability<?>, Tuple<IO, EnumFacing>>> settings;
     protected LongOpenHashSet parts;
@@ -287,6 +288,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
+        if (compound.hasKey("ars")) {
+            asyncRecipeSearching = compound.getBoolean("ars");
+        }
         if (compound.hasKey("recipeLogic")) {
             recipeLogic = new RecipeLogic(this);
             recipeLogic.readFromNBT(compound.getCompoundTag("recipeLogic"));
@@ -308,6 +312,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
         super.writeToNBT(compound);
+        if (!asyncRecipeSearching) {
+            compound.setBoolean("ars", false);
+        }
         if (recipeLogic != null) compound.setTag("recipeLogic", recipeLogic.writeToNBT(new NBTTagCompound()));
         if (capabilities != null) {
             NBTTagList tagList = new NBTTagList();

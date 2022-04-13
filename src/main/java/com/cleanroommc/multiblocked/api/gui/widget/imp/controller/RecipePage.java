@@ -3,6 +3,7 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.controller;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
@@ -38,6 +39,19 @@ public class RecipePage extends PageWidget{
         this.addWidget(tips = new DraggableScrollableWidgetGroup(8, 34, 160, 112));
         tips.addWidget(new LabelWidget(5, 5, () -> isWorking ? I18n.format("multiblocked.recipe.status.true" ) : I18n.format("multiblocked.recipe.status.false")).setTextColor(-1));
         tips.addWidget(new LabelWidget(5, 20, () -> I18n.format("multiblocked.recipe.remaining", recipe == null ? 0 : (recipe.duration - progress) / 20)).setTextColor(-1));
+        this.addWidget(new SwitchWidget(153, 131, 12, 12, (cd, r) -> {
+            controller.asyncRecipeSearching = r;
+            if (!cd.isRemote) {
+                controller.markAsDirty();
+            }
+        })
+                .setPressed(controller.asyncRecipeSearching)
+                .setSupplier(() -> controller.asyncRecipeSearching)
+                .setTexture(resourceTexture.getSubTexture(176 / 256.0, 143 / 256.0, 12 / 256.0, 12 / 256.0),
+                        resourceTexture.getSubTexture(176 / 256.0, 155 / 256.0, 12 / 256.0, 12 / 256.0))
+                .setHoverTooltip("Async/Sync recipes searching:\n" +
+                        "Async has better performance and only tries to match recipes when the internal contents changed\n" +
+                        "Sync always tries to match recipes, never miss matching recipes"));
         this.addWidget(new ImageWidget(7, 7, 162, 16,
                 new TextTexture(controller.getUnlocalizedName(), -1)
                         .setType(TextTexture.TextType.ROLL)
@@ -88,6 +102,7 @@ public class RecipePage extends PageWidget{
 
     @Override
     public void writeInitialData(PacketBuffer buffer) {
+        super.writeInitialData(buffer);
         detectAndSendChanges();
         writeRecipe(buffer);
         writeStatus(buffer);
@@ -95,6 +110,7 @@ public class RecipePage extends PageWidget{
 
     @Override
     public void readInitialData(PacketBuffer buffer) {
+        super.readInitialData(buffer);
         readRecipe(buffer);
         readStatus(buffer);
     }

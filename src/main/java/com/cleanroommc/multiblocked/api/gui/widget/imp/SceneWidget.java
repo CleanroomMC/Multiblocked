@@ -220,10 +220,10 @@ public class SceneWidget extends WidgetGroup {
         if (selectedPosFace != null || tmp != null) {
             RenderUtils.useLightMap(240, 240, () -> {
                 GlStateManager.disableDepth();
-                if (selectedPosFace != null) {
+                if (selectedPosFace != null && renderFacing) {
                     drawFacingBorder(selectedPosFace, 0xff00ff00);
                 }
-                if (tmp != null && !tmp.equals(selectedPosFace)) {
+                if (tmp != null && !tmp.equals(selectedPosFace) && renderFacing) {
                     drawFacingBorder(tmp, 0xffffffff);
                 }
                 GlStateManager.enableDepth();
@@ -242,7 +242,6 @@ public class SceneWidget extends WidgetGroup {
 
     @SideOnly(Side.CLIENT)
     public void drawFacingBorder(BlockPosFace posFace, int color, int inner) {
-        if (!renderFacing) return;
         GlStateManager.pushMatrix();
         RenderUtils.moveToFace(posFace.pos.getX(), posFace.pos.getY(), posFace.pos.getZ(), posFace.facing);
         RenderUtils.rotateToFace(posFace.facing, null);

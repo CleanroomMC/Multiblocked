@@ -51,7 +51,8 @@ public class ItemsIngredient extends Ingredient {
     }
 
     public ItemStack getOutputStack() {
-        ItemStack output = matchingStacks[0].copy();
+        ItemStack[] matching = getMatchingStacks();
+        ItemStack output = matching.length > 0 ? matching[0] : ItemStack.EMPTY;
         output.setCount(amount);
         return output;
     }

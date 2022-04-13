@@ -153,7 +153,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                             } catch (Exception ignored) {}
                         }
                     }).setHoverBorderTexture(1, -1).setHoverTooltip("setting"))
-                    .addWidget(new ImageWidget(32, 0, 100, 20, new TextTexture(file.getName()).setWidth(100).setType(TextTexture.TextType.ROLL)))
+                    .addWidget(new ImageWidget(32, 0, 100, 20, new TextTexture(file.getName().replace(".json", "")).setWidth(100).setType(TextTexture.TextType.ROLL)))
                     .addWidget(new ImageWidget(4, 2, 18, 18, new ItemStackTexture(Items.PAPER)));
             files.add(widgetGroup);
             containers.addWidget(widgetGroup);

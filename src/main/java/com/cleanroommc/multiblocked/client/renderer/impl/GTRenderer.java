@@ -84,7 +84,7 @@ public class GTRenderer extends IModelRenderer {
     @SideOnly(Side.CLIENT)
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder buffer) {
         TileEntity te = blockAccess.getTileEntity(pos);
-        if (te instanceof PartTileEntity) {
+        if (formedAsController && te instanceof PartTileEntity) {
             PartTileEntity<?> part = (PartTileEntity<?>) te;
             List<ControllerTileEntity> controllers = part.getControllers();
             for (ControllerTileEntity controller : controllers) {
@@ -156,6 +156,9 @@ public class GTRenderer extends IModelRenderer {
         if (downOverlay != null) {
             jsonObject.add("downTexture", gson.toJsonTree(downOverlay, ResourceLocation.class) );
         }
+        if (formedAsController) {
+            jsonObject.addProperty("formedAsController", true);
+        }
         return jsonObject;
     }
 
@@ -176,6 +179,9 @@ public class GTRenderer extends IModelRenderer {
         }
         if (jsonObject.has("downTexture")) {
             renderer.downOverlay = gson.fromJson(jsonObject.get("downTexture"), ResourceLocation.class);
+        }
+        if (jsonObject.has("formedAsController")) {
+            renderer.formedAsController = jsonObject.get("formedAsController").getAsBoolean();
         }
         return renderer;
     }

@@ -95,7 +95,7 @@ public class RecipeMapBuilderWidget extends WidgetGroup {
                                 FileUtility.saveJson(file, element);
                             }
                         })).setHoverBorderTexture(1, -1).setHoverTooltip("setting"))
-                        .addWidget(new ImageWidget(2, 0, 96, 20, new TextTexture(file.getName()).setWidth(96).setType(
+                        .addWidget(new ImageWidget(2, 0, 96, 20, new TextTexture(file.getName().replace(".json", "")).setWidth(96).setType(
                                 TextTexture.TextType.ROLL))));
             }
         }

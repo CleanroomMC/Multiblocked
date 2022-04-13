@@ -100,7 +100,7 @@ public abstract class WorldSceneRenderer {
     }
 
     public WorldSceneRenderer useCacheBuffer(boolean useCache) {
-        if (useCache || !OpenGlHelper.useVbo() || !Minecraft.getMinecraft().isCallingFromMinecraftThread()) return this;
+        if (this.useCache || !OpenGlHelper.useVbo() || !Minecraft.getMinecraft().isCallingFromMinecraftThread()) return this;
         deleteCacheBuffer();
         if (useCache) {
             this.vertexBuffers = new VertexBuffer[BlockRenderLayer.values().length];

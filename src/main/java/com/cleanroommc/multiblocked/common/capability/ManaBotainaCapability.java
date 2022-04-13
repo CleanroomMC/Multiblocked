@@ -108,5 +108,15 @@ public class ManaBotainaCapability extends MultiblockCapability<Integer> {
             return sum <= 0 ? null : Collections.singletonList(sum);
         }
 
+        int lastMana = -1;
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IManaReceiver capability = getCapability();
+            if (capability == null) return false;
+            if (lastMana == capability.getCurrentMana()) return false;
+            lastMana = capability.getCurrentMana();
+            return true;
+        }
     }
 }

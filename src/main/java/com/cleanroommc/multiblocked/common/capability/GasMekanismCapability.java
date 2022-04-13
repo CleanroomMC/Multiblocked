@@ -7,9 +7,14 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.GasStackWidget;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import mekanism.api.gas.GasRegistry;
 import mekanism.api.gas.GasStack;
+import mekanism.api.gas.GasTankInfo;
 import mekanism.api.gas.IGasHandler;
 import mekanism.common.MekanismBlocks;
 import mekanism.common.capabilities.Capabilities;
@@ -17,7 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
@@ -115,5 +120,66 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
             return left.isEmpty() ? null : left;
         }
 
+        GasStack[] lastStacks = new GasStack[0];
+        int[] lastStoreds = new int[0];
+        int[] lastMaxs = new int[0];
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IGasHandler capability = getCapability();
+            if (capability == null) return false;
+            GasTankInfo[] tanks = capability.getTankInfo();
+            boolean same = true;
+            if (lastStacks.length == tanks.length) {
+                for (int i = 0; i < tanks.length; i++) {
+                    GasTankInfo tank = tanks[i];
+                    GasStack content = tank.getGas();
+                    GasStack lastContent = lastStacks[i];
+                    if (content == null) {
+                        if (lastContent != null) {
+                            same = false;
+                            break;
+                        }
+                    } else {
+                        if (lastContent == null) {
+                            same = false;
+                            break;
+                        } else if (!content.isGasEqual(lastContent)) {
+                            same = false;
+                            break;
+                        }
+                    }
+                    int cap = tank.getStored();
+                    int lastCap = lastStoreds[i];
+                    if (cap != lastCap) {
+                        same = false;
+                        break;
+                    }
+                    int max = tank.getMaxGas();
+                    int lastMax = lastMaxs[i];
+                    if (max != lastMax) {
+                        same = false;
+                        break;
+                    }
+                }
+            } else {
+                same = false;
+            }
+
+            if (same) {
+                return false;
+            }
+            lastStacks = new GasStack[tanks.length];
+            lastStoreds = new int[tanks.length];
+            lastMaxs = new int[tanks.length];
+            for (int i = 0; i < tanks.length; i++) {
+                GasTankInfo tank = tanks[i];
+                GasStack gas = tank.getGas();
+                lastStacks[i] = gas == null ? null : gas.copy();
+                lastStoreds[i] = tank.getStored();
+                lastMaxs[i] = tank.getMaxGas();
+            }
+            return true;
+        }
     }
 }

@@ -55,6 +55,15 @@ public abstract class CapabilityProxy<K> {
      */
     protected abstract List<K> handleRecipeInner(IO io, Recipe recipe, List<K> left, boolean simulate);
 
+    /**
+     * Check whether scheduling recipe checking. Check to see if any changes have occurred.
+     * Do not do anything that causes conflicts here.
+     * @return if changed.
+     */
+    protected boolean hasInnerChanged() {
+        return true;
+    }
+
     @SuppressWarnings("unchecked")
     public final K copyContent(Object content) {
         return (K) capability.copyInner((K)content);

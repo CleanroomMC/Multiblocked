@@ -91,5 +91,15 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
             return null;
         }
 
+        double lastTemp = Double.MIN_VALUE;
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IHeatTransfer capability = getCapability();
+            if (capability == null || capability.getTemp() <= 0) return false;
+            if (lastTemp == capability.getTemp()) return false;
+            lastTemp = capability.getTemp();
+            return true;
+        }
     }
 }

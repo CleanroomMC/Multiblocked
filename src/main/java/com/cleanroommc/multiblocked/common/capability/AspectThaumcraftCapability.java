@@ -16,6 +16,7 @@ import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import net.minecraft.tileentity.TileEntity;
 import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.blocks.BlocksTC;
 
@@ -24,6 +25,7 @@ import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack> {
     public static final AspectThaumcraftCapability CAP = new AspectThaumcraftCapability();
@@ -123,6 +125,20 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
                 }
             }
             return left.isEmpty() ? null : left;
+        }
+
+        AspectList lastAspectList;
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IAspectContainer capability = getCapability();
+            if (capability == null) return false;
+            AspectList aspectList = capability.getAspects();
+            if (lastAspectList != null) {
+                return !aspectList.aspects.equals(lastAspectList.aspects);
+            }
+            lastAspectList = aspectList.copy();
+            return true;
         }
 
     }

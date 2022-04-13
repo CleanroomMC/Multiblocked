@@ -150,5 +150,57 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
             return left.isEmpty() ? null : left;
         }
 
+        FluidStack[] lastContents = new FluidStack[0];
+        int[] lastCaps = new int[0];
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IFluidHandler capability = getCapability();
+            if (capability == null) return false;
+            IFluidTankProperties[] tanks = capability.getTankProperties();
+            boolean same = true;
+            if (tanks.length == lastContents.length) {
+                for (int i = 0; i < tanks.length; i++) {
+                    IFluidTankProperties tank = tanks[i];
+                    FluidStack content = tank.getContents();
+                    FluidStack lastContent = lastContents[i];
+                    if (content == null) {
+                        if (lastContent != null) {
+                            same = false;
+                            break;
+                        }
+                    } else {
+                        if (lastContent == null) {
+                            same = false;
+                            break;
+                        } else if (!content.isFluidEqual(lastContent)) {
+                            same = false;
+                            break;
+                        }
+                    }
+                    int cap = tank.getCapacity();
+                    int lastCap = lastCaps[i];
+                    if (cap != lastCap) {
+                        same = false;
+                        break;
+                    }
+                }
+            } else {
+                same = false;
+            }
+
+            if (same) {
+                return false;
+            }
+            lastContents = new FluidStack[tanks.length];
+            lastCaps = new int[tanks.length];
+            for (int i = 0; i < tanks.length; i++) {
+                IFluidTankProperties tank = tanks[i];
+                FluidStack content = tank.getContents();
+                lastContents[i] = content == null ? null : content.copy();
+                lastCaps[i] = tank.getCapacity();
+            }
+            return true;
+        }
     }
 }

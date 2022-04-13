@@ -124,5 +124,17 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
             return sum <= 0 ? null : Collections.singletonList(sum);
         }
 
+        long stored = -1;
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IEnergyContainer capability = getCapability();
+            if (capability == null) return false;
+            if (capability.getEnergyStored() == stored) {
+                return false;
+            }
+            stored = capability.getEnergyStored();
+            return true;
+        }
     }
 }

@@ -12,7 +12,11 @@ import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.trait.ItemCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.ItemsContentWidget;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -21,7 +25,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
@@ -138,5 +142,46 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
             return left.isEmpty() ? null : left;
         }
 
+        ItemStack[] lastStacks = new ItemStack[0];
+        int[] limits = new int[0];
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IItemHandler capability = getCapability();
+            if (capability == null) return false;
+            boolean same = true;
+            if (lastStacks.length == capability.getSlots()) {
+                for (int i = 0; i < capability.getSlots(); i++) {
+                    ItemStack content = capability.getStackInSlot(i);
+                    ItemStack lastContent = lastStacks[i];
+                    if (lastContent == null) {
+                        same = false;
+                        break;
+                    } else if (!content.isItemEqual(lastContent)) {
+                        same = false;
+                        break;
+                    }
+                    int cap = capability.getSlotLimit(i);
+                    int lastCap = limits[i];
+                    if (cap != lastCap) {
+                        same = false;
+                        break;
+                    }
+                }
+            } else {
+                same = false;
+            }
+
+            if (same) {
+                return false;
+            }
+            lastStacks = new ItemStack[capability.getSlots()];
+            limits = new int[capability.getSlots()];
+            for (int i = 0; i < capability.getSlots(); i++) {
+                lastStacks[i] = capability.getStackInSlot(i).copy();
+                limits[i] = capability.getSlotLimit(i);
+            }
+            return true;
+        }
     }
 }

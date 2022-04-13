@@ -107,5 +107,21 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
             return sum <= 0 ? null : Collections.singletonList(sum);
         }
 
+        int stored = -1;
+        boolean canExtract = false;
+        boolean canReceive = false;
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IEnergyStorage capability = getCapability();
+            if (capability == null) return false;
+            if (stored == capability.getEnergyStored() && canExtract == capability.canExtract() && canReceive == capability.canReceive()) {
+                return false;
+            }
+            canExtract = capability.canExtract();
+            canReceive = capability.canReceive();
+            stored = capability.getEnergyStored();
+            return true;
+        }
     }
 }

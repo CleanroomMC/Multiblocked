@@ -63,7 +63,7 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
 
     @Override
     public boolean hasTrait() {
-        return isCEu();
+        return true;
     }
 
     @Override

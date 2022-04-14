@@ -56,8 +56,7 @@ public class ItemCapabilityTrait extends MultiCapabilityTrait {
         super.createUI(component, group, player);
         if (handler != null) {
             for (int i = 0; i < handler.getSlots(); i++) {
-                group.addWidget(new SlotWidget(new ProxyItemHandler(handler, guiIO,
-                        true), i, x[i], y[i], guiIO[i] == IO.BOTH || guiIO[i] == IO.OUT, guiIO[i] == IO.BOTH || guiIO[i] == IO.IN));
+                group.addWidget(new SlotWidget(new ProxyItemHandler(handler, guiIO, false), i, x[i], y[i], true, true));
             }
         }
     }

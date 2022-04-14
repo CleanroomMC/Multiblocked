@@ -105,16 +105,6 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
         ButtonWidget setting = (ButtonWidget) slot.widgets.get(1);
         ButtonWidget imageSelector = (ButtonWidget) new ButtonWidget(5, 65, width, height, new GuiTextureGroup(new ColorBorderTexture(1, -1), new ResourceTexture(texture)), null)
                 .setHoverTooltip("select a image");
-        dialog.addWidget(new SelectorWidget(5, 5, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(
-                Collectors.toList()), -1)
-                .setValue(capabilityIO.name())
-                .setOnChanged(io-> {
-                    capabilityIO = IO.valueOf(io);
-                    imageWidget.setImage(new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO)), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
-                })
-                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
-                .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("Capability IO (e.g., pipe interaction)"));
         dialog.addWidget(new TextFieldWidget(5, 25, 50, 15, true, null, s -> {
             width = Integer.parseInt(s);
             Size size = new Size(width, height);
@@ -131,11 +121,23 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
             imageSelector.setSize(size);
             setting.setSelfPosition(new Position(width - 8, 0));
         }).setCurrentString(height + "").setNumbersOnly(1, 180).setHoverTooltip("set height"));
+        dialog.addWidget(new SelectorWidget(5, 5, 50, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(
+                Collectors.toList()), -1)
+                .setValue(capabilityIO.name())
+                .setOnChanged(io-> {
+                    capabilityIO = IO.valueOf(io);
+                    imageWidget.setImage(new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO)), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
+                })
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setHoverTooltip("Capability IO (e.g., pipe interaction)"));
 
         dialog.addWidget(imageSelector);
         imageSelector.setOnPressCallback(cd -> new ResourceTextureWidget((WidgetGroup) dialog.parent.getGui().guiWidgets.get(0), texture1 -> {
-            imageSelector.setButtonTexture(new GuiTextureGroup(new ColorBorderTexture(1, -1), texture1));
-            texture = texture1.imageLocation.toString();
+            if (texture1 != null) {
+                imageSelector.setButtonTexture(new GuiTextureGroup(new ColorBorderTexture(1, -1), texture1));
+                texture = texture1.imageLocation.toString();
+            }
         }));
     }
 

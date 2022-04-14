@@ -72,6 +72,7 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait implements IT
 
     @Override
     protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot) {
+        super.initSettingDialog(dialog, slot);
         dialog.addWidget(new TextFieldWidget(60, 5, 100, 15, true, null, s -> capacity = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(capacity + "")

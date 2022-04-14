@@ -94,6 +94,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             if (capability != null && capability.hasTrait()) {
                 CapabilityTrait trait = capability.createTrait();
                 trait.serialize(entry.getValue());
+                trait.setComponent(this);
                 traits.put(capability, trait);
             }
         }

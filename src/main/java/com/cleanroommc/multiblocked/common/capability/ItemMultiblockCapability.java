@@ -132,7 +132,7 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
                     ItemsIngredient ingredient = iterator.next();
                     ItemStack output = ingredient.getOutputStack();
                     for (int i = 0; i < capability.getSlots(); i++) {
-                        output = capability.insertItem(i, output, simulate);
+                        output = capability.insertItem(i, output.copy(), simulate);
                         if (output.isEmpty()) break;
                     }
                     if (output.isEmpty()) iterator.remove();

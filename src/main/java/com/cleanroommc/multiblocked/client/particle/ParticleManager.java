@@ -51,19 +51,13 @@ public class ParticleManager {
     public static Entity entity;
 
     public void addEffect(IParticle... particles) {
-        for (IParticle particle : particles) {
-            if (particle.getGLHandler() != null) {
-                newParticleQueue.add(new Tuple<>(particle.getGLHandler(), particle));
-            } 
-        }
-    }
-
-    public void addEffect(List<IParticle> particles) {
-        for (IParticle particle : particles) {
-            if (particle.getGLHandler() != null) {
-                newParticleQueue.add(new Tuple<>(particle.getGLHandler(), particle));
+        mc.addScheduledTask(()->{
+            for (IParticle particle : particles) {
+                if (particle.getGLHandler() != null) {
+                    newParticleQueue.add(new Tuple<>(particle.getGLHandler(), particle));
+                }
             }
-        }
+        });
     }
 
     public void updateEffects() {
@@ -199,10 +193,8 @@ public class ParticleManager {
             ArrayDeque<IParticle> particles = renderQueue.get(handler);
             if (particles.isEmpty()) continue;
             BufferBuilder buffer = tessellator.getBuffer();
-            boolean addBlend = particles.getFirst().isAddBlend();
-            if (addBlend) {
-                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-            }
+            boolean addBlend = false;
+            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             handler.preDraw(buffer);
             for (final IParticle particle : particles) {
                 if (particle.shouldRendered(entityIn, partialTicks)) {

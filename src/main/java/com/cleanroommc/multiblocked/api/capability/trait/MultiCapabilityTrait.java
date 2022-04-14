@@ -2,7 +2,6 @@ package com.cleanroommc.multiblocked.api.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
@@ -20,6 +19,7 @@ import com.cleanroommc.multiblocked.util.JsonUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -32,6 +32,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
     protected IO[] guiIO;
     protected int[] x;
     protected int[] y;
+    protected boolean[] autoIO;
 
     public MultiCapabilityTrait(MultiblockCapability<?> capability) {
         super(capability);
@@ -48,6 +49,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
         guiIO = new IO[size];
         x = new int[size];
         y = new int[size];
+        autoIO = new boolean[size];
         int i = 0;
         for (JsonElement element : jsonArray) {
             JsonObject jsonObject = element.getAsJsonObject();
@@ -55,6 +57,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
             guiIO[i] = JsonUtil.getEnumOr(jsonObject, "gIO", IO.class, IO.BOTH);
             x[i] = JsonUtils.getInt(jsonObject, "x", 5);
             y[i] = JsonUtils.getInt(jsonObject, "y", 5);
+            autoIO[i] = JsonUtils.getBoolean(jsonObject, "autoIO", false);
             i++;
         }
     }
@@ -68,9 +71,17 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
             jsonObject.addProperty("gIO", guiIO[i].ordinal());
             jsonObject.addProperty("x", x[i]);
             jsonObject.addProperty("y", y[i]);
+            jsonObject.addProperty("autoIO", autoIO[i]);
             jsonArray.add(jsonObject);
         }
         return jsonArray;
+    }
+
+    public EnumFacing[] getIOFacing() {
+        if (component.getDefinition().allowRotate) {
+            return new EnumFacing[]{component.getFrontFacing()};
+        }
+        return EnumFacing.VALUES;
     }
 
     protected int getColorByIO(IO io) {
@@ -129,11 +140,18 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
                 .setHoverTooltip("Gui IO (e.g. gui interaction)"));
+        dialog.addWidget(new SelectorWidget(100, 30, 65, 15, Arrays.asList("Auto IO", "Passive IO"), -1)
+                .setValue(autoIO[index] ? "Auto IO" : "Passive IO")
+                .setOnChanged(auto -> autoIO[index] = auto.equals("Auto IO"))
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setHoverTooltip("auto input/output\n(Capability IO can't be BOTH)"));
     }
     
     protected void addSlot() {
         capabilityIO = ArrayUtils.add(capabilityIO, IO.BOTH);
         guiIO = ArrayUtils.add(guiIO, IO.BOTH);
+        autoIO = ArrayUtils.add(autoIO, false);
         x = ArrayUtils.add(x, 5);
         y = ArrayUtils.add(y, 5);
     }
@@ -141,6 +159,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
     protected void removeSlot(int index) {
         capabilityIO = ArrayUtils.remove(capabilityIO, index);
         guiIO = ArrayUtils.remove(guiIO, index);
+        autoIO = ArrayUtils.remove(autoIO, index);
         x = ArrayUtils.remove(x, index);
         y = ArrayUtils.remove(y, index);
     }

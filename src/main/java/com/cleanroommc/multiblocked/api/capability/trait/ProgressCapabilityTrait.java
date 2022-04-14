@@ -77,7 +77,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
     protected void refreshSlots(DraggableScrollableWidgetGroup dragGroup) {
         dragGroup.widgets.forEach(dragGroup::waitToRemoved);
         ButtonWidget setting = (ButtonWidget) new ButtonWidget(width - 8, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("settings");
-        ImageWidget imageWidget = new ImageWidget(0, 0, width, height, new GuiTextureGroup(new ResourceTexture(texture), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
+        ImageWidget imageWidget = new ImageWidget(0, 0, width, height, new GuiTextureGroup(new ResourceTexture(texture).getSubTexture(0, 0, 1, 0.5), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
         setting.setVisible(false);
         DraggableWidgetGroup slot = new DraggableWidgetGroup(x, y, width, height);
         slot.setOnSelected(w -> setting.setVisible(true));
@@ -101,7 +101,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
     protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot) {
         ImageWidget imageWidget = (ImageWidget) slot.widgets.get(0);
         ButtonWidget setting = (ButtonWidget) slot.widgets.get(1);
-        ButtonWidget imageSelector = (ButtonWidget) new ButtonWidget(5, 65, width, height, new GuiTextureGroup(new ColorBorderTexture(1, -1), new ResourceTexture(texture)), null)
+        ButtonWidget imageSelector = (ButtonWidget) new ButtonWidget(5, 65, width, height, new GuiTextureGroup(new ColorBorderTexture(1, -1), new ResourceTexture(texture).getSubTexture(0, 0, 1, 0.5)), null)
                 .setHoverTooltip("select a image");
         dialog.addWidget(new TextFieldWidget(5, 25, 50, 15, true, null, s -> {
             width = Integer.parseInt(s);
@@ -124,7 +124,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
                 .setValue(capabilityIO.name())
                 .setOnChanged(io-> {
                     capabilityIO = IO.valueOf(io);
-                    imageWidget.setImage(new GuiTextureGroup(new ResourceTexture(texture), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
+                    imageWidget.setImage(new GuiTextureGroup(new ResourceTexture(texture).getSubTexture(0, 0, 1, 0.5), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
                 })
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
@@ -133,9 +133,10 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
         dialog.addWidget(imageSelector);
         imageSelector.setOnPressCallback(cd -> new ResourceTextureWidget((WidgetGroup) dialog.parent.getGui().guiWidgets.get(0), texture1 -> {
             if (texture1 != null) {
-                imageSelector.setButtonTexture(new GuiTextureGroup(new ColorBorderTexture(1, -1), texture1));
                 texture = texture1.imageLocation.toString();
-                imageWidget.setImage(new GuiTextureGroup(new ResourceTexture(texture), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
+                ResourceTexture resourceTexture = new ResourceTexture(texture).getSubTexture(0, 0, 1, 0.5);
+                imageSelector.setButtonTexture(new GuiTextureGroup(new ColorBorderTexture(1, -1), resourceTexture));
+                imageWidget.setImage(new GuiTextureGroup(resourceTexture, new ColorBorderTexture(1, getColorByIO(capabilityIO))));
             }
         }));
     }

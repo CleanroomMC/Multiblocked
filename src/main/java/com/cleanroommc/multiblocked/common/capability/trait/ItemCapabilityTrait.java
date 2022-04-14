@@ -11,12 +11,14 @@ import com.google.gson.JsonElement;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,6 +61,60 @@ public class ItemCapabilityTrait extends MultiCapabilityTrait {
                 group.addWidget(new SlotWidget(new ProxyItemHandler(handler, guiIO, false), i, x[i], y[i], true, true));
             }
         }
+    }
+
+    @Override
+    public boolean hasUpdate() {
+        return ArrayUtils.contains(autoIO, true);
+    }
+
+    @Override
+    public void update() {
+        for (int i = 0; i < autoIO.length; i++) {
+            if (autoIO[i]) {
+                if (capabilityIO[i] == IO.IN) {
+                    ItemStack already = this.handler.getStackInSlot(i);
+                    int need = this.handler.getSlotLimit(i) - already.getCount();
+                    if (need > 0) {
+                        for (EnumFacing facing : getIOFacing()) {
+                            TileEntity te = component.getWorld().getTileEntity(component.getPos().offset(facing));
+                            if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())) {
+                                IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
+                                if (handler != null) {
+                                    for (int j = 0; j < handler.getSlots(); j++) {
+                                        ItemStack extracted = handler.extractItem(j, need, true);
+                                        if (extracted.isEmpty()) continue;
+                                        if (already.isEmpty() || extracted.isItemEqual(already)) {
+                                            this.handler.insertItem(i, handler.extractItem(j, need, false).copy(), false);
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if (capabilityIO[i] == IO.OUT){
+                    ItemStack already = this.handler.getStackInSlot(i);
+                    if (!already.isEmpty()) {
+                        for (EnumFacing facing : getIOFacing()) {
+                            TileEntity te = component.getWorld().getTileEntity(component.getPos().offset(facing));
+                            if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())) {
+                                IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
+                                if (handler != null) {
+                                    for (int j = 0; j < handler.getSlots(); j++) {
+                                        ItemStack left = handler.insertItem(j, already.copy(), false);
+                                        if (left.getCount() == already.getCount()) continue;
+                                        this.handler.extractItem(i, already.getCount() - left.getCount(), false);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        super.update();
     }
 
     @Nullable

@@ -108,7 +108,7 @@ public class TextureParticleRenderer extends ParticleRenderer implements ICustom
                 tfw.setCurrentString("");
             }
         }));
-        group.addWidget(createBoolSwitch(1, 40, "isAddBlend", "addition blend mode", renderer.isShader, r -> renderer.isAddBlend = r));
+        group.addWidget(createBoolSwitch(1, 40, "isAddBlend", "addition blend mode", renderer.isAddBlend, r -> renderer.isAddBlend = r));
         group.addWidget(createBoolSwitch(1, 55, "isBackLayer", "render in the back layer", renderer.isBackLayer, r -> renderer.isBackLayer = r));
         group.addWidget(new TextFieldWidget(1,75,70,10,true, null, num->renderer.scale = Float.parseFloat(num))
                 .setNumbersOnly(0f, 100f).setCurrentString(renderer.scale+"").setHoverTooltip("particle scale: from 0 to 100"));

@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import net.minecraftforge.common.capabilities.Capability;
@@ -73,6 +74,60 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             jsonObject.addProperty("tC", tankCapability[i]);
         }
         return jsonArray;
+    }
+
+    @Override
+    public boolean hasUpdate() {
+        return ArrayUtils.contains(autoIO, true);
+    }
+
+    @Override
+    public void update() {
+        for (int i = 0; i < autoIO.length; i++) {
+            if (autoIO[i]) {
+                if (capabilityIO[i] == IO.IN) {
+                    FluidTank already = this.handler.getTankAt(i);
+                    FluidStack fluidStack = already.getFluid();
+                    int need = already.getCapacity() - already.getFluidAmount();
+                    if (need > 0) {
+                        for (EnumFacing facing : getIOFacing()) {
+                            TileEntity te = component.getWorld().getTileEntity(component.getPos().offset(facing));
+                            if (te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite())) {
+                                IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite());
+                                if (handler != null) {
+                                    if (fluidStack != null) {
+                                        if (already.fill(handler.drain(new FluidStack(fluidStack.getFluid(), need), true), true) > 0) {
+                                            return;
+                                        }
+                                    } else {
+                                        if (already.fill(handler.drain(need, true), true) > 0) {
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if (capabilityIO[i] == IO.OUT){
+                    FluidTank already = this.handler.getTankAt(i);
+                    FluidStack fluidStack = already.getFluid();
+                    if (fluidStack != null && already.getFluidAmount() > 0) {
+                        for (EnumFacing facing : getIOFacing()) {
+                            TileEntity te = component.getWorld().getTileEntity(component.getPos().offset(facing));
+                            if (te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite())) {
+                                IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite());
+                                if (handler != null) {
+                                    if (handler.fill(fluidStack, true) > 0) {
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        super.update();
     }
 
     @Override

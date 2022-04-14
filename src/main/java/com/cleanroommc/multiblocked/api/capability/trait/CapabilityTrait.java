@@ -45,6 +45,14 @@ public abstract class CapabilityTrait implements IInnerCapabilityProvider {
         return null;
     }
 
+    public boolean hasUpdate() {
+        return false;
+    }
+    
+    public void update() {
+        
+    }
+
     public void markAsDirty() {
         if (component != null) {
             component.markAsDirty();
@@ -80,4 +88,5 @@ public abstract class CapabilityTrait implements IInnerCapabilityProvider {
     public void openConfigurator(WidgetGroup dialog) {
         
     }
+
 }

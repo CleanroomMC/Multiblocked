@@ -39,7 +39,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.NonNullList;
@@ -101,7 +100,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public final void checkUpdate() {
-        if (world != null && !isRemote() && (definition.needUpdateTick() || traits.values().stream().anyMatch(trait -> trait instanceof ITickable))) {
+        if (world != null && !isRemote() && (definition.needUpdateTick() || traits.values().stream().anyMatch(CapabilityTrait::hasUpdate))) {
             MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
         }
     }
@@ -140,9 +139,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         }
         if (!traits.isEmpty()) {
             for (CapabilityTrait trait : traits.values()) {
-                if (trait instanceof ITickable) {
-                    ((ITickable) trait).update();
-                }
+                trait.update();
             }
         }
     }

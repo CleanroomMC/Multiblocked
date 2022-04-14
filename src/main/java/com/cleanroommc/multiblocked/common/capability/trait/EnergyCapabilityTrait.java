@@ -20,7 +20,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class EnergyCapabilityTrait extends ProgressCapabilityTrait implements ITickable {
+public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
     private EnergyContainerHandler handler;
     protected int capacity;
 

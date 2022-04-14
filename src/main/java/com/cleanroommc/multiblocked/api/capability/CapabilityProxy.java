@@ -33,7 +33,9 @@ public abstract class CapabilityProxy<K> {
 
     public <C> C getCapability(Capability<C> capability) {
         TileEntity tileEntity = getTileEntity();
-        return tileEntity == null ? null : tileEntity.getCapability(capability, facing);
+        return tileEntity == null ?
+                null : tileEntity instanceof IInnerCapabilityProvider ?
+                ((IInnerCapabilityProvider) tileEntity).getInnerCapability(capability, facing) : tileEntity.getCapability(capability, facing);
     }
 
     public long getLatestPeriodID() {

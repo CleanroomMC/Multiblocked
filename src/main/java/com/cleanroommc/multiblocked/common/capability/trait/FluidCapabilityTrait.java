@@ -118,8 +118,14 @@ public class FluidCapabilityTrait extends SimpleCapabilityTrait {
 
     @Nullable
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(handler) : null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(handler.inner()) : null;
     }
 
     private static class ProxyFluidHandler implements IFluidTank, IFluidHandler {
@@ -183,12 +189,23 @@ public class FluidCapabilityTrait extends SimpleCapabilityTrait {
     public static class FluidTankList implements IFluidHandler, INBTSerializable<NBTTagCompound> {
         public IO[] cIOs;
         protected final List<FluidTank> fluidTanks;
-        protected IFluidTankProperties[] properties;
         private IFluidTankProperties[] fluidTankProperties;
+        private boolean inner;
 
         public FluidTankList(IO[] cIOs, FluidTank... fluidTanks) {
             this.fluidTanks = Arrays.asList(fluidTanks);
             this.cIOs = cIOs;
+        }
+
+        private FluidTankList(IO[] cIOs, final List<FluidTank> fluidTanks, IFluidTankProperties[] fluidTankProperties, boolean inner) {
+            this.cIOs = cIOs;
+            this.fluidTanks = fluidTanks;
+            this.fluidTankProperties = fluidTankProperties;
+            this.inner = inner;
+        }
+
+        public FluidTankList inner(){
+            return new FluidTankList(cIOs, fluidTanks, fluidTankProperties, true);
         }
 
         public List<FluidTank> getFluidTanks() {
@@ -235,7 +252,7 @@ public class FluidCapabilityTrait extends SimpleCapabilityTrait {
             int totalFilled = 0;
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];
-                if (io == IO.OUT) {
+                if ((inner ? io == IO.IN : io == IO.OUT)) {
                     continue;
                 }
                 FluidTank handler = fluidTanks.get(i);
@@ -249,7 +266,7 @@ public class FluidCapabilityTrait extends SimpleCapabilityTrait {
             }
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];
-                if (io == IO.OUT) {
+                if ((inner ? io == IO.IN : io == IO.OUT)) {
                     continue;
                 }
                 FluidTank handler = fluidTanks.get(i);
@@ -274,7 +291,7 @@ public class FluidCapabilityTrait extends SimpleCapabilityTrait {
             FluidStack totalDrained = null;
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];
-                if (io == IO.IN) {
+                if ((inner ? io == IO.OUT : io == IO.IN)) {
                     continue;
                 }
                 FluidTank handler = fluidTanks.get(i);
@@ -304,7 +321,7 @@ public class FluidCapabilityTrait extends SimpleCapabilityTrait {
             FluidStack totalDrained = null;
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];
-                if (io == IO.IN) {
+                if ((inner ? io == IO.OUT : io == IO.IN)) {
                     continue;
                 }
                 FluidTank handler = fluidTanks.get(i);

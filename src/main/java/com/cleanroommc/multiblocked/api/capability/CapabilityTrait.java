@@ -10,10 +10,11 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public abstract class CapabilityTrait {
+public abstract class CapabilityTrait implements IInnerCapabilityProvider{
     public final MultiblockCapability<?> capability;
     protected ComponentTileEntity<?> component;
 
@@ -33,12 +34,12 @@ public abstract class CapabilityTrait {
         this.component = component;
     }
 
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
         return getCapability(capability, facing) != null;
     }
 
     @Nullable
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         return null;
     }
 

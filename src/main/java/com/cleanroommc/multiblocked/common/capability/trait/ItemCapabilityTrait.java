@@ -55,24 +55,33 @@ public class ItemCapabilityTrait extends SimpleCapabilityTrait {
         super.createUI(group, player);
         if (handler != null) {
             for (int i = 0; i < handler.getSlots(); i++) {
-                group.addWidget(new SlotWidget(new ProxyItemHandler(handler, guiIO), i, x[i], y[i], guiIO[i] == IO.BOTH || guiIO[i] == IO.OUT, guiIO[i] == IO.BOTH || guiIO[i] == IO.IN));
+                group.addWidget(new SlotWidget(new ProxyItemHandler(handler, guiIO,
+                        true), i, x[i], y[i], guiIO[i] == IO.BOTH || guiIO[i] == IO.OUT, guiIO[i] == IO.BOTH || guiIO[i] == IO.IN));
             }
         }
     }
 
     @Nullable
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new ProxyItemHandler(handler, capabilityIO)) : null;
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new ProxyItemHandler(handler, capabilityIO, false)) : null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new ProxyItemHandler(handler, capabilityIO, true)) : null;
     }
 
     private static class ProxyItemHandler implements IItemHandler, IItemHandlerModifiable {
         public ItemStackHandler proxy;
         public IO[] ios;
+        public boolean inner;
 
-        public ProxyItemHandler(ItemStackHandler proxy, IO[] ios) {
+        public ProxyItemHandler(ItemStackHandler proxy, IO[] ios, boolean inner) {
             this.proxy = proxy;
             this.ios = ios;
+            this.inner = inner;
         }
 
         @Override
@@ -90,7 +99,7 @@ public class ItemCapabilityTrait extends SimpleCapabilityTrait {
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
             IO io = ios[slot];
-            if (io == IO.BOTH || io == IO.IN) {
+            if (io == IO.BOTH || (inner ? io == IO.OUT : io == IO.IN)) {
                 return proxy.insertItem(slot, stack, simulate);
             }
             return stack;
@@ -100,7 +109,7 @@ public class ItemCapabilityTrait extends SimpleCapabilityTrait {
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             IO io = ios[slot];
-            if (io == IO.BOTH || io == IO.OUT) {
+            if (io == IO.BOTH || (inner ? io == IO.IN : io == IO.OUT)) {
                 return proxy.extractItem(slot, amount, simulate);
             }
             return ItemStack.EMPTY;

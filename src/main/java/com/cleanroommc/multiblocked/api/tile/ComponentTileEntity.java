@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.api.tile;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.IInnerCapabilityProvider;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTComponent;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
@@ -68,7 +69,7 @@ import java.util.function.Consumer;
  */
 @SuppressWarnings("unchecked")
 @Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTComponent")
-public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity implements IUIHolder, ICTComponent {
+public abstract class ComponentTileEntity<T extends ComponentDefinition> extends TileEntity implements IUIHolder, ICTComponent, IInnerCapabilityProvider {
     // is good to write down all CT code here? or move them to @ZenExpansion.
     protected T definition;
 
@@ -322,6 +323,17 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return null;
     }
 
+    @Nullable
+    @Override
+    public <K> K getInnerCapability(@Nonnull Capability<K> capability, @Nullable EnumFacing facing) {
+        for (CapabilityTrait trait : traits.values()) {
+            K result = trait.getInnerCapability(capability, facing);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
 
     //************* gui *************//
 

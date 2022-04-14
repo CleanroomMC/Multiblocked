@@ -36,8 +36,6 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 @Mod(modid = Multiblocked.MODID,
         name = Multiblocked.NAME,

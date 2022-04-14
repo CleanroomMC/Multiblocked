@@ -16,7 +16,6 @@ import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
 import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
-import com.cleanroommc.multiblocked.events.Listeners;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import crafttweaker.CraftTweakerAPI;
 import net.minecraft.block.Block;
@@ -67,10 +66,7 @@ public class CommonProxy {
         }
     }
 
-    private static boolean init = false;
     public static void registerComponents(){
-        if (init) return;
-        init = true;
         // register any capability block
         MbdCapabilities.registerAnyCapabilityBlocks();
         // register blueprint table

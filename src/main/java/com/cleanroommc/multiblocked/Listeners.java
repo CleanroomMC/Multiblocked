@@ -1,4 +1,4 @@
-package com.cleanroommc.multiblocked.events;
+package com.cleanroommc.multiblocked;
 
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;

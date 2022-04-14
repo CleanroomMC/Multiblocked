@@ -71,6 +71,10 @@ public class Widget {
     public void setGui(ModularUI gui) {
         this.gui = gui;
     }
+    
+    public ModularUI getGui() {
+        return gui;
+    }
 
     public void setUiAccess(WidgetUIAccess uiAccess) {
         this.uiAccess = uiAccess;

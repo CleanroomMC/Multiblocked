@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.common.capability;
 
 import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
@@ -8,6 +9,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.common.capability.trait.FECapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.gson.*;
@@ -54,6 +56,16 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new TextTexture("FE", color)).setUnit("FE");
+    }
+
+    @Override
+    public boolean hasTrait() {
+        return true;
+    }
+
+    @Override
+    public CapabilityTrait createTrait() {
+        return new FECapabilityTrait();
     }
 
     @Override

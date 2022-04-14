@@ -62,7 +62,7 @@ public abstract class CapabilityTrait implements IInnerCapabilityProvider{
         this.component.writeTraitData(this, id, writer);
     }
 
-    public void createUI(WidgetGroup group, EntityPlayer player) {
+    public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 group.addWidget(new SlotWidget(player.inventory, col + (row + 1) * 9, 7 + col * 18, 173 + row * 18)

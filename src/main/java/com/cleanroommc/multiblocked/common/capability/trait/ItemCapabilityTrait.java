@@ -1,9 +1,10 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.IO;
-import com.cleanroommc.multiblocked.api.capability.SimpleCapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.MultiCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
+import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.ItemMultiblockCapability;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -20,7 +21,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ItemCapabilityTrait extends SimpleCapabilityTrait {
+public class ItemCapabilityTrait extends MultiCapabilityTrait {
     private ItemStackHandler handler;
 
     public ItemCapabilityTrait() {
@@ -51,8 +52,8 @@ public class ItemCapabilityTrait extends SimpleCapabilityTrait {
     }
 
     @Override
-    public void createUI(WidgetGroup group, EntityPlayer player) {
-        super.createUI(group, player);
+    public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
+        super.createUI(component, group, player);
         if (handler != null) {
             for (int i = 0; i < handler.getSlots(); i++) {
                 group.addWidget(new SlotWidget(new ProxyItemHandler(handler, guiIO,

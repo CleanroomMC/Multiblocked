@@ -5,9 +5,11 @@ import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 
 public class ProgressWidget extends Widget {
     public final static DoubleSupplier JEIProgress = () -> Math.abs(System.currentTimeMillis() % 2000) / 2000.;
@@ -15,6 +17,7 @@ public class ProgressWidget extends Widget {
     public final DoubleSupplier progressSupplier;
     private IGuiTexture emptyBarArea;
     private IGuiTexture filledBarArea;
+    private Function<Double, String> dynamicHoverTips;
 
     private double lastProgressValue;
 
@@ -36,6 +39,11 @@ public class ProgressWidget extends Widget {
         return this;
     }
 
+    public ProgressWidget setDynamicHoverTips(Function<Double, String> hoverTips) {
+        this.dynamicHoverTips = hoverTips;
+        return this;
+    }
+
     @Override
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
         Position pos = getPosition();
@@ -46,6 +54,9 @@ public class ProgressWidget extends Widget {
         if (filledBarArea != null) {
             if (progressSupplier == JEIProgress) {
                 lastProgressValue = progressSupplier.getAsDouble();
+                if (dynamicHoverTips != null) {
+                    setHoverTooltip(dynamicHoverTips.apply(lastProgressValue));
+                }
             }
             filledBarArea.drawSubArea(pos.x, pos.y, (int) (size.width * lastProgressValue), size.height,
                     0.0, 0.0, ((int) (size.width * lastProgressValue)) / (size.width * 1.0), 1.0);
@@ -65,6 +76,9 @@ public class ProgressWidget extends Widget {
     public void readUpdateInfo(int id, PacketBuffer buffer) {
         if (id == 0) {
             this.lastProgressValue = buffer.readDouble();
+            if (dynamicHoverTips != null) {
+                setHoverTooltip(dynamicHoverTips.apply(lastProgressValue));
+            }
         }
     }
 

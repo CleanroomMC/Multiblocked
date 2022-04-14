@@ -360,7 +360,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
                                 new ResourceTexture("multiblocked:textures/gui/custom_gui_tab_button.png").getSubTexture(0, 0.5, 1, 0.5)), group);
         group.addWidget(new ImageWidget(0, 0, 176, 256, new ResourceTexture(JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png"))));
         for (CapabilityTrait trait : traits.values()) {
-            trait.createUI(group, entityPlayer);
+            trait.createUI(this, group, entityPlayer);
         }
     }
 

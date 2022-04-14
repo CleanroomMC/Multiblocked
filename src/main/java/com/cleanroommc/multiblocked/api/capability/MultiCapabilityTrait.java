@@ -14,7 +14,6 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
 import com.cleanroommc.multiblocked.util.JsonUtil;
-import com.cleanroommc.multiblocked.util.Position;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -25,13 +24,13 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public abstract class SimpleCapabilityTrait extends CapabilityTrait {
+public abstract class MultiCapabilityTrait extends CapabilityTrait {
     protected IO[] capabilityIO;
     protected IO[] guiIO;
     protected int[] x;
     protected int[] y;
 
-    public SimpleCapabilityTrait(MultiblockCapability<?> capability) {
+    public MultiCapabilityTrait(MultiblockCapability<?> capability) {
         super(capability);
     }
 
@@ -71,62 +70,62 @@ public abstract class SimpleCapabilityTrait extends CapabilityTrait {
         return jsonArray;
     }
 
-    private int getColorByIO(IO io) {
+    protected int getColorByIO(IO io) {
         return io == IO.IN ? 0xaf00ff00 : io == IO.OUT ? 0xafff0000 : 0xaf0000ff;
     }
 
-    private void refreshSlots(DraggableScrollableWidgetGroup dragGroup) {
+    protected void refreshSlots(DraggableScrollableWidgetGroup dragGroup) {
         dragGroup.widgets.forEach(dragGroup::waitToRemoved);
         for (int i = 0; i < guiIO.length; i++) {
             int finalI = i;
-            ButtonWidget setting = new ButtonWidget(18, 4, 10, 10, new ResourceTexture("multiblocked:textures/gui/option.png"), null);
+            ButtonWidget setting =
+                    (ButtonWidget) new ButtonWidget(10, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("settings");
+            ImageWidget imageWidget = new ImageWidget(1, 1, 16, 16, new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO[finalI])), new ColorBorderTexture(1, getColorByIO(capabilityIO[finalI]))));
             setting.setVisible(false);
-            DraggableWidgetGroup button = new DraggableWidgetGroup(5, 5, 18, 18);
-            button.setSelfPosition(new Position(x[finalI], y[finalI]));
-            button.setOnSelected(w -> setting.setVisible(true));
-            button.setOnUnSelected(w -> setting.setVisible(false));
-            button.addWidget(setting);
-            ImageWidget imageWidget= new ImageWidget(1, 1, 16, 16, new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO[finalI])), new ColorBorderTexture(1, getColorByIO(capabilityIO[finalI]))));
-            button.addWidget(imageWidget);
-            button.setOnEndDrag(b -> {
+            DraggableWidgetGroup slot = new DraggableWidgetGroup(x[finalI], y[finalI], 18, 18);
+            slot.setOnSelected(w -> setting.setVisible(true));
+            slot.setOnUnSelected(w -> setting.setVisible(false));
+            slot.addWidget(imageWidget);
+            slot.addWidget(setting);
+            slot.setOnEndDrag(b -> {
                 x[finalI] = b.getSelfPosition().x;
                 y[finalI] = b.getSelfPosition().y;
             });
+            dragGroup.addWidget(slot);
 
-            dragGroup.addWidget(button);
             setting.setOnPressCallback(cd2 -> {
                 DialogWidget dialog = new DialogWidget(dragGroup, true);
                 dialog.addWidget(new ImageWidget(0, 0, 176, 256, new ColorRectTexture(0xaf000000)));
-                dialog.addWidget(new ButtonWidget(5, 5, 100, 20, new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("remove slot")), cd3 -> {
+                dialog.addWidget(new ButtonWidget(5, 5, 85, 20, new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("remove slot")), cd3 -> {
                     removeSlot(finalI);
                     refreshSlots(dragGroup);
                     dialog.close();
-                }));
-                dialog.addWidget(new SelectorWidget(5, 30, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
-                        .setValue(capabilityIO[finalI].name())
-                        .setOnChanged(io-> {
-                            capabilityIO[finalI] = IO.valueOf(io);
-                            imageWidget.setImage(new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO[finalI])), new ColorBorderTexture(1, getColorByIO(capabilityIO[finalI]))));
-                        })
-                        .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
-                        .setBackground(new ColorRectTexture(0xffaaaaaa))
-                        .setHoverTooltip("Capability IO (e.g., pipe interaction)"));
-                dialog.addWidget(new SelectorWidget(50, 30, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
-                        .setValue(guiIO[finalI].name())
-                        .setOnChanged(io-> {
-                            guiIO[finalI] = IO.valueOf(io);
-                            imageWidget.setImage(new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO[finalI])), new ColorBorderTexture(1, getColorByIO(capabilityIO[finalI]))));
-                        })
-                        .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
-                        .setBackground(new ColorRectTexture(0xffaaaaaa))
-                        .setHoverTooltip("Gui IO (e.g. gui interaction)"));
-                initDialog(dialog, finalI);
+                }).setHoverBorderTexture(1, -1));
+                initSettingDialog(dialog, slot, finalI);
             });
         }
     }
 
-    protected void initDialog(DialogWidget dialog, final int index) {
-
+    protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot, final int index) {
+        ImageWidget imageWidget = (ImageWidget) slot.widgets.get(0);
+        dialog.addWidget(new SelectorWidget(5, 30, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
+                .setValue(capabilityIO[index].name())
+                .setOnChanged(io-> {
+                    capabilityIO[index] = IO.valueOf(io);
+                    imageWidget.setImage(new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO[index])), new ColorBorderTexture(1, getColorByIO(capabilityIO[index]))));
+                })
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setHoverTooltip("Capability IO (e.g., pipe interaction)"));
+        dialog.addWidget(new SelectorWidget(50, 30, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
+                .setValue(guiIO[index].name())
+                .setOnChanged(io-> {
+                    guiIO[index] = IO.valueOf(io);
+                    imageWidget.setImage(new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO[index])), new ColorBorderTexture(1, getColorByIO(capabilityIO[index]))));
+                })
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setHoverTooltip("Gui IO (e.g. gui interaction)"));
     }
     
     protected void addSlot() {
@@ -152,7 +151,7 @@ public abstract class SimpleCapabilityTrait extends CapabilityTrait {
         parentDialog.addWidget(new ButtonWidget((384 - 176) / 2 -20,35, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> {
             addSlot();
             refreshSlots(dragGroup);
-        }));
+        }).setHoverTooltip("add a slot"));
     }
 
 }

@@ -1,12 +1,14 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.IO;
-import com.cleanroommc.multiblocked.api.capability.SimpleCapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.MultiCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TankWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
+import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.FluidMultiblockCapability;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -37,7 +39,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class FluidCapabilityTrait extends SimpleCapabilityTrait {
+public class FluidCapabilityTrait extends MultiCapabilityTrait {
     private FluidTankList handler;
     private int[] tankCapability;
 
@@ -74,8 +76,8 @@ public class FluidCapabilityTrait extends SimpleCapabilityTrait {
     }
 
     @Override
-    protected void initDialog(DialogWidget dialog, int index) {
-        super.initDialog(dialog, index);
+    protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot, int index) {
+        super.initSettingDialog(dialog, slot, index);
         dialog.addWidget(new LabelWidget(5, 60, "tank capability (L): "));
         dialog.addWidget(new TextFieldWidget(5, 70, 100, 15, true, null, s -> tankCapability[index] = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
@@ -107,11 +109,11 @@ public class FluidCapabilityTrait extends SimpleCapabilityTrait {
     }
 
     @Override
-    public void createUI(WidgetGroup group, EntityPlayer player) {
-        super.createUI(group, player);
+    public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
+        super.createUI(component, group, player);
         if (handler != null) {
             for (int i = 0; i < guiIO.length; i++) {
-                group.addWidget(new TankWidget(new ProxyFluidHandler(handler.getTankAt(i), guiIO[i]), x[i], y[i], guiIO[i] != IO.OUT, guiIO[i] != IO.IN));
+                group.addWidget(new TankWidget(new ProxyFluidHandler(handler.getTankAt(i), guiIO[i]), x[i], y[i], true, true));
             }
         }
     }

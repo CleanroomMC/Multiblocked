@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.util.Size;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -51,12 +52,12 @@ public class LabelWidget extends Widget {
     @Override
     @SideOnly(Side.CLIENT)
     public void drawInBackground(int mouseX, int mouseY, float particleTicks) {
-        String suppliedText = textSupplier.get();
+        String suppliedText = I18n.format(textSupplier.get());
         if (!suppliedText.equals(lastTextValue)) {
             this.lastTextValue = suppliedText;
             updateSize();
         }
-        String[] split = textSupplier.get().split("\n");
+        String[] split = suppliedText.split("\n");
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         Position position = getPosition();
         for (int i = 0; i < split.length; i++) {

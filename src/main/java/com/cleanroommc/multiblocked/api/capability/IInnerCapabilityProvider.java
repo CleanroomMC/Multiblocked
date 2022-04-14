@@ -9,6 +9,9 @@ import javax.annotation.Nullable;
 
 public interface IInnerCapabilityProvider extends ICapabilityProvider {
 
+    /**
+     * inner capability used for recipe logic handling.
+     */
     @Nullable
     default <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         return getCapability(capability, facing);

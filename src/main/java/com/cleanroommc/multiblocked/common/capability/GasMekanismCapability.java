@@ -103,7 +103,7 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
                     GasStack gasStack = iterator.next();
                     for (EnumFacing facing : EnumFacing.values()) {
                         if (capability.canReceiveGas(facing, gasStack.getGas())) {
-                            gasStack.amount -= capability.receiveGas(facing, gasStack, !simulate);
+                            gasStack.amount -= capability.receiveGas(facing, gasStack.copy(), !simulate);
                         }
                         if (gasStack.amount <= 0) break;
                     }

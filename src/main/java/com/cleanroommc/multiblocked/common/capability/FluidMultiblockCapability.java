@@ -130,7 +130,7 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
                         found = true;
                     }
                     if (!found) continue;
-                    FluidStack drained = capability.drain(fluidStack, !simulate);
+                    FluidStack drained = capability.drain(fluidStack.copy(), !simulate);
                     if (drained == null) continue;
                     fluidStack.amount = fluidStack.amount - drained.amount;
                     if (fluidStack.amount <= 0) {
@@ -140,7 +140,7 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
             } else if (io == IO.OUT){
                 while (iterator.hasNext()) {
                     FluidStack fluidStack = iterator.next();
-                    int filled = capability.fill(fluidStack, !simulate);
+                    int filled = capability.fill(fluidStack.copy(), !simulate);
                     fluidStack.amount = fluidStack.amount - filled;
                     if (fluidStack.amount <= 0) {
                         iterator.remove();

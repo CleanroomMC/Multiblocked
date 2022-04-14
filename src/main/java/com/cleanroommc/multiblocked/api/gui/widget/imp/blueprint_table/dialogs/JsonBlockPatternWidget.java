@@ -89,6 +89,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
 
     public JsonBlockPatternWidget(WidgetGroup parent, JsonBlockPattern pattern, Consumer<JsonBlockPattern> onClose) {
         super(parent, true);
+        setParentInVisible();
         this.setOnClosed(()->onClose.accept(null));
         this.pattern = pattern;
         this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/json_block_pattern.png")));

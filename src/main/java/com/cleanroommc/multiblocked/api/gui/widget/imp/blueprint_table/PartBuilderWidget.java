@@ -48,15 +48,8 @@ public class PartBuilderWidget extends WidgetGroup {
             }
         }).setHoverBorderTexture(1, -1).setHoverTooltip("open folder"));
         this.addWidget(new ButtonWidget(200 - 4 - 20, 51, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> {
-            for (Widget widget : widgets) {
-                widget.setVisible(false);
-                widget.setActive(false);
-            }
             new PartWidget(this, new PartDefinition(new ResourceLocation("mod_id:component_id")), jsonObject -> {
-                for (Widget widget : widgets) {
-                    widget.setVisible(true);
-                    widget.setActive(true);
-                }
+
                 if (jsonObject != null) {
                     FileUtility.saveJson(new File(Multiblocked.location, "definition/part/" + jsonObject.get("location").getAsString().replace(":", "_") + ".json"), jsonObject);
                 }

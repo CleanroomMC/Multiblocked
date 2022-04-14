@@ -84,8 +84,21 @@ public class SlotWidget extends Widget implements IIngredientSlot {
 
     @Override
     @SideOnly(Side.CLIENT)
+    public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
+        super.drawInForeground(mouseX, mouseY, partialTicks);
+        if (drawHoverTips && isMouseOverElement(mouseX, mouseY) && isActive()) {
+            ((ISlotWidget) slotReference).setHover(true);
+            ItemStack stack = slotReference.getStack();
+            net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
+            DrawerHelper.drawHoveringText(stack, getToolTips(DrawerHelper.getItemToolTip(stack)), 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
+            net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
+        }
+        ((ISlotWidget) slotReference).setHover(false);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
-        ((ISlotWidget) slotReference).setHover(drawHoverTips && isMouseOverElement(mouseX, mouseY) && isActive());
         Position pos = getPosition();
         Size size = getSize();
         if (backgroundTexture != null) {
@@ -281,7 +294,6 @@ public class SlotWidget extends Widget implements IIngredientSlot {
     public interface ISlotWidget {
         void setHover(boolean isHover);
         boolean isHover();
-        List<String> getToolTips(List<String> list);
     }
 
     protected class WidgetSlot extends Slot implements ISlotWidget {
@@ -299,11 +311,6 @@ public class SlotWidget extends Widget implements IIngredientSlot {
         @Override
         public boolean isHover() {
             return isHover;
-        }
-
-        @Override
-        public List<String> getToolTips(List<String> list) {
-            return SlotWidget.this.getToolTips(list);
         }
 
         @Override
@@ -358,11 +365,6 @@ public class SlotWidget extends Widget implements IIngredientSlot {
         @Override
         public boolean isHover() {
             return isHover;
-        }
-
-        @Override
-        public List<String> getToolTips(List<String> list) {
-            return SlotWidget.this.getToolTips(list);
         }
 
         @Override

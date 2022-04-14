@@ -127,12 +127,7 @@ public class ModularUIGuiContainer extends GuiContainer {
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
         if (this.mc.player.inventory.getItemStack().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.getHasStack()) {
             ItemStack stack = this.hoveredSlot.getStack();
-            if (this.hoveredSlot instanceof SlotWidget.ISlotWidget) {
-                FontRenderer font = stack.getItem().getFontRenderer(stack);
-                net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
-                this.drawHoveringText(((SlotWidget.ISlotWidget) this.hoveredSlot).getToolTips(this.getItemToolTip(stack)), mouseX, mouseY, (font == null ? fontRenderer : font));
-                net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
-            } else {
+            if (!(this.hoveredSlot instanceof SlotWidget.ISlotWidget)) {
                 this.renderToolTip(stack, mouseX, mouseY);
             }
         }

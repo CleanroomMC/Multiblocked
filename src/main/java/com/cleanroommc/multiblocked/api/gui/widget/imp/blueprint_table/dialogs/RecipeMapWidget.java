@@ -46,6 +46,7 @@ public class RecipeMapWidget extends DialogWidget {
 
     public RecipeMapWidget(WidgetGroup parent, RecipeMap recipeMap, Consumer<RecipeMap> onSave) {
         super(parent, true);
+        setParentInVisible();
         this.recipeMap = recipeMap;
         this.onSave = onSave;
         this.recipes = new ArrayList<>();

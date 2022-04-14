@@ -17,6 +17,7 @@ import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.util.CycleItemStackHandler;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.oredict.OreDictionary;
@@ -41,7 +42,11 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
             itemHandler.updateStacks(stacks);
         } else {
             itemHandler = new CycleItemStackHandler(stacks);
-            addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false).setDrawOverlay(false));
+            addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false).setDrawOverlay(false).setOnAddedTooltips((s, l)-> {
+                if (chance < 1) {
+                    l.add(chance == 0 ? (TextFormatting.RED + "no cost") : ("chance: " + TextFormatting.YELLOW + String.format("%.1f", chance * 100) + "%")  + TextFormatting.RESET);
+                }
+            }));
         }
     }
 

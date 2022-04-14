@@ -98,7 +98,8 @@ public class DrawerHelper {
     @SideOnly(Side.CLIENT)
     public static void drawHoveringText(ItemStack itemStack, List<String> tooltip, int maxTextWidth, int mouseX, int mouseY, int screenWidth, int screenHeight) {
         Minecraft mc = Minecraft.getMinecraft();
-        GuiUtils.drawHoveringText(itemStack == null ? ItemStack.EMPTY : itemStack, tooltip, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, mc.fontRenderer);
+        FontRenderer fontRenderer = itemStack.getItem().getFontRenderer(itemStack);
+        GuiUtils.drawHoveringText(itemStack, tooltip, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, fontRenderer == null ?  mc.fontRenderer : fontRenderer);
         GlStateManager.disableLighting();
     }
 

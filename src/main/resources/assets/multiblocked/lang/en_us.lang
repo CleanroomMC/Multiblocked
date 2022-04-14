@@ -1,29 +1,23 @@
 multiblocked.multiblock.formed= Multiblock Formed!
 
 multiblocked.capability.tc6_aspect=Thaumcraft Aspect
-tc6_aspect.in=Available Aspect Containers
-tc6_aspect.out=Available Aspect Containers
+tc6_aspect.any.name=Available Aspect Containers
 multiblocked.capability.forge_energy=Forge Energy
-forge_energy.in=Available Forge Energy Containers
-forge_energy.out=Available Forge Energy Containers
+forge_energy.any.name=Available Forge Energy Containers
 multiblocked.capability.fluid=Fluid
-fluid.in=Available Fluid Containers
-fluid.out=Available Fluid Containers
+fluid.any.name=Available Fluid Containers
 multiblocked.capability.mek_gas=Mekanism Gas
-mek_gas.in=Available Mekanism Gas Containers
-mek_gas.out=Available Mekanism Gas Containers
+mek_gas.any.name=Available Mekanism Gas Containers
 multiblocked.capability.mek_heat=Mekanism Heat
-mek_heat.in=Available Mekanism Heat Containers
-mek_heat.out=Available Mekanism Heat Containers
+mek_heat.any.name=Available Mekanism Heat Containers
 multiblocked.capability.item=Item
-item.in=Available Item Containers
-item.out=Available Item Containers
+item.any.name=Available Item Containers
 multiblocked.capability.bot_mana=Botaina Mana
-bot_mana.in=Available Botaina Mana Containers
-bot_mana.out=Available Botaina Mana Containers
+bot_mana.any.name=Available Botaina Mana Containers
 multiblocked.capability.qmd_particle=QMD Particle
-qmd_particle.in=Available QMD Particle Storages
-qmd_particle.out=Available QMD Particle Storages
+qmd_particle.any.name=Available QMD Particle Storages
+multiblocked.capability.gtce_energy=QMD Particle
+gtce_energy.any.name=Available GTCE Energy Container
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 

@@ -66,18 +66,10 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                     ResourceLocation location = new ResourceLocation("mod_id:component_id");
                     ControllerDefinition controllerDefinition = new ControllerDefinition(location);
                     controllerDefinition.baseRenderer = new BlockStateRenderer(world.getBlockState(pos));
-                    for (Widget widget : widgets) {
-                        widget.setVisible(false);
-                        widget.setActive(false);
-                    }
                     new ControllerWidget(this, controllerDefinition, new JsonBlockPattern(world, location, pos, facing,
                             poses[0].getX(), poses[0].getY(), poses[0].getZ(),
                             poses[1].getX(), poses[1].getY(), poses[1].getZ()),
                             "empty", jsonObject -> {
-                        for (Widget widget : widgets) {
-                            widget.setVisible(true);
-                            widget.setActive(true);
-                        }
                         if (jsonObject != null) {
                             FileUtility.saveJson(new File(Multiblocked.location, "definition/controller/" + jsonObject.get("location").getAsString().replace(":", "_") + ".json"), jsonObject);
                             updateList();

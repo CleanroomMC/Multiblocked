@@ -24,6 +24,7 @@ public class DialogWidget extends WidgetGroup {
     private static final int HEIGHT = 128;
     private static final int WIDTH = 184;
     public final WidgetGroup parent;
+    protected boolean isParentInVisible;
     protected Runnable onClosed;
 
     public DialogWidget(WidgetGroup parent, boolean isClient) {
@@ -38,8 +39,25 @@ public class DialogWidget extends WidgetGroup {
         return this;
     }
 
+    public DialogWidget setParentInVisible() {
+        this.isParentInVisible = true;
+        for (Widget widget : parent.widgets) {
+            if (widget != this) {
+                widget.setVisible(false);
+                widget.setActive(false);
+            }
+        }
+        return this;
+    }
+
     public void close() {
         parent.waitToRemoved(this);
+        if (isParentInVisible) {
+            for (Widget widget : parent.widgets) {
+                widget.setVisible(true);
+                widget.setActive(true);
+            }
+        }
         if (onClosed != null) {
             onClosed.run();
         }

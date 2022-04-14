@@ -55,6 +55,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
 
     public ComponentWidget(WidgetGroup group, T definition, Consumer<JsonObject> onSave) {
         super(group, true);
+        setParentInVisible();
         this.onSave = onSave;
         this.definition = definition;
         this.location = definition.location;

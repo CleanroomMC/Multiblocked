@@ -123,10 +123,6 @@ public class TemplateBuilderWidget extends WidgetGroup {
                 pattern = Multiblocked.GSON.fromJson(json, JsonBlockPattern.class);
             }
             if (pattern != null) {
-                for (Widget widget : widgets) {
-                    widget.setVisible(false);
-                    widget.setActive(false);
-                }
                 new JsonBlockPatternWidget(this, pattern, patternResult -> {
                     if (patternResult != null) {
                         if (ItemBlueprint.setPattern(selected) && patternResult.predicates.get("controller") instanceof PredicateComponent) {
@@ -141,10 +137,6 @@ public class TemplateBuilderWidget extends WidgetGroup {
                                 buffer.writeString(controller);
                             });
                         }
-                    }
-                    for (Widget widget : widgets) {
-                        widget.setVisible(true);
-                        widget.setActive(true);
                     }
                 });
             }

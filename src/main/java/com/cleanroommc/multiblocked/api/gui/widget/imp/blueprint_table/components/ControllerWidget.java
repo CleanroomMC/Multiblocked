@@ -107,8 +107,6 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         S3.addWidget(new TextBoxWidget(200, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
         S3.addWidget(new ButtonWidget(200, 66, 100, 20,
                 new GuiTextureGroup(ResourceBorderTexture.BAR, new TextTexture("Pattern Setting", -1).setDropShadow(true)), cd -> {
-            sceneWidget.setActive(false);
-            sceneWidget.setVisible(false);
             new JsonBlockPatternWidget(this, this.pattern.copy(), this::savePattern);
         }).setHoverBorderTexture(1, -1));
         updateScene();
@@ -203,8 +201,6 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
             pattern.cleanUp();
             updateScene();
         }
-        sceneWidget.setVisible(true);
-        sceneWidget.setActive(true);
     }
 
     @Override

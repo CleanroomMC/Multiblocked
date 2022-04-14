@@ -199,10 +199,9 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait implements IT
         }
 
         public void update() {
+            if (component.getWorld().isRemote || capabilityIO == IO.IN) return;
             long energyUsed = 0;
             amps = 0;
-            if (component.getWorld().isRemote) return;
-
             for (EnumFacing side : EnumFacing.VALUES) {
                 if (!outputsEnergy(side)) continue;
                 TileEntity tileEntity = component.getWorld().getTileEntity(component.getPos().offset(side));
@@ -211,7 +210,7 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait implements IT
                     IEnergyContainer energyContainer = tileEntity.getCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, oppositeSide);
                     if (energyContainer != null && energyContainer.inputsEnergy(oppositeSide)) {
                         long outputV = energyContainer.getInputVoltage();
-                        if (outputV > energyUsed) continue;
+                        if (outputV > getEnergyStored() - energyUsed) continue;
                         energyUsed += energyContainer.acceptEnergyFromNetwork(oppositeSide, outputV, 1) * energyContainer.getInputVoltage();
                     }
                     if (energyUsed >= getEnergyStored()) break;

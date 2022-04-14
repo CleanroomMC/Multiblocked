@@ -26,6 +26,7 @@ public class ProgressWidget extends Widget {
         this.progressSupplier = progressSupplier;
         this.emptyBarArea = fullImage.getSubTexture(0.0, 0.0, 1.0, 0.5);
         this.filledBarArea = fullImage.getSubTexture(0.0, 0.5, 1.0, 0.5);
+        this.lastProgressValue = -1;
     }
 
     public ProgressWidget(DoubleSupplier progressSupplier, int x, int y, int width, int height) {
@@ -58,8 +59,8 @@ public class ProgressWidget extends Widget {
                     setHoverTooltip(dynamicHoverTips.apply(lastProgressValue));
                 }
             }
-            filledBarArea.drawSubArea(pos.x, pos.y, (int) (size.width * lastProgressValue), size.height,
-                    0.0, 0.0, ((int) (size.width * lastProgressValue)) / (size.width * 1.0), 1.0);
+            filledBarArea.drawSubArea(pos.x, pos.y, (int) (size.width * (lastProgressValue < 0 ? 0 : lastProgressValue)), size.height,
+                    0.0, 0.0, ((int) (size.width * (lastProgressValue < 0 ? 0 : lastProgressValue))) / (size.width * 1.0), 1.0);
         }
     }
 

@@ -23,10 +23,10 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
-public class ManaBotainaCapability extends MultiblockCapability<Integer> {
-    public static final ManaBotainaCapability CAP = new ManaBotainaCapability();
+public class ManaBotaniaCapability extends MultiblockCapability<Integer> {
+    public static final ManaBotaniaCapability CAP = new ManaBotaniaCapability();
 
-    private ManaBotainaCapability() {
+    private ManaBotaniaCapability() {
         super("bot_mana", new Color(0x06D2D9).getRGB());
     }
 
@@ -78,7 +78,7 @@ public class ManaBotainaCapability extends MultiblockCapability<Integer> {
     public static class ManaBotainaCapabilityProxy extends CapabilityProxy<Integer> {
 
         public ManaBotainaCapabilityProxy(TileEntity tileEntity) {
-            super(ManaBotainaCapability.CAP, tileEntity);
+            super(ManaBotaniaCapability.CAP, tileEntity);
         }
 
         public IManaReceiver getCapability() {

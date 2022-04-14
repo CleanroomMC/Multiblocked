@@ -29,7 +29,7 @@ public class MbdCapabilities {
         registerCapability(ITEM = ItemMultiblockCapability.CAP);
         registerCapability(FLUID = FluidMultiblockCapability.CAP);
         if (Loader.isModLoaded(Multiblocked.MODID_BOT)) {
-            registerCapability(ManaBotainaCapability.CAP);
+            registerCapability(ManaBotaniaCapability.CAP);
         }
         if (Loader.isModLoaded(Multiblocked.MODID_TC6)) {
             registerCapability(AspectThaumcraftCapability.CAP);

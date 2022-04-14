@@ -7,7 +7,7 @@ import com.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability
 import com.cleanroommc.multiblocked.common.capability.EnergyGTCECapability;
 import com.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import com.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
-import com.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
+import com.cleanroommc.multiblocked.common.capability.ManaBotaniaCapability;
 import com.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import com.google.common.collect.ImmutableList;
@@ -217,15 +217,15 @@ public class RecipeBuilder {
     @Optional.Method(modid = Multiblocked.MODID_BOT)
     @ZenMethod
     public RecipeBuilder inputMana(float chance, int mana) {
-        keyBuilder.append(ManaBotainaCapability.CAP.name).append(mana);
-        return input(ManaBotainaCapability.CAP, chance, mana);
+        keyBuilder.append(ManaBotaniaCapability.CAP.name).append(mana);
+        return input(ManaBotaniaCapability.CAP, chance, mana);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BOT)
     @ZenMethod
     public RecipeBuilder outputMana(float chance, int mana) {
-        keyBuilder.append(ManaBotainaCapability.CAP.name).append(mana);
-        return output(ManaBotainaCapability.CAP, chance, mana);
+        keyBuilder.append(ManaBotaniaCapability.CAP.name).append(mana);
+        return output(ManaBotaniaCapability.CAP, chance, mana);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_TC6)

@@ -1,12 +1,14 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.common.capability.trait.EnergyCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
 import gregtech.api.GregTechAPI;
@@ -57,6 +59,16 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
     @Override
     public ContentWidget<? super Long> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new TextTexture("EU", color)).setUnit("EU");
+    }
+
+    @Override
+    public boolean hasTrait() {
+        return isCEu();
+    }
+
+    @Override
+    public CapabilityTrait createTrait() {
+        return new EnergyCapabilityTrait();
     }
 
     public boolean isCEu() {

@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.capability;
 
+import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.google.common.collect.Table;
 import crafttweaker.annotations.ZenRegister;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;

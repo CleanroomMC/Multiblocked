@@ -7,7 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
-import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
@@ -25,7 +25,6 @@ import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack> {
     public static final AspectThaumcraftCapability CAP = new AspectThaumcraftCapability();

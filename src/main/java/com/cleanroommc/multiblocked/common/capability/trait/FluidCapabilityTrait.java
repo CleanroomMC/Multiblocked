@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.IO;
-import com.cleanroommc.multiblocked.api.capability.MultiCapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.trait.MultiCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
@@ -130,7 +130,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(handler.inner()) : null;
     }
 
-    private static class ProxyFluidHandler implements IFluidTank, IFluidHandler {
+    private class ProxyFluidHandler implements IFluidTank, IFluidHandler {
         public FluidTank proxy;
         public IO io;
 
@@ -169,6 +169,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             if (io == IO.OUT) {
                 return 0;
             }
+            markAsDirty();
             return proxy.fill(resource, doFill);
         }
 
@@ -184,11 +185,12 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             if (io == IO.IN) {
                 return null;
             }
+            markAsDirty();
             return proxy.drain(maxDrain, doDrain);
         }
     }
 
-    public static class FluidTankList implements IFluidHandler, INBTSerializable<NBTTagCompound> {
+    public class FluidTankList implements IFluidHandler, INBTSerializable<NBTTagCompound> {
         public IO[] cIOs;
         protected final List<FluidTank> fluidTanks;
         private IFluidTankProperties[] fluidTankProperties;
@@ -247,6 +249,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             if (resource == null || resource.amount <= 0) {
                 return 0;
             }
+            if (doFill) markAsDirty();
             return fillTanksImpl(resource.copy(), doFill);
         }
 
@@ -289,6 +292,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             if (resource == null || resource.amount <= 0) {
                 return null;
             }
+            if (doDrain) markAsDirty();
             resource = resource.copy();
             FluidStack totalDrained = null;
             for (int i = 0; i < fluidTanks.size(); i++) {
@@ -320,6 +324,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             if (maxDrain == 0) {
                 return null;
             }
+            if (doDrain) markAsDirty();
             FluidStack totalDrained = null;
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];

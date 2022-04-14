@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.components;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;

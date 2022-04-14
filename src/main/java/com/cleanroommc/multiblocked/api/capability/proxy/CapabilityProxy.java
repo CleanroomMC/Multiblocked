@@ -1,5 +1,8 @@
-package com.cleanroommc.multiblocked.api.capability;
+package com.cleanroommc.multiblocked.api.capability.proxy;
 
+import com.cleanroommc.multiblocked.api.capability.IInnerCapabilityProvider;
+import com.cleanroommc.multiblocked.api.capability.IO;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

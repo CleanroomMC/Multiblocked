@@ -1,10 +1,10 @@
-package com.cleanroommc.multiblocked.api.capability;
+package com.cleanroommc.multiblocked.api.capability.proxy;
 
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.Capability;
 
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * The Proxy of a Capability {@link Capability}

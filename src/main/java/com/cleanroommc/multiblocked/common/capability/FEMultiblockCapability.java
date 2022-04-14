@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.capability.CapCapabilityProxy;
-import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;

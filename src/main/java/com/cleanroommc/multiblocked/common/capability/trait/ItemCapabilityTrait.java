@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.IO;
-import com.cleanroommc.multiblocked.api.capability.MultiCapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.trait.MultiCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
@@ -74,7 +74,7 @@ public class ItemCapabilityTrait extends MultiCapabilityTrait {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new ProxyItemHandler(handler, capabilityIO, true)) : null;
     }
 
-    private static class ProxyItemHandler implements IItemHandler, IItemHandlerModifiable {
+    private class ProxyItemHandler implements IItemHandler, IItemHandlerModifiable {
         public ItemStackHandler proxy;
         public IO[] ios;
         public boolean inner;
@@ -101,6 +101,7 @@ public class ItemCapabilityTrait extends MultiCapabilityTrait {
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
             IO io = ios[slot];
             if (io == IO.BOTH || (inner ? io == IO.OUT : io == IO.IN)) {
+                if (!simulate) markAsDirty();
                 return proxy.insertItem(slot, stack, simulate);
             }
             return stack;
@@ -111,6 +112,7 @@ public class ItemCapabilityTrait extends MultiCapabilityTrait {
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             IO io = ios[slot];
             if (io == IO.BOTH || (inner ? io == IO.IN : io == IO.OUT)) {
+                if (!simulate) markAsDirty();
                 return proxy.extractItem(slot, amount, simulate);
             }
             return ItemStack.EMPTY;

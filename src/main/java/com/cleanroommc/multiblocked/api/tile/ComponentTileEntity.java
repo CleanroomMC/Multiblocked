@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.api.tile;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.capability.CapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IInnerCapabilityProvider;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTComponent;
@@ -91,7 +91,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         this.definition = (T) definition;
         for (Map.Entry<String, JsonElement> entry : this.definition.traits.entrySet()) {
             MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
-            if (capability != null) {
+            if (capability != null && capability.hasTrait()) {
                 CapabilityTrait trait = capability.createTrait();
                 trait.serialize(entry.getValue());
                 traits.put(capability, trait);

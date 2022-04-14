@@ -1,5 +1,7 @@
-package com.cleanroommc.multiblocked.api.capability;
+package com.cleanroommc.multiblocked.api.capability.trait;
 
+import com.cleanroommc.multiblocked.api.capability.IInnerCapabilityProvider;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
@@ -14,7 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public abstract class CapabilityTrait implements IInnerCapabilityProvider{
+public abstract class CapabilityTrait implements IInnerCapabilityProvider {
     public final MultiblockCapability<?> capability;
     protected ComponentTileEntity<?> component;
 

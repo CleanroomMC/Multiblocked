@@ -1,6 +1,6 @@
 package com.cleanroommc.multiblocked.api.recipe;
 
-import com.cleanroommc.multiblocked.api.capability.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import crafttweaker.annotations.ZenRegister;

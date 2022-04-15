@@ -11,7 +11,6 @@ import com.cleanroommc.multiblocked.util.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -43,8 +42,10 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static com.cleanroommc.multiblocked.util.Vector3.X;
@@ -68,6 +69,7 @@ public abstract class WorldSceneRenderer {
     public final World world;
     public final Map<Collection<BlockPos>, ISceneRenderHook> renderedBlocksMap;
     protected VertexBuffer[] vertexBuffers;
+    protected Set<BlockPos> tileEntities;
     protected boolean useCache;
     protected boolean needCompile;
     protected ParticleManager particleManager;
@@ -104,6 +106,7 @@ public abstract class WorldSceneRenderer {
         deleteCacheBuffer();
         if (useCache) {
             this.vertexBuffers = new VertexBuffer[BlockRenderLayer.values().length];
+            this.tileEntities = new HashSet<>();
             for (int j = 0; j < BlockRenderLayer.values().length; ++j) {
                 this.vertexBuffers[j] = new VertexBuffer(DefaultVertexFormats.BLOCK);
             }
@@ -121,6 +124,7 @@ public abstract class WorldSceneRenderer {
                 }
             }
         }
+        this.tileEntities = null;
         useCache = false;
         needCompile = true;
         return this;
@@ -367,6 +371,21 @@ public abstract class WorldSceneRenderer {
             } finally {
                 ForgeHooksClient.setRenderLayer(oldRenderLayer);
             }
+            tileEntities.clear();
+            renderedBlocksMap.forEach((renderedBlocks, hook) -> {
+                if (renderedBlocks.size() > 500) return;
+                for (BlockPos pos : renderedBlocks) {
+                    if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
+                        continue;
+                    }
+                    TileEntity tile = world.getTileEntity(pos);
+                    if (tile != null) {
+                        if (TileEntityRendererDispatcher.instance.getRenderer(tile) != null) {
+                            tileEntities.add(pos);
+                        }
+                    }
+                }
+            });
             needCompile = false;
         } else {
             for (BlockRenderLayer layer : BlockRenderLayer.values()) {
@@ -446,16 +465,28 @@ public abstract class WorldSceneRenderer {
         // render TESR
         RenderHelper.enableStandardItemLighting();
         ForgeHooksClient.setRenderPass(pass);
-        renderedBlocksMap.forEach((renderedBlocks, hook)->{
-            if (hook != null) {
-                hook.apply(true, pass, null);
-            } else {
-                setDefaultPassRenderState(pass);
-            }
-            for (BlockPos pos : renderedBlocks) {
-                if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
-                    continue;
+        if (tileEntities == null) {
+            renderedBlocksMap.forEach((renderedBlocks, hook)->{
+                if (hook != null) {
+                    hook.apply(true, pass, null);
+                } else {
+                    setDefaultPassRenderState(pass);
                 }
+                if (renderedBlocks.size() > 500) return;
+                for (BlockPos pos : renderedBlocks) {
+                    if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
+                        continue;
+                    }
+                    TileEntity tile = world.getTileEntity(pos);
+                    if (tile != null) {
+                        if (tile.shouldRenderInPass(pass)) {
+                            TileEntityRendererDispatcher.instance.render(tile, pos.getX(), pos.getY(), pos.getZ(), particle);
+                        }
+                    }
+                }
+            });
+        } else {
+            for (BlockPos pos : tileEntities) {
                 TileEntity tile = world.getTileEntity(pos);
                 if (tile != null) {
                     if (tile.shouldRenderInPass(pass)) {
@@ -463,7 +494,7 @@ public abstract class WorldSceneRenderer {
                     }
                 }
             }
-        });
+        }
         ForgeHooksClient.setRenderPass(-1);
         RenderHelper.disableStandardItemLighting();
 

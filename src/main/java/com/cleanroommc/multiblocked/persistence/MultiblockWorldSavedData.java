@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -32,6 +33,22 @@ import java.util.Set;
 
 public class MultiblockWorldSavedData extends WorldSavedData {
 
+    // ********************************* dummy ********************************* //
+
+    private static final MultiblockWorldSavedData DUMMY = new MultiblockWorldSavedData("dummy"){
+        @Override
+        public void addMapping(MultiblockState state) {
+        }
+
+        @Override
+        public void addLoading(ComponentTileEntity<?> tileEntity) {
+        }
+
+        @Override
+        public void createSearchingThread() {
+        }
+    };
+
     @SideOnly(Side.CLIENT)
     public static Set<BlockPos> modelDisabled;
     @SideOnly(Side.CLIENT)
@@ -49,6 +66,9 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     private static WeakReference<World> worldRef;
 
     public static MultiblockWorldSavedData getOrCreate(World world) {
+        if (world instanceof DummyWorld) {
+            return DUMMY;
+        }
         MapStorage perWorldStorage = world.getPerWorldStorage();
         String name = getName(world);
         worldRef = new WeakReference<>(world);
@@ -198,7 +218,11 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         while (!Thread.interrupted()) {
             long st = System.currentTimeMillis();
             for (IAsyncThreadUpdate component : asyncComponents) {
-                component.asyncThreadLogic(periodID);
+                try {
+                    component.asyncThreadLogic(periodID);
+                } catch (Throwable e) {
+                    Multiblocked.LOGGER.error("asyncThreadLogic error: {}", e.getMessage());
+                }
             }
             periodID++;
             long et = System.currentTimeMillis();

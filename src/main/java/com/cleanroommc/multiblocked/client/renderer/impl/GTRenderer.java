@@ -166,7 +166,7 @@ public class GTRenderer extends IModelRenderer {
     public IRenderer fromJson(Gson gson, JsonObject jsonObject) {
         GTRenderer renderer =  new GTRenderer(gson.fromJson(jsonObject.get("baseTexture"), ResourceLocation.class), gson.fromJson(jsonObject.get("frontTexture"), ResourceLocation.class));
         if (jsonObject.has("backTexture")) {
-            renderer.baseTexture = gson.fromJson(jsonObject.get("backTexture"), ResourceLocation.class);
+            renderer.backTexture = gson.fromJson(jsonObject.get("backTexture"), ResourceLocation.class);
         }
         if (jsonObject.has("leftTexture")) {
             renderer.leftOverlay = gson.fromJson(jsonObject.get("leftTexture"), ResourceLocation.class);

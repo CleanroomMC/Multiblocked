@@ -1,13 +1,11 @@
 package com.cleanroommc.multiblocked.persistence;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Minecraft;
@@ -197,22 +195,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     private void searchingTask() {
         while (!Thread.interrupted()) {
             for (ControllerTileEntity controller : controllers) {
-                try {
-                    if (controller.hasProxies()) {
-                        // should i do lock for proxies?
-                        for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : controller.getCapabilities().values()) {
-                            if (map != null) {
-                                for (CapabilityProxy<?> proxy : map.values()) {
-                                    if (proxy != null) {
-                                        proxy.updateChangedState(periodID);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    Multiblocked.LOGGER.error("something run while checking proxy changes");
-                }
+                controller.asyncThreadLogic(periodID);
             }
             periodID++;
             try {

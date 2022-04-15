@@ -46,6 +46,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
@@ -103,12 +104,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         super.update();
         if (isFormed()) {
             updateFormed();
-        } else if (definition.catalyst == null && getTimer() % 20 == 0) {
-            if (state == null) state = new MultiblockState(world, pos);
-            if (checkPattern()) { // formed
-                MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
-                onStructureFormed();
-            }
         }
     }
 
@@ -383,5 +378,37 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
                 .widget(tabContainer)
                 .build(this, entityPlayer);
+    }
+
+    public void asyncThreadLogic(long periodID) {
+        if (periodID % 4 == 0) {
+            if (!isFormed() && getDefinition().catalyst == null) {
+                if (getPattern().checkPatternAt(new MultiblockState(world, pos), false)) {
+                    FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
+                        if (state == null) state = new MultiblockState(world, pos);
+                        if (checkPattern()) { // formed
+                            MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
+                            onStructureFormed();
+                        }
+                    });
+                }
+            }
+        }
+        try {
+            if (hasProxies()) {
+                // should i do lock for proxies?
+                for (Long2ObjectOpenHashMap<CapabilityProxy<?>> map : getCapabilities().values()) {
+                    if (map != null) {
+                        for (CapabilityProxy<?> proxy : map.values()) {
+                            if (proxy != null) {
+                                proxy.updateChangedState(periodID);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Multiblocked.LOGGER.error("something run while checking proxy changes");
+        }
     }
 }

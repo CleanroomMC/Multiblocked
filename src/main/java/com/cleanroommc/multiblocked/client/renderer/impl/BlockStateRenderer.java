@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.BlockSelectorWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.client.renderer.ICustomRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.util.FacadeBlockAccess;
@@ -38,25 +39,33 @@ import java.util.function.Supplier;
 public class BlockStateRenderer implements ICustomRenderer {
     public final static BlockStateRenderer INSTANCE = new BlockStateRenderer();
 
-    public final IBlockState state;
+    public final BlockInfo blockInfo;
     @SideOnly(Side.CLIENT)
     private IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
     private TileEntity tileEntity;
 
     private BlockStateRenderer() {
-        state = null;
+        blockInfo = null;
     }
 
     public BlockStateRenderer(IBlockState state) {
-        this.state = state == null ? Blocks.BARRIER.getDefaultState() : state;
+        this(new BlockInfo(state == null ? Blocks.BARRIER.getDefaultState() : state));
+    }
+
+    public BlockStateRenderer(BlockInfo blockInfo) {
+        this.blockInfo = blockInfo == null ? new BlockInfo(Blocks.BARRIER) : blockInfo;
         if (Multiblocked.isClient()) {
             registerTextureSwitchEvent();
         }
     }
 
     public IBlockState getState() {
-        return state == null ? Blocks.BARRIER.getDefaultState() : state;
+        return blockInfo.getBlockState();
+    }
+
+    public BlockInfo getBlockInfo() {
+        return blockInfo;
     }
 
     @SideOnly(Side.CLIENT)
@@ -111,9 +120,9 @@ public class BlockStateRenderer implements ICustomRenderer {
     public TileEntity getTileEntity(World world, BlockPos pos) {
         try {
             IBlockState state = getState();
-            if (!state.getBlock().hasTileEntity(state)) return null;
+            if (!state.getBlock().hasTileEntity(state) && blockInfo.getTileEntity() != null) return null;
             TrackedDummyWorld dummyWorld = new TrackedDummyWorld(world);
-            tileEntity = tileEntity == null ? state.getBlock().createTileEntity(world, state) : tileEntity;
+            tileEntity = blockInfo.getTileEntity() == null ? (tileEntity == null ? state.getBlock().createTileEntity(world, state) : tileEntity) : blockInfo.getTileEntity();
             dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(pos) ? state : iBlockState);
             dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tileEntity : tile);
             if (tileEntity != null) {
@@ -180,7 +189,7 @@ public class BlockStateRenderer implements ICustomRenderer {
 
     @Override
     public JsonObject toJson(Gson gson, JsonObject jsonObject) {
-        jsonObject.add("state", gson.toJsonTree(state, IBlockState.class));
+        jsonObject.add("state", gson.toJsonTree(getState(), IBlockState.class));
         return jsonObject;
     }
 

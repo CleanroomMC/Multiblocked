@@ -1,12 +1,16 @@
 package com.cleanroommc.multiblocked.api.pattern.util;
 
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.util.EnumFacing;
+import stanhebben.zenscript.annotations.ZenClass;
 
 import java.util.function.Function;
 
 /**
  * Relative direction when facing horizontally
  */
+@ZenClass("mods.gregtech.multiblock.RelativeDirection")
+@ZenRegister
 public enum RelativeDirection {
     UP(f -> EnumFacing.UP, EnumFacing.Axis.Y),
     DOWN(f -> EnumFacing.DOWN, EnumFacing.Axis.Y),

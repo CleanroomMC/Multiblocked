@@ -4,10 +4,12 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateAnyCapability;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateBlocks;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
+import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateMetaTileEntity;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateStates;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
+import net.minecraftforge.fml.common.Loader;
 
 import java.util.Map;
 
@@ -22,8 +24,12 @@ public class MbdPredicates {
         }
     }
 
-    public static Class<? extends SimplePredicate> getPredicate(String type) {
+    private static Class<? extends SimplePredicate> getPredicate(String type) {
         return PREDICATE_REGISTRY.get(type.toLowerCase());
+    }
+
+    public static SimplePredicate createPredicate(String type) {
+        return createPredicate(type, null);
     }
 
     public static SimplePredicate createPredicate(String type, JsonObject json) {
@@ -33,6 +39,7 @@ public class MbdPredicates {
         if (clazz != null) {
             try {
                 SimplePredicate simplePredicate = clazz.newInstance();
+                if (json == null) return simplePredicate.buildPredicate();
                 simplePredicate.fromJson(Multiblocked.GSON, json);
                 simplePredicate.buildPredicate();
                 return simplePredicate;
@@ -46,5 +53,13 @@ public class MbdPredicates {
         registerPredicate(PredicateStates.class);
         registerPredicate(PredicateBlocks.class);
         registerPredicate(PredicateAnyCapability.class);
+        if (Loader.isModLoaded(Multiblocked.MODID_GTCE) && isCEu()){
+            registerPredicate(PredicateMetaTileEntity.class);
+        }
+    }
+
+    public static boolean isCEu() {
+        String version = Loader.instance().getIndexedModList().get("gregtech").getVersion();
+        return Integer.parseInt(version.split("\\.")[0]) >= 2;
     }
 }

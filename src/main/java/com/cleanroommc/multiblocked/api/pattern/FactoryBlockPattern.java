@@ -2,8 +2,11 @@ package com.cleanroommc.multiblocked.api.pattern;
 
 import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
 import com.google.common.base.Joiner;
+import crafttweaker.annotations.ZenRegister;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -12,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+@ZenRegister
+@ZenClass("mods.gregtech.multiblock.FactoryBlockPattern")
 public class FactoryBlockPattern {
 
     private static final Joiner COMMA_JOIN = Joiner.on(",");
@@ -54,6 +59,7 @@ public class FactoryBlockPattern {
     /**
      * Adds a repeatable aisle to this pattern.
      */
+    @ZenMethod
     public FactoryBlockPattern aisleRepeatable(int minRepeat, int maxRepeat, String... aisle) {
         if (!ArrayUtils.isEmpty(aisle) && !StringUtils.isEmpty(aisle[0])) {
             if (this.depth.isEmpty()) {
@@ -90,6 +96,7 @@ public class FactoryBlockPattern {
     /**
      * Adds a single aisle to this pattern. (so multiple calls to this will increase the aisleDir by 1)
      */
+    @ZenMethod
     public FactoryBlockPattern aisle(String... aisle) {
         return aisleRepeatable(1, 1, aisle);
     }
@@ -97,6 +104,7 @@ public class FactoryBlockPattern {
     /**
      * Set last aisle repeatable
      */
+    @ZenMethod
     public FactoryBlockPattern setRepeatable(int minRepeat, int maxRepeat) {
         if (minRepeat > maxRepeat)
             throw new IllegalArgumentException("Lower bound of repeat counting must smaller than upper bound!");
@@ -107,16 +115,24 @@ public class FactoryBlockPattern {
     /**
      * Set last aisle repeatable
      */
+    @ZenMethod
     public FactoryBlockPattern setRepeatable(int repeatCount) {
         return setRepeatable(repeatCount, repeatCount);
     }
 
+    @ZenMethod
     public static FactoryBlockPattern start() {
         return new FactoryBlockPattern(RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.FRONT);
     }
 
+    @ZenMethod
     public static FactoryBlockPattern start(RelativeDirection charDir, RelativeDirection stringDir, RelativeDirection aisleDir) {
         return new FactoryBlockPattern(charDir, stringDir, aisleDir);
+    }
+
+    @ZenMethod
+    public FactoryBlockPattern where(String symbol, TraceabilityPredicate blockMatcher) {
+        return this.where(symbol.charAt(0), blockMatcher);
     }
 
     public FactoryBlockPattern where(char symbol, TraceabilityPredicate blockMatcher) {
@@ -128,6 +144,7 @@ public class FactoryBlockPattern {
         return this;
     }
 
+    @ZenMethod
     public BlockPattern build() {
         this.checkMissingPredicates();
         int[] centerOffset = new int[5];

@@ -3,7 +3,6 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
@@ -23,7 +22,6 @@ import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.JsonElement;
@@ -208,19 +206,12 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                                 disableFormed |= predicate.disableRenderFormed;
                             }
                         }
-                        if (candidates.size() == 1) {
-                            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                            definition.baseRenderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0].getBlockState());
-                        } else if (!candidates.isEmpty()) {
-                            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                            definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
-                        }
+                        definition = TemplateBuilderWidget.getComponentDefinition(definition, candidates);
                     }
                     if (definition != null) {
                         tileEntity.setDefinition(definition);
                         if (disableFormed) {
-                            definition.formedRenderer = new BlockStateRenderer(
-                                    Blocks.AIR.getDefaultState());
+                            definition.formedRenderer = new BlockStateRenderer(Blocks.AIR.getDefaultState());
                         }
                     }
                     tileEntity.isFormed = false;

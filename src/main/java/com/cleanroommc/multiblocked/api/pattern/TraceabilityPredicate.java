@@ -3,6 +3,11 @@ package com.cleanroommc.multiblocked.api.pattern;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import crafttweaker.annotations.ZenRegister;
+import stanhebben.zenscript.annotations.OperatorType;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenOperator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +17,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@ZenClass("mods.gregtech.multiblock.CTPredicate")
+@ZenRegister
 public class TraceabilityPredicate {
 
     public List<SimplePredicate> common = new ArrayList<>();
@@ -41,11 +48,13 @@ public class TraceabilityPredicate {
     /**
      * Mark it as the controller of this multi. Normally you won't call it yourself. Use plz.
      */
+    @ZenMethod
     public TraceabilityPredicate setCenter() {
         isCenter = true;
         return this;
     }
 
+    @ZenMethod
     public TraceabilityPredicate sort() {
         limited.sort(Comparator.comparingInt(a -> a.minCount));
         return this;
@@ -54,6 +63,7 @@ public class TraceabilityPredicate {
     /**
      * Add tooltips for candidates. They are shown in JEI Pages.
      */
+    @ZenMethod
     public TraceabilityPredicate addTooltips(String... tips) {
         if (tips.length > 0) {
             List<String> tooltips = Arrays.stream(tips).collect(Collectors.toList());
@@ -78,6 +88,7 @@ public class TraceabilityPredicate {
     /**
      * Set the minimum number of candidate blocks.
      */
+    @ZenMethod
     public TraceabilityPredicate setMinGlobalLimited(int min) {
         limited.addAll(common);
         common.clear();
@@ -87,6 +98,7 @@ public class TraceabilityPredicate {
         return this;
     }
 
+    @ZenMethod
     public TraceabilityPredicate setMinGlobalLimited(int min, int previewCount) {
         return this.setMinGlobalLimited(min).setPreviewCount(previewCount);
     }
@@ -94,6 +106,7 @@ public class TraceabilityPredicate {
     /**
      * Set the maximum number of candidate blocks.
      */
+    @ZenMethod
     public TraceabilityPredicate setMaxGlobalLimited(int max) {
         limited.addAll(common);
         common.clear();
@@ -103,6 +116,7 @@ public class TraceabilityPredicate {
         return this;
     }
 
+    @ZenMethod
     public TraceabilityPredicate setMaxGlobalLimited(int max, int previewCount) {
         return this.setMaxGlobalLimited(max).setPreviewCount(previewCount);
     }
@@ -111,6 +125,7 @@ public class TraceabilityPredicate {
      * Sets the Minimum and Maximum limit to the passed value
      * @param limit The Maximum and Minimum limit
      */
+    @ZenMethod
     public TraceabilityPredicate setExactLimit(int limit) {
         return this.setMinGlobalLimited(limit).setMaxGlobalLimited(limit);
     }
@@ -118,6 +133,7 @@ public class TraceabilityPredicate {
     /**
      * Set the number of it appears in JEI pages. It only affects JEI preview. (The specific number)
      */
+    @ZenMethod
     public TraceabilityPredicate setPreviewCount(int count) {
         common.forEach(predicate -> predicate.previewCount = count);
         limited.forEach(predicate -> predicate.previewCount = count);
@@ -127,6 +143,7 @@ public class TraceabilityPredicate {
     /**
      * Set renderMask.
      */
+    @ZenMethod
     public TraceabilityPredicate disableRenderFormed() {
         common.forEach(predicate -> predicate.disableRenderFormed = true);
         limited.forEach(predicate -> predicate.disableRenderFormed = true);
@@ -136,6 +153,7 @@ public class TraceabilityPredicate {
     /**
      * Set io.
      */
+    @ZenMethod
     public TraceabilityPredicate setIO(IO io) {
         common.forEach(predicate -> predicate.io = io);
         limited.forEach(predicate -> predicate.io = io);
@@ -153,6 +171,8 @@ public class TraceabilityPredicate {
         return flag || common.stream().anyMatch(predicate->predicate.test(blockWorldState));
     }
 
+    @ZenMethod
+    @ZenOperator(OperatorType.OR)
     public TraceabilityPredicate or(TraceabilityPredicate other) {
         if (other != null) {
             TraceabilityPredicate newPredicate = new TraceabilityPredicate(this);
@@ -163,18 +183,22 @@ public class TraceabilityPredicate {
         return this;
     }
 
+    @ZenMethod
     public boolean isAny() {
         return this.common.size() == 1 && this.limited.isEmpty() && this.common.get(0) == SimplePredicate.ANY;
     }
 
+    @ZenMethod
     public boolean isAir() {
         return this.common.size() == 1 && this.limited.isEmpty() && this.common.get(0) == SimplePredicate.AIR;
     }
 
+    @ZenMethod
     public boolean isSingle() {
         return !isAny() && !isAir() && this.common.size() + this.limited.size() == 1;
     }
 
+    @ZenMethod
     public boolean hasAir() {
         return this.common.contains(SimplePredicate.AIR);
     }

@@ -1,28 +1,12 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
-import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
-import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
-import com.cleanroommc.multiblocked.api.registry.MbdComponents;
-import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
-import com.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRenderer;
-import com.cleanroommc.multiblocked.client.util.RenderBufferUtils;
-import com.cleanroommc.multiblocked.client.util.RenderUtils;
-import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
-import com.cleanroommc.multiblocked.util.BlockPosFace;
-import com.cleanroommc.multiblocked.util.CycleItemStackHandler;
-import com.cleanroommc.multiblocked.util.Position;
-import com.cleanroommc.multiblocked.util.Size;
-import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
@@ -40,11 +24,25 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
-import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateAnyCapability;
-import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateBlocks;
+import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
-import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateStates;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.pattern.util.RelativeDirection;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
+import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
+import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
+import com.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRenderer;
+import com.cleanroommc.multiblocked.client.util.RenderBufferUtils;
+import com.cleanroommc.multiblocked.client.util.RenderUtils;
+import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import com.cleanroommc.multiblocked.util.BlockPosFace;
+import com.cleanroommc.multiblocked.util.CycleItemStackHandler;
+import com.cleanroommc.multiblocked.util.Position;
+import com.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -173,26 +171,12 @@ public class JsonBlockPatternWidget extends DialogWidget {
         AtomicReference<PredicateWidget> selectedPredicate = new AtomicReference<>();
         SelectorWidget sw;
         TextFieldWidget fw;
-        predicateTab.addWidget(sw = new SelectorWidget(172, 138, 60, 16, Arrays.asList("capability", "blocks", "states", "component"), -1)
+        predicateTab.addWidget(sw = new SelectorWidget(172, 138, 60, 16, new ArrayList<>(MbdPredicates.PREDICATE_REGISTRY.keySet()), -1)
                 .setButtonBackground(new ColorRectTexture(bgColor)).setValue("blocks"));
         predicateTab.addWidget(fw = new TextFieldWidget(232, 138, 50, 16, true, null, null));
         predicateTab.addWidget(new ButtonWidget(285, 138, 16, 16, cd -> {
             if (sw.getValue() == null) return;
-            SimplePredicate predicate = null;
-            switch (sw.getValue()) {
-                case "capability":
-                    predicate = new PredicateAnyCapability();
-                    break;
-                case "blocks":
-                    predicate = new PredicateBlocks();
-                    break;
-                case "states":
-                    predicate = new PredicateStates();
-                    break;
-                case "component":
-                    predicate = new PredicateComponent();
-                    break;
-            }
+            SimplePredicate predicate = MbdPredicates.createPredicate(sw.getValue());
             String predicateName = fw.getCurrentString();
             if (predicate != null && !pattern.predicates.containsKey(predicateName)) {
                 pattern.predicates.put(fw.getCurrentString(), predicate);
@@ -751,7 +735,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
                 }
                 if (candidates != null) {
                     if (candidates.size() == 1) {
-                        renderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0].getBlockState());
+                        renderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0]);
                     } else if (!candidates.isEmpty()){
                         renderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
                     } else {

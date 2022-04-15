@@ -11,7 +11,6 @@ import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
-import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
@@ -34,7 +33,6 @@ import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -310,13 +308,7 @@ public class TemplateBuilderWidget extends WidgetGroup {
                                             candidates.addAll(Arrays.asList(predicate.candidates.get()));
                                         }
                                     }
-                                    if (candidates.size() == 1) {
-                                        definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                                        definition.baseRenderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0].getBlockState());
-                                    } else if (!candidates.isEmpty()) {
-                                        definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                                        definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
-                                    }
+                                    definition = getComponentDefinition(definition, candidates);
                                 }
                                 if (definition != null) {
                                     tileEntity.setDefinition(definition);
@@ -332,5 +324,16 @@ public class TemplateBuilderWidget extends WidgetGroup {
                 }
             }
         }
+    }
+
+    public static ComponentDefinition getComponentDefinition(ComponentDefinition definition, Set<BlockInfo> candidates) {
+        if (candidates.size() == 1) {
+            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
+            definition.baseRenderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0]);
+        } else if (!candidates.isEmpty()) {
+            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
+            definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
+        }
+        return definition;
     }
 }

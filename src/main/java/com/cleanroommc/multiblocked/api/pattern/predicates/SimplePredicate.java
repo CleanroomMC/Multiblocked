@@ -158,10 +158,7 @@ public class SimplePredicate {
     }
 
     public List<ItemStack> getCandidates() {
-        return candidates == null ? Collections.emptyList() : Arrays.stream(this.candidates.get()).filter(info -> info.getBlockState().getBlock() != Blocks.AIR).map(info->{
-            IBlockState blockState = info.getBlockState();
-            return new ItemStack(Item.getItemFromBlock(blockState.getBlock()), 1, blockState.getBlock().damageDropped(blockState));
-        }).collect(Collectors.toList());
+        return candidates == null ? Collections.emptyList() : Arrays.stream(this.candidates.get()).filter(info -> info.getBlockState().getBlock() != Blocks.AIR).map(BlockInfo::getItemStackForm).collect(Collectors.toList());
     }
 
     public List<WidgetGroup> getConfigWidget(List<WidgetGroup> groups) {

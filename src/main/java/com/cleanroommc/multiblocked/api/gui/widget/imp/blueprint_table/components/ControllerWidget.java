@@ -3,16 +3,27 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.componen
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.PhantomSlotWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.RecipeMapBuilderWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.TemplateBuilderWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.JsonBlockPatternWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
+import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
@@ -20,24 +31,11 @@ import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
-import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.PhantomSlotWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.JsonBlockPatternWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
-import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.google.gson.JsonObject;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -170,13 +168,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                                 disableFormed |= predicate.disableRenderFormed;
                             }
                         }
-                        if (candidates.size() == 1) {
-                            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                            definition.baseRenderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0].getBlockState());
-                        } else if (!candidates.isEmpty()) {
-                            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-                            definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
-                        }
+                        definition = TemplateBuilderWidget.getComponentDefinition(definition, candidates);
                     }
                     if (definition != null) {
                         tileEntity.setDefinition(definition);

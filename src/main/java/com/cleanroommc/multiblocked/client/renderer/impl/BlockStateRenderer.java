@@ -90,7 +90,7 @@ public class BlockStateRenderer implements ICustomRenderer {
         state = getState();
         if (state.getBlock().canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
             BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
-            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, state);
+            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, state, blockAccess instanceof World ? getTileEntity((World) blockAccess, pos) : blockInfo.getTileEntity());
             brd.renderBlockDamage(state, pos, texture, access);
         }
     }
@@ -100,7 +100,7 @@ public class BlockStateRenderer implements ICustomRenderer {
         state = getState();
         if (state.getBlock().canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
             BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
-            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, state);
+            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, state, blockAccess instanceof World ? getTileEntity((World) blockAccess, pos) : blockInfo.getTileEntity());
             return brd.renderBlock(state, pos, access, buffer);
         }
         return false;

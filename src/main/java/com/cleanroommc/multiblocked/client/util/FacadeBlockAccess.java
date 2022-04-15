@@ -30,13 +30,22 @@ public class FacadeBlockAccess implements IBlockAccess {
     public final BlockPos pos;
     public final EnumFacing side;
     public final IBlockState state;
+    public final TileEntity tile;
 
     public FacadeBlockAccess(IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state) {
-
         this.world = world;
         this.pos = pos;
         this.side = side;
         this.state = state;
+        this.tile = null;
+    }
+
+    public FacadeBlockAccess(IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state, TileEntity tile) {
+        this.world = world;
+        this.pos = pos;
+        this.side = side;
+        this.state = state;
+        this.tile = tile;
     }
 
     public enum Result {
@@ -65,7 +74,7 @@ public class FacadeBlockAccess implements IBlockAccess {
 
     @Override
     public TileEntity getTileEntity(@Nonnull BlockPos pos) {
-        return getAction(pos) == Result.ORIGINAL ? world.getTileEntity(pos) : null;
+        return getAction(pos) == Result.ORIGINAL ? world.getTileEntity(pos) : tile;
     }
 
     @Override

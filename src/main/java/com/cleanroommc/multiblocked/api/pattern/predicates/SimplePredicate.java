@@ -1,30 +1,33 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
-import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import com.cleanroommc.multiblocked.api.pattern.error.SinglePredicateError;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.JsonUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,8 +43,8 @@ public class SimplePredicate {
     public static SimplePredicate ANY = new SimplePredicate("any", x -> true, null);
     public static SimplePredicate AIR = new SimplePredicate("air", blockWorldState -> blockWorldState.getBlockState().getBlock().isAir(blockWorldState.getBlockState(), blockWorldState.getWorld(), blockWorldState.getPos()), null);
     
-    public transient Supplier<BlockInfo[]> candidates;
-    public transient Predicate<MultiblockState> predicate;
+    public Supplier<BlockInfo[]> candidates;
+    public Predicate<MultiblockState> predicate;
 
     public List<String> toolTips;
 
@@ -226,21 +229,32 @@ public class SimplePredicate {
         jsonObject.add("type", new JsonPrimitive(type));
         jsonObject.add("toolTips", Multiblocked.GSON.toJsonTree(toolTips));
         if (disableRenderFormed) {
-            jsonObject.add("disableRenderFormed", new JsonPrimitive(true));
+            jsonObject.addProperty("disableRenderFormed", true);
         }
         if (minCount > -1) {
-            jsonObject.add("minCount", new JsonPrimitive(minCount));
+            jsonObject.addProperty("minCount", minCount);
         }
         if (maxCount > -1) {
-            jsonObject.add("maxCount", new JsonPrimitive(maxCount));
+            jsonObject.addProperty("maxCount", maxCount);
         }
         if (previewCount > -1) {
-            jsonObject.add("previewCount", new JsonPrimitive(previewCount));
+            jsonObject.addProperty("previewCount", previewCount);
         }
         if (io != IO.BOTH) {
-            jsonObject.add("io", new JsonPrimitive(io.name()));
+            jsonObject.addProperty("io", io.name());
         }
         return jsonObject;
+    }
+
+    public void fromJson(Gson gson, JsonObject jsonObject) {
+        if (jsonObject.has("toolTips")) {
+            toolTips = gson.fromJson(jsonObject.get("toolTips"), new TypeToken<ArrayList<String>>(){}.getType());
+        }
+        disableRenderFormed = JsonUtils.getBoolean(jsonObject, "disableRenderFormed", disableRenderFormed);
+        minCount = JsonUtils.getInt(jsonObject, "minCount", minCount);
+        maxCount = JsonUtils.getInt(jsonObject, "maxCount", maxCount);
+        previewCount = JsonUtils.getInt(jsonObject, "previewCount", previewCount);
+        io = IO.valueOf(JsonUtils.getString(jsonObject, "io", io.name()));
     }
     
 }

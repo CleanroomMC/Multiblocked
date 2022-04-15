@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.api.capability.IO;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -95,7 +96,18 @@ public class JsonUtil {
     public static <T extends Enum<T>> T getEnumOr(JsonObject jsonObject, String key, Class<T> enumClass, T io) {
         JsonElement jsonElement = jsonObject.get(key);
         if (jsonElement != null && jsonElement.isJsonPrimitive()) {
-            return (T)((Enum<T>[])enumClass.getEnumConstants())[jsonElement.getAsInt()];
+            JsonPrimitive primitive = jsonElement.getAsJsonPrimitive();
+            Enum<T>[] values = enumClass.getEnumConstants();
+            if (primitive.isString()) {
+                String name = primitive.getAsString();
+                for (Enum<T> value : values) {
+                    if (value.name().equals(name)) {
+                        return (T)value;
+                    }
+                }
+            } else if (primitive.isNumber()) {
+                return (T)values[jsonElement.getAsInt()];
+            }
         }
         return io;
     }

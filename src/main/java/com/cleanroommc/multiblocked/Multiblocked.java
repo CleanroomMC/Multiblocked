@@ -1,8 +1,13 @@
 package com.cleanroommc.multiblocked;
 
+import com.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
+import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
+import com.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
+import com.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
+import com.cleanroommc.multiblocked.api.json.ItemStackTypeAdapter;
 import com.cleanroommc.multiblocked.api.json.RecipeMapTypeAdapter;
 import com.cleanroommc.multiblocked.api.json.RecipeTypeAdapter;
-import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
+import com.cleanroommc.multiblocked.api.json.SimplePredicateFactory;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
@@ -11,12 +16,6 @@ import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
-import com.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
-import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
-import com.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
-import com.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
-import com.cleanroommc.multiblocked.api.json.ItemStackTypeAdapter;
-import com.cleanroommc.multiblocked.api.json.SimplePredicateTypeAdapter;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -66,9 +65,9 @@ public class Multiblocked {
             .registerTypeAdapterFactory(IBlockStateTypeAdapterFactory.INSTANCE)
             .registerTypeAdapterFactory(IRendererTypeAdapterFactory.INSTANCE)
             .registerTypeAdapterFactory(BlockTypeAdapterFactory.INSTANCE)
+            .registerTypeAdapterFactory(SimplePredicateFactory.INSTANCE)
             .registerTypeAdapter(ItemStack.class, ItemStackTypeAdapter.INSTANCE)
             .registerTypeAdapter(FluidStack.class, FluidStackTypeAdapter.INSTANCE)
-            .registerTypeAdapter(SimplePredicate.class, SimplePredicateTypeAdapter.INSTANCE)
             .registerTypeAdapter(Recipe.class, RecipeTypeAdapter.INSTANCE)
             .registerTypeAdapter(RecipeMap.class, RecipeMapTypeAdapter.INSTANCE)
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())

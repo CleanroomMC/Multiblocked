@@ -12,6 +12,7 @@ import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.registry.MbdItems;
+import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
 import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
@@ -43,6 +44,7 @@ public class CommonProxy {
         MultiblockedNetworking.init();
         MbdCapabilities.registerCapabilities();
         MbdRenderers.registerRenderers();
+        MbdPredicates.registerPredicates();
     }
 
     public void init() {

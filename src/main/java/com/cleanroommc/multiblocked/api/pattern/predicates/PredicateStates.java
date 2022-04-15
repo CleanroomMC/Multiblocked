@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
@@ -91,5 +92,11 @@ public class PredicateStates extends SimplePredicate {
     public JsonObject toJson(JsonObject jsonObject) {
         jsonObject.add("states", Multiblocked.GSON.toJsonTree(states));
         return super.toJson(jsonObject);
+    }
+
+    @Override
+    public void fromJson(Gson gson, JsonObject jsonObject) {
+        states = gson.fromJson(jsonObject.get("states"), IBlockState[].class);
+        super.fromJson(gson, jsonObject);
     }
 }

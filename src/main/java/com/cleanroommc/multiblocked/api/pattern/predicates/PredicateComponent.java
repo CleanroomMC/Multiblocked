@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class PredicateComponent extends SimplePredicate {
     public ResourceLocation location = new ResourceLocation("mod_id", "component_id");
-    public transient ComponentDefinition definition;
+    public ComponentDefinition definition;
 
     public PredicateComponent() {
         super("component");
@@ -70,5 +71,11 @@ public class PredicateComponent extends SimplePredicate {
     public JsonObject toJson(JsonObject jsonObject) {
         jsonObject.add("location", Multiblocked.GSON.toJsonTree(location));
         return super.toJson(jsonObject);
+    }
+
+    @Override
+    public void fromJson(Gson gson, JsonObject jsonObject) {
+        location = gson.fromJson(jsonObject.get("location"), ResourceLocation.class);
+        super.fromJson(gson, jsonObject);
     }
 }

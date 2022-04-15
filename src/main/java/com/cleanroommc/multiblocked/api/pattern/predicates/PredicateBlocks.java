@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
@@ -100,5 +101,11 @@ public class PredicateBlocks extends SimplePredicate {
         }
         jsonObject.add("blocks", jsonArray);
         return super.toJson(jsonObject);
+    }
+
+    @Override
+    public void fromJson(Gson gson, JsonObject jsonObject) {
+        blocks = gson.fromJson(jsonObject.get("blocks"), Block[].class);
+        super.fromJson(gson, jsonObject);
     }
 }

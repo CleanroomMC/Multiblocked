@@ -11,12 +11,14 @@ import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -90,7 +92,13 @@ public class PredicateAnyCapability extends SimplePredicate {
 
     @Override
     public JsonObject toJson(JsonObject jsonObject) {
-        jsonObject.add("capability", new JsonPrimitive(capability));
+        jsonObject.addProperty("capability", capability);
         return super.toJson(jsonObject);
+    }
+
+    @Override
+    public void fromJson(Gson gson, JsonObject jsonObject) {
+        capability = JsonUtils.getString(jsonObject, "capability", "");
+        super.fromJson(gson, jsonObject);
     }
 }

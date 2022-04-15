@@ -96,6 +96,12 @@ public class JsonBlockPatternWidget extends DialogWidget {
         this.addWidget(container = new TabContainer(0, 0, 384, 256));
         this.addWidget(new ButtonWidget(280, 29, 70, 20, cd -> {
             if (onClose != null) onClose.accept(pattern);
+            if (isParentInVisible) {
+                for (Widget widget : parent.widgets) {
+                    widget.setVisible(true);
+                    widget.setActive(true);
+                }
+            }
             parent.waitToRemoved(this);
         }).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
 

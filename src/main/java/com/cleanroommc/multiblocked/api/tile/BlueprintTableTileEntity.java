@@ -1,20 +1,19 @@
 package com.cleanroommc.multiblocked.api.tile;
 
-import com.cleanroommc.multiblocked.api.capability.IO;
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
+import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.BlueprintTableWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.Predicates;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
-import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
-import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
-import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 

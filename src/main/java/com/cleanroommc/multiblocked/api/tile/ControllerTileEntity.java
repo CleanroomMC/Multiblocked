@@ -21,6 +21,7 @@ import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.persistence.IAsyncThreadUpdate;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
@@ -61,7 +62,7 @@ import java.util.Set;
  * Head of the multiblock.
  */
 @Optional.Interface(modid = Multiblocked.MODID_CT, iface = "com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTController")
-public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition> implements ICapabilityProxyHolder, ICTController {
+public class ControllerTileEntity extends ComponentTileEntity<ControllerDefinition> implements ICapabilityProxyHolder, ICTController, IAsyncThreadUpdate {
     public MultiblockState state;
     public boolean asyncRecipeSearching = true;
     protected Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities;
@@ -380,6 +381,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 .build(this, entityPlayer);
     }
 
+    @Override
     public void asyncThreadLogic(long periodID) {
         if (periodID % 4 == 0) {
             if (!isFormed() && getDefinition().catalyst == null) {

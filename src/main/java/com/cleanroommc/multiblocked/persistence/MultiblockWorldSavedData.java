@@ -107,17 +107,17 @@ public class MultiblockWorldSavedData extends WorldSavedData {
 
     public void addLoading(ComponentTileEntity<?> tileEntity) {
         loading.add(tileEntity);
-        if (tileEntity instanceof ControllerTileEntity) {
-            controllers.add((ControllerTileEntity) tileEntity);
+        if (tileEntity instanceof IAsyncThreadUpdate) {
+            asyncComponents.add((ControllerTileEntity) tileEntity);
             createSearchingThread();
         }
     }
 
     public void removeLoading(ComponentTileEntity<?> tileEntity) {
         loading.remove(tileEntity);
-        if (tileEntity instanceof ControllerTileEntity) {
-            controllers.remove(tileEntity);
-            if (controllers.isEmpty()) {
+        if (tileEntity instanceof IAsyncThreadUpdate) {
+            asyncComponents.remove(tileEntity);
+            if (asyncComponents.isEmpty()) {
                 releaseSearchingThread();
             }
         }
@@ -182,7 +182,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     // ********************************* thread for searching ********************************* //
-    private final Set<ControllerTileEntity> controllers = Collections.synchronizedSet(new HashSet<>());
+    private final Set<IAsyncThreadUpdate> asyncComponents = Collections.synchronizedSet(new HashSet<>());
     private Thread thread;
     private long periodID = Multiblocked.RNG.nextLong();
 
@@ -194,8 +194,8 @@ public class MultiblockWorldSavedData extends WorldSavedData {
 
     private void searchingTask() {
         while (!Thread.interrupted()) {
-            for (ControllerTileEntity controller : controllers) {
-                controller.asyncThreadLogic(periodID);
+            for (IAsyncThreadUpdate component : asyncComponents) {
+                component.asyncThreadLogic(periodID);
             }
             periodID++;
             try {

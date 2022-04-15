@@ -131,6 +131,7 @@ public class Multiblocked {
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandClient("mbd_test"));
         event.registerServerCommand(new CommandClient("mbd_reload_shaders"));
+        event.registerServerCommand(new CommandClient("mbd_tps"));
     }
 
     @EventHandler

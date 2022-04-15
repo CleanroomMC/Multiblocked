@@ -185,6 +185,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     private final Set<IAsyncThreadUpdate> asyncComponents = Collections.synchronizedSet(new HashSet<>());
     private Thread thread;
     private long periodID = Multiblocked.RNG.nextLong();
+    private float tps = 4;
 
     public void createSearchingThread() {
         if (thread != null && !thread.isInterrupted()) return;
@@ -193,15 +194,25 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     private void searchingTask() {
+        long tpsST = System.currentTimeMillis();
         while (!Thread.interrupted()) {
+            long st = System.currentTimeMillis();
             for (IAsyncThreadUpdate component : asyncComponents) {
                 component.asyncThreadLogic(periodID);
             }
             periodID++;
-            try {
-                Thread.sleep(250);
-            } catch (InterruptedException e) {
-                break;
+            long et = System.currentTimeMillis();
+            if (periodID % 20 == 0) {
+                tps = Math.min((et - tpsST) / 1250f, 4);
+                tpsST = et;
+            }
+            long dur = (et - st);
+            if (dur < 250) {
+                try {
+                    Thread.sleep(Math.min(250, 250 - dur));
+                } catch (InterruptedException e) {
+                    break;
+                }
             }
         }
     }
@@ -216,4 +227,9 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     public long getPeriodID() {
         return periodID;
     }
+
+    public float getTPS () {
+        return tps;
+    }
+
 }

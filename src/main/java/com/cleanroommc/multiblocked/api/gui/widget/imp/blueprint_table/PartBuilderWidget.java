@@ -2,32 +2,44 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
 import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
-import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.components.PartWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.JsonElement;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class PartBuilderWidget extends WidgetGroup {
     DraggableScrollableWidgetGroup containers;
+    DummyComponentTileEntity tileEntity;
     List<SelectableWidgetGroup> files = new ArrayList<>();
 
     public PartBuilderWidget() {
@@ -56,10 +68,30 @@ public class PartBuilderWidget extends WidgetGroup {
                 updateList();
             });
         }).setHoverBorderTexture(1, -1).setHoverTooltip("create a new part block"));
+        initScene();
         updateList();
     }
 
+    @SideOnly(Side.CLIENT)
+    private void initScene() {
+        TrackedDummyWorld world = new TrackedDummyWorld();
+        world.addBlock(BlockPos.ORIGIN, new BlockInfo(MbdComponents.DummyComponentBlock));
+        tileEntity = (DummyComponentTileEntity) world.getTileEntity(BlockPos.ORIGIN);
+        this.addWidget(new ImageWidget(30, 59, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
+        this.addWidget(new SceneWidget(30, 59,  138, 138, world)
+                .setRenderedCore(Collections.singleton(BlockPos.ORIGIN), null)
+                .setRenderSelect(false)
+                .setRenderFacing(false));
+    }
+
+    private void setNewRenderer(IRenderer newRenderer) {
+        PartDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
+        definition.baseRenderer = newRenderer;
+        tileEntity.setDefinition(definition);
+    }
+
     protected void updateList() {
+        setNewRenderer(null);
         int size = files.size();
         files.forEach(containers::waitToRemoved);
         files.clear();
@@ -71,6 +103,14 @@ public class PartBuilderWidget extends WidgetGroup {
         }
         for (File file : Optional.ofNullable(path.listFiles((s, name) -> name.endsWith(".json"))).orElse(new File[0])) {
             SelectableWidgetGroup widgetGroup = (SelectableWidgetGroup) new SelectableWidgetGroup(0, (containers.widgets.size() - size) * 22, containers.getSize().width, 20)
+                    .setOnSelected(group -> {
+                        JsonElement jsonElement = FileUtility.loadJson(file);
+                        if (jsonElement != null) {
+                            try {
+                                setNewRenderer(Multiblocked.GSON.fromJson(jsonElement, PartDefinition.class).baseRenderer);
+                            } catch (Exception ignored) {}
+                        }
+                    })
                     .setSelectedTexture(-2, 0xff00aa00)
                     .addWidget(new ImageWidget(0, 0, 150, 20, new ColorRectTexture(0x4faaaaaa)))
                     .addWidget(new ButtonWidget(134, 4, 12, 12, new ResourceTexture("multiblocked:textures/gui/option.png"), cd -> {
@@ -78,15 +118,7 @@ public class PartBuilderWidget extends WidgetGroup {
                         if (jsonElement != null) {
                             try {
                                 PartDefinition definition = Multiblocked.GSON.fromJson(jsonElement, PartDefinition.class);
-                                for (Widget widget : widgets) {
-                                    widget.setVisible(false);
-                                    widget.setActive(false);
-                                }
                                 new PartWidget(this, definition, jsonObject -> {
-                                    for (Widget widget : widgets) {
-                                        widget.setVisible(true);
-                                        widget.setActive(true);
-                                    }
                                     if (jsonObject != null) {
                                         FileUtility.saveJson(file, jsonObject);
                                     }

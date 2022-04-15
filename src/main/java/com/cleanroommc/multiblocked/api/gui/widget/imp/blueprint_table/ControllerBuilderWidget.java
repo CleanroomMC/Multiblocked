@@ -1,7 +1,9 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
@@ -14,11 +16,19 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.components.ControllerWidget;
 import com.cleanroommc.multiblocked.api.item.ItemBlueprint;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
+import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
+import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
+import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
+import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
+import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -27,16 +37,21 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class ControllerBuilderWidget extends TemplateBuilderWidget {
     List<SelectableWidgetGroup> files = new ArrayList<>();
@@ -120,6 +135,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                     .setOnSelected(W -> {
                         templateButton.setVisible(false);
                         selected = null;
+                        onJsonSelected(file);
                     })
                     .addWidget(new ImageWidget(0, 0, 150, 20, new ColorRectTexture(0x4faaaaaa)))
                     .addWidget(new ButtonWidget(134, 4, 12, 12, new ResourceTexture("multiblocked:textures/gui/option.png"), cd -> {
@@ -150,6 +166,71 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
             files.add(widgetGroup);
             containers.addWidget(widgetGroup);
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void onJsonSelected(File file) {
+        JsonElement jsonElement = FileUtility.loadJson(file);
+        if (jsonElement != null) {
+            JsonBlockPattern pattern = Multiblocked.GSON.fromJson(jsonElement.getAsJsonObject().get("basePattern"), JsonBlockPattern.class);
+            updateScene(pattern);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void updateScene(JsonBlockPattern jsonPattern) {
+        int[] centerOffset = jsonPattern.getCenterOffset();
+        String[][] pattern = jsonPattern.pattern;
+        Set<BlockPos> posSet = new HashSet<>();
+        TrackedDummyWorld world = new TrackedDummyWorld();
+        sceneWidget.createScene(world);
+        int offset = Math.max(pattern.length, Math.max(pattern[0].length, pattern[0][0].length()));
+        for (int i = 0; i < pattern.length; i++) {
+            for (int j = 0; j < pattern[0].length; j++) {
+                for (int k = 0; k < pattern[0][0].length(); k++) {
+                    char symbol = pattern[i][j].charAt(k);
+                    BlockPos pos = jsonPattern.getActualPosOffset(k - centerOffset[2], j - centerOffset[1], i - centerOffset[0], EnumFacing.NORTH).add(offset, offset, offset);
+                    world.addBlock(pos, new BlockInfo(MbdComponents.DummyComponentBlock));
+                    DummyComponentTileEntity tileEntity = (DummyComponentTileEntity) world.getTileEntity(pos);
+                    ComponentDefinition definition = null;
+                    assert tileEntity != null;
+                    boolean disableFormed = false;
+                    if (jsonPattern.symbolMap.containsKey(symbol)) {
+                        Set<BlockInfo> candidates = new HashSet<>();
+                        for (String s : jsonPattern.symbolMap.get(symbol)) {
+                            SimplePredicate predicate = jsonPattern.predicates.get(s);
+                            if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
+                                definition = ((PredicateComponent) predicate).definition;
+                                disableFormed |= predicate.disableRenderFormed;
+                                break;
+                            } else if (predicate != null && predicate.candidates != null) {
+                                candidates.addAll(Arrays.asList(predicate.candidates.get()));
+                                disableFormed |= predicate.disableRenderFormed;
+                            }
+                        }
+                        if (candidates.size() == 1) {
+                            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
+                            definition.baseRenderer = new BlockStateRenderer(candidates.toArray(new BlockInfo[0])[0].getBlockState());
+                        } else if (!candidates.isEmpty()) {
+                            definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
+                            definition.baseRenderer = new CycleBlockStateRenderer(candidates.toArray(new BlockInfo[0]));
+                        }
+                    }
+                    if (definition != null) {
+                        tileEntity.setDefinition(definition);
+                        if (disableFormed) {
+                            definition.formedRenderer = new BlockStateRenderer(
+                                    Blocks.AIR.getDefaultState());
+                        }
+                    }
+                    tileEntity.isFormed = false;
+                    tileEntity.setWorld(world);
+                    tileEntity.validate();
+                    posSet.add(pos);
+                }
+            }
+        }
+        sceneWidget.setRenderedCore(posSet, null);
     }
 
     @Override

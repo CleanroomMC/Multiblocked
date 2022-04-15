@@ -88,6 +88,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public final void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
+        if (definition == null) {
+            getWorld().setBlockToAir(getPos());
+        }
         for (Map.Entry<String, JsonElement> entry : this.definition.traits.entrySet()) {
             MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
             if (capability != null && capability.hasTrait()) {

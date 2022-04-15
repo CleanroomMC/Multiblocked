@@ -3,7 +3,6 @@ package com.cleanroommc.multiblocked.common.capability.widget;
 import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
@@ -52,13 +51,19 @@ public class NumberContentWidget extends ContentWidget<Number> {
                 content = Double.parseDouble(number);
             } else if (content instanceof Integer) {
                 content = Integer.parseInt(number);
+            } else if (content instanceof Long) {
+                content = Long.parseLong(number);
             }
             onContentUpdate();
         }).setCurrentString(content.toString()));
         if (isDecimal) {
             textFieldWidget.setNumbersOnly(0f, Integer.MAX_VALUE);
         } else {
-            textFieldWidget.setNumbersOnly(0, Integer.MAX_VALUE);
+            if (content instanceof Long) {
+                textFieldWidget.setNumbersOnly(0, Long.MAX_VALUE);
+            } else {
+                textFieldWidget.setNumbersOnly(0, Integer.MAX_VALUE);
+            }
         }
         dialog.addWidget(createButton(textFieldWidget, -10000, x, y + 66));
         dialog.addWidget(createButton(textFieldWidget, -100, x, y + 44));
@@ -86,6 +91,10 @@ public class NumberContentWidget extends ContentWidget<Number> {
                     } else if (content instanceof Integer) {
                         if (Integer.parseInt(number) + scale >= 0) {
                             newValue = Integer.parseInt(number) + scale;
+                        }
+                    } else if (content instanceof Long) {
+                        if (Long.parseLong(number) + scale >= 0) {
+                            newValue = Long.parseLong(number) + scale;
                         }
                     }
                     if (newValue != null) {

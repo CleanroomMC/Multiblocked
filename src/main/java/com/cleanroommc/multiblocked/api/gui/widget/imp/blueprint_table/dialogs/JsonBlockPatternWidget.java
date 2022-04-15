@@ -45,7 +45,6 @@ import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateBlocks;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateStates;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

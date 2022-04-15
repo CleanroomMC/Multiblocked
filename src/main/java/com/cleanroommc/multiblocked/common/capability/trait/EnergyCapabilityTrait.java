@@ -13,7 +13,6 @@ import gregtech.api.capability.IEnergyContainer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.JsonUtils;
 import net.minecraftforge.common.capabilities.Capability;
 

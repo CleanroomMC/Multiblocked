@@ -43,7 +43,7 @@ public class ExpandPredicate {
 
 
     private static Supplier<BlockInfo[]> getCandidates(Set<net.minecraft.block.state.IBlockState> allowedStates){
-        return ()-> allowedStates.stream().map(state-> new BlockInfo(state, null)).toArray(BlockInfo[]::new);
+        return () -> allowedStates.stream().map(BlockInfo::fromBlockState).toArray(BlockInfo[]::new);
     }
 
     /**

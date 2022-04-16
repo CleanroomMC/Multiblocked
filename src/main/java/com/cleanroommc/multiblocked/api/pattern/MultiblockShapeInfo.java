@@ -44,7 +44,7 @@ public class MultiblockShapeInfo {
         }
 
         public Builder where(char symbol, IBlockState blockState) {
-            return where(symbol, new BlockInfo(blockState));
+            return where(symbol, BlockInfo.fromBlockState(blockState));
         }
 
         //TODO

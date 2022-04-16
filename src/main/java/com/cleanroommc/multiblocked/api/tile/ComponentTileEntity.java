@@ -88,9 +88,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public final void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
-        if (definition == null) {
-            getWorld().setBlockToAir(getPos());
-        }
         for (Map.Entry<String, JsonElement> entry : this.definition.traits.entrySet()) {
             MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
             if (capability != null && capability.hasTrait()) {
@@ -466,7 +463,16 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @Override
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
-        setDefinition(MbdComponents.DEFINITION_REGISTRY.get(new ResourceLocation(compound.getString("loc"))));
+        try {
+            setDefinition(MbdComponents.DEFINITION_REGISTRY.get(new ResourceLocation(compound.getString("loc"))));
+        } catch (Exception e) {
+            if (definition == null) {
+                getWorld().setBlockToAir(getPos());
+                getWorld().setTileEntity(getPos(), null);
+                throw new IllegalStateException("null definition set: " + compound.getString("loc"));
+            }
+            throw e;
+        }
         checkUpdate();
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
         if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {

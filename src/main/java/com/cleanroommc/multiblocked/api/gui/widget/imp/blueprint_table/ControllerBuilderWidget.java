@@ -1,7 +1,6 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
@@ -26,7 +25,6 @@ import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -188,36 +186,29 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                 for (int k = 0; k < pattern[0][0].length(); k++) {
                     char symbol = pattern[i][j].charAt(k);
                     BlockPos pos = jsonPattern.getActualPosOffset(k - centerOffset[2], j - centerOffset[1], i - centerOffset[0], EnumFacing.NORTH).add(offset, offset, offset);
-                    world.addBlock(pos, new BlockInfo(MbdComponents.DummyComponentBlock));
-                    DummyComponentTileEntity tileEntity = (DummyComponentTileEntity) world.getTileEntity(pos);
-                    ComponentDefinition definition = null;
-                    assert tileEntity != null;
-                    boolean disableFormed = false;
                     if (jsonPattern.symbolMap.containsKey(symbol)) {
-                        Set<BlockInfo> candidates = new HashSet<>();
+                        List<BlockInfo> candidates = new ArrayList<>();
                         for (String s : jsonPattern.symbolMap.get(symbol)) {
                             SimplePredicate predicate = jsonPattern.predicates.get(s);
                             if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
-                                definition = ((PredicateComponent) predicate).definition;
-                                disableFormed |= predicate.disableRenderFormed;
+                                world.addBlock(pos, new BlockInfo(MbdComponents.DummyComponentBlock));
+                                DummyComponentTileEntity  tileEntity = (DummyComponentTileEntity) world.getTileEntity(pos);
+                                assert tileEntity != null;
+                                tileEntity.setDefinition(((PredicateComponent) predicate).definition);
+                                tileEntity.isFormed = false;
+                                tileEntity.setWorld(world);
+                                tileEntity.validate();
+                                posSet.add(pos);
                                 break;
                             } else if (predicate != null && predicate.candidates != null) {
                                 candidates.addAll(Arrays.asList(predicate.candidates.get()));
-                                disableFormed |= predicate.disableRenderFormed;
                             }
                         }
-                        definition = TemplateBuilderWidget.getComponentDefinition(definition, candidates);
-                    }
-                    if (definition != null) {
-                        tileEntity.setDefinition(definition);
-                        if (disableFormed) {
-                            definition.formedRenderer = new BlockStateRenderer(Blocks.AIR.getDefaultState());
+                        if (candidates.size() > 0) {
+                            world.addBlock(pos, candidates.get(0));
+                            posSet.add(pos);
                         }
                     }
-                    tileEntity.isFormed = false;
-                    tileEntity.setWorld(world);
-                    tileEntity.validate();
-                    posSet.add(pos);
                 }
             }
         }

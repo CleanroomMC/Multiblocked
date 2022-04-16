@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.pattern;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternError;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
@@ -153,16 +154,21 @@ public class MultiblockState {
     }
 
     public void onChunkLoad() {
-        ControllerTileEntity controller = getController();
-        if (controller != null) {
-            if (controller.checkPattern()) {
-                MultiblockWorldSavedData.getOrCreate(world).addLoading(controller);
-                if (controller.getCapabilities() == null) {
-                    controller.onStructureFormed();
+        try {
+            ControllerTileEntity controller = getController();
+            if (controller != null) {
+                if (controller.checkPattern()) {
+                    MultiblockWorldSavedData.getOrCreate(world).addLoading(controller);
+                    if (controller.getCapabilities() == null) {
+                        controller.onStructureFormed();
+                    }
+                } else {
+                    error = UNLOAD_ERROR;
                 }
-            } else {
-                error = UNLOAD_ERROR;
             }
+        } catch (Throwable e) { // if controller loading failed.
+            MultiblockWorldSavedData.getOrCreate(world).removeMapping(this);
+            Multiblocked.LOGGER.error("An error while loading the controller world: {} pos: {}, {}", world.provider.getDimensionType().getSuffix(), controllerPos, e);
         }
     }
 

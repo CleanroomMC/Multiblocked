@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -283,7 +284,17 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
-        super.readFromNBT(compound);
+        try {
+            super.readFromNBT(compound);
+        } catch (Exception e) {
+            if (definition == null) {
+                MultiblockWorldSavedData mwsd = MultiblockWorldSavedData.getOrCreate(world);
+                if (pos != null && mwsd.mapping.containsKey(pos)) {
+                    mwsd.removeMapping(mwsd.mapping.get(pos));
+                }
+                return;
+            }
+        }
         if (compound.hasKey("ars")) {
             asyncRecipeSearching = compound.getBoolean("ars");
         }

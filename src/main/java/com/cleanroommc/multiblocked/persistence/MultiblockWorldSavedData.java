@@ -109,7 +109,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     public void addMapping(MultiblockState state) {
-        this.mapping.put(state.getController().getPos(), state);
+        this.mapping.put(state.controllerPos, state);
         for (BlockPos blockPos : state.getCache()) {
             chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c->new HashSet<>()).add(state);
         }
@@ -118,7 +118,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     public void removeMapping(MultiblockState state) {
-        this.mapping.remove(state.getController().getPos());
+        this.mapping.remove(state.controllerPos);
         for (Set<MultiblockState> set : chunkPosMapping.values()) {
             set.remove(state);
         }

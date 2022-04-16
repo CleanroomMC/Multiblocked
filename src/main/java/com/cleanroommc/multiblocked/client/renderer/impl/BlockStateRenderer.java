@@ -8,9 +8,11 @@ import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.client.renderer.ICustomRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.util.FacadeBlockAccess;
+import com.cleanroommc.multiblocked.client.util.FacadeBlockWorld;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -43,14 +45,19 @@ public class BlockStateRenderer implements ICustomRenderer {
     @SideOnly(Side.CLIENT)
     private IBakedModel itemModel;
     @SideOnly(Side.CLIENT)
-    private TileEntity tileEntity;
+    public static ThreadLocal<FacadeBlockWorld> facadeBlockWorld;
+    static {
+        if (Multiblocked.isClient()) {
+            facadeBlockWorld = ThreadLocal.withInitial(FacadeBlockWorld::new);
+        }
+    }
 
     private BlockStateRenderer() {
         blockInfo = null;
     }
 
     public BlockStateRenderer(IBlockState state) {
-        this(new BlockInfo(state == null ? Blocks.BARRIER.getDefaultState() : state));
+        this(BlockInfo.fromBlockState(state == null ? Blocks.BARRIER.getDefaultState() : state));
     }
 
     public BlockStateRenderer(BlockInfo blockInfo) {
@@ -90,7 +97,7 @@ public class BlockStateRenderer implements ICustomRenderer {
         state = getState();
         if (state.getBlock().canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
             BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
-            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, state, blockAccess instanceof World ? getTileEntity((World) blockAccess, pos) : blockInfo.getTileEntity());
+            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, state, blockAccess instanceof World ? getTileEntity((World) blockAccess, pos) : blockInfo.getTileEntity());
             brd.renderBlockDamage(state, pos, texture, access);
         }
     }
@@ -100,7 +107,7 @@ public class BlockStateRenderer implements ICustomRenderer {
         state = getState();
         if (state.getBlock().canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
             BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
-            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, null, state, blockAccess instanceof World ? getTileEntity((World) blockAccess, pos) : blockInfo.getTileEntity());
+            IBlockAccess access = new FacadeBlockAccess(blockAccess, pos, state, blockAccess instanceof World ? getTileEntity((World) blockAccess, pos) : blockInfo.getTileEntity());
             return brd.renderBlock(state, pos, access, buffer);
         }
         return false;
@@ -116,23 +123,17 @@ public class BlockStateRenderer implements ICustomRenderer {
         return TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass()) != null;
     }
 
+
     @SideOnly(Side.CLIENT)
     public TileEntity getTileEntity(World world, BlockPos pos) {
-        try {
-            IBlockState state = getState();
-            if (!state.getBlock().hasTileEntity(state) && blockInfo.getTileEntity() != null) return null;
-            TrackedDummyWorld dummyWorld = new TrackedDummyWorld(world);
-            tileEntity = blockInfo.getTileEntity() == null ? (tileEntity == null ? state.getBlock().createTileEntity(world, state) : tileEntity) : blockInfo.getTileEntity();
-            dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(pos) ? state : iBlockState);
-            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(pos) ? tileEntity : tile);
-            if (tileEntity != null) {
-                tileEntity.setPos(pos);
-                tileEntity.setWorld(dummyWorld);
-            }
-            return tileEntity;
-        } catch (Throwable throwable) {
-            return null;
+        TileEntity tile = getBlockInfo().getTileEntity();
+        if (tile != null) {
+            FacadeBlockWorld dummyWorld = facadeBlockWorld.get();
+            dummyWorld.update(world, pos, getState(), tile);
+            tile.setWorld(dummyWorld);
+            tile.setPos(pos);
         }
+        return tile;
     }
 
     @SideOnly(Side.CLIENT)

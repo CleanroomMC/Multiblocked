@@ -1,10 +1,11 @@
 package com.cleanroommc.multiblocked.client.util;
 
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
@@ -12,19 +13,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-/**
- * Mostly based on and (copied from) ThermalDynamics with minor tweaks
- * https://github.com/CoFH/ThermalDynamics/
- */
 @SideOnly(Side.CLIENT)
-public class FacadeBlockAccess implements IBlockAccess {
+public class FacadeBlockWorld extends DummyWorld {
 
-    public final IBlockAccess world;
-    public final BlockPos pos;
-    public final IBlockState state;
-    public final TileEntity tile;
+    public World world;
+    public BlockPos pos;
+    public IBlockState state;
+    public TileEntity tile;
 
-    public FacadeBlockAccess(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity tile) {
+    public FacadeBlockWorld() {
+    }
+
+    public void update(World world, BlockPos pos, IBlockState state, TileEntity tile) {
         this.world = world;
         this.pos = pos;
         this.state = state;

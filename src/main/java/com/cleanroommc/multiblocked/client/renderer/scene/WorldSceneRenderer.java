@@ -373,7 +373,6 @@ public abstract class WorldSceneRenderer {
             }
             tileEntities.clear();
             renderedBlocksMap.forEach((renderedBlocks, hook) -> {
-                if (renderedBlocks.size() > 500) return;
                 for (BlockPos pos : renderedBlocks) {
                     if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
                         continue;
@@ -472,7 +471,6 @@ public abstract class WorldSceneRenderer {
                 } else {
                     setDefaultPassRenderState(pass);
                 }
-                if (renderedBlocks.size() > 500) return;
                 for (BlockPos pos : renderedBlocks) {
                     if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
                         continue;

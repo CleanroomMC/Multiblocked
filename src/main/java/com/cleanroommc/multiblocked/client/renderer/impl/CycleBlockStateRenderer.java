@@ -4,9 +4,8 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
-import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import com.cleanroommc.multiblocked.client.util.FacadeBlockWorld;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -24,7 +23,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -92,17 +90,16 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
     @SideOnly(Side.CLIENT)
     public void renderTESR(@Nonnull TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         IBlockState state = getState();
-        TileEntity tileEntity = getTileEntity(te.getWorld(), te.getPos());
+        TileEntity tileEntity = getBlockInfo().getTileEntity();
 
         int pass = MinecraftForgeClient.getRenderPass();
         BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
-        TrackedDummyWorld dummyWorld = new TrackedDummyWorld(te.getWorld());
-        dummyWorld.setBlockStateHook((pos1, iBlockState) -> pos1.equals(te.getPos()) ? state : iBlockState);
+        FacadeBlockWorld dummyWorld = facadeBlockWorld.get();
+        dummyWorld.update(te.getWorld(), te.getPos(), getState(), tileEntity);
         if (tileEntity != null) {
-            dummyWorld.setTileEntityHook((pos1, tile) -> pos1.equals(te.getPos()) ? tileEntity : tile);
-            tileEntity.setPos(te.getPos());
             tileEntity.setWorld(dummyWorld);
+            tileEntity.setPos(te.getPos());
         }
 
         BlockRenderLayer oldRenderLayer = MinecraftForgeClient.getRenderLayer();
@@ -157,19 +154,4 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         return true;
     }
 
-    @Override
-    public boolean shouldRenderInPass(World world, BlockPos pos, int pass) {
-        return true;
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public boolean isGlobalRenderer(@Nonnull TileEntity te) {
-        return true;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public TileEntity getTileEntity(World world, BlockPos pos) {
-        return getBlockInfo().getTileEntity();
-    }
 }

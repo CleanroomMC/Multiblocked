@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.api.crafttweaker.expanders;
 
 import com.cleanroommc.multiblocked.api.pattern.Predicates;
 import com.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.block.IBlock;
 import crafttweaker.api.block.IBlockState;
@@ -9,7 +10,6 @@ import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.liquid.ILiquidDefinition;
 import crafttweaker.api.liquid.ILiquidStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
-import gregtech.api.util.BlockInfo;
 import net.minecraft.block.Block;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;

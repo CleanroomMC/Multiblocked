@@ -1,18 +1,18 @@
 package com.cleanroommc.multiblocked.api.recipe;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
-import com.cleanroommc.multiblocked.common.capability.EnergyGTCECapability;
-import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import crafttweaker.annotations.ZenRegister;
-import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
+import com.cleanroommc.multiblocked.common.capability.EnergyGTCECapability;
 import com.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
 import com.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
 import com.cleanroommc.multiblocked.common.capability.ManaBotainaCapability;
 import com.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
+import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import lach_01298.qmd.particle.ParticleStack;
@@ -40,12 +40,15 @@ public class RecipeBuilder {
     @ZenProperty
     public final RecipeMap recipeMap;
     public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> inputBuilder = new HashMap<>();
+    public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> tickInputBuilder = new HashMap<>();
     public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> outputBuilder = new HashMap<>();
+    public final Map<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> tickOutputBuilder = new HashMap<>();
     public final Map<String, Object> data = new HashMap<>();
     @ZenProperty
     protected int duration;
     protected ITextComponent text;
     protected StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name yourself.
+    protected boolean perTick;
 
     @ZenConstructor
     public RecipeBuilder(RecipeMap recipeMap) {
@@ -62,6 +65,14 @@ public class RecipeBuilder {
         outputBuilder.forEach((k, v)->{
             ImmutableList.Builder<Tuple<Object, Float>> builder = ImmutableList.builder();
             copy.outputBuilder.put(k, builder.addAll(v.build()));
+        });
+        tickInputBuilder.forEach((k, v)->{
+            ImmutableList.Builder<Tuple<Object, Float>> builder = ImmutableList.builder();
+            copy.tickInputBuilder.put(k, builder.addAll(v.build()));
+        });
+        tickOutputBuilder.forEach((k, v)->{
+            ImmutableList.Builder<Tuple<Object, Float>> builder = ImmutableList.builder();
+            copy.tickOutputBuilder.put(k, builder.addAll(v.build()));
         });
         data.forEach(copy.data::put);
         copy.duration = this.duration;
@@ -99,15 +110,21 @@ public class RecipeBuilder {
         return this;
     }
 
+    @ZenMethod
+    public RecipeBuilder perTick(boolean perTick) {
+        this.perTick = perTick;
+        return this;
+    }
+
     public RecipeBuilder input(MultiblockCapability<?> capability, float chance, Object... obj) {
         keyBuilder.append(chance);
-        inputBuilder.computeIfAbsent(capability, c -> ImmutableList.builder()).add(Arrays.stream(obj).map(o->new Tuple<>(o, chance)).toArray(Tuple[]::new));
+        (perTick ? tickInputBuilder : inputBuilder).computeIfAbsent(capability, c -> ImmutableList.builder()).add(Arrays.stream(obj).map(o->new Tuple<>(o, chance)).toArray(Tuple[]::new));
         return this;
     }
 
     public RecipeBuilder output(MultiblockCapability<?> capability, float chance, Object... obj) {
         keyBuilder.append(chance);
-        outputBuilder.computeIfAbsent(capability, c -> ImmutableList.builder()).add(Arrays.stream(obj).map(o->new Tuple<>(o, chance)).toArray(Tuple[]::new));
+        (perTick ? tickOutputBuilder : outputBuilder).computeIfAbsent(capability, c -> ImmutableList.builder()).add(Arrays.stream(obj).map(o->new Tuple<>(o, chance)).toArray(Tuple[]::new));
         return this;
     }
 
@@ -367,7 +384,15 @@ public class RecipeBuilder {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> entry : this.outputBuilder.entrySet()) {
             outputBuilder.put(entry.getKey(), entry.getValue().build());
         }
-        return new Recipe(keyBuilder.toString(), inputBuilder.build(), outputBuilder.build(), data.isEmpty() ? Recipe.EMPTY : ImmutableMap.copyOf(data), text, duration);
+        ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> tickInputBuilder = new ImmutableMap.Builder<>();
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> entry : this.tickInputBuilder.entrySet()) {
+            tickInputBuilder.put(entry.getKey(), entry.getValue().build());
+        }
+        ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> tickOutputBuilder = new ImmutableMap.Builder<>();
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> entry : this.tickOutputBuilder.entrySet()) {
+            tickOutputBuilder.put(entry.getKey(), entry.getValue().build());
+        }
+        return new Recipe(keyBuilder.toString(), inputBuilder.build(), outputBuilder.build(), tickInputBuilder.build(), tickOutputBuilder.build(), data.isEmpty() ? Recipe.EMPTY : ImmutableMap.copyOf(data), text, duration);
     }
 
     @ZenMethod

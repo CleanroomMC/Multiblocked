@@ -105,7 +105,9 @@ public class RecipeMap {
     public void addRecipe(Recipe recipe) {
         recipes.put(recipe.uid, recipe);
         inputCapabilities.addAll(recipe.inputs.keySet());
+        inputCapabilities.addAll(recipe.tickInputs.keySet());
         outputCapabilities.addAll(recipe.outputs.keySet());
+        outputCapabilities.addAll(recipe.tickOutputs.keySet());
     }
 
     @ZenMethod
@@ -113,7 +115,7 @@ public class RecipeMap {
         if (!holder.hasProxies()) return Collections.emptyList();
         List<Recipe> matches = new ArrayList<>();
         for (Recipe recipe : recipes.values()) {
-            if (recipe.match(holder)) {
+            if (recipe.matchRecipe(holder) && recipe.matchTickRecipe(holder)) {
                 matches.add(recipe);
             }
         }

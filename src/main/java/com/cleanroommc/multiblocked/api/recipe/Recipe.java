@@ -32,6 +32,8 @@ public class Recipe {
     public final String uid;
     public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputs;
     public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> outputs;
+    public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> tickInputs;
+    public final ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> tickOutputs;
     public final ImmutableMap<String, Object> data;
     @ZenProperty
     public final int duration;
@@ -40,19 +42,25 @@ public class Recipe {
     public Recipe(String uid,
                   ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputs,
                   ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> outputs,
+                  ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> tickInputs,
+                  ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> tickOutputs,
                   int duration) {
-        this(uid, inputs, outputs, EMPTY, null, duration);
+        this(uid, inputs, outputs, tickInputs, tickOutputs, EMPTY, null, duration);
     }
 
     public Recipe(String uid,
                   ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputs,
                   ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> outputs,
+                  ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> tickInputs,
+                  ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> tickOutputs,
                   ImmutableMap<String, Object> data,
                   ITextComponent text,
                   int duration) {
         this.uid = uid;
         this.inputs = inputs;
         this.outputs = outputs;
+        this.tickInputs = tickInputs;
+        this.tickOutputs = tickOutputs;
         this.duration = duration;
         this.data = data;
         this.text = text;
@@ -90,14 +98,25 @@ public class Recipe {
      * @return result
      */
     @ZenMethod
-    public boolean match(ICapabilityProxyHolder holder) {
+    public boolean matchRecipe(ICapabilityProxyHolder holder) {
         if (!holder.hasProxies()) return false;
-        if (!match(IO.IN, holder.getCapabilities())) return false;
-        return match(IO.OUT, holder.getCapabilities());
+        if (!matchRecipe(IO.IN, holder.getCapabilities(), inputs)) return false;
+        if (!matchRecipe(IO.OUT, holder.getCapabilities(), outputs)) return false;
+        return true;
     }
 
-    private boolean match(IO io, Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies) {
-        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : io == IO.IN ? inputs.entrySet() : outputs.entrySet()) {
+    @ZenMethod
+    public boolean matchTickRecipe(ICapabilityProxyHolder holder) {
+        if (hasTick()) {
+            if (!holder.hasProxies()) return false;
+            if (!matchRecipe(IO.IN, holder.getCapabilities(), tickInputs)) return false;
+            if (!matchRecipe(IO.OUT, holder.getCapabilities(), tickOutputs)) return false;
+        }
+        return true;
+    }
+
+    private boolean matchRecipe(IO io, Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies, ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> contents) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : contents.entrySet()) {
             Set<CapabilityProxy<?>> used = new HashSet<>();
             List<?> content = entry.getValue().stream().map(Tuple::getFirst).collect(Collectors.toList());
             if (capabilityProxies.contains(io, entry.getKey())) {
@@ -122,12 +141,21 @@ public class Recipe {
         return true;
     }
 
+    public boolean handleTickRecipeIO(IO io, ICapabilityProxyHolder holder) {
+        if (!holder.hasProxies() || io == IO.BOTH) return false;
+        return handleRecipe(io, holder, io == IO.IN ? tickInputs : tickOutputs);
+    }
+
+    public boolean handleRecipeIO (IO io, ICapabilityProxyHolder holder) {
+        if (!holder.hasProxies() || io == IO.BOTH) return false;
+        return handleRecipe(io, holder, io == IO.IN ? inputs : outputs);
+    }
+
     @SuppressWarnings("ALL")
     @ZenMethod
-    public void handleInput(ICapabilityProxyHolder holder) {
-        if (!holder.hasProxies()) return;
+    public boolean handleRecipe(IO io, ICapabilityProxyHolder holder, ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> contents) {
         Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();
-        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : inputs.entrySet()) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : contents.entrySet()) {
             Set<CapabilityProxy<?>> used = new HashSet<>();
             List content = new ArrayList<>();
             for (Tuple<Object, Float> tuple : entry.getValue()) {
@@ -136,11 +164,11 @@ public class Recipe {
                 }
             }
             if (content.isEmpty()) continue;
-            if (capabilityProxies.contains(IO.IN, entry.getKey())) {
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.IN, entry.getKey()).values()) { // search same io type
+            if (capabilityProxies.contains(io, entry.getKey())) {
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey()).values()) { // search same io type
                     if (used.contains(proxy)) continue;
                     used.add(proxy);
-                    content = proxy.handleRecipeInput(this, content);
+                    content = proxy.handleRecipe(io, this, content);
                     if (content == null) break;
                 }
             }
@@ -149,50 +177,19 @@ public class Recipe {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
                     if (used.contains(proxy)) continue;
                     used.add(proxy);
-                    content = proxy.handleRecipeInput(this, content);
-                    if (content == null) break;
-                }
-            }
-            if (content != null) {
-                Multiblocked.LOGGER.warn("io error while handling a recipe {} inputs. holder: {}", uid, holder);
-            }
-        }
-    }
-
-    @SuppressWarnings("ALL")
-    @ZenMethod
-    public void handleOutput(ICapabilityProxyHolder holder) {
-        if (!holder.hasProxies()) return;
-        Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();
-        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : outputs.entrySet()) {
-            Set<CapabilityProxy<?>> used = new HashSet<>();
-            List content = new ArrayList<>();
-            for (Tuple<Object, Float> tuple : entry.getValue()) {
-                if (tuple.getSecond() == 1 || Multiblocked.RNG.nextFloat() < tuple.getSecond()) { // chance output
-                    content.add(tuple.getFirst());
-                }
-            }
-            if (content.isEmpty()) continue;
-            if (capabilityProxies.contains(IO.OUT, entry.getKey())) {
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.OUT, entry.getKey()).values()) { // search same io type
-                    if (used.contains(proxy)) continue;
-                    used.add(proxy);
-                    content = proxy.handleRecipeOutput(this, content);
-                    if (content == null) break;
-                }
-            }
-            if (content == null) continue;
-            if (capabilityProxies.contains(IO.BOTH, entry.getKey())) {
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
-                    if (used.contains(proxy)) continue;
-                    used.add(proxy);
-                    content = proxy.handleRecipeOutput(this, content);
+                    content = proxy.handleRecipe(io,this, content);
                     if (content == null) break;
                 }
             }
             if (content != null) {
                 Multiblocked.LOGGER.warn("io error while handling a recipe {} outputs. holder: {}", uid, holder);
+                return false;
             }
         }
+        return true;
+    }
+
+    public boolean hasTick() {
+        return !tickInputs.isEmpty() || !tickOutputs.isEmpty();
     }
 }

@@ -123,7 +123,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (definition.dynamicRenderer != null) {
             return definition.dynamicRenderer.apply(this);
         }
-        if (definition.workingRenderer != null && isFormed() && status.equals("working")) {
+        if (definition.workingRenderer != null && isFormed() && (status.equals("working") || status.equals("suspend"))) {
             return definition.workingRenderer;
         }
         return super.updateCurrentRenderer();

@@ -49,8 +49,9 @@ multiblocked.fluid.state_liquid=§aState: Liquid
 item.multiblocked.blueprint.name=Blueprint
 
 multiblocked.recipe.duration=Duration: %ds
-multiblocked.recipe.status.true=status: §cworking§r
-multiblocked.recipe.status.false=status: §aidle§r
+multiblocked.recipe.status.working=status: §cworking§r
+multiblocked.recipe.status.idle=status: §aidle§r
+multiblocked.recipe.status.suspend=status: §3suspend§r
 multiblocked.recipe.remaining=remaining time: %ds
 
 multiblocked.renderer.null=Null

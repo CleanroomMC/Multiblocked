@@ -66,7 +66,7 @@ public class FluidContentWidget extends ContentWidget<FluidStack> {
                 else
                     content = PhantomFluidWidget.drainFrom(ingredient);
                 if (content != null) {
-                    setContent(io, getJEIContent(content), chance);
+                    setContent(io, getJEIContent(content), chance, perTick);
                     if (onPhantomUpdate != null) {
                         onPhantomUpdate.accept(FluidContentWidget.this);
                     }

@@ -2,11 +2,13 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.recipe;
 
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectableWidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
@@ -30,6 +32,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
     protected T content;
     protected float chance;
     protected IO io;
+    protected boolean perTick;
     protected IGuiTexture background;
     protected Consumer<ContentWidget<T>> onPhantomUpdate;
     protected Consumer<ContentWidget<T>> onMouseClicked;
@@ -45,10 +48,11 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
     }
 
     @SuppressWarnings("unchecked")
-    public final ContentWidget<T> setContent(@Nonnull IO io, @Nonnull Object content, float chance) {
+    public final ContentWidget<T> setContent(@Nonnull IO io, @Nonnull Object content, float chance, boolean perTick) {
         this.io = io;
         this.content = (T) content;
         this.chance = chance;
+        this.perTick = perTick;
         onContentUpdate();
         return this;
     }
@@ -73,7 +77,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
                 if (ingredient.getClass().equals(getJEIIngredient(getContent()).getClass())) {
                     T content = getJEIContent(ingredient);
                     if (content != null) {
-                        setContent(io, content, chance);
+                        setContent(io, content, chance, perTick);
                         if (onPhantomUpdate != null) {
                             onPhantomUpdate.accept(ContentWidget.this);
                         }
@@ -122,6 +126,10 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
         return chance;
     }
 
+    public boolean getPerTick() {
+        return perTick;
+    }
+
     public ContentWidget<T> setOnMouseClicked(Consumer<ContentWidget<T>> onMouseClicked) {
         this.onMouseClicked = onMouseClicked;
         return this;
@@ -149,7 +157,13 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
      */
     public void openConfigurator(WidgetGroup dialog){
         dialog.addWidget(new LabelWidget(5, 8, "Chance:"));
-        dialog.addWidget(new TextFieldWidget(125 - 60, 5, 60, 15, true, null, number -> setContent(io, content, Float.parseFloat(number))).setNumbersOnly(0f, 1f).setCurrentString(chance + ""));
+        dialog.addWidget(new TextFieldWidget(125 - 60, 5, 30, 15, true, null, number -> setContent(io, content, Float.parseFloat(number), perTick)).setNumbersOnly(0f, 1f).setCurrentString(chance + ""));
+        dialog.addWidget(new SwitchWidget(125 - 25 , 5, 15, 15, (cd, r) -> setContent(io, content, chance, r))
+                .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
+                .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
+                .setHoverBorderTexture(1, -1)
+                .setPressed(perTick)
+                .setHoverTooltip("per tick"));
     }
 
     public ContentWidget<T> setBackground(IGuiTexture background) {
@@ -167,6 +181,9 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
     public ContentWidget<T> setHoverTooltip(String tooltipText) {
         if (chance < 1) {
             tooltipText += chance == 0 ? (TextFormatting.RED + "\nno cost") : ("\nchance: " + TextFormatting.YELLOW + String.format("%.1f", chance * 100) + "%")  + TextFormatting.RESET;
+        }
+        if (perTick) {
+            tooltipText += (TextFormatting.GREEN + "\nper tick") + TextFormatting.RESET;
         }
         super.setHoverTooltip(tooltipText);
         return this;
@@ -196,6 +213,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
         drawHookBackground(mouseX, mouseY, partialTicks);
         super.drawInBackground(mouseX, mouseY, partialTicks);
         drawChance();
+        drawTick();
         drawHoverOverlay(mouseX, mouseY);
         if (isSelected) {
             DrawerHelper.drawBorder(getPosition().x, getPosition().y, getSize().width, getSize().height, 0xff00aa00, 1);
@@ -222,6 +240,21 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
     }
 
     @SideOnly(Side.CLIENT)
+    public void drawTick() {
+        if (perTick) {
+            Position pos = getPosition();
+            Size size = getSize();
+            GlStateManager.scale(0.5, 0.5, 1);
+            GlStateManager.disableDepth();
+            String s = "per tick";
+            int color = 0xFFFF00;
+            FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+            fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 23, (pos.y + (size.height / 3f) + 6) * 2 - size.height + (chance == 1 ? 0 : 10), color);
+            GlStateManager.scale(2, 2, 1);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
     public void drawHoverOverlay(int mouseX, int mouseY) {
         if (isMouseOverElement(mouseX, mouseY)) {
             GlStateManager.disableDepth();
@@ -232,4 +265,5 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
             GlStateManager.enableBlend();
         }
     }
+
 }

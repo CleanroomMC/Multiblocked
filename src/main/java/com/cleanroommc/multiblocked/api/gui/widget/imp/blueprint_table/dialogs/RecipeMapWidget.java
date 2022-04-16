@@ -59,7 +59,7 @@ public class RecipeMapWidget extends DialogWidget {
         this.addWidget(configurator = new WidgetGroup(250, 132, 130, 120));
         this.addWidget(recipeIO = new WidgetGroup(50, 100, 176, 100));
         this.addWidget(new ButtonWidget(230, 10, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> {
-            Recipe recipe = new Recipe(UUID.randomUUID().toString(), ImmutableMap.of(), ImmutableMap.of(), 1);
+            Recipe recipe = new Recipe(UUID.randomUUID().toString(), ImmutableMap.of(), ImmutableMap.of(), ImmutableMap.of(), ImmutableMap.of(), 1);
             recipes.add(new RecipeItem(recipe));
             recipesList.addWidget(recipes.get(recipes.size() - 1));
         }).setHoverBorderTexture(1, -1).setHoverTooltip("add a new recipe"));
@@ -185,19 +185,24 @@ public class RecipeMapWidget extends DialogWidget {
         }
 
         private void updateRecipe() {
-            recipe = new Recipe(uid, rebuild(inputs), rebuild(outputs), duration);
+            recipe = new Recipe(uid, rebuild(inputs, false), rebuild(outputs, false), rebuild(inputs, true), rebuild(outputs, true), duration);
         }
 
-        private ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> rebuild(Map<MultiblockCapability<?>, List<ContentWidget<?>>> contents) {
+        private ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> rebuild(Map<MultiblockCapability<?>, List<ContentWidget<?>>> contents, boolean perTick) {
             ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> builder = new ImmutableMap.Builder<>();
             for (Map.Entry<MultiblockCapability<?>, List<ContentWidget<?>>> entry : contents.entrySet()) {
                 MultiblockCapability<?> capability = entry.getKey();
                 if (capability != null && !entry.getValue().isEmpty()) {
                     ImmutableList.Builder<Tuple<Object, Float>> listBuilder = new ImmutableList.Builder<>();
                     for (ContentWidget<?> content : entry.getValue()) {
-                        listBuilder.add(new Tuple<>(content.getContent(), content.getChance()));
+                        if (content.getPerTick() == perTick) {
+                            listBuilder.add(new Tuple<>(content.getContent(), content.getChance()));
+                        }
                     }
-                    builder.put(capability, listBuilder.build());
+                    ImmutableList<Tuple<Object, Float>> list = listBuilder.build();
+                    if (!list.isEmpty()) {
+                        builder.put(capability, listBuilder.build());
+                    }
                 }
             }
             return builder.build();
@@ -217,7 +222,18 @@ public class RecipeMapWidget extends DialogWidget {
                 for (Tuple<Object, Float> in : entry.getValue()) {
                     ContentWidget<?> contentWidget = (ContentWidget<?>) capability.createContentWidget()
                             .setOnPhantomUpdate(w -> onContentSelectedOrUpdate(true, capability, w))
-                            .setContent(IO.IN, in.getFirst(), in.getSecond())
+                            .setContent(IO.IN, in.getFirst(), in.getSecond(), false)
+                            .setOnSelected(w -> onContentSelectedOrUpdate(true, capability, (ContentWidget<?>) w))
+                            .setSelectedTexture(-1, 0);
+                    this.inputs.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
+                }
+            }
+            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.tickInputs.entrySet()) {
+                MultiblockCapability<?> capability = entry.getKey();
+                for (Tuple<Object, Float> in : entry.getValue()) {
+                    ContentWidget<?> contentWidget = (ContentWidget<?>) capability.createContentWidget()
+                            .setOnPhantomUpdate(w -> onContentSelectedOrUpdate(true, capability, w))
+                            .setContent(IO.IN, in.getFirst(), in.getSecond(), true)
                             .setOnSelected(w -> onContentSelectedOrUpdate(true, capability, (ContentWidget<?>) w))
                             .setSelectedTexture(-1, 0);
                     this.inputs.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
@@ -229,7 +245,17 @@ public class RecipeMapWidget extends DialogWidget {
                 for (Tuple<Object, Float> out : entry.getValue()) {
                     ContentWidget<?> contentWidget= (ContentWidget<?>) capability
                             .createContentWidget().setOnPhantomUpdate(w -> onContentSelectedOrUpdate(false, capability, w))
-                            .setContent(IO.OUT, out.getFirst(), out.getSecond())
+                            .setContent(IO.OUT, out.getFirst(), out.getSecond(), false)
+                            .setOnSelected(w -> onContentSelectedOrUpdate(false, capability, (ContentWidget<?>) w));
+                    this.outputs.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
+                }
+            }
+            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.tickOutputs.entrySet()) {
+                MultiblockCapability<?> capability = entry.getKey();
+                for (Tuple<Object, Float> out : entry.getValue()) {
+                    ContentWidget<?> contentWidget= (ContentWidget<?>) capability
+                            .createContentWidget().setOnPhantomUpdate(w -> onContentSelectedOrUpdate(false, capability, w))
+                            .setContent(IO.OUT, out.getFirst(), out.getSecond(), true)
                             .setOnSelected(w -> onContentSelectedOrUpdate(false, capability, (ContentWidget<?>) w));
                     this.outputs.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
                 }
@@ -302,7 +328,7 @@ public class RecipeMapWidget extends DialogWidget {
             int i = 0;
             for (MultiblockCapability<?> capability : capabilities) {
                 contentCandidates.addWidget(capability.createContentWidget()
-                        .setContent(IO.IN, capability.defaultContent(), 1)
+                        .setContent(IO.IN, capability.defaultContent(), 1, false)
                         .setOnMouseClicked(contentWidget -> {
                             contents.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
                             updateRecipe();

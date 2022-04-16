@@ -30,14 +30,15 @@ public class RecipePage extends PageWidget{
     private Recipe recipe;
     @SideOnly(Side.CLIENT)
     private RecipeWidget recipeWidget;
-    private boolean isWorking;
+    private RecipeLogic.Status status;
     private int progress;
     
     public RecipePage(ControllerTileEntity controller, TabContainer tabContainer) {
         super(resourceTexture, tabContainer);
         this.controller = controller;
+        this.status = RecipeLogic.Status.IDLE;
         this.addWidget(tips = new DraggableScrollableWidgetGroup(8, 34, 160, 112));
-        tips.addWidget(new LabelWidget(5, 5, () -> isWorking ? I18n.format("multiblocked.recipe.status.true" ) : I18n.format("multiblocked.recipe.status.false")).setTextColor(-1));
+        tips.addWidget(new LabelWidget(5, 5, () -> I18n.format("multiblocked.recipe.status." + status.name)).setTextColor(-1));
         tips.addWidget(new LabelWidget(5, 20, () -> I18n.format("multiblocked.recipe.remaining", recipe == null ? 0 : (recipe.duration - progress) / 20)).setTextColor(-1));
         this.addWidget(new SwitchWidget(153, 131, 12, 12, (cd, r) -> {
             controller.asyncRecipeSearching = r;
@@ -124,8 +125,8 @@ public class RecipePage extends PageWidget{
                 recipe = recipeLogic.lastRecipe;
                 writeUpdateInfo(-1, this::writeRecipe);
             }
-            if (isWorking != recipeLogic.isWorking || progress != recipeLogic.progress) {
-                isWorking = recipeLogic.isWorking;
+            if (status != recipeLogic.getStatus() || progress != recipeLogic.progress) {
+                status = recipeLogic.getStatus();
                 progress = recipeLogic.progress;
                 writeUpdateInfo(-2, this::writeStatus);
             }
@@ -136,12 +137,12 @@ public class RecipePage extends PageWidget{
     }
 
     private void writeStatus(PacketBuffer buffer) {
-        buffer.writeBoolean(isWorking);
+        buffer.writeEnumValue(status);
         buffer.writeVarInt(progress);
     }
 
     private void readStatus(PacketBuffer buffer) {
-        isWorking = buffer.readBoolean();
+        status = buffer.readEnumValue(RecipeLogic.Status.class);
         progress = buffer.readVarInt();
     }
 
@@ -169,7 +170,7 @@ public class RecipePage extends PageWidget{
             if (recipeWidget != null) {
                 removeWidget(recipeWidget);
             }
-            isWorking = false;
+            status = RecipeLogic.Status.IDLE;
             progress = 0;
         }
     }

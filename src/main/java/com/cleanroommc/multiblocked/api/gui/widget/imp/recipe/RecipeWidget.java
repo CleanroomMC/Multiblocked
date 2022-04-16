@@ -47,7 +47,14 @@ public class RecipeWidget extends WidgetGroup {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.inputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();
             for (Tuple<Object, Float> in : entry.getValue()) {
-                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, in.getFirst(), in.getSecond()).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, in.getFirst(), in.getSecond(), false).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+                index++;
+            }
+        }
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.tickInputs.entrySet()) {
+            MultiblockCapability<?> capability = entry.getKey();
+            for (Tuple<Object, Float> in : entry.getValue()) {
+                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, in.getFirst(), in.getSecond(), true).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
         }
@@ -56,7 +63,14 @@ public class RecipeWidget extends WidgetGroup {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.outputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();
             for (Tuple<Object, Float> out : entry.getValue()) {
-                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out.getFirst(), out.getSecond()).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out.getFirst(), out.getSecond(), false).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+                index++;
+            }
+        }
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.tickOutputs.entrySet()) {
+            MultiblockCapability<?> capability = entry.getKey();
+            for (Tuple<Object, Float> out : entry.getValue()) {
+                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out.getFirst(), out.getSecond(), true).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
         }

@@ -67,7 +67,7 @@ public class ProgressWidget extends Widget {
     @Override
     public void detectAndSendChanges() {
         double actualValue = progressSupplier.getAsDouble();
-        if (Math.abs(actualValue - lastProgressValue) > 0.005) {
+        if (actualValue - lastProgressValue != 0) {
             this.lastProgressValue = actualValue;
             writeUpdateInfo(0, buffer -> buffer.writeDouble(actualValue));
         }

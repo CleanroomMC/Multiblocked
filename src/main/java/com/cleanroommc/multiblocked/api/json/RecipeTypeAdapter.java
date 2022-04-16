@@ -28,6 +28,8 @@ public class RecipeTypeAdapter implements JsonSerializer<Recipe>, JsonDeserializ
                 json.get("uid").getAsString(),
                 deserializeIO(json.get("inputs")),
                 deserializeIO(json.get("outputs")),
+                deserializeIO(json.has("tickInputs") ? json.get("tickInputs") : new JsonObject()),
+                deserializeIO(json.has("tickOutputs") ? json.get("tickOutputs") : new JsonObject()),
                 json.get("duration").getAsInt());
     }
 
@@ -38,6 +40,8 @@ public class RecipeTypeAdapter implements JsonSerializer<Recipe>, JsonDeserializ
         json.addProperty("duration", recipe.duration);
         json.add("inputs", serializeIO(recipe.inputs));
         json.add("outputs", serializeIO(recipe.outputs));
+        json.add("tickInputs", serializeIO(recipe.tickInputs));
+        json.add("tickOutputs", serializeIO(recipe.tickOutputs));
         return json;
     }
 

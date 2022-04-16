@@ -83,12 +83,8 @@ public abstract class CapabilityProxy<K> {
         return handleRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), true);
     }
 
-    public final List<K> handleRecipeInput(Recipe recipe, List<?> left) {
-        return handleRecipeInner(IO.IN, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), false);
-    }
-
-    public final List<K> handleRecipeOutput(Recipe recipe, List<?> left) {
-        return handleRecipeInner(IO.OUT, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), false);
+    public final List<K> handleRecipe(IO io, Recipe recipe, List<?> left) {
+        return handleRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), false);
     }
 
     public final void updateChangedState(long periodID) {

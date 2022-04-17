@@ -302,6 +302,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (compound.hasKey("recipeLogic")) {
             recipeLogic = new RecipeLogic(this);
             recipeLogic.readFromNBT(compound.getCompoundTag("recipeLogic"));
+            status = recipeLogic.getStatus().name;
         }
         if (compound.hasKey("capabilities")) {
             NBTTagList tagList = compound.getTagList("capabilities", Constants.NBT.TAG_COMPOUND);

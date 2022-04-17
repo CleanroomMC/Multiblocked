@@ -213,7 +213,7 @@ public class RecipeLogic {
     public void readFromNBT(NBTTagCompound compound) {
         lastRecipe = compound.hasKey("recipe") ? definition.recipeMap.recipes.get(compound.getString("recipe")) : null;
         if (lastRecipe != null) {
-            status = compound.hasKey("status") ? Status.values()[compound.getInteger("status")] : Status.WORKING;
+            setStatus(compound.hasKey("status") ? Status.values()[compound.getInteger("status")] : Status.WORKING);
             duration = lastRecipe.duration;
         }
     }

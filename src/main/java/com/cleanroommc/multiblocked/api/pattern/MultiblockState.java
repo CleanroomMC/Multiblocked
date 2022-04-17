@@ -143,7 +143,9 @@ public class MultiblockState {
             if (lastController != null) {
                 lastController.onStructureInvalid();
             }
-            MultiblockWorldSavedData.getOrCreate(world).removeMapping(this);
+            MultiblockWorldSavedData mbds = MultiblockWorldSavedData.getOrCreate(world);
+            mbds.removeMapping(this);
+            mbds.removeLoading(controllerPos);
         } else if (error != UNLOAD_ERROR) {
             ControllerTileEntity controller = getController();
             if (controller != null && !controller.checkPattern()) {
@@ -158,7 +160,9 @@ public class MultiblockState {
             ControllerTileEntity controller = getController();
             if (controller != null) {
                 if (controller.checkPattern()) {
-                    MultiblockWorldSavedData.getOrCreate(world).addLoading(controller);
+                    if (!controller.needAlwaysUpdate()) {
+                        MultiblockWorldSavedData.getOrCreate(world).addLoading(controller);
+                    }
                     if (controller.getCapabilities() == null) {
                         controller.onStructureFormed();
                     }
@@ -176,6 +180,10 @@ public class MultiblockState {
         ControllerTileEntity controller = getController();
         if (controller != null) {
             error = UNLOAD_ERROR;
+            if (!controller.needAlwaysUpdate()) {
+                MultiblockWorldSavedData.getOrCreate(world).removeLoading(controllerPos);
+            }
+        } else {
             MultiblockWorldSavedData.getOrCreate(world).removeLoading(controllerPos);
         }
     }

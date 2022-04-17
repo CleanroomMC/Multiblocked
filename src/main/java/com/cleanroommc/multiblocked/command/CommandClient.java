@@ -62,10 +62,10 @@ public class CommandClient extends CommandBase {
                 sender.sendMessage(new TextComponentString(tps.toString()));
             } else if (cmd.equals("mbd_test")) {
                 World world = ((EntityPlayerMP) sender).world;
-                IBlockState state= MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation("mbd:ebf")).getDefaultState();
+                IBlockState state= MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation("multiblocked:fusion_sun")).getDefaultState();
                 for (int i = 0; i < 5; i++) {
                     for (int j = 0; j < 5; j++) {
-                        BlockPos pos = sender.getPosition().offset(EnumFacing.SOUTH, i * 6).offset(EnumFacing.EAST, j * 6);
+                        BlockPos pos = sender.getPosition().offset(EnumFacing.SOUTH, i * 6).offset(EnumFacing.EAST, j * 6).offset(EnumFacing.UP, 3);
                         world.setBlockState(pos, state);
 //                        TileEntity tileEntity = world.getTileEntity(pos);
 //                        if (tileEntity instanceof ControllerTileEntity) {

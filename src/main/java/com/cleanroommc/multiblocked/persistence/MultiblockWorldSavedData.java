@@ -113,7 +113,6 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         for (BlockPos blockPos : state.getCache()) {
             chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c->new HashSet<>()).add(state);
         }
-        addLoading(state.getController());
         setDirty(true);
     }
 
@@ -122,7 +121,6 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         for (Set<MultiblockState> set : chunkPosMapping.values()) {
             set.remove(state);
         }
-        removeLoading(state.controllerPos);
         setDirty(true);
     }
 
@@ -226,12 +224,12 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         long tpsST = System.currentTimeMillis();
         while (!Thread.interrupted()) {
             long st = System.currentTimeMillis();
-            for (IAsyncThreadUpdate asyncComponent : asyncComponents) {
-                try {
+            try {
+                for (IAsyncThreadUpdate asyncComponent : asyncComponents) {
                     asyncComponent.asyncThreadLogic(periodID);
-                } catch (Throwable e) {
-                    Multiblocked.LOGGER.error("asyncThreadLogic error: {}", e.getMessage());
                 }
+            } catch (Throwable e) {
+                Multiblocked.LOGGER.error("asyncThreadLogic error: {}", e.getMessage());
             }
             periodID++;
             long et = System.currentTimeMillis();

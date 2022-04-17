@@ -1,7 +1,7 @@
 package com.cleanroommc.multiblocked.core.mixins;
 
-import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -11,7 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(World.class)
 public class WorldMixin {
@@ -22,13 +23,21 @@ public class WorldMixin {
     private void afterUpdatingEntities(CallbackInfo ci) {
         this.profiler.startSection("multiblocks");
         if (!((World) (Object) this).isRemote) {
-            Iterator<ComponentTileEntity<?>> iterator = MultiblockWorldSavedData.getOrCreate((World) (Object) this).getLoadings().iterator();
-            while (iterator.hasNext()) {
-                ComponentTileEntity<?> component = iterator.next();
-                if (component.isInvalid()) {
-                    iterator.remove();
+            List<ComponentTileEntity<?>> inValids = null;
+            MultiblockWorldSavedData mbds = MultiblockWorldSavedData.getOrCreate((World) (Object) this);
+            for (ComponentTileEntity<?> loading : mbds.getLoadings()) {
+                if (loading.isInvalid()) {
+                    if (inValids == null) {
+                        inValids = new ArrayList<>();
+                    }
+                    inValids.add(loading);
                 } else {
-                    component.update();
+                    loading.update();
+                }
+            }
+            if (inValids != null) {
+                for (ComponentTileEntity<?> inValid : inValids) {
+                    mbds.removeLoading(inValid.getPos());
                 }
             }
         }

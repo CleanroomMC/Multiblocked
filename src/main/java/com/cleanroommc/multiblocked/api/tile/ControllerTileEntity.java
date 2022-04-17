@@ -144,7 +144,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         if (recipeLogic == null) {
             recipeLogic = new RecipeLogic(this);
         }
-        setStatus("idle");
+        if (status.equals("unformed")) {
+            setStatus("idle");
+        }
         // init capabilities
         Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap = state.getMatchContext().get("capabilities");
         if (capabilityMap != null) {
@@ -362,6 +364,9 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                             held.shrink(1);
                         }
                         MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
+                        if (!needAlwaysUpdate()) {
+                            MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
+                        }
                         onStructureFormed();
                         return true;
                     }

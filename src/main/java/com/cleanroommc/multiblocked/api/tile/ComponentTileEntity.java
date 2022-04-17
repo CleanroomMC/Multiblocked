@@ -99,10 +99,8 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         }
     }
 
-    private void checkUpdate() {
-        if (world != null && !isRemote() && (definition.needUpdateTick() || traits.values().stream().anyMatch(CapabilityTrait::hasUpdate))) {
-            MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
-        }
+    public boolean needAlwaysUpdate() {
+        return world != null && !isRemote() && (definition.needUpdateTick() || traits.values().stream().anyMatch(CapabilityTrait::hasUpdate));
     }
 
     @Override
@@ -151,10 +149,10 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public void setStatus(String status) {
         if (!isRemote()) {
-            if (definition.statusChanged != null) {
-                status = definition.statusChanged.apply(this, status);
-            }
             if (!this.status.equals(status)) {
+                if (definition.statusChanged != null) {
+                    status = definition.statusChanged.apply(this, status);
+                }
                 this.status = status;
                 writeCustomData(1, buffer->buffer.writeString(this.status));
             }
@@ -463,7 +461,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @Override
     public void setPos(@Nonnull BlockPos pos) {
         super.setPos(pos);
-        checkUpdate();
+        if (needAlwaysUpdate()) {
+            MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
+        }
     }
 
     @Override
@@ -479,7 +479,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             }
             throw e;
         }
-        checkUpdate();
+        if (needAlwaysUpdate()) {
+            MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
+        }
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
         if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
             persistentData = CraftTweakerMC.getIData(compound.getTag("ct_persistent"));

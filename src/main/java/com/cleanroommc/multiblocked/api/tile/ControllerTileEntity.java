@@ -1,10 +1,10 @@
 package com.cleanroommc.multiblocked.api.tile;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.ICapabilityProxyHolder;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTController;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
@@ -32,7 +32,6 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;

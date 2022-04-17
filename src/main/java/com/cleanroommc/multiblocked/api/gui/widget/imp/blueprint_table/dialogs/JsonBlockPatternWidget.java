@@ -189,6 +189,12 @@ public class JsonBlockPatternWidget extends DialogWidget {
             if (sceneWidget.selected != null && !name.equals("controller")) {
                 pattern.symbolMap.get(sceneWidget.selected.symbol).add(name);
                 needUpdatePredicateSelector = true;
+                for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
+                    tile.updateRenderer();
+                }
+                if (sceneWidget != null) {
+                    sceneWidget.needCompileCache();
+                }
             }
         }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/move_down.png")).setHoverBorderTexture(1, -1).setHoverTooltip("add selected predicate to symbol"));
         predicateTab.addWidget(new ButtonWidget(350 - 18, 138, 16, 16, cd -> {
@@ -212,6 +218,9 @@ public class JsonBlockPatternWidget extends DialogWidget {
             }
             for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
                 tile.updateRenderer();
+            }
+            if (sceneWidget != null) {
+                sceneWidget.needCompileCache();
             }
         }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("remove selected predicate"));
         pattern.predicates.forEach((predicateName, predicate) -> {
@@ -260,6 +269,12 @@ public class JsonBlockPatternWidget extends DialogWidget {
                 .setYScrollBarWidth(4)
                 .setYBarStyle(null, new ColorRectTexture(-1)));
         updatePredicateSelector();
+        for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
+            tile.updateRenderer();
+        }
+        if (sceneWidget != null) {
+            sceneWidget.needCompileCache();
+        }
     }
 
     public void updatePatternJson() {
@@ -292,13 +307,17 @@ public class JsonBlockPatternWidget extends DialogWidget {
                         if (sceneWidget.selected != null) {
                             pattern.symbolMap.get(sceneWidget.selected.symbol).remove(name);
                             needUpdatePredicateSelector = true;
+                            for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
+                                tile.updateRenderer();
+                            }
+                            if (sceneWidget != null) {
+                                sceneWidget.needCompileCache();
+                            }
                         }
                     }));
                 }
             }
-            for (SymbolTileEntity tile : sceneWidget.tiles.values()) {
-                tile.updateRenderer();
-            }
+
         }
     }
 
@@ -329,6 +348,9 @@ public class JsonBlockPatternWidget extends DialogWidget {
                 }
             }).setHoverTooltip(c == '@' ? "controller" : c == ' ' ? "any" : c == '-' ? "air" : null));
             i++;
+        }
+        if (sceneWidget != null) {
+            sceneWidget.needCompileCache();
         }
     }
 
@@ -418,7 +440,9 @@ public class JsonBlockPatternWidget extends DialogWidget {
                 layerSwitch.setVisible(true);
                 layerSwitch.setActive(true);
             }
-            sceneWidget.needCompileCache();
+            if (viewMode == 1 || viewMode == 2) {
+                sceneWidget.needCompileCache();
+            }
         }
 
         private void addAisle(int add) {
@@ -742,9 +766,6 @@ public class JsonBlockPatternWidget extends DialogWidget {
                         renderer = null;
                     }
                 }
-            }
-            if (widget.sceneWidget != null) {
-                widget.sceneWidget.needCompileCache();
             }
         }
 

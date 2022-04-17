@@ -116,7 +116,6 @@ public abstract class WorldSceneRenderer {
         deleteCacheBuffer();
         if (useCache) {
             this.vertexBuffers = new VertexBuffer[BlockRenderLayer.values().length];
-            this.tileEntities = new HashSet<>();
             for (int j = 0; j < BlockRenderLayer.values().length; ++j) {
                 this.vertexBuffers[j] = new VertexBuffer(DefaultVertexFormats.BLOCK);
             }
@@ -414,33 +413,32 @@ public abstract class WorldSceneRenderer {
                 } finally {
                     ForgeHooksClient.setRenderLayer(oldRenderLayer);
                 }
-                if (tileEntities != null) {
-                    tileEntities.clear();
-                    renderedBlocksMap.forEach((renderedBlocks, hook) -> {
-                        for (BlockPos pos : renderedBlocks) {
-                            progress++;
-                            if (Thread.interrupted())
-                                return;
-                            if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
-                                continue;
-                            }
-                            TileEntity tile = world.getTileEntity(pos);
-                            if (tile != null) {
-                                if (TileEntityRendererDispatcher.instance.getRenderer(tile) != null) {
-                                    tileEntities.add(pos);
-                                }
+                Set<BlockPos> poses = new HashSet<>();
+                renderedBlocksMap.forEach((renderedBlocks, hook) -> {
+                    for (BlockPos pos : renderedBlocks) {
+                        progress++;
+                        if (Thread.interrupted())
+                            return;
+                        if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
+                            continue;
+                        }
+                        TileEntity tile = world.getTileEntity(pos);
+                        if (tile != null) {
+                            if (TileEntityRendererDispatcher.instance.getRenderer(tile) != null) {
+                                poses.add(pos);
                             }
                         }
-                    });
-                }
+                    }
+                });
                 if (Thread.interrupted())
                     return;
+                tileEntities = poses;
                 cacheState.set(CacheState.COMPILED);
                 thread = null;
                 maxProgress = -1;
             });
             thread.start();
-        } else if (cacheState.get() == CacheState.COMPILED){
+        } else {
             for (BlockRenderLayer layer : BlockRenderLayer.values()) {
                 int pass = layer == BlockRenderLayer.TRANSLUCENT ? 1 : 0;
                 if (pass == 1) {
@@ -521,7 +519,7 @@ public abstract class WorldSceneRenderer {
         // render TESR
         RenderHelper.enableStandardItemLighting();
         ForgeHooksClient.setRenderPass(pass);
-        if (tileEntities == null) {
+        if (!useCache) {
             renderedBlocksMap.forEach((renderedBlocks, hook)->{
                 if (hook != null) {
                     hook.apply(true, pass, null);
@@ -541,11 +539,13 @@ public abstract class WorldSceneRenderer {
                 }
             });
         } else {
-            for (BlockPos pos : tileEntities) {
-                TileEntity tile = world.getTileEntity(pos);
-                if (tile != null) {
-                    if (tile.shouldRenderInPass(pass)) {
-                        TileEntityRendererDispatcher.instance.render(tile, pos.getX(), pos.getY(), pos.getZ(), particle);
+            if (tileEntities != null) {
+                for (BlockPos pos : tileEntities) {
+                    TileEntity tile = world.getTileEntity(pos);
+                    if (tile != null) {
+                        if (tile.shouldRenderInPass(pass)) {
+                            TileEntityRendererDispatcher.instance.render(tile, pos.getX(), pos.getY(), pos.getZ(), particle);
+                        }
                     }
                 }
             }

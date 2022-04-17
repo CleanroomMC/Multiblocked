@@ -337,13 +337,12 @@ public class SceneWidget extends WidgetGroup {
         int width = getSize().width;
         int height = getSize().height;
         if (renderer != null) {
+            renderer.render(x, y, width, height, mouseX, mouseY);
             if (renderer.isCompiling()) {
                 double progress = renderer.getCompileProgress();
                 if (progress > 0) {
                     new TextTexture("Renderer is compiling! " + String.format("%.1f", progress * 100) + "%%").setWidth(width).draw(mouseX, mouseY, x, y, width, height);
                 }
-            } else {
-                renderer.render(x, y, width, height, mouseX, mouseY);
             }
         }
         super.drawInBackground(mouseX, mouseY, partialTicks);

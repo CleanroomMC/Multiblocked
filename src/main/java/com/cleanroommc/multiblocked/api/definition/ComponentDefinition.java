@@ -96,7 +96,6 @@ public class ComponentDefinition {
             ComponentTileEntity<?> component = clazz.newInstance();
             component.setWorld(world);
             component.setDefinition(this);
-            component.checkUpdate();
             return component;
         } catch (InstantiationException | IllegalAccessException e) {
             Multiblocked.LOGGER.error(e);

@@ -1,14 +1,24 @@
 package com.cleanroommc.multiblocked.command;
 
+import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
+import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import com.cleanroommc.multiblocked.network.s2c.SPacketCommand;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
@@ -50,6 +60,20 @@ public class CommandClient extends CommandBase {
                 }
                 tps.append(String.format("Overall: Mean TPS: %.2f", sumTps / server.worlds.length));
                 sender.sendMessage(new TextComponentString(tps.toString()));
+            } else if (cmd.equals("mbd_test")) {
+                World world = ((EntityPlayerMP) sender).world;
+                IBlockState state= MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation("mbd:ebf")).getDefaultState();
+                for (int i = 0; i < 5; i++) {
+                    for (int j = 0; j < 5; j++) {
+                        BlockPos pos = sender.getPosition().offset(EnumFacing.SOUTH, i * 6).offset(EnumFacing.EAST, j * 6);
+                        world.setBlockState(pos, state);
+//                        TileEntity tileEntity = world.getTileEntity(pos);
+//                        if (tileEntity instanceof ControllerTileEntity) {
+//                            ((ControllerTileEntity) tileEntity).getPattern().autoBuild((EntityPlayer) sender, new MultiblockState(world, pos));
+//                        }
+                    }
+                }
+
             } else {
                 MultiblockedNetworking.sendToPlayer(new SPacketCommand(cmd), (EntityPlayerMP) sender);
             }

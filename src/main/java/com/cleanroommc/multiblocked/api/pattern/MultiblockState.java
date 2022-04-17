@@ -176,7 +176,7 @@ public class MultiblockState {
         ControllerTileEntity controller = getController();
         if (controller != null) {
             error = UNLOAD_ERROR;
-            MultiblockWorldSavedData.getOrCreate(world).removeLoading(controller);
+            MultiblockWorldSavedData.getOrCreate(world).removeLoading(controllerPos);
         }
     }
 

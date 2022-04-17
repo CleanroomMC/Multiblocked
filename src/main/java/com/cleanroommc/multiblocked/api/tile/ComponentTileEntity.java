@@ -99,7 +99,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         }
     }
 
-    public final void checkUpdate() {
+    private void checkUpdate() {
         if (world != null && !isRemote() && (definition.needUpdateTick() || traits.values().stream().anyMatch(CapabilityTrait::hasUpdate))) {
             MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
         }
@@ -458,6 +458,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     @Override
     protected final void setWorldCreate(@Nonnull World worldIn) {
         setWorld(worldIn);
+    }
+
+    @Override
+    public void setPos(@Nonnull BlockPos pos) {
+        super.setPos(pos);
+        checkUpdate();
     }
 
     @Override

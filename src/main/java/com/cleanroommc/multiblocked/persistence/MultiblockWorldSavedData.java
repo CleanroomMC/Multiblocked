@@ -9,6 +9,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import jdk.nashorn.internal.ir.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MultiblockWorldSavedData extends WorldSavedData {
 
@@ -86,13 +88,13 @@ public class MultiblockWorldSavedData extends WorldSavedData {
 
     public final Map<BlockPos, MultiblockState> mapping;
     public final Map<ChunkPos, Set<MultiblockState>> chunkPosMapping;
-    public final Set<ComponentTileEntity<?>> loading;
+    public final Map<BlockPos, ComponentTileEntity<?>> loading;
 
     public MultiblockWorldSavedData(String name) { // Also constructed Reflectively by MapStorage
         super(name);
         this.mapping = new Object2ObjectOpenHashMap<>();
         this.chunkPosMapping = new HashMap<>();
-        this.loading = new ObjectOpenHashSet<>();
+        this.loading = new Object2ObjectOpenHashMap<>();
     }
 
     public static void clearDisabled() {
@@ -105,7 +107,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     public Collection<ComponentTileEntity<?>> getLoadings() {
-        return loading;
+        return loading.values();
     }
 
     public void addMapping(MultiblockState state) {
@@ -122,21 +124,30 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         for (Set<MultiblockState> set : chunkPosMapping.values()) {
             set.remove(state);
         }
+        removeLoading(state.controllerPos);
         setDirty(true);
     }
 
     public void addLoading(ComponentTileEntity<?> tileEntity) {
-        loading.add(tileEntity);
-        if (tileEntity instanceof IAsyncThreadUpdate) {
-            asyncComponents.add((ControllerTileEntity) tileEntity);
-            createSearchingThread();
+        ComponentTileEntity<?> last = loading.put(tileEntity.getPos(), tileEntity);
+        if (last != tileEntity) {
+            if (last instanceof IAsyncThreadUpdate) {
+                asyncComponents.remove(last);
+                if (asyncComponents.isEmpty()) {
+                    releaseSearchingThread();
+                }
+            }
+            if (tileEntity instanceof IAsyncThreadUpdate) {
+                asyncComponents.add((ControllerTileEntity) tileEntity);
+                createSearchingThread();
+            }
         }
     }
 
-    public void removeLoading(ComponentTileEntity<?> tileEntity) {
-        loading.remove(tileEntity);
-        if (tileEntity instanceof IAsyncThreadUpdate) {
-            asyncComponents.remove(tileEntity);
+    public void removeLoading(BlockPos componentPos) {
+        ComponentTileEntity<?> component = loading.remove(componentPos);
+        if (component instanceof IAsyncThreadUpdate) {
+            asyncComponents.remove(component);
             if (asyncComponents.isEmpty()) {
                 releaseSearchingThread();
             }
@@ -202,7 +213,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     }
 
     // ********************************* thread for searching ********************************* //
-    private final Set<IAsyncThreadUpdate> asyncComponents = Collections.synchronizedSet(new HashSet<>());
+    private final CopyOnWriteArrayList<IAsyncThreadUpdate> asyncComponents = new CopyOnWriteArrayList<>();
     private Thread thread;
     private long periodID = Multiblocked.RNG.nextLong();
     private float tps = 4;
@@ -217,13 +228,13 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         long tpsST = System.currentTimeMillis();
         while (!Thread.interrupted()) {
             long st = System.currentTimeMillis();
-            asyncComponents.forEach(component -> { // foreach is thread safe
+            for (IAsyncThreadUpdate asyncComponent : asyncComponents) {
                 try {
-                    component.asyncThreadLogic(periodID);
+                    asyncComponent.asyncThreadLogic(periodID);
                 } catch (Throwable e) {
                     Multiblocked.LOGGER.error("asyncThreadLogic error: {}", e.getMessage());
                 }
-            });
+            }
             periodID++;
             long et = System.currentTimeMillis();
             if (periodID % 20 == 0) {

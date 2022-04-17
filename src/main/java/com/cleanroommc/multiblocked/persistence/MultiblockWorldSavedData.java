@@ -217,13 +217,13 @@ public class MultiblockWorldSavedData extends WorldSavedData {
         long tpsST = System.currentTimeMillis();
         while (!Thread.interrupted()) {
             long st = System.currentTimeMillis();
-            for (IAsyncThreadUpdate component : asyncComponents) {
+            asyncComponents.forEach(component -> { // foreach is thread safe
                 try {
                     component.asyncThreadLogic(periodID);
                 } catch (Throwable e) {
                     Multiblocked.LOGGER.error("asyncThreadLogic error: {}", e.getMessage());
                 }
-            }
+            });
             periodID++;
             long et = System.currentTimeMillis();
             if (periodID % 20 == 0) {

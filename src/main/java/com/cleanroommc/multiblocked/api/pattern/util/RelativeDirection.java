@@ -10,7 +10,7 @@ import java.util.function.Function;
 /**
  * Relative direction when facing horizontally
  */
-@ZenClass("mods.gregtech.multiblock.RelativeDirection")
+@ZenClass("mods.multiblocked.pattern.RelativeDirection")
 @ZenRegister
 public enum RelativeDirection {
     @ZenProperty

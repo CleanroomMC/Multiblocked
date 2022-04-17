@@ -78,6 +78,8 @@ public abstract class WorldSceneRenderer {
     protected Set<BlockPos> tileEntities;
     protected boolean useCache;
     protected AtomicReference<CacheState> cacheState;
+    protected int maxProgress;
+    protected int progress;
     protected Thread thread;
     protected ParticleManager particleManager;
     protected EntityCamera viewEntity;
@@ -380,8 +382,17 @@ public abstract class WorldSceneRenderer {
         return cacheState.get() == CacheState.COMPILING;
     }
 
+    public double getCompileProgress() {
+        if (maxProgress > 1000) {
+            return progress * 1. / maxProgress;
+        }
+        return 0;
+    }
+
     private void renderCacheBuffer(Minecraft mc, BlockRenderLayer oldRenderLayer, float particleTicks, boolean checkDisabledModel) {
         if (cacheState.get() == CacheState.NEED) {
+            progress = 0;
+            maxProgress = renderedBlocksMap.keySet().stream().map(Collection::size).reduce(0, Integer::sum) * (BlockRenderLayer.values().length + 1);
             thread = new Thread(()->{
                 cacheState.set(CacheState.COMPILING);
                 BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
@@ -392,7 +403,9 @@ public abstract class WorldSceneRenderer {
                         ForgeHooksClient.setRenderLayer(layer);
                         BufferBuilder buffer = new BufferBuilder(262144);
                         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-                        renderedBlocksMap.forEach((renderedBlocks, hook) -> renderBlocks(checkDisabledModel, blockrendererdispatcher, layer, buffer, renderedBlocks));
+                        renderedBlocksMap.forEach((renderedBlocks, hook) -> {
+                            renderBlocks(checkDisabledModel, blockrendererdispatcher, layer, buffer, renderedBlocks);
+                        });
                         buffer.reset();
                         mc.addScheduledTask(()->{
                             vertexBuffers[layer.ordinal()].bufferData(buffer.getByteBuffer());
@@ -405,6 +418,7 @@ public abstract class WorldSceneRenderer {
                     tileEntities.clear();
                     renderedBlocksMap.forEach((renderedBlocks, hook) -> {
                         for (BlockPos pos : renderedBlocks) {
+                            progress++;
                             if (Thread.interrupted())
                                 return;
                             if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
@@ -423,6 +437,7 @@ public abstract class WorldSceneRenderer {
                     return;
                 cacheState.set(CacheState.COMPILED);
                 thread = null;
+                maxProgress = -1;
             });
             thread.start();
         } else if (cacheState.get() == CacheState.COMPILED){
@@ -474,6 +489,9 @@ public abstract class WorldSceneRenderer {
 
     private void renderBlocks(boolean checkDisabledModel, BlockRendererDispatcher blockrendererdispatcher, BlockRenderLayer layer, BufferBuilder buffer, Collection<BlockPos> renderedBlocks) {
         for (BlockPos pos : renderedBlocks) {
+            if (maxProgress > 0) {
+                progress++;
+            }
             if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
                 continue;
             }

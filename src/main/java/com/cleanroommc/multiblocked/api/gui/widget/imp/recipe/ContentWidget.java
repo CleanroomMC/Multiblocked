@@ -180,7 +180,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
     @Override
     public ContentWidget<T> setHoverTooltip(String tooltipText) {
         if (chance < 1) {
-            tooltipText += chance == 0 ? (TextFormatting.RED + "\nno cost") : ("\nchance: " + TextFormatting.YELLOW + String.format("%.1f", chance * 100) + "%")  + TextFormatting.RESET;
+            tooltipText += chance == 0 ? (TextFormatting.RED + "\nno cost") : ("\nchance: " + TextFormatting.YELLOW + String.format("%.1f", chance * 100) + "%%")  + TextFormatting.RESET;
         }
         if (perTick) {
             tooltipText += (TextFormatting.GREEN + "\nper tick") + TextFormatting.RESET;

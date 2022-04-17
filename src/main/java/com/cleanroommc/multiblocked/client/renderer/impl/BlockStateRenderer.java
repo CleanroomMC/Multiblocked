@@ -42,13 +42,6 @@ public class BlockStateRenderer implements ICustomRenderer {
     public final BlockInfo blockInfo;
     @SideOnly(Side.CLIENT)
     private IBakedModel itemModel;
-    @SideOnly(Side.CLIENT)
-    public static ThreadLocal<FacadeBlockWorld> facadeBlockWorld;
-    static {
-        if (Multiblocked.isClient()) {
-            facadeBlockWorld = ThreadLocal.withInitial(FacadeBlockWorld::new);
-        }
-    }
 
     private BlockStateRenderer() {
         blockInfo = null;
@@ -126,9 +119,7 @@ public class BlockStateRenderer implements ICustomRenderer {
     public TileEntity getTileEntity(World world, BlockPos pos) {
         TileEntity tile = getBlockInfo().getTileEntity();
         if (tile != null) {
-            FacadeBlockWorld dummyWorld = facadeBlockWorld.get();
-            dummyWorld.update(world, pos, getState(), tile);
-            tile.setWorld(dummyWorld);
+            tile.setWorld(new FacadeBlockWorld(world, pos, getState(), tile));
             tile.setPos(pos);
         }
         return tile;

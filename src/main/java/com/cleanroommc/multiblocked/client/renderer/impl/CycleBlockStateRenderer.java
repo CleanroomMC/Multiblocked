@@ -95,8 +95,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         int pass = MinecraftForgeClient.getRenderPass();
         BlockRendererDispatcher brd  = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
-        FacadeBlockWorld dummyWorld = facadeBlockWorld.get();
-        dummyWorld.update(te.getWorld(), te.getPos(), getState(), tileEntity);
+        FacadeBlockWorld dummyWorld = new FacadeBlockWorld(te.getWorld(), te.getPos(), getState(), tileEntity);
         if (tileEntity != null) {
             tileEntity.setWorld(dummyWorld);
             tileEntity.setPos(te.getPos());
@@ -146,6 +145,11 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
         if (tesr != null) {
             tesr.render(tileEntity, x, y, z, partialTicks, destroyStage, alpha);
         }
+    }
+
+    @Override
+    public boolean shouldRenderInPass(World world, BlockPos pos, int pass) {
+        return true;
     }
 
     @SideOnly(Side.CLIENT)

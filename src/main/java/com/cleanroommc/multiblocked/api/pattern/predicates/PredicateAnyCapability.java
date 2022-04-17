@@ -49,7 +49,7 @@ public class PredicateAnyCapability extends SimplePredicate {
             return this;
         }
         predicate = state -> state.getBlockState().getBlock() == capability.getAnyBlock() || checkCapability(io, capability, state);
-        candidates = () -> new BlockInfo[]{new BlockInfo(capability.getAnyBlock())};
+        candidates = () -> new BlockInfo[]{BlockInfo.fromBlockState(capability.getAnyBlock().getDefaultState())};
         toolTips = new ArrayList<>();
         toolTips.add(String.format("Any Capability: %s IO: %s", capability.name, io.name()));
         return this;

@@ -16,15 +16,12 @@ import javax.annotation.Nonnull;
 @SideOnly(Side.CLIENT)
 public class FacadeBlockWorld extends DummyWorld {
 
-    public World world;
-    public BlockPos pos;
-    public IBlockState state;
-    public TileEntity tile;
+    public final World world;
+    public final BlockPos pos;
+    public final IBlockState state;
+    public final TileEntity tile;
 
-    public FacadeBlockWorld() {
-    }
-
-    public void update(World world, BlockPos pos, IBlockState state, TileEntity tile) {
+    public FacadeBlockWorld(World world, BlockPos pos, IBlockState state, TileEntity tile) {
         this.world = world;
         this.pos = pos;
         this.state = state;

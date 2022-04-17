@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ItemStackTexture;
@@ -23,8 +24,11 @@ import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.util.FileUtility;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -174,45 +178,72 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
     }
 
     @SideOnly(Side.CLIENT)
+    Thread thread;
+
+    @SideOnly(Side.CLIENT)
     private void updateScene(JsonBlockPattern jsonPattern) {
-        int[] centerOffset = jsonPattern.getCenterOffset();
-        String[][] pattern = jsonPattern.pattern;
-        Set<BlockPos> posSet = new HashSet<>();
+        if (thread != null) {
+            thread.interrupt();
+            thread = null;
+        }
         TrackedDummyWorld world = new TrackedDummyWorld();
         sceneWidget.createScene(world);
-        int offset = Math.max(pattern.length, Math.max(pattern[0].length, pattern[0][0].length()));
-        for (int i = 0; i < pattern.length; i++) {
-            for (int j = 0; j < pattern[0].length; j++) {
-                for (int k = 0; k < pattern[0][0].length(); k++) {
-                    char symbol = pattern[i][j].charAt(k);
-                    BlockPos pos = jsonPattern.getActualPosOffset(k - centerOffset[2], j - centerOffset[1], i - centerOffset[0], EnumFacing.NORTH).add(offset, offset, offset);
-                    if (jsonPattern.symbolMap.containsKey(symbol)) {
-                        List<BlockInfo> candidates = new ArrayList<>();
-                        for (String s : jsonPattern.symbolMap.get(symbol)) {
-                            SimplePredicate predicate = jsonPattern.predicates.get(s);
-                            if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
-                                world.addBlock(pos, new BlockInfo(MbdComponents.DummyComponentBlock));
-                                DummyComponentTileEntity  tileEntity = (DummyComponentTileEntity) world.getTileEntity(pos);
-                                assert tileEntity != null;
-                                tileEntity.setDefinition(((PredicateComponent) predicate).definition);
-                                tileEntity.isFormed = false;
-                                tileEntity.setWorld(world);
-                                tileEntity.validate();
-                                posSet.add(pos);
-                                break;
-                            } else if (predicate != null && predicate.candidates != null) {
-                                candidates.addAll(Arrays.asList(predicate.candidates.get()));
-                            }
+        ImageWidget imageWidget;
+        sceneWidget.addWidget(imageWidget = new ImageWidget(0, 0, sceneWidget.getSize().width, sceneWidget.getSize().height));
+        imageWidget.setVisible(jsonPattern.pattern.length * jsonPattern.pattern[0].length * jsonPattern.pattern[0][0].length() > 1000);
+        thread = new Thread(()->{
+            int[] centerOffset = jsonPattern.getCenterOffset();
+            String[][] pattern = jsonPattern.pattern;
+            Set<BlockPos> posSet = new HashSet<>();
+            int offset = Math.max(pattern.length, Math.max(pattern[0].length, pattern[0][0].length()));
+            int sum = jsonPattern.pattern.length * jsonPattern.pattern[0].length * jsonPattern.pattern[0][0].length();
+            AtomicDouble progress = new AtomicDouble(0);
+            imageWidget.setImage(new TextTexture("building scene!").setSupplier(()-> "building scene! " + String.format("%.1f", progress.get()) + "%%").setWidth(sceneWidget.getSize().width));
+            int count = 0;
+            for (int i = 0; i < pattern.length; i++) {
+                for (int j = 0; j < pattern[0].length; j++) {
+                    for (int k = 0; k < pattern[0][0].length(); k++) {
+                        if (Thread.interrupted()) {
+                            sceneWidget.waitToRemoved(imageWidget);
+                            return;
                         }
-                        if (candidates.size() > 0) {
-                            world.addBlock(pos, candidates.get(0));
-                            posSet.add(pos);
+                        count++;
+                        progress.set(count * 100.0 / sum);
+                        char symbol = pattern[i][j].charAt(k);
+                        BlockPos pos = jsonPattern.getActualPosOffset(k - centerOffset[2], j - centerOffset[1], i - centerOffset[0], EnumFacing.NORTH).add(offset, offset, offset);
+                        if (jsonPattern.symbolMap.containsKey(symbol)) {
+                            List<BlockInfo> candidates = new ArrayList<>();
+                            for (String s : jsonPattern.symbolMap.get(symbol)) {
+                                SimplePredicate predicate = jsonPattern.predicates.get(s);
+                                if (predicate instanceof PredicateComponent && ((PredicateComponent) predicate).definition != null) {
+                                    world.addBlock(pos, new BlockInfo(MbdComponents.DummyComponentBlock));
+                                    DummyComponentTileEntity  tileEntity = (DummyComponentTileEntity) world.getTileEntity(pos);
+                                    assert tileEntity != null;
+                                    tileEntity.setDefinition(((PredicateComponent) predicate).definition);
+                                    tileEntity.isFormed = false;
+                                    tileEntity.setWorld(world);
+                                    tileEntity.validate();
+                                    posSet.add(pos);
+                                    break;
+                                } else if (predicate != null && predicate.candidates != null) {
+                                    candidates.addAll(Arrays.asList(predicate.candidates.get()));
+                                }
+                            }
+                            if (candidates.size() > 0) {
+                                world.addBlock(pos, candidates.get(0));
+                                posSet.add(pos);
+                            }
                         }
                     }
                 }
             }
-        }
-        sceneWidget.setRenderedCore(posSet, null);
+            Minecraft.getMinecraft().addScheduledTask(()->{
+                sceneWidget.setRenderedCore(posSet, null);
+                sceneWidget.waitToRemoved(imageWidget);
+            });
+            thread = null;
+        });
+        thread.start();
     }
 
     @Override

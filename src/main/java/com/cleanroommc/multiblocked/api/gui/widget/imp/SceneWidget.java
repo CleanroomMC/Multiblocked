@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp;
 
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
+import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.client.particle.ParticleManager;
 import com.cleanroommc.multiblocked.client.renderer.scene.ISceneRenderHook;
 import com.cleanroommc.multiblocked.client.renderer.scene.ImmediateWorldSceneRenderer;
@@ -112,6 +113,9 @@ public class SceneWidget extends WidgetGroup {
         core = new HashSet<>();
         dummyWorld = new TrackedDummyWorld(world);
         dummyWorld.setRenderFilter(pos -> renderer.renderedBlocksMap.keySet().stream().anyMatch(c -> c.contains(pos)));
+        if (renderer != null) {
+            renderer.deleteCacheBuffer();
+        }
         renderer = new ImmediateWorldSceneRenderer(dummyWorld);
         center = new Vector3f();
         renderer.setOnLookingAt(ray -> {});
@@ -333,7 +337,11 @@ public class SceneWidget extends WidgetGroup {
         int width = getSize().width;
         int height = getSize().height;
         if (renderer != null) {
-            renderer.render(x, y, width, height, mouseX, mouseY);
+            if (renderer.isCompiling()) {
+                new TextTexture("Renderer is compiling!").setWidth(width).draw(mouseX, mouseY, x, y, width, height);
+            } else {
+                renderer.render(x, y, width, height, mouseX, mouseY);
+            }
         }
         super.drawInBackground(mouseX, mouseY, partialTicks);
         currentMouseX = mouseX;

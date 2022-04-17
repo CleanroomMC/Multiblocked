@@ -89,9 +89,11 @@ public class SlotWidget extends Widget implements IIngredientSlot {
         if (drawHoverTips && isMouseOverElement(mouseX, mouseY) && isActive()) {
             ((ISlotWidget) slotReference).setHover(true);
             ItemStack stack = slotReference.getStack();
-            net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
-            DrawerHelper.drawHoveringText(stack, getToolTips(DrawerHelper.getItemToolTip(stack)), 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
-            net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
+            if (!stack.isEmpty()) {
+                net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
+                DrawerHelper.drawHoveringText(stack, getToolTips(DrawerHelper.getItemToolTip(stack)), 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
+                net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
+            }
         }
         ((ISlotWidget) slotReference).setHover(false);
     }
@@ -158,7 +160,7 @@ public class SlotWidget extends Widget implements IIngredientSlot {
 
     @Override
     public Widget mouseClicked(int mouseX, int mouseY, int button) {
-        if (isMouseOverElement(mouseX, mouseY) && gui != null) {
+        if (isMouseOverElement(mouseX, mouseY) && gui != null && (canPutItems || canTakeItems)) {
             ModularUIGuiContainer modularUIGui = gui.getModularUIGui();
             boolean last = modularUIGui.getDragSplitting();
             gui.getModularUIGui().superMouseClicked(mouseX, mouseY, button);

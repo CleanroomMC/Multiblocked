@@ -46,16 +46,16 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static com.cleanroommc.multiblocked.util.Vector3.X;
 
 /**
- * Created with IntelliJ IDEA.
+ * Abstract class, and extend a lot of features compared with the original one.
  *
  * @Author: KilaBash
  * @Date: 2021/08/23
- * @Description: Abstract class, and extend a lot of features compared with the original one.
  */
 @SuppressWarnings("ALL")
 @SideOnly(Side.CLIENT)
@@ -65,13 +65,20 @@ public abstract class WorldSceneRenderer {
     protected static final IntBuffer VIEWPORT_BUFFER = ByteBuffer.allocateDirect(16 * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
     protected static final FloatBuffer PIXEL_DEPTH_BUFFER = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asFloatBuffer();
     protected static final FloatBuffer OBJECT_POS_BUFFER = ByteBuffer.allocateDirect(3 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+    enum CacheState {
+        UNUSED,
+        NEED,
+        COMPILING,
+        COMPILED
+    }
 
     public final World world;
     public final Map<Collection<BlockPos>, ISceneRenderHook> renderedBlocksMap;
     protected VertexBuffer[] vertexBuffers;
     protected Set<BlockPos> tileEntities;
     protected boolean useCache;
-    protected boolean needCompile;
+    protected AtomicReference<CacheState> cacheState;
+    protected Thread thread;
     protected ParticleManager particleManager;
     protected EntityCamera viewEntity;
 
@@ -87,6 +94,7 @@ public abstract class WorldSceneRenderer {
     public WorldSceneRenderer(World world) {
         this.world = world;
         renderedBlocksMap = new LinkedHashMap<>();
+        cacheState = new AtomicReference<>(CacheState.UNUSED);
     }
 
     public WorldSceneRenderer setParticleManager(ParticleManager particleManager) {
@@ -110,7 +118,11 @@ public abstract class WorldSceneRenderer {
             for (int j = 0; j < BlockRenderLayer.values().length; ++j) {
                 this.vertexBuffers[j] = new VertexBuffer(DefaultVertexFormats.BLOCK);
             }
-            needCompile = true;
+            if (cacheState.get() == CacheState.COMPILING && thread != null) {
+                thread.interrupt();
+                thread = null;
+            }
+            cacheState.set(CacheState.NEED);
         }
         this.useCache = useCache;
         return this;
@@ -123,15 +135,23 @@ public abstract class WorldSceneRenderer {
                     this.vertexBuffers[i].deleteGlBuffers();
                 }
             }
+            if (cacheState.get() == CacheState.COMPILING && thread != null) {
+                thread.interrupt();
+                thread = null;
+            }
         }
         this.tileEntities = null;
         useCache = false;
-        needCompile = true;
+        cacheState.set(CacheState.UNUSED);
         return this;
     }
 
     public WorldSceneRenderer needCompileCache() {
-        needCompile = true;
+        if (cacheState.get() == CacheState.COMPILING && thread != null) {
+            thread.interrupt();
+            thread = null;
+        }
+        cacheState.set(CacheState.NEED);
         return this;
     }
 
@@ -356,37 +376,56 @@ public abstract class WorldSceneRenderer {
         }
     }
 
+    public boolean isCompiling() {
+        return cacheState.get() == CacheState.COMPILING;
+    }
+
     private void renderCacheBuffer(Minecraft mc, BlockRenderLayer oldRenderLayer, float particleTicks, boolean checkDisabledModel) {
-        if (needCompile) {
-            BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
-            try { // render block in each layer
-                for (BlockRenderLayer layer : BlockRenderLayer.values()) {
-                    ForgeHooksClient.setRenderLayer(layer);
-                    BufferBuilder buffer = new BufferBuilder(262144);
-                    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-                    renderedBlocksMap.forEach((renderedBlocks, hook) -> renderBlocks(checkDisabledModel, blockrendererdispatcher, layer, buffer, renderedBlocks));
-                    buffer.reset();
-                    vertexBuffers[layer.ordinal()].bufferData(buffer.getByteBuffer());
-                }
-            } finally {
-                ForgeHooksClient.setRenderLayer(oldRenderLayer);
-            }
-            tileEntities.clear();
-            renderedBlocksMap.forEach((renderedBlocks, hook) -> {
-                for (BlockPos pos : renderedBlocks) {
-                    if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
-                        continue;
+        if (cacheState.get() == CacheState.NEED) {
+            thread = new Thread(()->{
+                cacheState.set(CacheState.COMPILING);
+                BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
+                try { // render block in each layer
+                    for (BlockRenderLayer layer : BlockRenderLayer.values()) {
+                        if (Thread.interrupted())
+                            return;
+                        ForgeHooksClient.setRenderLayer(layer);
+                        BufferBuilder buffer = new BufferBuilder(262144);
+                        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+                        renderedBlocksMap.forEach((renderedBlocks, hook) -> renderBlocks(checkDisabledModel, blockrendererdispatcher, layer, buffer, renderedBlocks));
+                        buffer.reset();
+                        mc.addScheduledTask(()->{
+                            vertexBuffers[layer.ordinal()].bufferData(buffer.getByteBuffer());
+                        });
                     }
-                    TileEntity tile = world.getTileEntity(pos);
-                    if (tile != null) {
-                        if (TileEntityRendererDispatcher.instance.getRenderer(tile) != null) {
-                            tileEntities.add(pos);
+                } finally {
+                    ForgeHooksClient.setRenderLayer(oldRenderLayer);
+                }
+                if (tileEntities != null) {
+                    tileEntities.clear();
+                    renderedBlocksMap.forEach((renderedBlocks, hook) -> {
+                        for (BlockPos pos : renderedBlocks) {
+                            if (Thread.interrupted())
+                                return;
+                            if (checkDisabledModel && MultiblockWorldSavedData.modelDisabled.contains(pos)) {
+                                continue;
+                            }
+                            TileEntity tile = world.getTileEntity(pos);
+                            if (tile != null) {
+                                if (TileEntityRendererDispatcher.instance.getRenderer(tile) != null) {
+                                    tileEntities.add(pos);
+                                }
+                            }
                         }
-                    }
+                    });
                 }
+                if (Thread.interrupted())
+                    return;
+                cacheState.set(CacheState.COMPILED);
+                thread = null;
             });
-            needCompile = false;
-        } else {
+            thread.start();
+        } else if (cacheState.get() == CacheState.COMPILED){
             for (BlockRenderLayer layer : BlockRenderLayer.values()) {
                 int pass = layer == BlockRenderLayer.TRANSLUCENT ? 1 : 0;
                 if (pass == 1) {

@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Supplier;
 
-@ZenExpansion("mods.gregtech.multiblock.CTPredicate")
+@ZenExpansion("mods.multiblocked.pattern.CTPredicate")
 @ZenRegister
 public class ExpandPredicate {
     /**

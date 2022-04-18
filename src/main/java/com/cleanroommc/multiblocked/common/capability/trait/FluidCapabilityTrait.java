@@ -23,6 +23,7 @@ import net.minecraft.util.JsonUtils;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -117,7 +118,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
                             if (te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite())) {
                                 IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite());
                                 if (handler != null) {
-                                    if (handler.fill(fluidStack, true) > 0) {
+                                    if (already.drain(handler.fill(fluidStack.copy(), true), true) != null) {
                                         return;
                                     }
                                 }

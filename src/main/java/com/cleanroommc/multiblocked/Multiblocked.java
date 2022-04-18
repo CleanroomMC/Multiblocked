@@ -41,7 +41,7 @@ import java.util.Random;
         name = Multiblocked.NAME,
         version = Multiblocked.VERSION,
         acceptedMinecraftVersions = "1.12.2",
-        dependencies = "required:mixinbooter;after:jei@[4.15.0,);after:crafttweaker")
+        dependencies = "required:mixinbooter@[4.2,);after:jei@[4.15.0,);after:crafttweaker")
 public class Multiblocked {
 
     public static final String MODID = "multiblocked";

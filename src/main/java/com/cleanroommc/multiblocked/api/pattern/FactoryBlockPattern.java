@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 @ZenRegister
-@ZenClass("mods.gregtech.multiblock.FactoryBlockPattern")
+@ZenClass("mods.multiblocked.pattern.FactoryBlockPattern")
 public class FactoryBlockPattern {
 
     private static final Joiner COMMA_JOIN = Joiner.on(",");

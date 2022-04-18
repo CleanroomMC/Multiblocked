@@ -19,6 +19,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -68,7 +69,7 @@ public class RecipeWrapper extends ModularWrapper {
                     .collect(Collectors.toList()));
         }
 
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_TC6)) {
             if (recipe.inputs.containsKey(AspectThaumcraftCapability.CAP)) {
                 ingredients.setInputs(AspectListIngredient.INSTANCE, recipe.inputs.get(AspectThaumcraftCapability.CAP).stream()
                         .map(Tuple::getFirst)
@@ -85,7 +86,7 @@ public class RecipeWrapper extends ModularWrapper {
             }
         }
 
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_MEK)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_MEK)) {
             if (recipe.inputs.containsKey(GasMekanismCapability.CAP)) {
                 ingredients.setInputs(MekanismJEI.TYPE_GAS, recipe.inputs.get(GasMekanismCapability.CAP).stream()
                         .map(Tuple::getFirst)
@@ -100,7 +101,7 @@ public class RecipeWrapper extends ModularWrapper {
             }
         }
 
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_QMD)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_QMD)) {
             if (recipe.inputs.containsKey(ParticleQMDCapability.CAP)) {
                 ingredients.setInputs(ParticleType.Particle, recipe.inputs.get(ParticleQMDCapability.CAP).stream()
                         .map(Tuple::getFirst)

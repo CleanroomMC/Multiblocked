@@ -11,6 +11,7 @@ import com.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.OBJRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.TextureParticleRenderer;
 import com.google.common.collect.Maps;
+import net.minecraftforge.fml.common.Loader;
 
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class MbdRenderers {
         registerRenderer(OBJRenderer.INSTANCE);
         registerRenderer(TextureParticleRenderer.INSTANCE);
         registerRenderer(GTRenderer.INSTANCE);
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_GEO)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_GEO)) {
             registerRenderer(GeoComponentRenderer.INSTANCE);
         }
     }

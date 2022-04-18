@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -52,7 +53,7 @@ public class MbdComponents {
         COMPONENT_ITEMS_REGISTRY.computeIfAbsent(definition.location, x ->
                 new ItemComponent(COMPONENT_BLOCKS_REGISTRY.computeIfAbsent(definition.location, X ->
                         new BlockComponent(definition))));
-        if (definition instanceof ControllerDefinition && Multiblocked.isModLoaded(Multiblocked.MODID_JEI)) {
+        if (definition instanceof ControllerDefinition && Loader.isModLoaded(Multiblocked.MODID_JEI)) {
             MultiblockInfoCategory.registerMultiblock((ControllerDefinition) definition);
         }
     }

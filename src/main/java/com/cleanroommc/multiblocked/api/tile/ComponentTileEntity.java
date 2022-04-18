@@ -49,6 +49,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
@@ -489,7 +490,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
         }
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
             persistentData = CraftTweakerMC.getIData(compound.getTag("ct_persistent"));
         }
         NBTTagCompound traitTag = compound.getCompoundTag("trait");
@@ -505,7 +506,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         compound.setString("loc", definition.location.toString());
         compound.setByte("frontFacing", (byte) frontFacing.getIndex());
         compound.setString("mbd_def", definition.location.toString());
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_CT) && persistentData instanceof IData) {
+        if (Loader.isModLoaded(Multiblocked.MODID_CT) && persistentData instanceof IData) {
             compound.setTag("ct_persistent", CraftTweakerMC.getNBT((IData) persistentData));
         }
         NBTTagCompound traitTag = new NBTTagCompound();

@@ -27,6 +27,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
@@ -114,7 +115,7 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(@Nonnull IModIngredientRegistration registry) {
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_TC6) && !Multiblocked.isModLoaded(Multiblocked.MODID_THAUMJEI)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_TC6) && !Loader.isModLoaded(Multiblocked.MODID_THAUMJEI)) {
             ((AspectListIngredient) AspectListIngredient.INSTANCE).registerIngredients(registry);
         }
     }

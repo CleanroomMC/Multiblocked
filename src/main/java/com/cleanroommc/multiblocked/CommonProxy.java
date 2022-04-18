@@ -16,7 +16,6 @@ import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
 import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
-import com.cleanroommc.multiblocked.events.Listeners;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import crafttweaker.CraftTweakerAPI;
 import net.minecraft.block.Block;
@@ -24,6 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -37,7 +37,7 @@ import java.io.File;
 public class CommonProxy {
 
     public void preInit() {
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_GEO)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_GEO)) {
             GeckoLib.initialize();
         }
         MinecraftForge.EVENT_BUS.register(Listeners.class);
@@ -55,7 +55,7 @@ public class CommonProxy {
         // register ui
         UIFactory.register(TileEntityUIFactory.INSTANCE);
         // loadCT
-        if (Multiblocked.isModLoaded(Multiblocked.MODID_CT)) {
+        if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
             CraftTweakerAPI.tweaker.loadScript(false, "multiblocked");
         }
     }
@@ -66,10 +66,7 @@ public class CommonProxy {
         }
     }
 
-    private static boolean init = false;
     public static void registerComponents(){
-        if (init) return;
-        init = true;
         // register any capability block
         MbdCapabilities.registerAnyCapabilityBlocks();
         // register blueprint table

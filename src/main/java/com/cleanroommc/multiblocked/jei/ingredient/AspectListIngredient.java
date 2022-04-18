@@ -9,6 +9,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.opengl.GL11;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -21,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AspectListIngredient extends AbstractIngredient<AspectList> {
-    public static IIngredientType<AspectList> INSTANCE = Multiblocked.isModLoaded(Multiblocked.MODID_THAUMJEI) ? ThaumcraftJEIPlugin.ASPECT_LIST : new AspectListIngredient();
+    public static IIngredientType<AspectList> INSTANCE = Loader.isModLoaded(Multiblocked.MODID_THAUMJEI) ? ThaumcraftJEIPlugin.ASPECT_LIST : new AspectListIngredient();
 
     private AspectListIngredient() {}
 

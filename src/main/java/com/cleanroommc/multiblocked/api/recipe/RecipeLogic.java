@@ -47,24 +47,9 @@ public class RecipeLogic {
         timer++;
         if (getStatus() != Status.IDLE && lastRecipe != null) {
             if (getStatus() == Status.SUSPEND && timer % 5 == 0) {
-                if (controller.asyncRecipeSearching) {
-                    if (mbwsd.getPeriodID() < lastPeriod) {
-                        lastPeriod = mbwsd.getPeriodID();
-                        progress++;
-                        handleTickRecipe(lastRecipe);
-                    } else {
-                        if (controller.hasProxies() && asyncChanged()) {
-                            progress++;
-                            handleTickRecipe(lastRecipe);
-                        }
-                    }
-                } else {
-                    progress++;
-                    handleTickRecipe(lastRecipe);
-                }
+                checkAsyncRecipeSearching(this::handleRecipeWorking);
             } else {
-                progress++;
-                handleTickRecipe(lastRecipe);
+                handleRecipeWorking();
                 if (progress == duration) {
                     onRecipeFinish();
                 }
@@ -72,18 +57,28 @@ public class RecipeLogic {
         } else if (lastRecipe != null) {
             findAndHandleRecipe();
         } else if (timer % 5 == 0) {
-            if (controller.asyncRecipeSearching) {
-                if (mbwsd.getPeriodID() < lastPeriod) {
-                    lastPeriod = mbwsd.getPeriodID();
-                    findAndHandleRecipe();
-                } else {
-                    if (controller.hasProxies() && asyncChanged()) {
-                        findAndHandleRecipe();
-                    }
-                }
+            checkAsyncRecipeSearching(this::findAndHandleRecipe);
+        }
+    }
+
+    @ZenMethod
+    public void handleRecipeWorking() {
+        progress++;
+        handleTickRecipe(lastRecipe);
+    }
+
+    private void checkAsyncRecipeSearching(Runnable changed) {
+        if (controller.asyncRecipeSearching) {
+            if (mbwsd.getPeriodID() < lastPeriod) {
+                lastPeriod = mbwsd.getPeriodID();
+                changed.run();
             } else {
-                findAndHandleRecipe();
+                if (controller.hasProxies() && asyncChanged()) {
+                    changed.run();
+                }
             }
+        } else {
+            changed.run();
         }
     }
 

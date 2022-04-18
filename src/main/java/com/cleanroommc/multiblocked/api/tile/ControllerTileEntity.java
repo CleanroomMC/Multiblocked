@@ -399,17 +399,15 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public void asyncThreadLogic(long periodID) {
-        if (periodID % 4 == 0) {
-            if (!isFormed() && getDefinition().catalyst == null) {
-                if (getPattern().checkPatternAt(new MultiblockState(world, pos), false)) {
-                    FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
-                        if (state == null) state = new MultiblockState(world, pos);
-                        if (checkPattern()) { // formed
-                            MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
-                            onStructureFormed();
-                        }
-                    });
-                }
+        if (!isFormed() && getDefinition().catalyst == null && (getOffset() + periodID) % 4 == 0) {
+            if (getPattern().checkPatternAt(new MultiblockState(world, pos), false)) {
+                FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
+                    if (state == null) state = new MultiblockState(world, pos);
+                    if (checkPattern()) { // formed
+                        MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
+                        onStructureFormed();
+                    }
+                });
             }
         }
         try {

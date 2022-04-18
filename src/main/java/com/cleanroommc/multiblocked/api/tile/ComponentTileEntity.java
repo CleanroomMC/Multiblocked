@@ -80,7 +80,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     private EnumFacing frontFacing = EnumFacing.NORTH; // 0
 
-    private int timer = Multiblocked.RNG.nextInt();
+    private final int offset = Multiblocked.RNG.nextInt();
+
+    private int timer = offset;
 
     protected String status = "unformed";
 
@@ -125,6 +127,10 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public abstract boolean isFormed();
+
+    public int getOffset() {
+        return offset;
+    }
 
     public int getTimer() {
         return timer;

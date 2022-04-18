@@ -5,10 +5,10 @@
   "description": "An extremely flexible, vanilla-esque multiblock mod that also incorporates aspects of MultiblockTweaker and Modular Machinery.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
+  "url": "https://github.com/CleanroomMC/Multiblocked",
+  "updateUrl": "https://github.com/CleanroomMC/Multiblocked",
   "authorList": ["KilaBash", "Rongmario"],
-  "credits": "CleanroomMC Team",
+  "credits": "thanks for model providers (yor42, 琥珀酸, Zaglo). debug and communication CleanroomMC Team",
   "logoFile": "",
   "screenshots": [],
   "dependencies": [

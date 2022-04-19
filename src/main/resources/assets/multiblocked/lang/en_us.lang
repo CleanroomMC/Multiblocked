@@ -37,8 +37,9 @@ multiblocked.pattern.replaceable_air=Replaceable by Air
 multiblocked.structure_page.candidates=Candidates
 multiblocked.structure_page.switch=§6formed§r/§coriginal§r
 
-blueprint_table.name=Multiblocked Blueprint Table
+blueprint_table.name=Blueprint Table Core
 blueprint_table.description=Multiblock Creator and Customizer
+blueprint_table_part.name=Blueprint Table
 
 multiblocked.fluid.empty=Empty
 multiblocked.fluid.amount=§9Amount: %,d/%,d L
@@ -49,10 +50,10 @@ multiblocked.fluid.state_liquid=§aState: Liquid
 item.multiblocked.blueprint.name=Blueprint
 
 multiblocked.recipe.duration=Duration: %ds
-multiblocked.recipe.status.working=status: §cworking§r
-multiblocked.recipe.status.idle=status: §aidle§r
-multiblocked.recipe.status.suspend=status: §3suspend§r
-multiblocked.recipe.remaining=remaining time: %ds
+multiblocked.recipe.status.working=Status: §cWorking§r
+multiblocked.recipe.status.idle=sStatus: §aIdle§r
+multiblocked.recipe.status.suspend=Status: §3Suspend§r
+multiblocked.recipe.remaining=Remaining time: %ds
 
 multiblocked.renderer.null=Null
 multiblocked.renderer.imodel=Java Model

@@ -44,6 +44,9 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_GTCE)) {
             registerCapability(EnergyGTCECapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_LC)) {
+            registerCapability(LEMultiblockCapability.CAP);
+        }
     }
 
     public static MultiblockCapability<?> get(String s) {

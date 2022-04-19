@@ -10,7 +10,6 @@ import com.cleanroommc.multiblocked.api.gui.modular.ModularUIGuiHandler;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
-import mezz.jei.Internal;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
@@ -24,11 +23,8 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.input.IShowsRecipeFocuses;
-import mezz.jei.input.InputHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
@@ -120,15 +116,4 @@ public class JeiPlugin implements IModPlugin {
         }
     }
 
-    public static void setupInputHandler() {
-        try {
-            Field inputHandlerField = Internal.class.getDeclaredField("inputHandler");
-            inputHandlerField.setAccessible(true);
-            InputHandler inputHandler = (InputHandler) inputHandlerField.get(null);
-            List<IShowsRecipeFocuses> showsRecipeFocuses = ObfuscationReflectionHelper.getPrivateValue(InputHandler.class, inputHandler, "showsRecipeFocuses");
-            showsRecipeFocuses.add(0, new MultiblockInfoRecipeFocusShower());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

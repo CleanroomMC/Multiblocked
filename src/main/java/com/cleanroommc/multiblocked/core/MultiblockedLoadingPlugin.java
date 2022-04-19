@@ -34,7 +34,7 @@ public class MultiblockedLoadingPlugin implements IFMLLoadingPlugin, IEarlyMixin
 
     @Override
     public List<String> getMixinConfigs() {
-        return ImmutableList.of("mixins.multiblocked.json");
+        return ImmutableList.of("mixins.multiblocked_vanilla.json");
     }
 
 }

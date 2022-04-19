@@ -12,7 +12,6 @@ import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.command.CommandMbdTree;
-import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -25,7 +24,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -117,10 +115,4 @@ public class Multiblocked {
         event.registerServerCommand(new CommandMbdTree());
     }
 
-    @EventHandler
-    public void loadComplete(FMLLoadCompleteEvent event) {
-        if (Multiblocked.isClient() && Loader.isModLoaded(Multiblocked.MODID_JEI)) {
-            JeiPlugin.setupInputHandler();
-        }
-    }
 }

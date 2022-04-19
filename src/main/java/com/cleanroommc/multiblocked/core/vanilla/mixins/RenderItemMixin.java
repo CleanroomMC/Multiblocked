@@ -1,4 +1,4 @@
-package com.cleanroommc.multiblocked.core.mixins;
+package com.cleanroommc.multiblocked.core.vanilla.mixins;
 
 import com.cleanroommc.multiblocked.client.renderer.ICustomItemRenderer;
 import net.minecraft.client.renderer.GlStateManager;

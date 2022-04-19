@@ -1,0 +1,10 @@
+{
+  "package": "com.cleanroommc.multiblocked.core.mods.mixins",
+  "refmap": "mixins.multiblocked.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "InputHandlerMixin"
+  ]
+}

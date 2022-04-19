@@ -1,4 +1,4 @@
-package com.cleanroommc.multiblocked.core.mixins;
+package com.cleanroommc.multiblocked.core.vanilla.mixins;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;

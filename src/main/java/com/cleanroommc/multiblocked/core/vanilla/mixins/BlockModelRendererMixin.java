@@ -1,4 +1,4 @@
-package com.cleanroommc.multiblocked.core.mixins;
+package com.cleanroommc.multiblocked.core.vanilla.mixins;
 
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.block.state.IBlockState;

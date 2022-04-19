@@ -1,5 +1,5 @@
 {
-  "package": "com.cleanroommc.multiblocked.core.mixins",
+  "package": "com.cleanroommc.multiblocked.core.vanilla.mixins",
   "refmap": "mixins.multiblocked.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.8",

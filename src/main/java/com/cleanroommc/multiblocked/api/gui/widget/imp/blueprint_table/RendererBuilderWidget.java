@@ -24,9 +24,9 @@ public class RendererBuilderWidget extends WidgetGroup {
         super(0, 0, 384, 256);
         setClientSideWidget();
         this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_page.png")));
-        this.addWidget(new ButtonWidget(40, 40, 40, 40, new ItemStackTexture(new ItemStack(Blocks.BEACON)), this::renderer).setHoverBorderTexture(1, -1).setHoverTooltip("IRenderer Helper"));
-        this.addWidget(new ButtonWidget(90, 40, 40, 40, new ResourceTexture("multiblocked:textures/fx/fx.png"), this::particle).setHoverBorderTexture(1, -1).setHoverTooltip("Particle Helper"));
-        this.addWidget(new ButtonWidget(140, 40, 40, 40, shaderTexture = ShaderTexture.createShader(new ResourceLocation(Multiblocked.MODID, "fbm")), this::shader).setHoverBorderTexture(1, -1).setHoverTooltip("Shader Helper"));
+        this.addWidget(new ButtonWidget(40, 40, 40, 40, new ItemStackTexture(new ItemStack(Blocks.BEACON)), this::renderer).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.builder.renderer.irenderer"));
+        this.addWidget(new ButtonWidget(90, 40, 40, 40, new ResourceTexture("multiblocked:textures/fx/fx.png"), this::particle).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.builder.renderer.particle"));
+        this.addWidget(new ButtonWidget(140, 40, 40, 40, shaderTexture = ShaderTexture.createShader(new ResourceLocation(Multiblocked.MODID, "fbm")), this::shader).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.builder.renderer.shader"));
     }
 
     private void shader(ClickData clickData) {

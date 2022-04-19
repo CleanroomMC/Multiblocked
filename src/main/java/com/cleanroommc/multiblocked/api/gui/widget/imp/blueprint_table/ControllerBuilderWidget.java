@@ -28,6 +28,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -58,7 +59,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
 
     public ControllerBuilderWidget(BlueprintTableTileEntity table) {
         super(table);
-        templateButton.setHoverTooltip("Create a controller from a blueprint");
+        templateButton.setHoverTooltip("multiblocked.gui.builder.controller.create");
         this.addWidget(new ButtonWidget(330, 96, 20, 20, new ResourceTexture("multiblocked:textures/gui/save.png"), cd->{
             if (cd.isRemote) {
                 try {
@@ -68,7 +69,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                     e.printStackTrace();
                 }
             }
-        }).setHoverBorderTexture(1, -1).setHoverTooltip("open folder"));
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.open_folder"));
     }
 
     @Override
@@ -160,7 +161,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                                 });
                             } catch (Exception ignored) {}
                         }
-                    }).setHoverBorderTexture(1, -1).setHoverTooltip("setting"))
+                    }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.settings"))
                     .addWidget(new ImageWidget(32, 0, 100, 20, new TextTexture(file.getName().replace(".json", "")).setWidth(100).setType(TextTexture.TextType.ROLL)))
                     .addWidget(new ImageWidget(4, 2, 18, 18, new ItemStackTexture(Items.PAPER)));
             files.add(widgetGroup);
@@ -198,7 +199,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
             int offset = Math.max(pattern.length, Math.max(pattern[0].length, pattern[0][0].length()));
             int sum = jsonPattern.pattern.length * jsonPattern.pattern[0].length * jsonPattern.pattern[0][0].length();
             AtomicDouble progress = new AtomicDouble(0);
-            imageWidget.setImage(new TextTexture("building scene!").setSupplier(()-> "building scene! " + String.format("%.1f", progress.get()) + "%%").setWidth(sceneWidget.getSize().width));
+            imageWidget.setImage(new TextTexture("multiblocked.gui.tips.building_scene").setSupplier(()-> I18n.format("multiblocked.gui.tips.building_scene") + String.format(" %.1f", progress.get()) + "%%").setWidth(sceneWidget.getSize().width));
             int count = 0;
             for (int i = 0; i < pattern.length; i++) {
                 for (int j = 0; j < pattern[0].length; j++) {

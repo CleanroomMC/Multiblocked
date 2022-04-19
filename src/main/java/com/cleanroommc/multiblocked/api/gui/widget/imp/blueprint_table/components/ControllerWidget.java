@@ -68,7 +68,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         if (predicate instanceof PredicateComponent) {
             ((PredicateComponent) predicate).definition = definition;
         }
-        S1.addWidget(createBoolSwitch(x + 100, 90, "consumeCatalyst", "consume Catalyst", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
+        S1.addWidget(createBoolSwitch(x + 100, 90, "consumeCatalyst", "multiblocked.gui.widget.controller.consume", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
 
         IItemHandlerModifiable handler;
         PhantomSlotWidget phantomSlotWidget = new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, x + 205, 73);
@@ -78,12 +78,12 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         phantomSlotWidget.setClearSlotOnRightClick(true)
                 .setChangeListener(() -> definition.catalyst = handler.getStackInSlot(0))
                 .setBackgroundTexture(new ColorBorderTexture(1, -1))
-                .setHoverTooltip("Catalyst, if it is empty then right click can be formed")
+                .setHoverTooltip("multiblocked.gui.widget.controller.catalyst")
                 .setVisible(definition.catalyst != null);
         handler.setStackInSlot(0, definition.catalyst == null ? ItemStack.EMPTY : definition.catalyst);
         labelWidget.setVisible(definition.catalyst != null);
 
-        S1.addWidget(createBoolSwitch(x + 100, 75, "needCatalyst", "If no catalyst is needed, the structure will try to formed per second.", definition.catalyst != null, r -> {
+        S1.addWidget(createBoolSwitch(x + 100, 75, "needCatalyst", "multiblocked.gui.widget.controller.need_catalyst", definition.catalyst != null, r -> {
             definition.catalyst = !r ? null : ItemStack.EMPTY;
             phantomSlotWidget.setVisible(r);
             labelWidget.setVisible(r);
@@ -92,7 +92,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         tabContainer.addTab(new TabButton(88, 26, 20, 20)
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S3"))
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S3"))
-                        .setHoverTooltip("Step 3: structure pattern setup"),
+                        .setHoverTooltip("multiblocked.gui.widget.controller.s3"),
                 S3 = new WidgetGroup(0, 0, getSize().width, getSize().height));
         S3.addWidget(new ImageWidget(50, 66, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
         S3.addWidget(sceneWidget = new SceneWidget(50, 66, 138, 138, null)
@@ -114,7 +114,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         tabContainer.addTab(new TabButton(111, 26, 20, 20)
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S4"))
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S4"))
-                        .setHoverTooltip("Step 4: machine recipe map"),
+                        .setHoverTooltip("multiblocked.gui.widget.controller.s4"),
                 S4 = new WidgetGroup(0, 0, getSize().width, getSize().height));
         S4.addWidget(new LabelWidget(80, 55, "RecipeMap: "));
         S4.addWidget(new TextFieldWidget(80, 70, 100, 15, true, () -> this.recipeMap, s -> this.recipeMap = s));

@@ -42,17 +42,15 @@ public class RecipeMapBuilderWidget extends WidgetGroup {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }).setHoverBorderTexture(1, -1).setHoverTooltip("open folder"));
-        this.addWidget(new ButtonWidget(0, 26, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd->{
-            new RecipeMapWidget(parent, new RecipeMap(UUID.randomUUID().toString()),recipeMap -> {
-                if (recipeMap != null) {
-                    File path = new File(Multiblocked.location, "recipe_map/" + recipeMap.name + ".json");
-                    JsonElement element = Multiblocked.GSON.toJsonTree(recipeMap);
-                    FileUtility.saveJson(path, element);
-                    updateRecipeMapList();
-                }
-            });
-        }).setHoverBorderTexture(1, -1).setHoverTooltip("create a new RecipeMap"));
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.open_folder"));
+        this.addWidget(new ButtonWidget(0, 26, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd-> new RecipeMapWidget(parent, new RecipeMap(UUID.randomUUID().toString()), recipeMap -> {
+            if (recipeMap != null) {
+                File path = new File(Multiblocked.location, "recipe_map/" + recipeMap.name + ".json");
+                JsonElement element = Multiblocked.GSON.toJsonTree(recipeMap);
+                FileUtility.saveJson(path, element);
+                updateRecipeMapList();
+            }
+        })).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.builder.recipe_map.create"));
         updateRecipeMapList();
     }
 
@@ -94,7 +92,7 @@ public class RecipeMapBuilderWidget extends WidgetGroup {
                                 JsonElement element = Multiblocked.GSON.toJsonTree(recipeMap);
                                 FileUtility.saveJson(file, element);
                             }
-                        })).setHoverBorderTexture(1, -1).setHoverTooltip("setting"))
+                        })).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.settings"))
                         .addWidget(new ImageWidget(2, 0, 96, 20, new TextTexture(file.getName().replace(".json", "")).setWidth(96).setType(
                                 TextTexture.TextType.ROLL))));
             }

@@ -57,19 +57,17 @@ public class IRendererWidget extends DialogWidget {
         this.addWidget(new ButtonWidget(285, 55, 40, 20, this::onUpdate)
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("update"));
+                .setHoverTooltip("multiblocked.gui.tips.update"));
         this.addWidget(new ButtonWidget(330, 55, 45, 20, cd -> Minecraft.getMinecraft().scheduleResourcesRefresh())
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("refresh", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("§4NOTE: Resources refresh will cause the game to stall for a while.§r" +
-                        "\n§2Must refresh to display models which have never been loaded before (obj, b3d, and geo).§r" +
-                        "\n§3Also need to refresh if the texture is not loaded.§r"));
+                .setHoverTooltip("multiblocked.gui.dialogs.renderer.refresh"));
         this.addWidget(new SelectorWidget(181, 55, 100, 20, getRendererList(), -1)
                 .setValue(getType(renderer))
                 .setOnChanged(this::onChangeRenderer)
                 .setButtonBackground(new ColorBorderTexture(1, -1), new ColorRectTexture(0xff444444))
                 .setBackground(new ColorRectTexture(0xff999999))
-                .setHoverTooltip("renderer"));
+                .setHoverTooltip("multiblocked.gui.dialogs.renderer.renderer"));
         onChangeRenderer(getType(renderer));
         if (onSave == null) return;
         this.addWidget(new ButtonWidget(285, 30, 40, 20, cd -> {
@@ -80,7 +78,7 @@ public class IRendererWidget extends DialogWidget {
         })
                 .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("save", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("NOTE!! update before save"));
+                .setHoverTooltip("multiblocked.gui.tips.save"));
     }
 
     private List<String> getRendererList() {

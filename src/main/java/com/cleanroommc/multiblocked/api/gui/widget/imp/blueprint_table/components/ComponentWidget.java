@@ -64,22 +64,22 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
         tabContainer.addTab(new TabButton(42, 26, 20, 20)
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S1"))
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S1"))
-                        .setHoverTooltip("Step 1: basic setup"),
+                        .setHoverTooltip("multiblocked.gui.widget.component.s1"),
                 S1 = new WidgetGroup(0, 0, getSize().width, getSize().height));
         int x = 47;
         S1.addWidget(new LabelWidget(x, 57, ()->"Registry Name:").setDrop(true).setTextColor(-1));
         S1.addWidget(new TextFieldWidget(x + 80, 54, 150, 15, true, null, this::updateRegistryName).setCurrentString(this.location.toString()));
-        S1.addWidget(createBoolSwitch(x, 75, "allowRotate", "allow rotation", definition.allowRotate, r -> definition.allowRotate = r));
-        S1.addWidget(createBoolSwitch(x, 90, "showInJei", "show in jei", definition.showInJei, r -> definition.showInJei = r));
-        S1.addWidget(createBoolSwitch(x, 105, "isOpaqueCube", "is opaque block", definition.isOpaqueCube, r -> definition.isOpaqueCube = r));
-        S1.addWidget(createScene(x - 2, 125, "baseRenderer", "basic renderer", definition.baseRenderer, r -> definition.baseRenderer = r));
-        S1.addWidget(createScene(x + 98, 125, "formedRenderer", "formed renderer", definition.formedRenderer, r -> definition.formedRenderer = r));
-        S1.addWidget(createScene(x + 198, 125, "workingRenderer", "working renderer", definition.workingRenderer, r -> definition.workingRenderer = r));
+        S1.addWidget(createBoolSwitch(x, 75, "allowRotate", "multiblocked.gui.widget.component.allowRotate", definition.allowRotate, r -> definition.allowRotate = r));
+        S1.addWidget(createBoolSwitch(x, 90, "showInJei", "multiblocked.gui.widget.component.jei", definition.showInJei, r -> definition.showInJei = r));
+        S1.addWidget(createBoolSwitch(x, 105, "isOpaqueCube", "multiblocked.gui.widget.component.opaque", definition.isOpaqueCube, r -> definition.isOpaqueCube = r));
+        S1.addWidget(createScene(x - 2, 125, "baseRenderer", "multiblocked.gui.widget.component.basic_renderer", definition.baseRenderer, r -> definition.baseRenderer = r));
+        S1.addWidget(createScene(x + 98, 125, "formedRenderer", "multiblocked.gui.widget.component.formed_renderer", definition.formedRenderer, r -> definition.formedRenderer = r));
+        S1.addWidget(createScene(x + 198, 125, "workingRenderer", "multiblocked.gui.widget.component.working_renderer", definition.workingRenderer, r -> definition.workingRenderer = r));
 
         tabContainer.addTab(new TabButton(65, 26, 20, 20)
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S2"))
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S2"))
-                        .setHoverTooltip("Step 2: trait setup"),
+                        .setHoverTooltip("multiblocked.gui.widget.component.s2"),
                 S2 = new WidgetGroup(0, 0, getSize().width, getSize().height));
         int y = 55;
         for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
@@ -102,7 +102,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
                                 imageWidget.setImage(texture);
                             }
                         });
-                    }).setHoverTooltip("set background texture"));
+                    }).setHoverTooltip("multiblocked.gui.widget.component.set_bg"));
                     
                     // open trait settings
                     trait.openConfigurator(dialog);
@@ -135,7 +135,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
                         .setHoverTexture(new ColorBorderTexture(1, 0xff545757))
                         .setPressed(definition.traits.has(capability.name))
-                        .setHoverTooltip(capability.name));
+                        .setHoverTooltip(capability.getUnlocalizedName()));
                 widgetGroup.addWidget(new LabelWidget(40, 3, capability.getUnlocalizedName()));
                 S2.addWidget(widgetGroup);
                 y += 15;
@@ -145,13 +145,13 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
         tabContainer.addTab(new TabButton(235, 26, 20, 20)
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("J"))
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("F"))
-                        .setHoverTooltip("Finish"),
+                        .setHoverTooltip("multiblocked.gui.widget.component.f"),
                 JSON = new WidgetGroup(0, 0, getSize().width, getSize().height));
         JSON.addWidget(new SwitchWidget(50, 54, 16, 16, (cd,r) -> {
             isPretty = r;
             updatePatternJson();
-        }).setHoverBorderTexture(1, -1).setTexture(new ResourceTexture("multiblocked:textures/gui/pretty.png"), new ResourceTexture("multiblocked:textures/gui/pretty_active.png")).setHoverTooltip("pretty format"));
-        JSON.addWidget(new ButtonWidget(70, 54, 16, 16, cd -> GuiScreen.setClipboardString(isPretty ? Multiblocked.prettyJson(getComponentJson()) : getComponentJson())).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/copy.png")).setHoverBorderTexture(1, -1).setHoverTooltip("copy to clipboard"));
+        }).setHoverBorderTexture(1, -1).setTexture(new ResourceTexture("multiblocked:textures/gui/pretty.png"), new ResourceTexture("multiblocked:textures/gui/pretty_active.png")).setHoverTooltip("multiblocked.gui.tips.pretty"));
+        JSON.addWidget(new ButtonWidget(70, 54, 16, 16, cd -> GuiScreen.setClipboardString(isPretty ? Multiblocked.prettyJson(getComponentJson()) : getComponentJson())).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/copy.png")).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.copy"));
         JSON.addWidget(new ImageWidget(47, 75, 285, 136, new ColorBorderTexture(1, 0xafafaf00)));
         JSON.addWidget(tfGroup = new DraggableScrollableWidgetGroup(47, 75, 285, 136)
                 .setBackground(new ColorRectTexture(0x8f111111))

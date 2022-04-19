@@ -68,6 +68,20 @@ multiblocked.gui.tips.settings=settings
 multiblocked.gui.tips.block_register=block register name
 multiblocked.gui.tips.block_meta=block state meta
 multiblocked.gui.tips.open_folder=open folder
+multiblocked.gui.tips.building_scene=building scene!
+multiblocked.gui.tips.pretty=pretty format
+multiblocked.gui.tips.copy=copy to clipboard
+multiblocked.gui.tips.execute=execute
+multiblocked.gui.tips.help=help
+multiblocked.gui.tips.update=update
+multiblocked.gui.tips.save=NOTE!! update before save
+multiblocked.gui.tips.min=min
+multiblocked.gui.tips.max=max
+multiblocked.gui.tips.json=Json
+multiblocked.gui.tips.switch_view=switch view
+multiblocked.gui.tips.configuration=configuration
+multiblocked.gui.tips.unique=ensure a unique id
+multiblocked.gui.tips.remove=remove
 
 multiblocked.gui.tips.select_image=select a image
 multiblocked.gui.trait.add_slot=add a slot
@@ -88,4 +102,59 @@ multiblocked.gui.blueprint_table.part_block=part block
 multiblocked.gui.blueprint_table.renderer_assistant=renderer assistant
 multiblocked.gui.blueprint_table.wiki=open wiki page
 
+multiblocked.gui.builder.controller.create=create a controller from a blueprint
+multiblocked.gui.builder.part.create=create a part block
+multiblocked.gui.builder.recipe_map.create=create a new RecipeMap
+multiblocked.gui.builder.renderer.irenderer=IRenderer Helper
+multiblocked.gui.builder.renderer.particle=Particle Helper
+multiblocked.gui.builder.renderer.shader=Shader Helper
+multiblocked.gui.builder.template.create=create template for multiblock builder
+multiblocked.gui.builder.template.status=Status:
+multiblocked.gui.builder.template.size=Size:
+multiblocked.gui.builder.template.description=Description:
+multiblocked.gui.builder.template.from=from: %d, %d, %d
+multiblocked.gui.builder.template.to=to: %d, %d, %d
+multiblocked.gui.builder.template.raw=raw
+multiblocked.gui.builder.template.pattern=pattern
 
+multiblocked.gui.widget.component.s1=Step 1: basic setup
+multiblocked.gui.widget.component.s2=Step 2: trait setup
+multiblocked.gui.widget.component.f=Finish
+multiblocked.gui.widget.component.set_bg=set background texture
+multiblocked.gui.widget.component.allowRotate=allow rotation
+multiblocked.gui.widget.component.jei=show in jei
+multiblocked.gui.widget.component.opaque=is opaque block
+multiblocked.gui.widget.component.basic_renderer=basic renderer
+multiblocked.gui.widget.component.formed_renderer=formed renderer
+multiblocked.gui.widget.component.working_renderer=working renderer
+
+multiblocked.gui.widget.controller.consume=consume Catalyst
+multiblocked.gui.widget.controller.need_catalyst=If no catalyst is needed, the structure will try to formed per second
+multiblocked.gui.widget.controller.catalyst=Catalyst, if it is empty then right click can be formed
+multiblocked.gui.widget.controller.s3=Step 3: structure pattern setup
+multiblocked.gui.widget.controller.s4=Step 4: machine recipe map
+
+multiblocked.gui.widget.part.shared=can be shared with different multiblocks
+
+multiblocked.gui.dialogs.renderer.refresh=§4NOTE: Resources refresh will cause the game to stall for a while.§r\n§2Must refresh to display models which have never been loaded before (obj, b3d, and geo).§r\n§3Also need to refresh if the texture is not loaded.§r
+multiblocked.gui.dialogs.renderer.shader=open a shader file
+multiblocked.gui.dialogs.renderer.renderer=renderer
+
+multiblocked.gui.dialogs.pattern.pattern=Pattern
+multiblocked.gui.dialogs.pattern.repeat=repetition of aisle (1 <= min <= max <= 1)
+multiblocked.gui.dialogs.pattern.direction=relative directions
+multiblocked.gui.dialogs.pattern.char=Char
+multiblocked.gui.dialogs.pattern.string=String
+multiblocked.gui.dialogs.pattern.aisle=Aisle
+multiblocked.gui.dialogs.pattern.predicate=Predicate
+multiblocked.gui.dialogs.pattern.create_predicate=create predicate
+multiblocked.gui.dialogs.pattern.add_predicate=add selected predicate for current symbol
+multiblocked.gui.dialogs.pattern.remove_predicate=remove predicate
+multiblocked.gui.dialogs.pattern.next_aisle=next aisle
+multiblocked.gui.dialogs.pattern.last_aisle=last aisle
+
+multiblocked.gui.dialogs.recipe_map.add_recipe=add a new recipe
+multiblocked.gui.dialogs.recipe_map.remove_recipe=remove recipe
+multiblocked.gui.dialogs.recipe_map.progress=set the progress texture
+multiblocked.gui.dialogs.recipe_map.add_in=add an input ingredient
+multiblocked.gui.dialogs.recipe_map.add_out=add an output ingredient

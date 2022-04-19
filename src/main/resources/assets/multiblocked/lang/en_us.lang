@@ -63,3 +63,29 @@ multiblocked.renderer.tparticle=Textured Particle
 multiblocked.renderer.blockstate=BlockState Model
 multiblocked.renderer.gregtech=GregTech Model
 
+# gui lang
+multiblocked.gui.tips.settings=settings
+multiblocked.gui.tips.block_register=block register name
+multiblocked.gui.tips.block_meta=block state meta
+multiblocked.gui.tips.open_folder=open folder
+
+multiblocked.gui.tips.select_image=select a image
+multiblocked.gui.trait.add_slot=add a slot
+multiblocked.gui.trait.remove_slot=remove slot
+multiblocked.gui.trait.capability_io=Capability IO (e.g., pipe interaction)
+multiblocked.gui.trait.gui_io=Gui IO (e.g. gui interaction)
+multiblocked.gui.trait.auto_io=Auto IO
+multiblocked.gui.trait.passive_io=Passive IO
+multiblocked.gui.trait.auto=auto input/output\n(Capability IO can't be BOTH)\nonly front facing
+multiblocked.gui.trait.set_width=set width
+multiblocked.gui.trait.set_height=set height
+
+
+multiblocked.gui.blueprint_table.builder_template=builder template
+multiblocked.gui.blueprint_table.recipe_map=recipe map
+multiblocked.gui.blueprint_table.controller_block=controller block
+multiblocked.gui.blueprint_table.part_block=part block
+multiblocked.gui.blueprint_table.renderer_assistant=renderer assistant
+multiblocked.gui.blueprint_table.wiki=open wiki page
+
+

@@ -62,7 +62,7 @@ public abstract class SingleCapabilityTrait extends CapabilityTrait {
 
     protected void refreshSlots(DraggableScrollableWidgetGroup dragGroup) {
         dragGroup.widgets.forEach(dragGroup::waitToRemoved);
-        ButtonWidget setting = (ButtonWidget) new ButtonWidget(10, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("settings");
+        ButtonWidget setting = (ButtonWidget) new ButtonWidget(10, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.settings");
         ImageWidget imageWidget = new ImageWidget(1, 1, 16, 16, new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO)), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
         setting.setVisible(false);
         DraggableWidgetGroup slot = new DraggableWidgetGroup(x, y, 18, 18);
@@ -93,7 +93,7 @@ public abstract class SingleCapabilityTrait extends CapabilityTrait {
                 })
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("Capability IO (e.g., pipe interaction)"));
+                .setHoverTooltip("multiblocked.gui.trait.capability_io"));
         dialog.addWidget(new SelectorWidget(50, 5, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
                 .setValue(guiIO.name())
                 .setOnChanged(io-> {
@@ -102,7 +102,7 @@ public abstract class SingleCapabilityTrait extends CapabilityTrait {
                 })
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("Gui IO (e.g. gui interaction)"));
+                .setHoverTooltip("multiblocked.gui.trait.gui_io"));
     }
 
     @Override

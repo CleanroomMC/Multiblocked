@@ -76,7 +76,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
 
     protected void refreshSlots(DraggableScrollableWidgetGroup dragGroup) {
         dragGroup.widgets.forEach(dragGroup::waitToRemoved);
-        ButtonWidget setting = (ButtonWidget) new ButtonWidget(width - 8, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("settings");
+        ButtonWidget setting = (ButtonWidget) new ButtonWidget(width - 8, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.settings");
         ImageWidget imageWidget = new ImageWidget(0, 0, width, height, new GuiTextureGroup(new ResourceTexture(texture).getSubTexture(0, 0, 1, 0.5), new ColorBorderTexture(1, getColorByIO(capabilityIO))));
         setting.setVisible(false);
         DraggableWidgetGroup slot = new DraggableWidgetGroup(x, y, width, height);
@@ -102,7 +102,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
         ImageWidget imageWidget = (ImageWidget) slot.widgets.get(0);
         ButtonWidget setting = (ButtonWidget) slot.widgets.get(1);
         ButtonWidget imageSelector = (ButtonWidget) new ButtonWidget(5, 65, width, height, new GuiTextureGroup(new ColorBorderTexture(1, -1), new ResourceTexture(texture).getSubTexture(0, 0, 1, 0.5)), null)
-                .setHoverTooltip("select a image");
+                .setHoverTooltip("multiblocked.gui.tips.select_image");
         dialog.addWidget(new TextFieldWidget(5, 25, 50, 15, true, null, s -> {
             width = Integer.parseInt(s);
             Size size = new Size(width, height);
@@ -110,7 +110,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
             imageWidget.setSize(size);
             imageSelector.setSize(size);
             setting.setSelfPosition(new Position(width - 8, 0));
-        }).setCurrentString(width + "").setNumbersOnly(1, 180).setHoverTooltip("set width"));
+        }).setCurrentString(width + "").setNumbersOnly(1, 180).setHoverTooltip("multiblocked.gui.trait.set_width"));
         dialog.addWidget(new TextFieldWidget(5, 45, 50, 15, true, null, s -> {
             height = Integer.parseInt(s);
             Size size = new Size(width, height);
@@ -118,7 +118,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
             imageWidget.setSize(size);
             imageSelector.setSize(size);
             setting.setSelfPosition(new Position(width - 8, 0));
-        }).setCurrentString(height + "").setNumbersOnly(1, 180).setHoverTooltip("set height"));
+        }).setCurrentString(height + "").setNumbersOnly(1, 180).setHoverTooltip("multiblocked.gui.trait.set_height"));
         dialog.addWidget(new SelectorWidget(5, 5, 50, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(
                 Collectors.toList()), -1)
                 .setValue(capabilityIO.name())
@@ -128,7 +128,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
                 })
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("Capability IO (e.g., pipe interaction)"));
+                .setHoverTooltip("multiblocked.gui.trait.capability_io"));
 
         dialog.addWidget(imageSelector);
         imageSelector.setOnPressCallback(cd -> new ResourceTextureWidget((WidgetGroup) dialog.parent.getGui().guiWidgets.get(0), texture1 -> {

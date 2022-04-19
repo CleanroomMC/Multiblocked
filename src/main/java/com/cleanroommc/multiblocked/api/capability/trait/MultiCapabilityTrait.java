@@ -93,7 +93,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
         for (int i = 0; i < guiIO.length; i++) {
             int finalI = i;
             ButtonWidget setting =
-                    (ButtonWidget) new ButtonWidget(10, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("settings");
+                    (ButtonWidget) new ButtonWidget(10, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.settings");
             ImageWidget imageWidget = new ImageWidget(1, 1, 16, 16, new GuiTextureGroup(new ColorRectTexture(getColorByIO(guiIO[finalI])), new ColorBorderTexture(1, getColorByIO(capabilityIO[finalI]))));
             setting.setVisible(false);
             DraggableWidgetGroup slot = new DraggableWidgetGroup(x[finalI], y[finalI], 18, 18);
@@ -110,7 +110,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
             setting.setOnPressCallback(cd2 -> {
                 DialogWidget dialog = new DialogWidget(dragGroup, true);
                 dialog.addWidget(new ImageWidget(0, 0, 176, 256, new ColorRectTexture(0xaf000000)));
-                dialog.addWidget(new ButtonWidget(5, 5, 85, 20, new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("remove slot")), cd3 -> {
+                dialog.addWidget(new ButtonWidget(5, 5, 85, 20, new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.trait.remove_slot")), cd3 -> {
                     removeSlot(finalI);
                     refreshSlots(dragGroup);
                     dialog.close();
@@ -130,7 +130,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
                 })
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("Capability IO (e.g., pipe interaction)"));
+                .setHoverTooltip("multiblocked.gui.trait.capability_io"));
         dialog.addWidget(new SelectorWidget(50, 30, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
                 .setValue(guiIO[index].name())
                 .setOnChanged(io-> {
@@ -139,13 +139,13 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
                 })
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("Gui IO (e.g. gui interaction)"));
-        dialog.addWidget(new SelectorWidget(100, 30, 65, 15, Arrays.asList("Auto IO", "Passive IO"), -1)
-                .setValue(autoIO[index] ? "Auto IO" : "Passive IO")
-                .setOnChanged(auto -> autoIO[index] = auto.equals("Auto IO"))
+                .setHoverTooltip("multiblocked.gui.trait.gui_io"));
+        dialog.addWidget(new SelectorWidget(100, 30, 65, 15, Arrays.asList("multiblocked.gui.trait.auto_io", "multiblocked.gui.trait.passive_io"), -1)
+                .setValue(autoIO[index] ? "multiblocked.gui.trait.auto_io" : "multiblocked.gui.trait.passive_io")
+                .setOnChanged(auto -> autoIO[index] = auto.equals("multiblocked.gui.trait.auto_io"))
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("auto input/output\n(Capability IO can't be BOTH)"));
+                .setHoverTooltip("multiblocked.gui.trait.auto"));
     }
     
     protected void addSlot() {
@@ -173,7 +173,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
         parentDialog.addWidget(new ButtonWidget((384 - 176) / 2 -20,35, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> {
             addSlot();
             refreshSlots(dragGroup);
-        }).setHoverTooltip("add a slot"));
+        }).setHoverTooltip("multiblocked.gui.trait.add_slot"));
     }
 
 }

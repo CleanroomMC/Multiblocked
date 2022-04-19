@@ -3,12 +3,7 @@ package com.cleanroommc.multiblocked.api.recipe;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
-import com.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
-import com.cleanroommc.multiblocked.common.capability.EnergyGTCECapability;
-import com.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
-import com.cleanroommc.multiblocked.common.capability.HeatMekanismCapability;
-import com.cleanroommc.multiblocked.common.capability.ManaBotaniaCapability;
-import com.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
+import com.cleanroommc.multiblocked.common.capability.*;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -372,6 +367,32 @@ public class RecipeBuilder {
     public RecipeBuilder outputEU(float chance, long eu) {
         keyBuilder.append(EnergyGTCECapability.CAP.name).append(eu);
         return output(EnergyGTCECapability.CAP, chance, eu);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_LC)
+    @ZenMethod
+    public RecipeBuilder inputLE(double le) {
+        return inputLE(1, le);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_LC)
+    @ZenMethod
+    public RecipeBuilder outputLE(double le) {
+        return outputLE(1, le);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_LC)
+    @ZenMethod
+    public RecipeBuilder inputLE(float chance, double le) {
+        keyBuilder.append(LEMultiblockCapability.CAP.name).append(le);
+        return input(LEMultiblockCapability.CAP, chance, le);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_LC)
+    @ZenMethod
+    public RecipeBuilder outputLE(float chance, double le) {
+        keyBuilder.append(LEMultiblockCapability.CAP.name).append(le);
+        return output(LEMultiblockCapability.CAP, chance, le);
     }
 
     @ZenMethod

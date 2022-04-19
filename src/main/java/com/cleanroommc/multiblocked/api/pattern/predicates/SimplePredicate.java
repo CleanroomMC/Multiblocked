@@ -15,19 +15,20 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
+import com.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
 import com.cleanroommc.multiblocked.api.pattern.error.SinglePredicateError;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.JsonUtils;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -37,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SimplePredicate {
@@ -53,6 +55,9 @@ public class SimplePredicate {
     public int previewCount = -1;
     public boolean disableRenderFormed = false;
     public IO io = IO.BOTH;
+    public String customTips;
+    public String nbtParser;
+    public boolean isCTParser;
     
     public final String type;
 
@@ -86,6 +91,9 @@ public class SimplePredicate {
         if (toolTips != null) {
             toolTips.forEach(tip->result.add(I18n.format(tip)));
         }
+        if (customTips != null) {
+            result.addAll(Arrays.stream(I18n.format(customTips).split("\n")).collect(Collectors.toList()));
+        }
         if (minCount == maxCount && maxCount != -1) {
             result.add(I18n.format("multiblocked.pattern.limited_exact",
                     minCount));
@@ -114,36 +122,45 @@ public class SimplePredicate {
 
     public boolean test(MultiblockState blockWorldState) {
         if (predicate.test(blockWorldState)) {
-            if (disableRenderFormed) {
-                blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new).add(blockWorldState.getPos().toLong());
-            }
-            if (io != IO.BOTH) {
-                if (blockWorldState.io == IO.BOTH) {
-                    blockWorldState.io = io;
-                } else if (blockWorldState.io != io) {
-                    blockWorldState.io = null;
-                }
-            }
-            return true;
+            return checkInnerConditions(blockWorldState);
         }
         return false;
     }
 
     public boolean testLimited(MultiblockState blockWorldState) {
         if (testGlobal(blockWorldState)) {
-            if (disableRenderFormed) {
-                blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new).add(blockWorldState.getPos().toLong());
-            }
-            if (io != IO.BOTH) {
-                if (blockWorldState.io == IO.BOTH) {
-                    blockWorldState.io = io;
-                } else if (blockWorldState.io != io) {
-                    blockWorldState.io = null;
-                }
-            }
-            return true;
+            return checkInnerConditions(blockWorldState);
         }
         return false;
+    }
+
+    private boolean checkInnerConditions(MultiblockState blockWorldState) {
+        if (disableRenderFormed) {
+            blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new).add(blockWorldState.getPos().toLong());
+        }
+        if (io != IO.BOTH) {
+            if (blockWorldState.io == IO.BOTH) {
+                blockWorldState.io = io;
+            } else if (blockWorldState.io != io) {
+                blockWorldState.io = null;
+            }
+        }
+        if (nbtParser != null) {
+            TileEntity te = blockWorldState.getTileEntity();
+            if (te != null) {
+                if (isCTParser && Loader.isModLoaded(Multiblocked.MODID_CT)) {
+                    // TODO
+                } else {
+                    NBTTagCompound nbt = te.serializeNBT();
+                    if (Pattern.matches(nbtParser, nbt.toString())) {
+                        return true;
+                    }
+                }
+            }
+            blockWorldState.setError(new PatternStringError("The NBT fails to match"));
+            return false;
+        }
+        return true;
     }
 
     public boolean testGlobal(MultiblockState blockWorldState) {
@@ -162,11 +179,11 @@ public class SimplePredicate {
     }
 
     public List<WidgetGroup> getConfigWidget(List<WidgetGroup> groups) {
-        WidgetGroup group = new WidgetGroup(0, 0, 120, 90);
+        WidgetGroup group = new WidgetGroup(0, 0, 300, 90);
         groups.add(group);
         group.setClientSideWidget();
         group.addWidget(new LabelWidget(0, 0, () -> "Type: " + type).setTextColor(-1).setDrop(true));
-        TextFieldWidget min, max, preview;
+        TextFieldWidget min, max, preview, nbt, tooltips;
 
         group.addWidget(min = new TextFieldWidget(55, 15, 30, 15, true, () -> minCount + "", s -> {
             minCount = Integer.parseInt(s);
@@ -212,19 +229,39 @@ public class SimplePredicate {
                 .addWidget(new ImageWidget(2, 2, 11, 11, new ColorBorderTexture(1, -1)))
                 .addWidget(new LabelWidget(20, 3, "disableRenderFormed").setTextColor(-1).setDrop(true));
         group.addWidget(widgetGroup);
+
+        group.addWidget(nbt = new TextFieldWidget(155, 15, 100, 15, true, null, s -> nbtParser = s));
+        nbt.setCurrentString(nbtParser == null ? "" : nbtParser).setHoverTooltip("nbt parser").setVisible(nbtParser != null);
+        group.addWidget(new SwitchWidget(100, 15, 50, 15, (cd, r)->{
+            nbt.setVisible(r);
+            nbtParser = r ? "" : null;
+        }).setPressed(nbtParser != null).setHoverBorderTexture(1, -1)
+                .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("nbt (N)", -1).setDropShadow(true))
+                .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("nbt (Y)", -1).setDropShadow(true))
+                .setHoverTooltip("match the nbt tag"));
+
+        group.addWidget(tooltips = new TextFieldWidget(155, 33, 100, 15, true, null, s -> customTips = s));
+        tooltips.setCurrentString(customTips != null ? customTips : "").setHoverTooltip("customTips").setVisible(customTips != null);
+        group.addWidget(new SwitchWidget(100, 33, 50, 15, (cd, r) -> {
+            tooltips.setVisible(r);
+            customTips = r ? "" : null;
+        }).setPressed(customTips != null).setHoverBorderTexture(1, -1)
+                .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("tips (N)", -1).setDropShadow(true))
+                .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("tips (Y)", -1).setDropShadow(true))
+                .setHoverTooltip("add tooltips"));
+
         group.addWidget(new SelectorWidget(130, 70, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
                 .setValue(io.name())
                 .setIsUp(true)
                 .setOnChanged(io-> this.io = IO.valueOf(io))
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
-                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setBackground(new ColorRectTexture(0xff333333))
                 .setHoverTooltip("IO"));
         return groups;
     }
 
     public JsonObject toJson(JsonObject jsonObject) {
         jsonObject.add("type", new JsonPrimitive(type));
-        jsonObject.add("toolTips", Multiblocked.GSON.toJsonTree(toolTips));
         if (disableRenderFormed) {
             jsonObject.addProperty("disableRenderFormed", true);
         }
@@ -240,18 +277,27 @@ public class SimplePredicate {
         if (io != IO.BOTH) {
             jsonObject.addProperty("io", io.name());
         }
+        if (nbtParser != null) {
+            jsonObject.addProperty("nbtParser", nbtParser);
+        }
+        if (customTips != null) {
+            jsonObject.addProperty("customTips", customTips);
+        }
+        if (isCTParser) {
+            jsonObject.addProperty("isCTParser", true);
+        }
         return jsonObject;
     }
 
     public void fromJson(Gson gson, JsonObject jsonObject) {
-        if (jsonObject.has("toolTips")) {
-            toolTips = gson.fromJson(jsonObject.get("toolTips"), new TypeToken<ArrayList<String>>(){}.getType());
-        }
         disableRenderFormed = JsonUtils.getBoolean(jsonObject, "disableRenderFormed", disableRenderFormed);
         minCount = JsonUtils.getInt(jsonObject, "minCount", minCount);
         maxCount = JsonUtils.getInt(jsonObject, "maxCount", maxCount);
         previewCount = JsonUtils.getInt(jsonObject, "previewCount", previewCount);
         io = IO.valueOf(JsonUtils.getString(jsonObject, "io", io.name()));
+        nbtParser = JsonUtils.getString(jsonObject, "nbtParser", nbtParser);
+        customTips = JsonUtils.getString(jsonObject, "customTips", customTips);
+        isCTParser = JsonUtils.getBoolean(jsonObject, "isCTParser", isCTParser);
     }
     
 }

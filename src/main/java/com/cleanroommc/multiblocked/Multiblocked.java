@@ -11,7 +11,7 @@ import com.cleanroommc.multiblocked.api.json.SimplePredicateFactory;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
-import com.cleanroommc.multiblocked.command.CommandClient;
+import com.cleanroommc.multiblocked.command.CommandMbdTree;
 import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -118,9 +118,7 @@ public class Multiblocked {
 
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-        event.registerServerCommand(new CommandClient("mbd_test"));
-        event.registerServerCommand(new CommandClient("mbd_reload_shaders"));
-        event.registerServerCommand(new CommandClient("mbd_tps"));
+        event.registerServerCommand(new CommandMbdTree());
     }
 
     @EventHandler

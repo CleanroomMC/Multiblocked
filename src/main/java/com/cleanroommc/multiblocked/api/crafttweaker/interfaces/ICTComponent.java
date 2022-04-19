@@ -6,12 +6,15 @@ import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IFacing;
 import crafttweaker.api.world.IWorld;
+import crafttweaker.mc1120.player.MCPlayer;
 import crafttweaker.mc1120.world.MCBlockPos;
 import crafttweaker.mc1120.world.MCFacing;
 import crafttweaker.mc1120.world.MCWorld;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -21,6 +24,8 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenSetter;
+
+import java.util.UUID;
 
 @ZenClass("mods.multiblocked.tile.Component")
 @ZenRegister
@@ -33,15 +38,27 @@ public interface ICTComponent {
     }
 
     @ZenGetter
-    default IWorld world(){
+    default IWorld world() {
         World world = getInner().getWorld();
         return world == null ? null : new MCWorld(world);
     }
 
     @ZenGetter
-    default IBlockPos pos(){
+    default IBlockPos pos() {
         BlockPos pos = getInner().getPos();
         return pos == null ? null : new MCBlockPos(pos);
+    }
+
+    @ZenGetter
+    default IPlayer player() {
+        EntityPlayer player = getInner().getOwner();
+        return player == null ? null : new MCPlayer(player);
+    }
+
+    @ZenGetter
+    default String playerUUID() {
+        UUID player = getInner().getOwnerUUID();
+        return player == null ? "" : player.toString();
     }
 
     @ZenGetter
@@ -73,7 +90,7 @@ public interface ICTComponent {
     }
 
     @ZenMethod
-    default void update(){
+    default void update() {
         getInner().update();
     }
 

@@ -92,6 +92,9 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
             } else {
                 componentTileEntity.setFrontFacing(placer.getHorizontalFacing().getOpposite());
             }
+            if (placer instanceof EntityPlayer) {
+                componentTileEntity.setOwner(placer.getUniqueID());
+            }
         }
     }
 

@@ -55,11 +55,7 @@ import net.minecraftforge.fml.common.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -80,6 +76,8 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public Object rendererObject; // used for renderer
 
     private EnumFacing frontFacing = EnumFacing.NORTH; // 0
+
+    private UUID owner;
 
     private final int offset = Multiblocked.RNG.nextInt();
 
@@ -137,6 +135,23 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return timer;
     }
 
+    public UUID getOwnerUUID() {
+        return owner;
+    }
+
+    @Nullable
+    public EntityPlayer getOwner() {
+        return this.world.getPlayerEntityByUUID(owner);
+    }
+
+    public void setOwner(UUID player) {
+        this.owner = player;
+    }
+
+    public void setOwner(EntityPlayer player) {
+        this.owner = player.getUniqueID();
+    }
+
     public void update(){
         timer++;
         if (definition.updateTick != null) {
@@ -148,7 +163,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             }
         }
     }
-
 
     public String getStatus() {
         return status;
@@ -490,6 +504,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
         }
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
+        this.owner = compound.getUniqueId("owner");
         if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
             persistentData = CraftTweakerMC.getIData(compound.getTag("ct_persistent"));
         }
@@ -505,6 +520,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         super.writeToNBT(compound);
         compound.setString("loc", definition.location.toString());
         compound.setByte("frontFacing", (byte) frontFacing.getIndex());
+        compound.setUniqueId("owner", this.owner);
         compound.setString("mbd_def", definition.location.toString());
         if (Loader.isModLoaded(Multiblocked.MODID_CT) && persistentData instanceof IData) {
             compound.setTag("ct_persistent", CraftTweakerMC.getNBT((IData) persistentData));

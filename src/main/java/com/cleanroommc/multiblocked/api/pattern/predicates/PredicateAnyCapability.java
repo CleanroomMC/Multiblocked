@@ -1,6 +1,5 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
-import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
@@ -11,11 +10,10 @@ import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.JsonUtils;
@@ -64,11 +62,7 @@ public class PredicateAnyCapability extends SimplePredicate {
                     .add(capability);
             return true;
         }
-        if (Multiblocked.isClient()) {
-            state.setError(new PatternStringError(I18n.format("multiblocked.pattern.error.capability", I18n.format(capability.getUnlocalizedName()), io.name())));
-        } else {
-            state.setError(new PatternStringError("find no io_capability: " + io.name() + "_" + capability.name));
-        }
+        state.setError(new PatternStringError(LocalizationUtils.format("multiblocked.pattern.error.capability", LocalizationUtils.format(capability.getUnlocalizedName()), io.name())));
         return false;
     }
 

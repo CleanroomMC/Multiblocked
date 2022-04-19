@@ -86,12 +86,6 @@ public class Multiblocked {
         }
     };
 
-    static {
-        location = new File(Loader.instance().getConfigDir(), "multiblocked");
-        location.mkdir();
-        new File(location, "assets").mkdir();
-    }
-
 
     public static boolean isClient() {
         return FMLLaunchHandler.side().isClient();
@@ -103,6 +97,7 @@ public class Multiblocked {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        location = new File(Loader.instance().getConfigDir(), MbdConfig.location);
         proxy.preInit();
     }
 

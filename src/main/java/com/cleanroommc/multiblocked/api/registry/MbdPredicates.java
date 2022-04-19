@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateAnyCapability;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateBlocks;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateComponent;
+import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateCustomAny;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateMetaTileEntity;
 import com.cleanroommc.multiblocked.api.pattern.predicates.PredicateStates;
 import com.cleanroommc.multiblocked.api.pattern.predicates.SimplePredicate;
@@ -53,6 +54,7 @@ public class MbdPredicates {
         registerPredicate(PredicateStates.class);
         registerPredicate(PredicateBlocks.class);
         registerPredicate(PredicateAnyCapability.class);
+        registerPredicate(PredicateCustomAny.class);
         if (Loader.isModLoaded(Multiblocked.MODID_GTCE) && isCEu()){
             registerPredicate(PredicateMetaTileEntity.class);
         }

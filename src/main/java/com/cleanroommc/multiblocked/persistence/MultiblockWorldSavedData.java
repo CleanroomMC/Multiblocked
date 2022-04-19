@@ -66,7 +66,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     private static WeakReference<World> worldRef;
 
     public static MultiblockWorldSavedData getOrCreate(World world) {
-        if (world instanceof DummyWorld) {
+        if (world == null || world instanceof DummyWorld) {
             return DUMMY;
         }
         MapStorage perWorldStorage = world.getPerWorldStorage();

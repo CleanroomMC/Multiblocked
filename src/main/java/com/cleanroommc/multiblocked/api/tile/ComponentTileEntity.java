@@ -87,7 +87,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     protected Map<MultiblockCapability<?>, CapabilityTrait> traits = new HashMap<>();
 
-    public final void setDefinition(ComponentDefinition definition) {
+    public void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
         for (Map.Entry<String, JsonElement> entry : this.definition.traits.entrySet()) {
             MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());

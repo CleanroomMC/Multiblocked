@@ -44,19 +44,15 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
         }
     }
 
-    public static ControllerDefinition tableDefinition;
-    public static PartDefinition partDefinition;
+    public final static ControllerDefinition tableDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table"), BlueprintTableTileEntity.class);
+    public final static PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));
 
     public static void registerBlueprintTable() {
-        tableDefinition = new ControllerDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table"), BlueprintTableTileEntity.class);
         tableDefinition.recipeMap.inputCapabilities.add(MbdCapabilities.ITEM);
         tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"));
         tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"));
         tableDefinition.isOpaqueCube = false;
-        tableDefinition.catalyst = null;
 
-
-        partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));
         partDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"));
         partDefinition.allowRotate = false;
         partDefinition.isOpaqueCube = false;

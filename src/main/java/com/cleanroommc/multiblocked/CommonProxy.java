@@ -15,6 +15,7 @@ import com.cleanroommc.multiblocked.api.registry.MbdItems;
 import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
 import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
+import com.cleanroommc.multiblocked.api.tile.ControllerTileTesterEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
 import crafttweaker.CraftTweakerAPI;
@@ -71,6 +72,8 @@ public class CommonProxy {
         MbdCapabilities.registerAnyCapabilityBlocks();
         // register blueprint table
         BlueprintTableTileEntity.registerBlueprintTable();
+        // register controller tester
+        ControllerTileTesterEntity.registerTestController();
         // register JsonBlockPatternBlock
         JsonBlockPatternWidget.registerBlock();
         // register JsonFiles

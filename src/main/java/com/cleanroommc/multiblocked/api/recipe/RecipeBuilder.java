@@ -371,26 +371,26 @@ public class RecipeBuilder {
 
     @Optional.Method(modid = Multiblocked.MODID_LC)
     @ZenMethod
-    public RecipeBuilder inputLE(int le) {
+    public RecipeBuilder inputLE(double le) {
         return inputLE(1, le);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_LC)
     @ZenMethod
-    public RecipeBuilder outputLE(int le) {
+    public RecipeBuilder outputLE(double le) {
         return outputLE(1, le);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_LC)
     @ZenMethod
-    public RecipeBuilder inputLE(float chance, int le) {
+    public RecipeBuilder inputLE(float chance, double le) {
         keyBuilder.append(LEMultiblockCapability.CAP.name).append(le);
         return input(LEMultiblockCapability.CAP, chance, le);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_LC)
     @ZenMethod
-    public RecipeBuilder outputLE(float chance, int le) {
+    public RecipeBuilder outputLE(float chance, double le) {
         keyBuilder.append(LEMultiblockCapability.CAP.name).append(le);
         return output(LEMultiblockCapability.CAP, chance, le);
     }

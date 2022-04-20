@@ -11,9 +11,11 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
+import stanhebben.zenscript.annotations.OperatorType;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenOperator;
 
 @ZenClass("mods.multiblocked.capability.CapabilityHolder")
 @ZenRegister
@@ -27,6 +29,12 @@ public interface ICapabilityProxyHolder {
     @ZenMethod
     default boolean hasProxy(IO io, MultiblockCapability<?> capability) {
         return hasProxies() && getCapabilities().contains(io, capability);
+    }
+
+    @ZenMethod
+    @ZenOperator(OperatorType.ADD)
+    default ICapabilityProxyHolder mergeWith(ICapabilityProxyHolder otherHolder) {
+        return new CommonCapabilityProxyHolder(getCapabilities()).mergeWith(otherHolder);
     }
 
     Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities();

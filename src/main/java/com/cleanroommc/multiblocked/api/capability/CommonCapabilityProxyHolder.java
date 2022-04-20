@@ -35,6 +35,21 @@ public class CommonCapabilityProxyHolder implements ICapabilityProxyHolder{
         }
     }
 
+    public CommonCapabilityProxyHolder(Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities) {
+        this.capabilities = capabilities;
+    }
+
+    public ICapabilityProxyHolder mergeWith(ICapabilityProxyHolder capabilityProxyHolder) {
+        if (hasProxies() && capabilityProxyHolder.hasProxies()) {
+            Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities = Tables.newCustomTable(new EnumMap<>(IO.class), Object2ObjectOpenHashMap::new);
+            capabilities.putAll(capabilities);
+            capabilities.putAll(capabilityProxyHolder.getCapabilities());
+            return new CommonCapabilityProxyHolder(capabilities);
+        } else {
+            return hasProxies() ? this : capabilityProxyHolder;
+        }
+    }
+
     @Override
     public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
         return capabilities;

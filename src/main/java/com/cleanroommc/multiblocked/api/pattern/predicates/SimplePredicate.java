@@ -250,10 +250,10 @@ public class SimplePredicate {
                 .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("tips (Y)", -1).setDropShadow(true))
                 .setHoverTooltip("add tooltips"));
 
-        group.addWidget(new SelectorWidget(130, 70, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
-                .setValue(io.name())
+        group.addWidget(new SelectorWidget(130, 70, 40, 15, Arrays.asList("IN", "OUT", "BOTH", "NULL"), -1)
+                .setValue(io == null ? "NULL" : io.name())
                 .setIsUp(true)
-                .setOnChanged(io-> this.io = IO.valueOf(io))
+                .setOnChanged(io-> this.io = io.equals("NULL") ? null : IO.valueOf(io))
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xff333333))
                 .setHoverTooltip("IO"));
@@ -275,7 +275,11 @@ public class SimplePredicate {
             jsonObject.addProperty("previewCount", previewCount);
         }
         if (io != IO.BOTH) {
-            jsonObject.addProperty("io", io.name());
+            if (io == null) {
+                jsonObject.addProperty("io", "null");
+            } else {
+                jsonObject.addProperty("io", io.name());
+            }
         }
         if (nbtParser != null) {
             jsonObject.addProperty("nbtParser", nbtParser);
@@ -294,7 +298,7 @@ public class SimplePredicate {
         minCount = JsonUtils.getInt(jsonObject, "minCount", minCount);
         maxCount = JsonUtils.getInt(jsonObject, "maxCount", maxCount);
         previewCount = JsonUtils.getInt(jsonObject, "previewCount", previewCount);
-        io = IO.valueOf(JsonUtils.getString(jsonObject, "io", io.name()));
+        io = JsonUtils.getString(jsonObject, "io", "").equals("null") ? null : IO.valueOf(JsonUtils.getString(jsonObject, "io", IO.BOTH.name()));
         nbtParser = JsonUtils.getString(jsonObject, "nbtParser", nbtParser);
         customTips = JsonUtils.getString(jsonObject, "customTips", customTips);
         isCTParser = JsonUtils.getBoolean(jsonObject, "isCTParser", isCTParser);

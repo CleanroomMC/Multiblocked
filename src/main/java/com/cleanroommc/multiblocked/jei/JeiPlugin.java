@@ -87,6 +87,7 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public void registerCategories(@Nonnull IRecipeCategoryRegistration registry) {
+        Multiblocked.LOGGER.info("JEI register categories");
         IJeiHelpers jeiHelpers = registry.getJeiHelpers();
         registry.addRecipeCategories(new MultiblockInfoCategory(jeiHelpers));
         for (RecipeMap recipeMap : RecipeMap.RECIPE_MAP_REGISTRY.values()) {
@@ -97,6 +98,7 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public void register(@Nonnull IModRegistry registry) {
+        Multiblocked.LOGGER.info("JEI register");
         IJeiHelpers jeiHelpers = registry.getJeiHelpers();
         ModularUIGuiHandler modularUIGuiHandler = new ModularUIGuiHandler(jeiHelpers.recipeTransferHandlerHelper());
         registry.addAdvancedGuiHandlers(modularUIGuiHandler);
@@ -115,6 +117,7 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(@Nonnull IModIngredientRegistration registry) {
+        Multiblocked.LOGGER.info("JEI register ingredients");
         if (Loader.isModLoaded(Multiblocked.MODID_TC6) && !Loader.isModLoaded(Multiblocked.MODID_THAUMJEI)) {
             ((AspectListIngredient) AspectListIngredient.INSTANCE).registerIngredients(registry);
         }

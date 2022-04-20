@@ -37,6 +37,7 @@ import java.io.File;
 public class CommonProxy {
 
     public void preInit() {
+        Multiblocked.LOGGER.info("pre init");
         if (Loader.isModLoaded(Multiblocked.MODID_GEO)) {
             GeckoLib.initialize();
         }
@@ -48,6 +49,7 @@ public class CommonProxy {
     }
 
     public void init() {
+        Multiblocked.LOGGER.info("init");
         // register recipe map
         RecipeMap.registerRecipeFromFile(Multiblocked.GSON, new File(Multiblocked.location, "recipe_map"));
         // execute init handler
@@ -56,11 +58,13 @@ public class CommonProxy {
         UIFactory.register(TileEntityUIFactory.INSTANCE);
         // loadCT
         if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
+            Multiblocked.LOGGER.info("ct loader multiblocked");
             CraftTweakerAPI.tweaker.loadScript(false, "multiblocked");
         }
     }
 
     public void postInit() {
+        Multiblocked.LOGGER.info("post init");
         for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
             capability.getAnyBlock().definition.baseRenderer = new CycleBlockStateRenderer(capability.getCandidates());
         }

@@ -128,11 +128,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return super.updateCurrentRenderer();
     }
 
-    @Override
-    public boolean hasProxies() {
-        return capabilities != null && !capabilities.isEmpty();
-    }
-
     public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
         return capabilities;
     }

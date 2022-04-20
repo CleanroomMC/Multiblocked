@@ -138,8 +138,13 @@ public class RecipeLogic {
     @ZenMethod
     public void setupRecipe(Recipe recipe) {
         if (definition.setupRecipe != null) {
-            if (definition.setupRecipe.apply(this, recipe)) {
-                return;
+            try {
+                if (definition.setupRecipe.apply(this, recipe)) {
+                    return;
+                }
+            } catch (Exception exception) {
+                definition.setupRecipe = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "setupRecipe", exception);
             }
         }
         if (recipe.handleRecipeIO(IO.IN, this.controller)) {
@@ -185,8 +190,13 @@ public class RecipeLogic {
     @ZenMethod
     public void onRecipeFinish() {
         if (definition.recipeFinish != null) {
-            if (definition.recipeFinish.apply(this, lastRecipe)) {
-                return;
+            try {
+                if (definition.recipeFinish.apply(this, lastRecipe)) {
+                    return;
+                }
+            } catch (Exception exception) {
+                definition.recipeFinish = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "recipeFinish", exception);
             }
         }
         lastRecipe.handleRecipeIO(IO.OUT, this.controller);

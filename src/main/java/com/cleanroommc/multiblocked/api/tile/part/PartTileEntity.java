@@ -50,7 +50,12 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
     @Override
     public IRenderer updateCurrentRenderer() {
         if (definition.dynamicRenderer != null) {
-            return definition.dynamicRenderer.apply(this);
+            try {
+                return definition.dynamicRenderer.apply(this);
+            } catch (Exception exception) {
+                definition.dynamicRenderer = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicRenderer", exception);
+            }
         }
         if (definition.workingRenderer != null) {
             for (ControllerTileEntity controller : getControllers()) {
@@ -81,7 +86,12 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
         if (controllerPos.add(controller.getPos())) {
             writeCustomData(-1, this::writeControllersToBuffer);
             if (definition.partAddedToMulti != null) {
-                definition.partAddedToMulti.apply(this, controller);
+                try {
+                    definition.partAddedToMulti.apply(this, controller);
+                } catch (Exception exception) {
+                    definition.partAddedToMulti = null;
+                    Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "partAddedToMulti", exception);
+                }
             }
             setStatus("idle");
         }
@@ -91,7 +101,12 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
         if (controllerPos.remove(controller.getPos())) {
             writeCustomData(-1, this::writeControllersToBuffer);
             if (definition.partRemovedFromMulti != null) {
-                definition.partRemovedFromMulti.apply(this, controller);
+                try {
+                    definition.partRemovedFromMulti.apply(this, controller);
+                } catch (Exception exception) {
+                    definition.partRemovedFromMulti = null;
+                    Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "partRemovedFromMulti", exception);
+                }
             }
             if (getControllers().isEmpty()) {
                 setStatus("unformed");

@@ -90,7 +90,7 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
 
     public static void registerTestController() {
         DEFAULT_DEFINITION.recipeMap.inputCapabilities.add(MbdCapabilities.ITEM);
-        DEFAULT_DEFINITION.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"));
+        DEFAULT_DEFINITION.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/controller_tester"));
         DEFAULT_DEFINITION.isOpaqueCube = false;
         DEFAULT_DEFINITION.basePattern = FactoryBlockPattern.start()
                 .aisle("@")

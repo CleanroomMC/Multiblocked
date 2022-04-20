@@ -10,6 +10,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.IOPageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.tester.ControllerPatternWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.tester.ZSScriptWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.Predicates;
@@ -20,6 +21,7 @@ import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
 
@@ -50,20 +52,26 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
 
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
-        TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
-        new ControllerPatternWidget(this, tabContainer);
-        if (getDefinition() != DEFAULT_DEFINITION) {
-            if (!traits.isEmpty()) initTraitUI(tabContainer, entityPlayer);
-            if (isFormed()) {
-                new RecipePage(this, tabContainer);
-                new IOPageWidget(this, tabContainer);
-            } else {
-                new StructurePageWidget(this.definition, tabContainer);
+        if (Multiblocked.isClient() && Multiblocked.isSinglePlayer()) {
+            TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
+            new ControllerPatternWidget(this, tabContainer);
+            if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
+                new ZSScriptWidget(tabContainer);
             }
+            if (getDefinition() != DEFAULT_DEFINITION) {
+                if (!traits.isEmpty()) initTraitUI(tabContainer, entityPlayer);
+                if (isFormed()) {
+                    new RecipePage(this, tabContainer);
+                    new IOPageWidget(this, tabContainer);
+                } else {
+                    new StructurePageWidget(this.definition, tabContainer);
+                }
+            }
+            return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
+                    .widget(tabContainer)
+                    .build(this, entityPlayer);
         }
-        return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
-                .widget(tabContainer)
-                .build(this, entityPlayer);
+        return null;
     }
 
     @Override

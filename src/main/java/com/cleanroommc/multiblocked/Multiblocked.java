@@ -11,6 +11,7 @@ import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -21,6 +22,8 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,6 +89,10 @@ public class Multiblocked {
 
     public static String prettyJson(String uglyJson) {
         return GSON_PRETTY.toJson(new JsonParser().parse(uglyJson));
+    }
+
+    public static boolean isSinglePlayer() {
+        return isClient() && Minecraft.getMinecraft().isSingleplayer();
     }
 
     @EventHandler

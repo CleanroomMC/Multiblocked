@@ -75,7 +75,7 @@ public class TextBoxWidget extends Widget {
             int wrapWidth = getSize().width * font.FONT_HEIGHT / fontSize;
             if (content != null) {
                 for (String textLine : content) {
-                    this.textLines.addAll(font.listFormattedStringToWidth(I18n.format(textLine), wrapWidth));
+                    this.textLines.addAll(font.listFormattedStringToWidth(textLine, wrapWidth));
                 }
             }
             this.setSize(new Size(this.getSize().width, this.textLines.size() * (fontSize + space)));

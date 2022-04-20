@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.Loader;
 import javax.annotation.Nonnull;
 
 public class ControllerTileTesterEntity extends ControllerTileEntity {
-    private final static ControllerDefinition DEFAULT_DEFINITION = new ControllerDefinition(new ResourceLocation("multiblocked:controller_tester"), ControllerTileTesterEntity.class);
+    public final static ControllerDefinition DEFAULT_DEFINITION = new ControllerDefinition(new ResourceLocation("multiblocked:controller_tester"), ControllerTileTesterEntity.class);
 
     @Override
     public void setDefinition(ComponentDefinition definition) {
@@ -37,7 +37,7 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
         }
         if (definition == null) {
             definition = DEFAULT_DEFINITION;
-        } else if (definition != DEFAULT_DEFINITION) {
+        } else if (definition != DEFAULT_DEFINITION && world != null) {
             if (isRemote()) {
                 scheduleChunkForRenderUpdate();
             } else {

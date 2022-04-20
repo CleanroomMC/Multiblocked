@@ -39,6 +39,8 @@ multiblocked.structure_page.switch=§6formed§r/§coriginal§r
 
 blueprint_table.name=Multiblocked Blueprint Table
 blueprint_table.description=Help you customize multiblock
+controller_tester.name=Controller Test Block
+controller_tester.description=You could use this block to test your scripts without restart game. It's unsafe, which can only be used in the single play.
 
 multiblocked.fluid.empty=Empty
 multiblocked.fluid.amount=§9Amount: %,d/%,d L

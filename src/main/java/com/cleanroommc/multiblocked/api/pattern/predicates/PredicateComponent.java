@@ -1,7 +1,9 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
+import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import com.cleanroommc.multiblocked.api.tile.ControllerTileTesterEntity;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.cleanroommc.multiblocked.Multiblocked;
@@ -43,9 +45,15 @@ public class PredicateComponent extends SimplePredicate {
                 return new BlockInfo[]{new BlockInfo(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(location).getDefaultState(), MbdComponents.DEFINITION_REGISTRY.get(location).createNewTileEntity(null))};
             } else {
                 if (definition == null) return new BlockInfo[0];
-                DummyComponentTileEntity te = new DummyComponentTileEntity();
-                te.setDefinition(definition);
-                return new BlockInfo[]{new BlockInfo(MbdComponents.DummyComponentBlock.getDefaultState(), te)};
+                if (definition instanceof ControllerDefinition){
+                    ControllerTileTesterEntity te = new ControllerTileTesterEntity();
+                    te.setDefinition(definition);
+                    return new BlockInfo[]{new BlockInfo(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(ControllerTileTesterEntity.DEFAULT_DEFINITION.location).getDefaultState(), te)};
+                } else {
+                    DummyComponentTileEntity te = new DummyComponentTileEntity();
+                    te.setDefinition(definition);
+                    return new BlockInfo[]{new BlockInfo(MbdComponents.DummyComponentBlock.getDefaultState(), te)};
+                }
             }
         };
         return this;

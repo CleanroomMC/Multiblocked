@@ -63,3 +63,4 @@ multiblocked.renderer.tparticle=Textured Particle
 multiblocked.renderer.blockstate=BlockState Model
 multiblocked.renderer.gregtech=GregTech Model
 
+multiblocked.top.recipe_progress=Progress:

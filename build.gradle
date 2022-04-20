@@ -92,6 +92,7 @@ dependencies {
     deobfCompile 'curse.maven:qmd-362056:3662442'
     deobfCompile 'curse.maven:thaumcraft-223628:2629023'
     deobfCompile 'curse.maven:thaumic-jei-285492:2705304'
+    deobfCompile 'curse.maven:the-one-probe-245211:2667280'
 }
 
 sourceSets {

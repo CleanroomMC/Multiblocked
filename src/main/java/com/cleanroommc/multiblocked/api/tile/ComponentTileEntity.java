@@ -77,7 +77,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     private EnumFacing frontFacing = EnumFacing.NORTH; // 0
 
-    private UUID owner = UUID.fromString("missing");
+    private UUID owner;
 
     private final int offset = Multiblocked.RNG.nextInt();
 
@@ -141,7 +141,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Nullable
     public EntityPlayer getOwner() {
-        return this.world.getPlayerEntityByUUID(owner);
+        return owner == null ? null : this.world.getPlayerEntityByUUID(owner);
     }
 
     public void setOwner(UUID player) {

@@ -89,12 +89,11 @@ public class AuraMultiblockCapability extends MultiblockCapability<Integer> {
 
             int sum = left.stream().reduce(0, Integer::sum);
             if (io == IO.IN) {
-                int cost = Math.min(IAuraChunk.getAuraInArea(world, pos, MbdConfig.naturesAura.radius), sum);
                 if (!simulate) {
                     BlockPos spot = IAuraChunk.getHighestSpot(world, pos, MbdConfig.naturesAura.radius, pos);
                     IAuraChunk.getAuraChunk(world, spot).drainAura(pos, sum);
                 }
-                sum -= cost;
+                return null;
             } else if (io == IO.OUT) {
                 if (!simulate) {
                     BlockPos spot = IAuraChunk.getLowestSpot(world, pos, MbdConfig.naturesAura.radius, pos);

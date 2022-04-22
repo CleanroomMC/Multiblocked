@@ -50,6 +50,9 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_PRODIGY)) {
             registerCapability(HotAirProdigyCapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_NA)) {
+            registerCapability(AuraMultiblockCapability.CAP);
+        }
     }
 
     public static MultiblockCapability<?> get(String s) {

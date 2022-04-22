@@ -2,7 +2,10 @@ package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.trait.SingleCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.ImpetusThaumicAugmentationCapability;
 import com.google.gson.JsonElement;
@@ -18,6 +21,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import thaumcraft.api.aspects.Aspect;
 import thecodex6824.thaumicaugmentation.ThaumicAugmentation;
 import thecodex6824.thaumicaugmentation.api.impetus.CapabilityImpetusStorage;
+import thecodex6824.thaumicaugmentation.api.impetus.IImpetusStorage;
 import thecodex6824.thaumicaugmentation.api.impetus.ImpetusStorage;
 import thecodex6824.thaumicaugmentation.api.impetus.node.CapabilityImpetusNode;
 import thecodex6824.thaumicaugmentation.api.impetus.node.NodeHelper;
@@ -31,8 +35,8 @@ import javax.annotation.Nullable;
  * @author youyihj
  */
 public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
-    private ImpetusStorage storage;
-    private BufferedImpetusProsumer node;
+    private ImpetusStorageProxy storage;
+    private ImpetusNodeProxy node;
     private int capacity;
     private int maxReceive;
     private int maxExtract;
@@ -61,20 +65,8 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
         beamEndpointXOffset = JsonUtils.getFloat(jsonObject, "beamEndpointXOffset", 0.5f);
         beamEndpointYOffset = JsonUtils.getFloat(jsonObject, "beamEndpointYOffset", 0.5f);
         beamEndpointZOffset = JsonUtils.getFloat(jsonObject, "beamEndpointZOffset", 0.5f);
-        storage = new ImpetusStorage(capacity, maxReceive, maxExtract);
-        node = new BufferedImpetusProsumer(maxInputs, maxOutputs, storage) {
-            @Override
-            public Vec3d getBeamEndpoint() {
-                Vec3d offset = new Vec3d(beamEndpointXOffset, beamEndpointYOffset, beamEndpointZOffset);
-                EnumFacing frontFacing = component.getFrontFacing();
-                EnumFacing currentFacing = EnumFacing.NORTH;
-                while (currentFacing != frontFacing) {
-                    currentFacing = currentFacing.rotateYCCW();
-                    offset = rotateYCCW(offset);
-                }
-                return super.getBeamEndpoint().add(offset);
-            }
-        };
+        storage = new ImpetusStorageProxy(capacity, maxReceive, maxExtract);
+        node = new ImpetusNodeProxy(maxInputs, maxOutputs, storage);
     }
 
     private static Vec3d rotateYCCW(Vec3d toRotate) {
@@ -119,6 +111,7 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
     public void onLoad() {
         node.setLocation(new DimensionalBlockPos(component.getPos(), component.getWorld().provider.getDimension()));
         node.init(component.getWorld());
+        ThaumicAugmentation.proxy.registerRenderableImpetusNode(node);
     }
 
     @Override
@@ -140,7 +133,7 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
     @Override
     public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
         super.createUI(component, group, player);
-        group.addWidget(new LabelWidget(100, 80, () ->
+        group.addWidget(new LabelWidget(50, 80, () ->
             String.format("Impetus Stored: %d / %d", storage.getEnergyStored(), storage.getMaxEnergyStored())
         ));
     }
@@ -152,6 +145,75 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
         }
         node.destroy();
         ThaumicAugmentation.proxy.deregisterRenderableImpetusNode(node);
+    }
+
+    @Override
+    protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot) {
+        super.initSettingDialog(dialog, slot);
+
+        dialog.addWidget(new TextFieldWidget(60, 25, 100, 15, true, null, s -> {
+            capacity = Integer.parseInt(s);
+            updateSettings();
+        })
+                .setNumbersOnly(1, Integer.MAX_VALUE)
+                .setCurrentString(capacity + "")
+                .setHoverTooltip("capacity"));
+
+        dialog.addWidget(new TextFieldWidget(60, 45, 100, 15, true, null, s -> {
+            maxReceive = Integer.parseInt(s);
+            updateSettings();
+        })
+                .setNumbersOnly(1, Integer.MAX_VALUE)
+                .setCurrentString(maxReceive + "")
+                .setHoverTooltip("maxReceive (per package)"));
+
+        dialog.addWidget(new TextFieldWidget(60, 65, 100, 15, true, null, s -> {
+            maxExtract = Integer.parseInt(s);
+            updateSettings();
+        })
+                .setNumbersOnly(1, Integer.MAX_VALUE)
+                .setCurrentString(maxExtract + "")
+                .setHoverTooltip("maxExtract (per package)"));
+
+        dialog.addWidget(new TextFieldWidget(60, 85, 100, 15, true, null, s -> {
+            maxInputs = Integer.parseInt(s);
+            updateSettings();
+        })
+                .setNumbersOnly(0, 10)
+                .setCurrentString(maxInputs + "")
+                .setHoverTooltip("maxInputs"));
+
+        dialog.addWidget(new TextFieldWidget(60, 105, 100, 15, true, null, s -> {
+            maxOutputs = Integer.parseInt(s);
+            updateSettings();
+        })
+                .setNumbersOnly(0, 10)
+                .setCurrentString(maxOutputs + "")
+                .setHoverTooltip("maxOutputs"));
+
+        dialog.addWidget(new TextFieldWidget(60, 125, 100, 15, true, null, s -> {
+            beamEndpointXOffset = Float.parseFloat(s);
+            updateSettings();
+        })
+                .setNumbersOnly(-5.0f, 5.0f)
+                .setCurrentString(beamEndpointXOffset + "")
+                .setHoverTooltip("beamEndPointXOffset"));
+
+        dialog.addWidget(new TextFieldWidget(60, 145, 100, 15, true, null, s -> {
+            beamEndpointYOffset = Float.parseFloat(s);
+            updateSettings();
+        })
+                .setNumbersOnly(-5.0f, 5.0f)
+                .setCurrentString(beamEndpointYOffset + "")
+                .setHoverTooltip("beamEndpointYOffset"));
+
+        dialog.addWidget(new TextFieldWidget(60, 165, 100, 15, true, null, s -> {
+            beamEndpointZOffset = Float.parseFloat(s);
+            updateSettings();
+        })
+                .setNumbersOnly(-5.0f, 5.0f)
+                .setCurrentString(beamEndpointZOffset + "")
+                .setHoverTooltip("beamEndpointZOffset"));
     }
 
     @Nullable
@@ -170,5 +232,47 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
     @Override
     public <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         return getCapability(capability, facing);
+    }
+
+    public void updateSettings() {
+        storage.updateSettings();
+        node.updateSettings();
+    }
+
+    private class ImpetusStorageProxy extends ImpetusStorage {
+
+        public ImpetusStorageProxy(long maxEnergy, long maxReceive, long maxExtract) {
+            super(maxEnergy, maxReceive, maxExtract);
+        }
+
+        void updateSettings() {
+            ImpetusStorageProxy.this.maxEnergy = ImpetusCapabilityTrait.this.capacity;
+            ImpetusStorageProxy.this.maxExtract = ImpetusCapabilityTrait.this.maxExtract;
+            ImpetusStorageProxy.this.maxReceive = ImpetusCapabilityTrait.this.maxReceive;
+        }
+    }
+
+    private class ImpetusNodeProxy extends BufferedImpetusProsumer {
+
+        public ImpetusNodeProxy(int totalInputs, int totalOutputs, IImpetusStorage owning) {
+            super(totalInputs, totalOutputs, owning);
+        }
+
+        void updateSettings() {
+            ImpetusNodeProxy.this.maxInputs = ImpetusCapabilityTrait.this.maxInputs;
+            ImpetusNodeProxy.this.maxOutputs = ImpetusCapabilityTrait.this.maxOutputs;
+        }
+
+        @Override
+        public Vec3d getBeamEndpoint() {
+            Vec3d offset = new Vec3d(beamEndpointXOffset, beamEndpointYOffset, beamEndpointZOffset);
+            EnumFacing frontFacing = component.getFrontFacing();
+            EnumFacing currentFacing = EnumFacing.NORTH;
+            while (currentFacing != frontFacing) {
+                currentFacing = currentFacing.rotateYCCW();
+                offset = rotateYCCW(offset);
+            }
+            return new Vec3d(component.getPos()).add(offset);
+        }
     }
 }

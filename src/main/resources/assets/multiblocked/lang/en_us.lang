@@ -40,6 +40,8 @@ multiblocked.structure_page.switch=§6formed§r/§coriginal§r
 blueprint_table.name=Blueprint Table Core
 blueprint_table.description=Multiblock Creator and Customizer
 blueprint_table_part.name=Blueprint Table
+controller_tester.name=Controller Test Block
+controller_tester.description=You could use this block to test your scripts without restart game. It's unsafe, which can only be used in the single play.
 
 multiblocked.fluid.empty=Empty
 multiblocked.fluid.amount=§9Amount: %,d/%,d L
@@ -159,3 +161,4 @@ multiblocked.gui.dialogs.recipe_map.remove_recipe=Remove Selected recipe
 multiblocked.gui.dialogs.recipe_map.progress=Set a Progress Bar Texture
 multiblocked.gui.dialogs.recipe_map.add_in=Add an Input Ingredient
 multiblocked.gui.dialogs.recipe_map.add_out=Add an Output Ingredient
+multiblocked.top.recipe_progress=Progress:

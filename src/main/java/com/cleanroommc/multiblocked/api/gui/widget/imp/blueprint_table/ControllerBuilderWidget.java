@@ -146,15 +146,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                                 String recipeMap = jsonElement.getAsJsonObject().get("recipeMap").getAsString();
                                 JsonBlockPattern pattern = Multiblocked.GSON.fromJson(jsonElement.getAsJsonObject().get("basePattern"), JsonBlockPattern.class);
                                 ControllerDefinition definition = Multiblocked.GSON.fromJson(jsonElement, ControllerDefinition.class);
-                                for (Widget widget : widgets) {
-                                    widget.setVisible(false);
-                                    widget.setActive(false);
-                                }
                                 new ControllerWidget(this, definition, pattern, recipeMap, jsonObject -> {
-                                    for (Widget widget : widgets) {
-                                        widget.setVisible(true);
-                                        widget.setActive(true);
-                                    }
                                     if (jsonObject != null) {
                                         FileUtility.saveJson(file, jsonObject);
                                     }

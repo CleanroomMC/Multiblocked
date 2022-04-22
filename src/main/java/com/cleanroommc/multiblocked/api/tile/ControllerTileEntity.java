@@ -72,7 +72,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     public BlockPattern getPattern() {
         if (definition.dynamicPattern != null) {
-            return definition.dynamicPattern.apply(this);
+            try {
+                return definition.dynamicPattern.apply(this);
+            } catch (Exception exception) {
+                definition.dynamicPattern = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicPattern", exception);
+            }
         }
         return definition.basePattern;
     }
@@ -113,24 +118,29 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             recipeLogic.update();
         }
         if (definition.updateFormed != null) {
-            definition.updateFormed.apply(this);
+            try {
+                definition.updateFormed.apply(this);
+            } catch (Exception exception) {
+                definition.updateFormed = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "updateFormed", exception);
+            }
         }
     }
 
     @Override
     public IRenderer updateCurrentRenderer() {
         if (definition.dynamicRenderer != null) {
-            return definition.dynamicRenderer.apply(this);
+            try {
+                return definition.dynamicRenderer.apply(this);
+            } catch (Exception exception) {
+                definition.dynamicRenderer = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicRenderer", exception);
+            }
         }
         if (definition.workingRenderer != null && isFormed() && (status.equals("working") || status.equals("suspend"))) {
             return definition.workingRenderer;
         }
         return super.updateCurrentRenderer();
-    }
-
-    @Override
-    public boolean hasProxies() {
-        return capabilities != null && !capabilities.isEmpty();
     }
 
     public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
@@ -205,7 +215,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
         writeCustomData(-1, this::writeState);
         if (definition.structureFormed != null) {
-            definition.structureFormed.apply(this);
+            try {
+                definition.structureFormed.apply(this);
+            } catch (Exception exception) {
+                definition.structureFormed = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "structureFormed", exception);
+            }
         }
     }
     
@@ -226,7 +241,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
         writeCustomData(-1, this::writeState);
         if (definition.structureInvalid != null) {
-            definition.structureInvalid.apply(this);
+            try {
+                definition.structureInvalid.apply(this);
+            } catch (Exception exception) {
+                definition.structureInvalid = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "structureInvalid", exception);
+            }
         }
     }
 
@@ -350,7 +370,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     @Override
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (definition.onRightClick != null) {
-            if (definition.onRightClick.apply(this, CraftTweakerMC.getIPlayer(player), CraftTweakerMC.getIFacing(facing), hitX, hitY, hitZ)) return true;
+            try {
+                if (definition.onRightClick.apply(this, CraftTweakerMC.getIPlayer(player), CraftTweakerMC.getIFacing(facing), hitX, hitY, hitZ)) return true;
+            } catch (Exception exception) {
+                definition.onRightClick = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onRightClick", exception);
+            }
         }
         if (!world.isRemote) {
             if (!isFormed() && definition.catalyst != null) {

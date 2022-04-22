@@ -1,10 +1,12 @@
 package com.cleanroommc.multiblocked.api.pattern.predicates;
 
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
+import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import com.cleanroommc.multiblocked.api.tile.ControllerTileTesterEntity;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
@@ -37,16 +39,21 @@ public class PredicateComponent extends SimplePredicate {
 
     @Override
     public SimplePredicate buildPredicate() {
-        predicate = state -> state.getBlockState().getBlock() instanceof BlockComponent && ((BlockComponent) state.getBlockState().getBlock()).definition.location.equals(location);
+        predicate = state -> state.getTileEntity() instanceof ComponentTileEntity<?> && ((ComponentTileEntity<?>) state.getTileEntity()).getDefinition().location.equals(location);
         candidates = () -> {
             if (MbdComponents.COMPONENT_BLOCKS_REGISTRY.containsKey(location)) {
-                return new BlockInfo[]{new BlockInfo(
-                        MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(location).getDefaultState(), MbdComponents.DEFINITION_REGISTRY.get(location).createNewTileEntity(null))};
+                return new BlockInfo[]{new BlockInfo(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(location).getDefaultState(), MbdComponents.DEFINITION_REGISTRY.get(location).createNewTileEntity(null))};
             } else {
                 if (definition == null) return new BlockInfo[0];
-                DummyComponentTileEntity te = new DummyComponentTileEntity();
-                te.setDefinition(definition);
-                return new BlockInfo[]{new BlockInfo(MbdComponents.DummyComponentBlock.getDefaultState(), te)};
+                if (definition instanceof ControllerDefinition){
+                    ControllerTileTesterEntity te = new ControllerTileTesterEntity();
+                    te.setDefinition(definition);
+                    return new BlockInfo[]{new BlockInfo(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(ControllerTileTesterEntity.DEFAULT_DEFINITION.location).getDefaultState(), te)};
+                } else {
+                    DummyComponentTileEntity te = new DummyComponentTileEntity();
+                    te.setDefinition(definition);
+                    return new BlockInfo[]{new BlockInfo(MbdComponents.DummyComponentBlock.getDefaultState(), te)};
+                }
             }
         };
         return this;

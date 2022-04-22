@@ -49,20 +49,22 @@ public class PredicateAnyCapability extends SimplePredicate {
         predicate = state -> state.getBlockState().getBlock() == capability.getAnyBlock() || checkCapability(io, capability, state);
         candidates = () -> new BlockInfo[]{BlockInfo.fromBlockState(capability.getAnyBlock().getDefaultState())};
         toolTips = new ArrayList<>();
-        toolTips.add(String.format("Any Capability: %s IO: %s", capability.name, io.name()));
+        toolTips.add(String.format("Any Capability: %s IO: %s", capability.name, io == null ? "NULL" : io.name()));
         return this;
     }
 
     private static boolean checkCapability(IO io, MultiblockCapability<?> capability, MultiblockState state) {
-        TileEntity tileEntity = state.getTileEntity();
-        if (tileEntity != null && capability.isBlockHasCapability(io, tileEntity)) {
-            Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilities = state.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
-            capabilities.computeIfAbsent(state.getPos().toLong(), l-> new EnumMap<>(IO.class))
-                    .computeIfAbsent(io, x->new HashSet<>())
-                    .add(capability);
-            return true;
+        if (io != null) {
+            TileEntity tileEntity = state.getTileEntity();
+            if (tileEntity != null && capability.isBlockHasCapability(io, tileEntity)) {
+                Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilities = state.getMatchContext().getOrCreate("capabilities", Long2ObjectOpenHashMap::new);
+                capabilities.computeIfAbsent(state.getPos().toLong(), l-> new EnumMap<>(IO.class))
+                        .computeIfAbsent(io, x->new HashSet<>())
+                        .add(capability);
+                return true;
+            }
         }
-        state.setError(new PatternStringError(LocalizationUtils.format("multiblocked.pattern.error.capability", LocalizationUtils.format(capability.getUnlocalizedName()), io.name())));
+        state.setError(new PatternStringError(LocalizationUtils.format("multiblocked.pattern.error.capability", LocalizationUtils.format(capability.getUnlocalizedName()), io == null ? "NULL" : io.name())));
         return false;
     }
 

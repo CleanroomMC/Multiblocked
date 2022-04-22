@@ -87,7 +87,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     protected Map<MultiblockCapability<?>, CapabilityTrait> traits = new HashMap<>();
 
-    public final void setDefinition(ComponentDefinition definition) {
+    public void setDefinition(ComponentDefinition definition) {
         this.definition = (T) definition;
         for (Map.Entry<String, JsonElement> entry : this.definition.traits.entrySet()) {
             MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
@@ -141,7 +141,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Nullable
     public EntityPlayer getOwner() {
-        return this.world.getPlayerEntityByUUID(owner);
+        return owner == null ? null : this.world.getPlayerEntityByUUID(owner);
     }
 
     public void setOwner(UUID player) {
@@ -155,7 +155,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public void update(){
         timer++;
         if (definition.updateTick != null) {
-            definition.updateTick.apply(this);
+            try {
+                definition.updateTick.apply(this);
+            } catch (Exception exception) {
+                definition.updateTick = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "updateTick", exception);
+            }
         }
         if (!traits.isEmpty()) {
             for (CapabilityTrait trait : traits.values()) {
@@ -172,7 +177,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         if (!isRemote()) {
             if (!this.status.equals(status)) {
                 if (definition.statusChanged != null) {
-                    status = definition.statusChanged.apply(this, status);
+                    try {
+                        status = definition.statusChanged.apply(this, status);
+                    } catch (Exception exception) {
+                        definition.statusChanged = null;
+                        Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "statusChanged", exception);
+                    }
                 }
                 this.status = status;
                 writeCustomData(1, buffer->buffer.writeString(this.status));
@@ -210,7 +220,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public IRenderer updateCurrentRenderer() {
         if (definition.dynamicRenderer != null) {
-            return definition.dynamicRenderer.apply(this);
+            try {
+                return definition.dynamicRenderer.apply(this);
+            } catch (Exception exception) {
+                definition.dynamicRenderer = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicRenderer", exception);
+            }
         }
         if (isFormed()) {
             return definition.formedRenderer == null ? definition.baseRenderer : definition.formedRenderer;
@@ -242,7 +257,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public int getOutputRedstoneSignal(EnumFacing facing) {
         if (definition.getOutputRedstoneSignal != null) {
-            return definition.getOutputRedstoneSignal.apply(this, CraftTweakerMC.getIFacing(facing));
+            try {
+                return definition.getOutputRedstoneSignal.apply(this, CraftTweakerMC.getIFacing(facing));
+            } catch (Exception exception) {
+                definition.getOutputRedstoneSignal = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "getOutputRedstoneSignal", exception);
+            }
         }
         return 0;
     }
@@ -288,17 +308,27 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public void onDrops(NonNullList<ItemStack> drops, EntityPlayer player) {
         if (definition.onDrops != null) {
-            for (IItemStack drop : definition.onDrops.apply(this, CraftTweakerMC.getIPlayer(player))) {
-                drops.add(CraftTweakerMC.getItemStack(drop));
+            try {
+                for (IItemStack drop :  definition.onDrops.apply(this, CraftTweakerMC.getIPlayer(player))) {
+                    drops.add(CraftTweakerMC.getItemStack(drop));
+                }
+                return;
+            } catch (Exception exception) {
+                definition.onDrops = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onDrops", exception);
             }
-        } else {
-            drops.add(definition.getStackForm());
         }
+        drops.add(definition.getStackForm());
     }
 
     public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (definition.onRightClick != null) {
-            if (definition.onRightClick.apply(this, CraftTweakerMC.getIPlayer(player), CraftTweakerMC.getIFacing(facing), hitX, hitY, hitZ)) return true;
+            try {
+                if (definition.onRightClick.apply(this, CraftTweakerMC.getIPlayer(player), CraftTweakerMC.getIFacing(facing), hitX, hitY, hitZ)) return true;
+            } catch (Exception exception) {
+                definition.onRightClick = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onRightClick", exception);
+            }
         }
         if (!player.isSneaking()) {
             if (!world.isRemote && player instanceof EntityPlayerMP) {
@@ -312,13 +342,23 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     public void onLeftClick(EntityPlayer player) {
         if (definition.onLeftClick != null) {
-            definition.onLeftClick.apply(this, CraftTweakerMC.getIPlayer(player));
+            try {
+                definition.onLeftClick.apply(this, CraftTweakerMC.getIPlayer(player));
+            } catch (Exception exception) {
+                definition.onLeftClick = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onLeftClick", exception);
+            }
         }
     }
 
     public void onNeighborChanged() {
         if (definition.onNeighborChanged != null) {
-            definition.onNeighborChanged.apply(this);
+            try {
+                definition.onNeighborChanged.apply(this);
+            } catch (Exception exception) {
+                definition.onNeighborChanged = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onNeighborChanged", exception);
+            }
         }
     }
     //************* capability *************//
@@ -409,14 +449,19 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         buf.writeByte(this.frontFacing.getIndex());
         buf.writeString(status);
         if (definition.writeInitialData != null) { // ct
-            IData data = definition.writeInitialData.apply(this);
-            if (data != null) {
-                buf.writeBoolean(true);
-                NBTTagCompound tag = new NBTTagCompound();
-                tag.setTag("data", CraftTweakerMC.getNBT(data));
-                buf.writeCompoundTag(tag);
-            } else {
-                buf.writeBoolean(false);
+            try {
+                IData data = definition.writeInitialData.apply(this);
+                if (data != null) {
+                    buf.writeBoolean(true);
+                    NBTTagCompound tag = new NBTTagCompound();
+                    tag.setTag("data", CraftTweakerMC.getNBT(data));
+                    buf.writeCompoundTag(tag);
+                } else {
+                    buf.writeBoolean(false);
+                }
+            } catch (Exception exception) {
+                definition.writeInitialData = null;
+                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "writeInitialData", exception);
             }
         } else {
             buf.writeBoolean(false);
@@ -431,7 +476,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             try {
                 NBTTagCompound nbt = buf.readCompoundTag();
                 if (nbt != null && definition.readInitialData != null) {
-                    definition.readInitialData.apply(this, CraftTweakerMC.getIData(nbt.getTag("data")));
+                    try {
+                        definition.readInitialData.apply(this, CraftTweakerMC.getIData(nbt.getTag("data")));
+                    } catch (Exception exception) {
+                        definition.readInitialData = null;
+                        Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "readInitialData", exception);
+                    }
                 }
             } catch (IOException e) {
                 Multiblocked.LOGGER.error("handling ct initial data error");
@@ -451,7 +501,12 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             try {
                 NBTTagCompound nbt = buf.readCompoundTag();
                 if (nbt != null && definition.receiveCustomData != null) {
-                    definition.receiveCustomData.apply(this, id, CraftTweakerMC.getIData(nbt.getTag("data")));
+                    try {
+                        definition.receiveCustomData.apply(this, id, CraftTweakerMC.getIData(nbt.getTag("data")));
+                    } catch (Exception exception) {
+                        definition.receiveCustomData = null;
+                        Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "receiveCustomData", exception);
+                    }
                 }
             } catch (IOException e) {
                 Multiblocked.LOGGER.error("handling ct custom data error id:{}", id);
@@ -504,7 +559,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
         }
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
-        this.owner = compound.getUniqueId("owner");
+        if (compound.hasKey("owner")) {
+            this.owner = compound.getUniqueId("owner");
+        }
         if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
             persistentData = CraftTweakerMC.getIData(compound.getTag("ct_persistent"));
         }
@@ -520,7 +577,9 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         super.writeToNBT(compound);
         compound.setString("loc", definition.location.toString());
         compound.setByte("frontFacing", (byte) frontFacing.getIndex());
-        compound.setUniqueId("owner", this.owner);
+        if (this.owner != null) {
+            compound.setUniqueId("owner", this.owner);
+        }
         compound.setString("mbd_def", definition.location.toString());
         if (Loader.isModLoaded(Multiblocked.MODID_CT) && persistentData instanceof IData) {
             compound.setTag("ct_persistent", CraftTweakerMC.getNBT((IData) persistentData));

@@ -1,0 +1,21 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"particle": "multiblocked:blocks/blueprint_table",
+		"table": "multiblocked:blocks/blueprint_table"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 10.66667, 5.33334, 16], "texture": "#table", "cullface": "north"},
+				"east": {"uv": [0, 10.66667, 5.33334, 16], "texture": "#table", "cullface": "east"},
+				"south": {"uv": [0, 16, 5.33334, 10.66667], "texture": "#table", "cullface": "south"},
+				"west": {"uv": [0, 10.66667, 5.33334, 16], "texture": "#table", "cullface": "west"},
+				"up": {"uv": [0, 10.66667, 5.33333, 16], "texture": "#table", "cullface": "up"},
+				"down": {"uv": [0, 10.66667, 5.33333, 16], "texture": "#table"}
+			}
+		}
+	]
+}

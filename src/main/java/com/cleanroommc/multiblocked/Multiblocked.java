@@ -1,21 +1,17 @@
 package com.cleanroommc.multiblocked;
 
-import com.cleanroommc.multiblocked.api.json.BlockTypeAdapterFactory;
-import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
-import com.cleanroommc.multiblocked.api.json.IBlockStateTypeAdapterFactory;
-import com.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
-import com.cleanroommc.multiblocked.api.json.ItemStackTypeAdapter;
-import com.cleanroommc.multiblocked.api.json.RecipeMapTypeAdapter;
-import com.cleanroommc.multiblocked.api.json.RecipeTypeAdapter;
-import com.cleanroommc.multiblocked.api.json.SimplePredicateFactory;
+import com.cleanroommc.multiblocked.api.json.*;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
+import com.cleanroommc.multiblocked.command.CommandClient;
+import com.cleanroommc.multiblocked.integration.InfoProviders;
 import com.cleanroommc.multiblocked.command.CommandMbdTree;
 import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -24,12 +20,10 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,8 +48,10 @@ public class Multiblocked {
     public static final String MODID_MEK = "mekanism";
     public static final String MODID_GEO = "geckolib3";
     public static final String MODID_GTCE = "gregtech";
+    public static final String MODID_LC = "lightningcraft";
+    public static final String MODID_TOP = "theoneprobe";
     public static final String NAME = "Multiblocked";
-    public static final String VERSION = "0.4.0";
+    public static final String VERSION = "0.4.1";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
@@ -95,6 +91,10 @@ public class Multiblocked {
         return GSON_PRETTY.toJson(new JsonParser().parse(uglyJson));
     }
 
+    public static boolean isSinglePlayer() {
+        return isClient() && Minecraft.getMinecraft().isSingleplayer();
+    }
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         location = new File(Loader.instance().getConfigDir(), MbdConfig.location);
@@ -104,6 +104,9 @@ public class Multiblocked {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         proxy.init();
+        if (Loader.isModLoaded(MODID_TOP)) {
+            InfoProviders.registerTOP();
+        }
     }
 
     @EventHandler

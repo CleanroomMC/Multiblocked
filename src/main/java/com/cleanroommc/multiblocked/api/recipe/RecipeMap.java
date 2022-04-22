@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import crafttweaker.annotations.ZenRegister;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenConstructor;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
@@ -51,10 +52,10 @@ public class RecipeMap {
 
     public HashMap<String, Recipe> recipes = new HashMap<>();
 
+    @ZenConstructor
     public RecipeMap(String name) {
         this.name = name;
     }
-
 
     public RecipeMap copy() {
         RecipeMap copy = new RecipeMap(name);
@@ -66,6 +67,7 @@ public class RecipeMap {
         return copy;
     }
 
+    @ZenMethod
     public static void register(RecipeMap recipeMap) {
         RECIPE_MAP_REGISTRY.put(recipeMap.name, recipeMap);
     }

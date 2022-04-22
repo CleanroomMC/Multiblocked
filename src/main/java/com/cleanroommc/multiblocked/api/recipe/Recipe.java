@@ -141,18 +141,19 @@ public class Recipe {
         return true;
     }
 
+    @ZenMethod
     public boolean handleTickRecipeIO(IO io, ICapabilityProxyHolder holder) {
         if (!holder.hasProxies() || io == IO.BOTH) return false;
         return handleRecipe(io, holder, io == IO.IN ? tickInputs : tickOutputs);
     }
 
+    @ZenMethod
     public boolean handleRecipeIO (IO io, ICapabilityProxyHolder holder) {
         if (!holder.hasProxies() || io == IO.BOTH) return false;
         return handleRecipe(io, holder, io == IO.IN ? inputs : outputs);
     }
 
     @SuppressWarnings("ALL")
-    @ZenMethod
     public boolean handleRecipe(IO io, ICapabilityProxyHolder holder, ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> contents) {
         Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : contents.entrySet()) {

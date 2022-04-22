@@ -421,6 +421,32 @@ public class RecipeBuilder {
         return output(HotAirProdigyCapability.CAP, chance, hotAir);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_NA)
+    @ZenMethod
+    public RecipeBuilder inputAura(int aura) {
+        return inputAura(1, aura);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_NA)
+    @ZenMethod
+    public RecipeBuilder outputAura(int aura) {
+        return outputAura(1, aura);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_NA)
+    @ZenMethod
+    public RecipeBuilder inputAura(float chance, int aura) {
+        keyBuilder.append(AuraMultiblockCapability.CAP.name).append(aura);
+        return input(AuraMultiblockCapability.CAP, chance, aura);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_NA)
+    @ZenMethod
+    public RecipeBuilder outputAura(float chance, int aura) {
+        keyBuilder.append(AuraMultiblockCapability.CAP.name).append(aura);
+        return output(AuraMultiblockCapability.CAP, chance, aura);
+    }
+
     @ZenMethod
     public Recipe build() {
         ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputBuilder = new ImmutableMap.Builder<>();

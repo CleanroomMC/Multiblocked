@@ -93,6 +93,8 @@ dependencies {
     deobfCompile 'curse.maven:thaumcraft-223628:2629023'
     deobfCompile 'curse.maven:thaumic-jei-285492:2705304'
     deobfCompile 'curse.maven:the-one-probe-245211:2667280'
+    deobfCompile 'curse.maven:prodigy-tech-297414:2769520'
+    deobfCompile 'curse.maven:patchouli-306770:3162874'
 }
 
 sourceSets {

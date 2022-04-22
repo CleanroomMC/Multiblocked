@@ -76,6 +76,7 @@ public class LEMultiblockCapability extends MultiblockCapability<Double> {
         @Override
         protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, boolean simulate) {
             TileEntityLightningCell tile = (TileEntityLightningCell) getTileEntity();
+            if (tile == null) return left;
             double sum = left.stream().reduce(0d, Double::sum);
             if (io == IO.IN) {
                 double in = Math.min(tile.storedPower, sum);
@@ -98,7 +99,7 @@ public class LEMultiblockCapability extends MultiblockCapability<Double> {
         @Override
         protected boolean hasInnerChanged() {
             TileEntityLightningCell tile = (TileEntityLightningCell) getTileEntity();
-            if (tile.storedPower == storedPower) {
+            if (tile == null || tile.storedPower == storedPower) {
                 return false;
             }
             storedPower = tile.storedPower;

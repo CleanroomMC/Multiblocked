@@ -115,7 +115,7 @@ public abstract class PlayerCapabilityTrait extends CapabilityTrait {
     protected void refreshSlots(DraggableScrollableWidgetGroup dragGroup) {
         dragGroup.widgets.forEach(dragGroup::waitToRemoved);
         ButtonWidget setting = (ButtonWidget) new ButtonWidget(width - 8, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("settings");
-        ImageWidget imageWidget = new ImageWidget(0, 0, width, height, new TextTexture("Player Name").setBackgroundColor(0xff000000));
+        ImageWidget imageWidget = new ImageWidget(0, 0, width, height, new TextTexture("Player Name").setWidth(width).setType(textType).setBackgroundColor(0xff000000));
         setting.setVisible(false);
         DraggableWidgetGroup slot = new DraggableWidgetGroup(x, y, width, height);
         slot.setOnSelected(w -> setting.setVisible(true));
@@ -153,7 +153,8 @@ public abstract class PlayerCapabilityTrait extends CapabilityTrait {
             imageWidget.setSize(size);
             setting.setSelfPosition(new Position(width - 8, 0));
         }).setCurrentString(height + "").setNumbersOnly(10, 180).setHoverTooltip("set height"));
-        dialog.addWidget(new SelectorWidget(5, 5, 50, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(
+
+        dialog.addWidget(new SelectorWidget(5, 5, 50, 15, Arrays.stream(TextTexture.TextType.values()).map(Enum::name).collect(
                 Collectors.toList()), -1)
                 .setValue(textType.name())
                 .setOnChanged(io-> {

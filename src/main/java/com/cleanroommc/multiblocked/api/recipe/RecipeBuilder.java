@@ -447,6 +447,32 @@ public class RecipeBuilder {
         return output(AuraMultiblockCapability.CAP, chance, aura);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_EU2)
+    @ZenMethod
+    public RecipeBuilder inputGP(float gp) {
+        return inputGP(1, gp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_EU2)
+    @ZenMethod
+    public RecipeBuilder outputGP(float gp) {
+        return outputGP(1, gp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_EU2)
+    @ZenMethod
+    public RecipeBuilder inputGP(float chance, float gp) {
+        keyBuilder.append(GPExtraUtilities2Capability.CAP.name).append(gp);
+        return input(GPExtraUtilities2Capability.CAP, chance, gp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_EU2)
+    @ZenMethod
+    public RecipeBuilder outputGP(float chance, float gp) {
+        keyBuilder.append(GPExtraUtilities2Capability.CAP.name).append(gp);
+        return output(GPExtraUtilities2Capability.CAP, chance, gp);
+    }
+
     @ZenMethod
     public Recipe build() {
         ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputBuilder = new ImmutableMap.Builder<>();

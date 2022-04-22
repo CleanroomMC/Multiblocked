@@ -117,10 +117,15 @@ public class BlockStateRenderer implements ICustomRenderer {
 
     @SideOnly(Side.CLIENT)
     public TileEntity getTileEntity(World world, BlockPos pos) {
-        TileEntity tile = getBlockInfo().getTileEntity();
+        BlockInfo blockInfo = getBlockInfo();
+        TileEntity tile = blockInfo.getTileEntity();
         if (tile != null) {
-            tile.setWorld(new FacadeBlockWorld(world, pos, getState(), tile));
-            tile.setPos(pos);
+            try {
+                tile.setWorld(new FacadeBlockWorld(world, pos, getState(), tile));
+                tile.setPos(pos);
+            } catch (Throwable throwable) {
+                blockInfo.setTileEntity(null);
+            }
         }
         return tile;
     }

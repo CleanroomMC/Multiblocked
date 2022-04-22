@@ -395,6 +395,32 @@ public class RecipeBuilder {
         return output(LEMultiblockCapability.CAP, chance, le);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
+    @ZenMethod
+    public RecipeBuilder inputHotAir(int hotAir) {
+        return inputHotAir(1, hotAir);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
+    @ZenMethod
+    public RecipeBuilder outputHotAir(int hotAir) {
+        return outputHotAir(1, hotAir);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
+    @ZenMethod
+    public RecipeBuilder inputHotAir(float chance, int hotAir) {
+        keyBuilder.append(HotAirProdigyCapability.CAP.name).append(hotAir);
+        return input(HotAirProdigyCapability.CAP, chance, hotAir);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
+    @ZenMethod
+    public RecipeBuilder outputHotAir(float chance, int hotAir) {
+        keyBuilder.append(HotAirProdigyCapability.CAP.name).append(hotAir);
+        return output(HotAirProdigyCapability.CAP, chance, hotAir);
+    }
+
     @ZenMethod
     public RecipeBuilder inputImpetus(int impetus) {
         return inputImpetus(1, impetus);

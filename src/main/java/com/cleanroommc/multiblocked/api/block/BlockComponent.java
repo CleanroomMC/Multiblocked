@@ -205,6 +205,11 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
     }
 
     @Override
+    public boolean isFullBlock(IBlockState state) {
+        return isOpaqueCube(state);
+    }
+
+    @Override
     public int getPackedLightmapCoords(@Nonnull IBlockState state, @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
         if (isOpaqueCube(state)) return super.getPackedLightmapCoords(state, source, pos);
         int i = source.getCombinedLight(pos, 0);
@@ -218,7 +223,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public int getLightOpacity(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
-        return isOpaqueCube(state) ? 255 : 1;
+        return isOpaqueCube(state) ? 255 : 0;
     }
 
     @Override

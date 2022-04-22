@@ -421,11 +421,13 @@ public class RecipeBuilder {
         return output(HotAirProdigyCapability.CAP, chance, hotAir);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_TA)
     @ZenMethod
     public RecipeBuilder inputImpetus(int impetus) {
         return inputImpetus(1, impetus);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_TA)
     @ZenMethod
     public RecipeBuilder outputImpetus(int impetus) {
         return outputImpetus(1, impetus);

@@ -95,7 +95,7 @@ dependencies {
     deobfCompile 'curse.maven:the-one-probe-245211:2667280'
     deobfCompile 'curse.maven:prodigy-tech-297414:2769520'
     deobfCompile 'curse.maven:patchouli-306770:3162874'
-    deobfCompile "curse.maven:thaumic-augmentation-319441:3536155"
+    deobfCompile 'curse.maven:thaumic-augmentation-319441:3536155'
 }
 
 sourceSets {

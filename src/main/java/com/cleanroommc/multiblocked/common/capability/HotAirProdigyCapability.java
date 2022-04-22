@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.common.capability;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
@@ -9,14 +10,18 @@ import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
+import lykrast.prodigytech.common.block.BlockHotAirMachine;
 import lykrast.prodigytech.common.capability.CapabilityHotAir;
 import lykrast.prodigytech.common.capability.IHotAir;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 
 public class HotAirProdigyCapability extends MultiblockCapability<Integer> {
     public static final HotAirProdigyCapability CAP = new HotAirProdigyCapability();
@@ -52,7 +57,13 @@ public class HotAirProdigyCapability extends MultiblockCapability<Integer> {
 
     @Override
     public BlockInfo[] getCandidates() {
-        return new BlockInfo[0];
+        return new BlockInfo[] {
+                new BlockInfo(Objects.requireNonNull(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Multiblocked.MODID_PRODIGY, "magmatic_aeroheater")))),
+                new BlockInfo(Objects.requireNonNull(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Multiblocked.MODID_PRODIGY, "solid_fuel_aeroheater")))),
+                new BlockInfo(Objects.requireNonNull(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Multiblocked.MODID_PRODIGY, "energion_aeroheater")))),
+                new BlockInfo(Objects.requireNonNull(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Multiblocked.MODID_PRODIGY, "tartaric_aeroheater")))),
+                new BlockInfo(Objects.requireNonNull(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Multiblocked.MODID_PRODIGY, "capacitor_aeroheater"))))
+        };
     }
 
     @Override

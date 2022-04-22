@@ -93,15 +93,13 @@ public class AuraMultiblockCapability extends MultiblockCapability<Integer> {
                     BlockPos spot = IAuraChunk.getHighestSpot(world, pos, MbdConfig.naturesAura.radius, pos);
                     IAuraChunk.getAuraChunk(world, spot).drainAura(pos, sum);
                 }
-                return null;
             } else if (io == IO.OUT) {
                 if (!simulate) {
                     BlockPos spot = IAuraChunk.getLowestSpot(world, pos, MbdConfig.naturesAura.radius, pos);
                     IAuraChunk.getAuraChunk(world, spot).storeAura(pos, sum);
                 }
-                return null;
             }
-            return sum <= 0 ? null : Collections.singletonList(sum);
+            return null;
         }
 
         int lastMana = Integer.MIN_VALUE;

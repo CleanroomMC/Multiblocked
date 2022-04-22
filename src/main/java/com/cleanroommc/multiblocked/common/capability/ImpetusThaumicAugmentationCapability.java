@@ -1,6 +1,5 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
@@ -14,8 +13,7 @@ import com.cleanroommc.multiblocked.common.capability.trait.ImpetusCapabilityTra
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import thecodex6824.thaumicaugmentation.api.TABlocks;
 import thecodex6824.thaumicaugmentation.api.impetus.CapabilityImpetusStorage;
 import thecodex6824.thaumicaugmentation.api.impetus.IImpetusStorage;
 
@@ -24,7 +22,6 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author youyihj
@@ -63,9 +60,7 @@ public class ImpetusThaumicAugmentationCapability extends MultiblockCapability<L
 
     @Override
     public BlockInfo[] getCandidates() {
-        return new BlockInfo[] {
-            new BlockInfo(Objects.requireNonNull(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Multiblocked.MODID_TA, "impetus_matrix"))))
-        };
+        return new BlockInfo[] {new BlockInfo(TABlocks.IMPETUS_MATRIX)};
     }
 
 

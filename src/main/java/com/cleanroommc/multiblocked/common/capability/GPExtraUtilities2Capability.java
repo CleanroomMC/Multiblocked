@@ -47,8 +47,8 @@ public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
     }
 
     @Override
-    public HotAirProdigyCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return new HotAirProdigyCapabilityProxy(tileEntity);
+    public GPExtraUtilities2CapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
+        return new GPExtraUtilities2CapabilityProxy(tileEntity);
     }
 
     @Override
@@ -86,9 +86,9 @@ public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
         return new JsonPrimitive(aFloat);
     }
 
-    public static class HotAirProdigyCapabilityProxy extends CapabilityProxy<Float> {
+    public static class GPExtraUtilities2CapabilityProxy extends CapabilityProxy<Float> {
 
-        public HotAirProdigyCapabilityProxy(TileEntity tileEntity) {
+        public GPExtraUtilities2CapabilityProxy(TileEntity tileEntity) {
             super(GPExtraUtilities2Capability.CAP, tileEntity);
         }
 

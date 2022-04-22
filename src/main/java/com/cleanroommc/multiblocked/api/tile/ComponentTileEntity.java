@@ -351,6 +351,33 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         }
     }
 
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        traits.values().forEach(CapabilityTrait::onLoad);
+    }
+
+    @Override
+    public void onChunkUnload() {
+        super.onChunkUnload();
+        traits.values().forEach(CapabilityTrait::onChunkUnload);
+    }
+
+    @Override
+    public boolean receiveClientEvent(int id, int type) {
+        boolean result = false;
+        for (CapabilityTrait trait : traits.values()) {
+            result |= trait.receiveClientEvent(id, type);
+        }
+        return result;
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        traits.values().forEach(CapabilityTrait::invalidate);
+    }
+
     public void onNeighborChanged() {
         if (definition.onNeighborChanged != null) {
             try {

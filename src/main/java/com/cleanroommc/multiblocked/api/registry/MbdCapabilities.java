@@ -47,6 +47,9 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_LC)) {
             registerCapability(LEMultiblockCapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_TA)) {
+            registerCapability(ImpetusThaumicAugmentationCapability.CAP);
+        }
     }
 
     public static MultiblockCapability<?> get(String s) {

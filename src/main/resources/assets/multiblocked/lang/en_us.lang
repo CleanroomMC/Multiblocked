@@ -18,6 +18,8 @@ multiblocked.capability.qmd_particle=QMD Particle
 qmd_particle.any.name=Available QMD Particle Storages
 multiblocked.capability.gtce_energy=GTCE Energy
 gtce_energy.any.name=Available GTCE Energy Container
+multiblock.capability.ta_impetus=TA Impetus Energy
+ta_impetus.any.name=Available Thaumic Augmentation Impetus Container
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 

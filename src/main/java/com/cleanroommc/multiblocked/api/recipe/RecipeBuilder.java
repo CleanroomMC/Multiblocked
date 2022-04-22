@@ -396,6 +396,30 @@ public class RecipeBuilder {
     }
 
     @ZenMethod
+    public RecipeBuilder inputImpetus(int impetus) {
+        return inputImpetus(1, impetus);
+    }
+
+    @ZenMethod
+    public RecipeBuilder outputImpetus(int impetus) {
+        return outputImpetus(1, impetus);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_TA)
+    @ZenMethod
+    public RecipeBuilder inputImpetus(float chance, long impetus) {
+        keyBuilder.append(ImpetusThaumicAugmentationCapability.CAP.name).append(impetus);
+        return input(ImpetusThaumicAugmentationCapability.CAP, chance, impetus);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_TA)
+    @ZenMethod
+    public RecipeBuilder outputImpetus(float chance, long impetus) {
+        keyBuilder.append(ImpetusThaumicAugmentationCapability.CAP.name).append(impetus);
+        return output(ImpetusThaumicAugmentationCapability.CAP, chance, impetus);
+    }
+
+    @ZenMethod
     public Recipe build() {
         ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputBuilder = new ImmutableMap.Builder<>();
         for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> entry : this.inputBuilder.entrySet()) {

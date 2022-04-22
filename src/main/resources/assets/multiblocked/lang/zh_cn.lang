@@ -126,7 +126,7 @@ multiblocked.gui.builder.template.description=信息:
 multiblocked.gui.builder.template.from=从: %d, %d, %d
 multiblocked.gui.builder.template.to=到: %d, %d, %d
 multiblocked.gui.builder.template.raw=原始结构
-multiblocked.gui.builder.template.pattern=样式
+multiblocked.gui.builder.template.pattern=结构模板
 
 multiblocked.gui.widget.component.s1=第 1 步: 基本设置
 multiblocked.gui.widget.component.s2=第 2 步: 特性设置
@@ -134,7 +134,7 @@ multiblocked.gui.widget.component.f=完成
 multiblocked.gui.widget.component.set_bg=设置背景贴图
 multiblocked.gui.widget.component.allowRotate=允许旋转
 multiblocked.gui.widget.component.jei=在 JEI 中显示
-multiblocked.gui.widget.component.opaque=不透明
+multiblocked.gui.widget.component.opaque=不透明的完整方块
 multiblocked.gui.widget.component.basic_renderer=普通渲染
 multiblocked.gui.widget.component.formed_renderer=成型渲染
 multiblocked.gui.widget.component.working_renderer=工作中渲染
@@ -142,13 +142,13 @@ multiblocked.gui.widget.component.working_renderer=工作中渲染
 multiblocked.gui.widget.controller.consume=消耗催化剂
 multiblocked.gui.widget.controller.need_catalyst=如果这个多方块不需要催化剂，多方块结构将尝试每隔一段时间形成一次多方块结构
 multiblocked.gui.widget.controller.catalyst=催化剂|如果是空的，右键单击控制器将触发多方块结构的形成。
-multiblocked.gui.widget.controller.s3=第 3 步: 结构模式设置
+multiblocked.gui.widget.controller.s3=第 3 步: 结构模板设置
 multiblocked.gui.widget.controller.s4=第 4 步:机器配方
 
 multiblocked.gui.widget.part.shared=可以与不同的多方块结构共享
 
 multiblocked.gui.dialogs.renderer.refresh=§4注意：刷新资源将导致游戏停滞一段时间。§r\n§2你必须刷新以显示未被加载的模型（如 .obj、.b3d 或 .geo 模型文件）。
-multiblocked.gui.dialogs.renderer.shader=打开一个光影文件
+multiblocked.gui.dialogs.renderer.shader=打开一个着色器文件
 multiblocked.gui.dialogs.renderer.renderer=渲染器
 
 multiblocked.gui.dialogs.pattern.pattern=样式
@@ -204,9 +204,9 @@ multiblocked.gui.predicate.tips=自定义提示
 multiblocked.gui.predicate.add_tips=添加提示
 
 multiblocked.gui.predicate.geo.0=是否需要全局渲染。如果你的模型足够大
-multiblocked.gui.predicate.particle.0=使用光影
-multiblocked.gui.predicate.particle.1=添加混合模式
-multiblocked.gui.predicate.particle.2=在后一层渲染
+multiblocked.gui.predicate.particle.0=使用着色器
+multiblocked.gui.predicate.particle.1=加性混合模式
+multiblocked.gui.predicate.particle.2=渲染在底层
 multiblocked.gui.predicate.particle.3=粒子大小: 从 0 到 100
 multiblocked.gui.predicate.particle.4=地图光照\n-1: 跟随环境\n0-15: 发光
 multiblocked.gui.predicate.particle.5=渲染距离 (如果不在可视范围内，不要渲染)\n-1: 总是渲染
@@ -233,9 +233,9 @@ multiblocked.gui.label.tips=提示：你可以编辑控制器
 multiblocked.gui.label.dir=文件夹:
 multiblocked.gui.label.symbol=Character 特征:
 multiblocked.gui.label.block_settings=方块设置
-multiblocked.gui.label.component_registry_name=部件注册表名:
+multiblocked.gui.label.component_registry_name=方块注册名:
 multiblocked.gui.label.metaTileEntity_registry_name=MetaTileEntity 注册名:
 multiblocked.gui.label.type=类型:
 
-multiblocked.gui.label.save_pattern=保存样式
-multiblocked.gui.label.pattern_settings=样式设置
+multiblocked.gui.label.save_pattern=保存结构模板
+multiblocked.gui.label.pattern_settings=结构模板设置

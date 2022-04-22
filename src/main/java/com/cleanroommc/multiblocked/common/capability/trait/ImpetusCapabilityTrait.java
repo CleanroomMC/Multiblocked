@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.trait.MultiCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.ImpetusThaumicAugmentationCapability;
 import com.google.gson.JsonElement;
@@ -139,7 +140,9 @@ public class ImpetusCapabilityTrait extends MultiCapabilityTrait {
     @Override
     public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
         super.createUI(component, group, player);
-        group.addWidget(capability.createContentWidget());
+        group.addWidget(new LabelWidget(100, 80, () ->
+            String.format("Impetus Stored: %d / %d", storage.getEnergyStored(), storage.getMaxEnergyStored())
+        ));
     }
 
     @Override

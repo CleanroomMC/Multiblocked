@@ -20,7 +20,7 @@ multiblocked.capability.gtce_energy=GTCE Energy
 gtce_energy.any.name=Available GTCE Energy Container
 multiblocked.capability.prodigy_hotair=ProdigyTech Hot Air
 prodigy_hotair.any.name=Available Hot Air Containers
-multiblock.capability.ta_impetus=TA Impetus Energy
+multiblocked.capability.ta_impetus=TA Impetus Energy
 ta_impetus.any.name=Available Thaumic Augmentation Impetus Container
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget

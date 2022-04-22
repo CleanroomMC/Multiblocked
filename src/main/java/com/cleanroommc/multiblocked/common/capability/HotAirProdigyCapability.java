@@ -77,5 +77,16 @@ public class HotAirProdigyCapability extends MultiblockCapability<Integer> {
             if (capability == null || capability.getOutAirTemperature() <= left.get(0)) return left;
             return null;
         }
+
+        Integer lastTemp = Integer.MIN_VALUE;
+
+        @Override
+        protected boolean hasInnerChanged() {
+            IHotAir capability = getCapability();
+            if (capability == null || capability.getOutAirTemperature() <= 0) return false;
+            if (lastTemp == capability.getOutAirTemperature()) return false;
+            lastTemp = capability.getOutAirTemperature();
+            return true;
+        }
     }
 }

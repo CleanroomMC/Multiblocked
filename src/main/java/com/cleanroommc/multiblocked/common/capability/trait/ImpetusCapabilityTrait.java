@@ -1,6 +1,6 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
-import com.cleanroommc.multiblocked.api.capability.trait.MultiCapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.trait.SingleCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 /**
  * @author youyihj
  */
-public class ImpetusCapabilityTrait extends MultiCapabilityTrait {
+public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
     private ImpetusStorage storage;
     private BufferedImpetusProsumer node;
     private int capacity;

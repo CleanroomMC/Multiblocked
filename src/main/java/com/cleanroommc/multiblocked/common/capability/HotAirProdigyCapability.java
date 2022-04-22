@@ -52,7 +52,7 @@ public class HotAirProdigyCapability extends MultiblockCapability<Integer> {
 
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new TextTexture("HA", color)).setUnit("HotAir");
+        return new NumberContentWidget().setContentTexture(new TextTexture("HA", color)).setUnit("°C");
     }
 
     @Override

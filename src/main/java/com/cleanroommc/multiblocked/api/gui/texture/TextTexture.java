@@ -118,7 +118,23 @@ public class TextTexture implements IGuiTexture{
             float _x = (float) (x + (width - textW) / 2f);
             float _y = (float) (y + (height - textH) / 2f);
             fontRenderer.drawString(resultText, _x, _y, color, dropShadow);
+        } else if (type == TextType.LEFT) {
+            textH *= texts.size();
+            for (int i = 0; i < texts.size(); i++) {
+                String resultText = texts.get(i);
+                float _y = (float) (y + (height - textH) / 2f + i * fontRenderer.FONT_HEIGHT);
+                fontRenderer.drawString(resultText, (float) x, _y, color, dropShadow);
+            }
+        } else if (type == TextType.RIGHT) {
+            textH *= texts.size();
+            for (int i = 0; i < texts.size(); i++) {
+                String resultText = texts.get(i);
+                int textW = fontRenderer.getStringWidth(resultText);
+                float _y = (float) (y + (height - textH) / 2f + i * fontRenderer.FONT_HEIGHT);
+                fontRenderer.drawString(resultText, (float) (x + width - textW), _y, color, dropShadow);
+            }
         }
+
 
         GlStateManager.color(1, 1, 1, 1);
     }
@@ -126,6 +142,8 @@ public class TextTexture implements IGuiTexture{
     public enum TextType{
         NORMAL,
         HIDE,
-        ROLL
+        ROLL,
+        LEFT,
+        RIGHT
     }
 }

@@ -104,6 +104,14 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return world != null && !isRemote() && (definition.needUpdateTick() || traits.values().stream().anyMatch(CapabilityTrait::hasUpdate));
     }
 
+    public boolean hasTrait(MultiblockCapability<?> capability) {
+        return traits.get(capability) != null;
+    }
+
+    public CapabilityTrait getTrait(MultiblockCapability<?> capability) {
+        return traits.get(capability);
+    }
+
     @Override
     public ComponentTileEntity<?> getInner() {
         return this;

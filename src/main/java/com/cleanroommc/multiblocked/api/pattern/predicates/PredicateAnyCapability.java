@@ -82,7 +82,7 @@ public class PredicateAnyCapability extends SimplePredicate {
                 })
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("Capability"));
+                .setHoverTooltip("multiblocked.gui.predicate.capability"));
         return groups;
     }
 

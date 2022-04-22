@@ -60,7 +60,7 @@ public class B3DRenderer extends IModelRenderer {
                     if (r != null && r.isFile()) {
                         tfw.setCurrentString("multiblocked:b3d/" + r.getPath().replace(path.getPath(), "").substring(1).replace('\\', '/'));
                     }
-                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
+                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("multiblocked.gui.tips.file_selector"));
         if (current instanceof B3DRenderer) {
             tfw.setCurrentString(((B3DRenderer) current).modelLocation.toString());
         }

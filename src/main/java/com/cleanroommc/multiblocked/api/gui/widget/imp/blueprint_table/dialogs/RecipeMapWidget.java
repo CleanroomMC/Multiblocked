@@ -51,7 +51,7 @@ public class RecipeMapWidget extends DialogWidget {
         this.onSave = onSave;
         this.recipes = new ArrayList<>();
         this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_page.png")));
-        this.addWidget(new LabelWidget(40, 40, "RecipeMap ID:"));
+        this.addWidget(new LabelWidget(40, 40, "multiblocked.gui.label.recipe_map_id"));
         this.addWidget(new TextFieldWidget(40, 55, 100, 15, true, null, s -> recipeMap.name = s).setCurrentString(recipeMap.name));
         this.addWidget(new ButtonWidget(150, 52, 70, 20, this::onSave).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
         this.addWidget(new ImageWidget(250, 3, 130, 128, ResourceBorderTexture.BORDERED_BACKGROUND_BLUE));
@@ -267,7 +267,7 @@ public class RecipeMapWidget extends DialogWidget {
             WidgetGroup group = RecipeMapWidget.this.recipeIO;
             group.clearAllWidgets();
             group.addWidget(new ImageWidget(-10, -10, group.getSize().width + 20, group.getSize().height + 20, ResourceBorderTexture.BORDERED_BACKGROUND));
-            group.addWidget(new LabelWidget(5, 5,"uid:"));
+            group.addWidget(new LabelWidget(5, 5,"multiblocked.gui.label.uid"));
             group.addWidget(new TextFieldWidget(30, 5,  120, 10, true, () -> uid, s -> uid = s)
                     .setHoverTooltip("multiblocked.gui.tips.unique"));
             inputs.clear();
@@ -284,9 +284,9 @@ public class RecipeMapWidget extends DialogWidget {
                     progressWidget.setProgressBar(texture.getSubTexture(0.0, 0.0, 1.0, 0.5), texture.getSubTexture(0.0, 0.5, 1.0, 0.5));
                 }
             })).setHoverTexture(new ColorRectTexture(0xaf888888)).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.progress"));
-            group.addWidget(new LabelWidget(5, 90, "Duration:"));
+            group.addWidget(new LabelWidget(5, 90, "multiblocked.gui.label.duration"));
             group.addWidget(new TextFieldWidget(60, 90,  60, 10, true, () -> duration + "", s -> duration = Integer.parseInt(s)).setNumbersOnly(1, Integer.MAX_VALUE));
-            group.addWidget(new LabelWidget(122, 90, "ticks"));
+            group.addWidget(new LabelWidget(122, 90, "multiblocked.gui.label.ticks"));
             updateIOContentWidgets();
             int index = 0;
             for (List<ContentWidget<?>> widgets : this.inputs.values()) {

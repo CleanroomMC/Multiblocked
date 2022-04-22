@@ -6,6 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.common.capability.EnergyGTCECapability;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gregtech.api.capability.GregtechCapabilities;
@@ -47,7 +48,7 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
 
     @Override
     protected String dynamicHoverTips(double progress) {
-        return String.format("EU Stored: %d / %d", (int)(handler.getEnergyCapacity() * progress), handler.getEnergyCapacity());
+        return LocalizationUtils.format("multiblocked.gui.trait.energy.progress", (int)(handler.getEnergyCapacity() * progress), handler.getEnergyCapacity());
     }
 
     @Override
@@ -75,7 +76,7 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
         dialog.addWidget(new TextFieldWidget(60, 5, 100, 15, true, null, s -> capacity = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(capacity + "")
-                .setHoverTooltip("capability (EU)"));
+                .setHoverTooltip("multiblocked.gui.trait.energy.tips"));
     }
 
     @Nullable

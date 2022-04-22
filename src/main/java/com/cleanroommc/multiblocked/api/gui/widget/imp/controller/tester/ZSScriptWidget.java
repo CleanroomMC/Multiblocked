@@ -44,7 +44,7 @@ public class ZSScriptWidget extends PageWidget {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }).setHoverBorderTexture(1, -1).setHoverTooltip("open folder"));
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.open_folder"));
         this.addWidget(new ButtonWidget(30, 105, 140, 20, null, this::loadZS).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("load script", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
         tfGroup = new DraggableScrollableWidgetGroup(5, 130, 176 - 10, 120)
                 .setBackground(new ColorRectTexture(0xaf444444))

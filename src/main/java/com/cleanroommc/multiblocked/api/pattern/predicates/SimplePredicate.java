@@ -18,6 +18,7 @@ import com.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
 import com.cleanroommc.multiblocked.api.pattern.error.SinglePredicateError;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -182,7 +183,7 @@ public class SimplePredicate {
         WidgetGroup group = new WidgetGroup(0, 0, 300, 90);
         groups.add(group);
         group.setClientSideWidget();
-        group.addWidget(new LabelWidget(0, 0, () -> "Type: " + type).setTextColor(-1).setDrop(true));
+        group.addWidget(new LabelWidget(0, 0, () -> LocalizationUtils.format("multiblocked.gui.label.type") + " " + type).setTextColor(-1).setDrop(true));
         TextFieldWidget min, max, preview, nbt, tooltips;
 
         group.addWidget(min = new TextFieldWidget(55, 15, 30, 15, true, () -> minCount + "", s -> {
@@ -191,12 +192,12 @@ public class SimplePredicate {
                 maxCount = minCount;
             }
         }).setNumbersOnly(0, Integer.MAX_VALUE));
-        min.setHoverTooltip("min").setVisible(minCount != -1);
+        min.setHoverTooltip("multiblocked.gui.tips.min").setVisible(minCount != -1);
         group.addWidget(new SwitchWidget(0, 15, 50, 15, (cd, r)->{
             min.setVisible(r);
             minCount = r ? 0 : -1;
         }).setPressed(minCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("min (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("min (Y)", -1).setDropShadow(true))
-                .setHoverTooltip("minimum count limit in the structure"));
+                .setHoverTooltip("multiblocked.gui.predicate.min"));
 
         group.addWidget(max = new TextFieldWidget(55, 33, 30, 15, true, () -> maxCount + "", s -> {
             maxCount = Integer.parseInt(s);
@@ -204,28 +205,28 @@ public class SimplePredicate {
                 minCount = maxCount;
             }
         }).setNumbersOnly(0, Integer.MAX_VALUE));
-        max.setHoverTooltip("max").setVisible(maxCount != -1);
+        max.setHoverTooltip("multiblocked.gui.tips.max").setVisible(maxCount != -1);
         group.addWidget(new SwitchWidget(0, 33, 50, 15, (cd, r)->{
             max.setVisible(r);
             maxCount = r ? 0 : -1;
         }).setPressed(maxCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("max (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("max (Y)", -1).setDropShadow(true))
-                .setHoverTooltip("maximum count limit in the structure"));
+                .setHoverTooltip("multiblocked.gui.predicate.max"));
 
 
-        group.addWidget(preview = (TextFieldWidget) new TextFieldWidget(55, 51 , 30, 15, true, () -> previewCount + "", s -> previewCount = Integer.parseInt(s)).setNumbersOnly(0, Integer.MAX_VALUE).setHoverTooltip("preview"));
-        preview.setHoverTooltip("jei").setVisible(previewCount != -1);
+        group.addWidget(preview = (TextFieldWidget) new TextFieldWidget(55, 51 , 30, 15, true, () -> previewCount + "", s -> previewCount = Integer.parseInt(s)).setNumbersOnly(0, Integer.MAX_VALUE).setHoverTooltip("multiblocked.gui.predicate.preview"));
+        preview.setHoverTooltip("multiblocked.gui.predicate.jei").setVisible(previewCount != -1);
         group.addWidget(new SwitchWidget(0, 51, 50, 15, (cd, r)->{
             preview.setVisible(r);
             previewCount = r ? 0 : -1;
         }).setPressed(previewCount != -1).setHoverBorderTexture(1, -1).setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("jei (N)", -1).setDropShadow(true)).setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("jei (Y)", -1).setDropShadow(true))
-                .setHoverTooltip("exact limit in the jei preview"));
+                .setHoverTooltip("multiblocked.gui.predicate.preview.1"));
         WidgetGroup widgetGroup = new WidgetGroup(0, 70, 100, 15)
                 .addWidget(new SwitchWidget(0, 0, 15, 15, (cd, r)->disableRenderFormed = r)
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
                         .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
                         .setHoverTexture(new ColorBorderTexture(1, -1))
                         .setPressed(disableRenderFormed)
-                        .setHoverTooltip("disable the original model rendering while the structure formed"))
+                        .setHoverTooltip("multiblocked.gui.predicate.disabled"))
                 .addWidget(new ImageWidget(2, 2, 11, 11, new ColorBorderTexture(1, -1)))
                 .addWidget(new LabelWidget(20, 3, "disableRenderFormed").setTextColor(-1).setDrop(true));
         group.addWidget(widgetGroup);
@@ -238,17 +239,17 @@ public class SimplePredicate {
         }).setPressed(nbtParser != null).setHoverBorderTexture(1, -1)
                 .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("nbt (N)", -1).setDropShadow(true))
                 .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("nbt (Y)", -1).setDropShadow(true))
-                .setHoverTooltip("match the nbt tag"));
+                .setHoverTooltip("multiblocked.gui.predicate.nbt"));
 
         group.addWidget(tooltips = new TextFieldWidget(155, 33, 100, 15, true, null, s -> customTips = s));
-        tooltips.setCurrentString(customTips != null ? customTips : "").setHoverTooltip("customTips").setVisible(customTips != null);
+        tooltips.setCurrentString(customTips != null ? customTips : "").setHoverTooltip("multiblocked.gui.predicate.tips").setVisible(customTips != null);
         group.addWidget(new SwitchWidget(100, 33, 50, 15, (cd, r) -> {
             tooltips.setVisible(r);
             customTips = r ? "" : null;
         }).setPressed(customTips != null).setHoverBorderTexture(1, -1)
                 .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("tips (N)", -1).setDropShadow(true))
                 .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("tips (Y)", -1).setDropShadow(true))
-                .setHoverTooltip("add tooltips"));
+                .setHoverTooltip("multiblocked.gui.predicate.add_tips"));
 
         group.addWidget(new SelectorWidget(130, 70, 40, 15, Arrays.asList("IN", "OUT", "BOTH", "NULL"), -1)
                 .setValue(io == null ? "NULL" : io.name())
@@ -256,7 +257,7 @@ public class SimplePredicate {
                 .setOnChanged(io-> this.io = io.equals("NULL") ? null : IO.valueOf(io))
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xff333333))
-                .setHoverTooltip("IO"));
+                .setHoverTooltip("multiblocked.gui.tips.io"));
         return groups;
     }
 

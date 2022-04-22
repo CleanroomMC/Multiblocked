@@ -10,6 +10,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
@@ -43,7 +44,7 @@ public class NumberContentWidget extends ContentWidget<Number> {
         TextFieldWidget textFieldWidget;
         int x = 5;
         int y = 25;
-        dialog.addWidget(new LabelWidget(5, y + 3, "Number:"));
+        dialog.addWidget(new LabelWidget(5, y + 3, "multiblocked.gui.label.number"));
         dialog.addWidget(textFieldWidget = new TextFieldWidget(125 - 60, y, 60, 15, true, null, number -> {
             if (content instanceof Float) {
                 content = Float.parseFloat(number);
@@ -102,7 +103,8 @@ public class NumberContentWidget extends ContentWidget<Number> {
                         onContentUpdate();
                         textFieldWidget.setCurrentString(newValue.toString());
                     }
-                }).setHoverBorderTexture(1, -1).setHoverTooltip("shift-click: " + (num >= 0 ? "+" : "") + num * 10);
+                }).setHoverBorderTexture(1, -1).setHoverTooltip(
+                LocalizationUtils.format("multiblocked.gui.shift_click") + ": " + (num >= 0 ? "+" : "") + num * 10);
     }
 
     @Override

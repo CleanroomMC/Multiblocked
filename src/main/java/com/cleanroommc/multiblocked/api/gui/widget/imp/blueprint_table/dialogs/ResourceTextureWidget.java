@@ -53,11 +53,11 @@ public class ResourceTextureWidget extends DialogWidget {
         addWidget(new ButtonWidget(x + WIDTH / 2 - 30 - 20, y + HEIGHT - 32, 40, 20, cd -> {
             close();
             if (result != null) result.accept(selected.get());
-        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("confirm", -1).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("multiblocked.gui.tips.confirm", -1).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000));
         addWidget(new ButtonWidget(x + WIDTH / 2 + 30 - 20, y + HEIGHT - 32, 40, 20, cd -> {
             close();
             if (result != null) result.accept(null);
-        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("cancel", 0xffff0000).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("multiblocked.gui.tips.cancel", 0xffff0000).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000));
         addWidget(imageWidget);
         addWidget(new ButtonWidget(x + 15, y + 15, 20, 20, cd -> {
             try {
@@ -65,8 +65,8 @@ public class ResourceTextureWidget extends DialogWidget {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000).setHoverTooltip("open folder"));
-        addWidget(new ImageWidget(x + 15, y + 20, WIDTH - 30,10, new TextTexture("Texture", -1).setWidth(WIDTH - 30).setDropShadow(true)));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1).setDropShadow(true)).setHoverBorderTexture(1, 0xff000000).setHoverTooltip("multiblocked.gui.tips.open_folder"));
+        addWidget(new ImageWidget(x + 15, y + 20, WIDTH - 30,10, new TextTexture("multiblocked.gui.tips.texture", -1).setWidth(WIDTH - 30).setDropShadow(true)));
     }
 
     private ResourceTexture getTextureFromFile(File path, File r){

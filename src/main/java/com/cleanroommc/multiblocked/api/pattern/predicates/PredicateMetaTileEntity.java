@@ -86,7 +86,7 @@ public class PredicateMetaTileEntity extends SimplePredicate {
                     }
                     textFieldWidget.setCurrentString(metaTileEntityId);
                 }).setBackgroundTexture(new ColorBorderTexture(1, -1)));
-        group.addWidget(new LabelWidget(0, 0, ()->"MetaTileEntity registry name:").setDrop(true).setTextColor(-1));
+        group.addWidget(new LabelWidget(0, 0, "multiblocked.gui.label.metaTileEntity_registry_name"));
         group.addWidget(textFieldWidget);
         MetaTileEntity sampleMetaTileEntity = GregTechAPI.MTE_REGISTRY.getObject(new ResourceLocation(metaTileEntityId));
         if (sampleMetaTileEntity != null) {

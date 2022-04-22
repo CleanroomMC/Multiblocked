@@ -41,6 +41,7 @@ import com.cleanroommc.multiblocked.client.util.RenderUtils;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.util.BlockPosFace;
 import com.cleanroommc.multiblocked.util.CycleItemStackHandler;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.gui.GuiScreen;
@@ -101,7 +102,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
                 }
             }
             parent.waitToRemoved(this);
-        }).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
+        }).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.label.save_pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
 
         // patternTab
         ResourceTexture tabPattern = new ResourceTexture("multiblocked:textures/gui/tab_pattern.png");
@@ -113,7 +114,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
 
         int bgColor = 0x8f111111;
 
-        patternTab.addWidget(new LabelWidget(174, 92, () -> "Repeat:").setTextColor(-1).setDrop(true));
+        patternTab.addWidget(new LabelWidget(174, 92, "multiblocked.gui.label.repeat"));
         repeats = new TextFieldWidget[2];
         patternTab.addWidget(new ImageWidget(266, 86, 29, 18, new ResourceTexture("multiblocked:textures/gui/repeat.png")).setHoverTooltip("multiblocked.gui.dialogs.pattern.repeat"));
         patternTab.addWidget(repeats[0] = new TextFieldWidget(215, 87, 40, 15, true, () -> sceneWidget.selected == null ? "" : pattern.aisleRepetitions[sceneWidget.selected.a][0] + "", s -> {
@@ -142,10 +143,10 @@ public class JsonBlockPatternWidget extends DialogWidget {
             updateSymbolButton();
         }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_wood.png"), new TextTexture("Add", -1).setDropShadow(true).setWidth(40)).setHoverBorderTexture(1, -1));
         updateSymbolButton();
-        patternTab.addWidget(new LabelWidget(174, 143, ()->"tips: you cant modify controller").setDrop(true).setTextColor(-1));
+        patternTab.addWidget(new LabelWidget(174, 143, "multiblocked.gui.label.tips"));
 
         List<String> candidates = Arrays.stream(RelativeDirection.values()).map(Enum::name).collect(Collectors.toList());
-        patternTab.addWidget(new LabelWidget(174, 70, () -> "Dir:").setTextColor(-1).setDrop(true));
+        patternTab.addWidget(new LabelWidget(174, 70, "multiblocked.gui.label.dir"));
         patternTab.addWidget(new ImageWidget(193, 60, 20, 20, new ResourceTexture("multiblocked:textures/gui/axis.png")).setHoverTooltip("multiblocked.gui.dialogs.pattern.direction"));
         patternTab.addWidget(new ImageWidget(215, 57, 40, 10, new TextTexture("multiblocked.gui.dialogs.pattern.char", -1).setDropShadow(true)));
         patternTab.addWidget(new ImageWidget(260, 57, 40, 10, new TextTexture("multiblocked.gui.dialogs.pattern.string", -1).setDropShadow(true)));
@@ -254,7 +255,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
         });
 
         //information
-        addWidget(new LabelWidget(31, 166, () -> "Symbol Character: " + (sceneWidget.selected == null ? "" : ("'" + sceneWidget.selected.symbol + "'"))).setTextColor(-1));
+        addWidget(new LabelWidget(31, 166, () -> LocalizationUtils.format("multiblocked.gui.label.symbol") + " " + (sceneWidget.selected == null ? "" : ("'" + sceneWidget.selected.symbol + "'"))).setTextColor(-1));
         addWidget(new LabelWidget(31, 178, () -> {
             if (sceneWidget.selected == null) return "Aisle Repetition: ";
             return String.format("Aisle Index: %d", sceneWidget.selected.a);

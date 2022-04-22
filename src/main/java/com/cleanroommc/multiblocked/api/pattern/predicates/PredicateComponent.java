@@ -64,7 +64,7 @@ public class PredicateComponent extends SimplePredicate {
         super.getConfigWidget(groups);
         WidgetGroup group = new WidgetGroup(0, 0, 100, 20);
         groups.add(group);
-        group.addWidget(new LabelWidget(0, 0, ()->"Component registry name:").setDrop(true).setTextColor(-1));
+        group.addWidget(new LabelWidget(0, 0, "multiblocked.gui.label.component_registry_name"));
         group.addWidget(new TextFieldWidget(0, 10, 120, 20, true, null, s -> {
             if (s != null && !s.isEmpty()) {
                 location = new ResourceLocation(s);

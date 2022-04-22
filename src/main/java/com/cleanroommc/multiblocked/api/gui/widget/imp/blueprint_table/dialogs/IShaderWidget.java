@@ -53,7 +53,7 @@ public class IShaderWidget extends DialogWidget {
             }
             tfGroup.computeMax();
         })
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("multiblocked.gui.tips.update"));
         File path = new File(Multiblocked.location, "assets/multiblocked/shaders");
@@ -76,7 +76,7 @@ public class IShaderWidget extends DialogWidget {
                 .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xdf000000)))
                 .addWidget(new TextBoxWidget(2, 2, getSize().width - 4, Collections.singletonList(HELP)).setFontColor(-1).setShadow(true))
                 .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorBorderTexture(1, -1))))
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("help", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.help", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("multiblocked.gui.tips.help"));
     }

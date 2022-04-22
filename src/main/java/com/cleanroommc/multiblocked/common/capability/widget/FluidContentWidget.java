@@ -88,7 +88,7 @@ public class FluidContentWidget extends ContentWidget<FluidStack> {
         super.openConfigurator(dialog);
         int x = 5;
         int y = 25;
-        dialog.addWidget(new LabelWidget(5, y + 3, "Amount:"));
+        dialog.addWidget(new LabelWidget(5, y + 3, "multiblocked.gui.label.amount"));
         dialog.addWidget(new TextFieldWidget(125 - 60, y, 60, 15, true, null, number -> {
             content = new FluidStack(content, Integer.parseInt(number));
             onContentUpdate();

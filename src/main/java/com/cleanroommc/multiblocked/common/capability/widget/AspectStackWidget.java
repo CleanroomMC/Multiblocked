@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
@@ -23,7 +24,7 @@ public class AspectStackWidget extends ContentWidget<AspectStack> {
     @Override
     protected void onContentUpdate() {
         if (Multiblocked.isClient() && content != null) {
-            this.setHoverTooltip(TextFormatting.AQUA + content.aspect.getLocalizedDescription() + "\nAmount: " + TextFormatting.YELLOW + content.amount);
+            this.setHoverTooltip(TextFormatting.AQUA + content.aspect.getLocalizedDescription() + TextFormatting.RESET + "\n" + LocalizationUtils.format("multiblocked.gui.trait.aspect.amount") + " "  + content.amount);
         }
     }
 
@@ -68,7 +69,7 @@ public class AspectStackWidget extends ContentWidget<AspectStack> {
         super.openConfigurator(dialog);
         int x = 5;
         int y = 25;
-        dialog.addWidget(new LabelWidget(5, y + 3, "Amount:"));
+        dialog.addWidget(new LabelWidget(5, y + 3, "multiblocked.gui.label.amount"));
         dialog.addWidget(new TextFieldWidget(125 - 60, y, 60, 15, true, null, number -> {
             content = new AspectStack(content.aspect, Integer.parseInt(number));
             onContentUpdate();

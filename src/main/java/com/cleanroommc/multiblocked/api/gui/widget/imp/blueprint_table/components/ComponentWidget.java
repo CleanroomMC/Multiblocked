@@ -67,7 +67,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
                         .setHoverTooltip("multiblocked.gui.widget.component.s1"),
                 S1 = new WidgetGroup(0, 0, getSize().width, getSize().height));
         int x = 47;
-        S1.addWidget(new LabelWidget(x, 57, ()->"Registry Name:").setDrop(true).setTextColor(-1));
+        S1.addWidget(new LabelWidget(x, 57, "multiblocked.gui.label.registry_name"));
         S1.addWidget(new TextFieldWidget(x + 80, 54, 150, 15, true, null, this::updateRegistryName).setCurrentString(this.location.toString()));
         S1.addWidget(createBoolSwitch(x, 75, "allowRotate", "multiblocked.gui.widget.component.allowRotate", definition.allowRotate, r -> definition.allowRotate = r));
         S1.addWidget(createBoolSwitch(x, 90, "showInJei", "multiblocked.gui.widget.component.jei", definition.showInJei, r -> definition.showInJei = r));
@@ -162,7 +162,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
         this.addWidget(new ButtonWidget(260, 26, 80, 20, null, cd -> {
             if (onSave != null) onSave.accept(getJsonObj());
             super.close();
-        }).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
+        }).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.label.save_pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
     }
 
     @Override

@@ -80,11 +80,19 @@ multiblocked.gui.tips.update=Update
 multiblocked.gui.tips.save=Note: Update Before Saving
 multiblocked.gui.tips.min=Min
 multiblocked.gui.tips.max=Max
+multiblocked.gui.tips.io=IO
 multiblocked.gui.tips.json=JSON
 multiblocked.gui.tips.switch_view=Switch View
 multiblocked.gui.tips.configuration=Configuration
 multiblocked.gui.tips.unique=Ensure this ID is unique
 multiblocked.gui.tips.remove=Remove
+multiblocked.gui.shift_click=shift-click
+multiblocked.gui.tips.file_selector=Select File
+multiblocked.gui.tips.confirm=Confirm
+multiblocked.gui.tips.cancel=Cancel
+multiblocked.gui.tips.refresh=Refresh
+multiblocked.gui.tips.save_1=Save
+multiblocked.gui.tips.texture=Texture
 
 multiblocked.gui.tips.select_image=Select an Image
 multiblocked.gui.trait.add_slot=Add a Slot
@@ -151,7 +159,7 @@ multiblocked.gui.dialogs.pattern.string=String
 multiblocked.gui.dialogs.pattern.aisle=Aisle
 multiblocked.gui.dialogs.pattern.predicate=Predicate
 multiblocked.gui.dialogs.pattern.create_predicate=Create a Predicate
-multiblocked.gui.dialogs.pattern.add_predicate=add selected predicate for current symbol
+multiblocked.gui.dialogs.pattern.add_predicate=Add Selected Predicate for Current Symbol
 multiblocked.gui.dialogs.pattern.remove_predicate=Remove Selected Predicate
 multiblocked.gui.dialogs.pattern.next_aisle=Next Aisle
 multiblocked.gui.dialogs.pattern.last_aisle=Last Aisle
@@ -162,3 +170,72 @@ multiblocked.gui.dialogs.recipe_map.progress=Set a Progress Bar Texture
 multiblocked.gui.dialogs.recipe_map.add_in=Add an Input Ingredient
 multiblocked.gui.dialogs.recipe_map.add_out=Add an Output Ingredient
 multiblocked.top.recipe_progress=Progress:
+
+multiblocked.gui.content.per_tick=Consume Per Tick
+multiblocked.gui.content.chance_0=§cno cost§r
+multiblocked.gui.content.chance_1=chance:§e %s %%§r
+multiblocked.gui.content.tips.per_tick=§aper tick§r
+
+multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
+multiblocked.gui.trait.energy.tips=Capability (EU)
+
+multiblocked.gui.trait.fe.progress=FE Stored: %d / %d
+multiblocked.gui.trait.fe.tips.0=Capability (RF)
+multiblocked.gui.trait.fe.tips.1=MaxReceive (RF/packet)
+
+multiblocked.gui.trait.aspect.amount=Amount:
+multiblocked.gui.trait.gas.amount=
+
+multiblocked.gui.trait.item.ore_dict=oreDict
+multiblocked.gui.trait.item.add=Add a New Item Matcher
+
+multiblocked.gui.predicate.capability=Capability
+multiblocked.gui.predicate.blocks.add=Add a New Block
+multiblocked.gui.predicate.states.add=Add a New BlockState
+
+multiblocked.gui.predicate.preview=Preview
+multiblocked.gui.predicate.jei=JEI
+multiblocked.gui.predicate.min=minimum count limit in the structure
+multiblocked.gui.predicate.max=maximum count limit in the structure
+multiblocked.gui.predicate.preview.1=exact limit in the jei preview
+multiblocked.gui.predicate.disabled=disable the original model rendering while the structure formed
+multiblocked.gui.predicate.nbt=match the nbt tag
+multiblocked.gui.predicate.tips=Custom Tips
+multiblocked.gui.predicate.add_tips=Add Tooltips
+
+multiblocked.gui.predicate.geo.0=Whether global rendering is required. Do it if your model is large enough
+multiblocked.gui.predicate.particle.0=Use Shader
+multiblocked.gui.predicate.particle.1=addition blend mode
+multiblocked.gui.predicate.particle.2=render in the back layer
+multiblocked.gui.predicate.particle.3=particle scale: from 0 to 100
+multiblocked.gui.predicate.particle.4=lighting map\n-1: follow the environment\n0-15: lighting
+multiblocked.gui.predicate.particle.5=render range (do not render if out of eye range)\n-1: always render
+
+multiblocked.gui.label.recipe_map=RecipeMap:
+multiblocked.gui.label.recipe_map_id=RecipeMap ID:
+multiblocked.gui.label.uid=uid:
+multiblocked.gui.label.duration=Duration:
+multiblocked.gui.label.ticks=ticks
+multiblocked.gui.label.chance=Chance:
+multiblocked.gui.label.configurator=no configurator
+multiblocked.gui.label.scale=Scale
+multiblocked.gui.label.light=Light
+multiblocked.gui.label.render_range=Render Range
+multiblocked.gui.label.tank_capability=Tank Capability (L):
+multiblocked.gui.label.amount=Amount:
+multiblocked.gui.label.number=Number:
+multiblocked.gui.label.energy=Energy:
+multiblocked.gui.label.focus=Focus:
+multiblocked.gui.label.registry_name=Registry Name:
+multiblocked.gui.label.catalyst=Catalyst
+multiblocked.gui.label.repeat=Repeat:
+multiblocked.gui.label.tips=tips: you cant modify controller
+multiblocked.gui.label.dir=Dir:
+multiblocked.gui.label.symbol=Symbol Character:
+multiblocked.gui.label.block_settings=Block Settings
+multiblocked.gui.label.component_registry_name=Component registry name:
+multiblocked.gui.label.metaTileEntity_registry_name=MetaTileEntity registry name:
+multiblocked.gui.label.type=Type:
+
+multiblocked.gui.label.save_pattern=Save Pattern
+multiblocked.gui.label.pattern_settings=Pattern Settings

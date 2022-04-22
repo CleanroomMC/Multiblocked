@@ -77,19 +77,19 @@ public class ParticleStackWidget extends ContentWidget<ParticleStack> {
         super.openConfigurator(dialog);
         int x = 125 - 60;
         int y = 25;
-        dialog.addWidget(new LabelWidget(5, y + 3, "Amount:"));
+        dialog.addWidget(new LabelWidget(5, y + 3, "multiblocked.gui.label.amount"));
         dialog.addWidget(new TextFieldWidget(x, y, 60, 15, true, null, number -> {
             content = new ParticleStack(content.getParticle(), Integer.parseInt(number), content.getMeanEnergy(), content.getFocus());
             onContentUpdate();
         }).setNumbersOnly(1, Integer.MAX_VALUE).setCurrentString(content.getAmount()+""));
 
-        dialog.addWidget(new LabelWidget(5, y + 21, "Energy:"));
+        dialog.addWidget(new LabelWidget(5, y + 21, "multiblocked.gui.label.energy"));
         dialog.addWidget(new TextFieldWidget(x, y + 18, 60, 15, true, null, number -> {
             content = new ParticleStack(content.getParticle(), content.getAmount(), Long.parseLong(number), content.getFocus());
             onContentUpdate();
         }).setNumbersOnly(0, Long.MAX_VALUE).setCurrentString(content.getMeanEnergy()+""));
 
-        dialog.addWidget(new LabelWidget(5, y + 39, "Focus:"));
+        dialog.addWidget(new LabelWidget(5, y + 39, "multiblocked.gui.label.focus"));
         dialog.addWidget(new TextFieldWidget(x, y + 36, 60, 15, true, null, number -> {
             content = new ParticleStack(content.getParticle(),  content.getAmount(), content.getMeanEnergy(), Float.parseFloat(number));
             onContentUpdate();

@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
 import mekanism.api.gas.Gas;
@@ -27,7 +28,8 @@ public class GasStackWidget extends ContentWidget<GasStack> {
     @Override
     protected void onContentUpdate() {
         if (Multiblocked.isClient() && content != null) {
-            this.setHoverTooltip(TextFormatting.AQUA + content.getGas().getLocalizedName() + " Gas\nAmount: " + TextFormatting.YELLOW + content.amount);
+            this.setHoverTooltip(TextFormatting.AQUA + content.getGas().getLocalizedName() + TextFormatting.RESET + "\n" + LocalizationUtils
+                    .format("multiblocked.gui.trait.gas.amount") + " "  + + content.amount);
         }
     }
 
@@ -105,7 +107,7 @@ public class GasStackWidget extends ContentWidget<GasStack> {
         super.openConfigurator(dialog);
         int x = 5;
         int y = 25;
-        dialog.addWidget(new LabelWidget(5, y + 3, "Amount:"));
+        dialog.addWidget(new LabelWidget(5, y + 3, "multiblocked.gui.label.amount"));
         dialog.addWidget(new TextFieldWidget(125 - 60, y, 60, 15, true, null, number -> {
             content = new GasStack(content.getGas(), Integer.parseInt(number));
             onContentUpdate();

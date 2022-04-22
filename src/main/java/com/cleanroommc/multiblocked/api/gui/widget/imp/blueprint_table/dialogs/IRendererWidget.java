@@ -55,11 +55,11 @@ public class IRendererWidget extends DialogWidget {
                 .setRenderFacing(false));
         this.addWidget(group = new DraggableScrollableWidgetGroup(181, 80, 180, 120));
         this.addWidget(new ButtonWidget(285, 55, 40, 20, this::onUpdate)
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("multiblocked.gui.tips.update"));
         this.addWidget(new ButtonWidget(330, 55, 45, 20, cd -> Minecraft.getMinecraft().scheduleResourcesRefresh())
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("refresh", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.refresh", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("multiblocked.gui.dialogs.renderer.refresh"));
         this.addWidget(new SelectorWidget(181, 55, 100, 20, getRendererList(), -1)
@@ -76,7 +76,7 @@ public class IRendererWidget extends DialogWidget {
             }
             super.close();
         })
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("save", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.save_1", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
                 .setHoverTooltip("multiblocked.gui.tips.save"));
     }

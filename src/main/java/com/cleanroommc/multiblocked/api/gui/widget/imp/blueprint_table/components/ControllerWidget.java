@@ -72,7 +72,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
 
         IItemHandlerModifiable handler;
         PhantomSlotWidget phantomSlotWidget = new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, x + 205, 73);
-        LabelWidget labelWidget = new LabelWidget(x + 230, 78, () -> "Catalyst").setTextColor(-1).setDrop(true);
+        LabelWidget labelWidget = new LabelWidget(x + 230, 78, "multiblocked.gui.label.catalyst");
         S1.addWidget(phantomSlotWidget);
         S1.addWidget(labelWidget);
         phantomSlotWidget.setClearSlotOnRightClick(true)
@@ -106,7 +106,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                 .setHoverTooltip("multiblocked.structure_page.switch"));
         S3.addWidget(new TextBoxWidget(200, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
         S3.addWidget(new ButtonWidget(200, 66, 100, 20,
-                new GuiTextureGroup(ResourceBorderTexture.BAR, new TextTexture("Pattern Setting", -1).setDropShadow(true)), cd -> {
+                new GuiTextureGroup(ResourceBorderTexture.BAR, new TextTexture("multiblocked.gui.label.pattern_settings", -1).setDropShadow(true)), cd -> {
             new JsonBlockPatternWidget(this, this.pattern.copy(), this::savePattern);
         }).setHoverBorderTexture(1, -1));
         updateScene(this.pattern);
@@ -116,7 +116,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                         .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S4"))
                         .setHoverTooltip("multiblocked.gui.widget.controller.s4"),
                 S4 = new WidgetGroup(0, 0, getSize().width, getSize().height));
-        S4.addWidget(new LabelWidget(80, 55, "RecipeMap: "));
+        S4.addWidget(new LabelWidget(80, 55, "multiblocked.gui.label.recipe_map"));
         S4.addWidget(new TextFieldWidget(80, 70, 100, 15, true, () -> this.recipeMap, s -> this.recipeMap = s));
         S4.addWidget(new RecipeMapBuilderWidget(this, 188, 50, 150, 170).setOnRecipeMapSelected(recipeMap1 -> this.recipeMap = recipeMap1.name));
     }

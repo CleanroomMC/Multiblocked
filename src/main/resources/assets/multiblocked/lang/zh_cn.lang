@@ -1,0 +1,241 @@
+multiblocked.multiblock.formed=多方块结构形成！
+
+multiblocked.capability.tc6_aspect=神秘要素
+tc6_aspect.any.name=任意神秘要素容器
+multiblocked.capability.forge_energy=FE 能量
+forge_energy.any.name=任意 FE 容器
+multiblocked.capability.fluid=流体
+fluid.any.name=任意流体储罐
+multiblocked.capability.mek_gas=Mekanism 气体
+mek_gas.any.name=任意 Mekanism 气体储罐
+multiblocked.capability.mek_heat=Mekanism 热量
+mek_heat.any.name=任意 Mekanism 加热器
+multiblocked.capability.item=物品
+item.any.name=任意物品容器
+multiblocked.capability.bot_mana=植物魔法 Mana
+bot_mana.any.name=任意植物魔法 Mana 容器
+multiblocked.capability.qmd_particle=QMD 粒子
+qmd_particle.any.name=任意 QMD 粒子容器
+multiblocked.capability.gtce_energy=GTCE 能量
+gtce_energy.any.name=任意 GTCE 能量容器
+
+multiblocked.content.miss=输入输出：%s 能量：缺失 %s
+
+multiblocked.pattern.error=错误的组件 (%s) 在 (%s)
+multiblocked.pattern.error.share=这个模块可以被多个结构共享
+multiblocked.pattern.error.chunk=区块被卸载
+multiblocked.pattern.error.capability=找不到具体容器类型 (输入输出): %s (%s)
+multiblocked.pattern.error.limited.0=§c最大: %d 个§r
+multiblocked.pattern.error.limited.1=§c最小: %d 个§r
+multiblocked.pattern.error.limited.2=§c最大: 每层 %d 个§r
+multiblocked.pattern.error.limited.3=§c最小: 每层 %d 个§r
+multiblocked.pattern.limited_exact=§c锁定数量: %d§r
+multiblocked.pattern.limited_within=§c在 %d 个至 %d 个区间§r
+multiblocked.pattern.single=§6只可以放置该方块§r
+multiblocked.pattern.replaceable_air=可以替换为空气
+
+multiblocked.structure_page.candidates=备选
+multiblocked.structure_page.switch=§6已形成§r/§c未形成§r
+
+blueprint_table.name=蓝图工作台核心
+blueprint_table.description=多方块创建器与定制工具
+blueprint_table_part.name=蓝图工作台
+controller_tester.name=测试控制器方块
+controller_tester.description=你可以用这个方块来测试你的脚本且而不需要重启游戏。它是不安全的，只能在单人游戏中使用。
+
+multiblocked.fluid.empty=空
+multiblocked.fluid.amount=§9数量: %,d/%,d L
+multiblocked.fluid.temperature=§c温度: %,d K
+multiblocked.fluid.state_gas=§a状态: 气态
+multiblocked.fluid.state_liquid=§a状态: 液态
+
+item.multiblocked.blueprint.name=蓝图
+
+multiblocked.recipe.duration=耗时: %ds
+multiblocked.recipe.status.working=状态: §c工作中§r
+multiblocked.recipe.status.idle=状态: §a待机§r
+multiblocked.recipe.status.suspend=状态: §3暂停§r
+multiblocked.recipe.remaining=剩余时间: %ds
+
+multiblocked.renderer.null=空
+multiblocked.renderer.imodel=Java 模型
+multiblocked.renderer.geo=GeckoLib 模型
+multiblocked.renderer.b3d=B3D 模型
+multiblocked.renderer.obj=OBJ 模型
+multiblocked.renderer.tparticle=粒子贴图
+multiblocked.renderer.blockstate=BlockState 模型
+multiblocked.renderer.gregtech=GregTech 模型
+
+# gui lang
+multiblocked.gui.tips.settings=设置
+multiblocked.gui.tips.block_register=方块名称
+multiblocked.gui.tips.block_meta=BlockState Metadata
+multiblocked.gui.tips.open_folder=打开文件夹
+multiblocked.gui.tips.building_scene=构建场景中！
+multiblocked.gui.tips.pretty=格式美化
+multiblocked.gui.tips.copy=复制到剪贴板
+multiblocked.gui.tips.execute=执行
+multiblocked.gui.tips.help=帮助
+multiblocked.gui.tips.update=更新
+multiblocked.gui.tips.save=注意: 保存前请更新！
+multiblocked.gui.tips.min=最小
+multiblocked.gui.tips.max=最大
+multiblocked.gui.tips.io=输入输出
+multiblocked.gui.tips.json=JSON
+multiblocked.gui.tips.switch_view=切换视图
+multiblocked.gui.tips.configuration=配置
+multiblocked.gui.tips.unique=确保此 ID 是唯一的
+multiblocked.gui.tips.remove=移除
+multiblocked.gui.shift_click=Shift-右键
+multiblocked.gui.tips.file_selector=选择文件
+multiblocked.gui.tips.confirm=确定
+multiblocked.gui.tips.cancel=取消
+multiblocked.gui.tips.refresh=刷新
+multiblocked.gui.tips.save_1=保存
+multiblocked.gui.tips.texture=贴图
+
+multiblocked.gui.tips.select_image=选择一个贴图
+multiblocked.gui.trait.add_slot=添加一个槽位
+multiblocked.gui.trait.remove_slot=移除选择的槽位
+multiblocked.gui.trait.capability_io=仓位输入输出 (例如：管道交互)
+multiblocked.gui.trait.gui_io=GUI 输入输出 (例如：GUI 交互)
+multiblocked.gui.trait.auto_io=自动输入输出
+multiblocked.gui.trait.passive_io=被动输入输出
+multiblocked.gui.trait.auto=自动输入输出 | 容器无法同时使用输入输出 | 仅限正面
+multiblocked.gui.trait.set_width=设置宽度
+multiblocked.gui.trait.set_height=设置高度
+
+
+multiblocked.gui.blueprint_table.builder_template=建筑模板
+multiblocked.gui.blueprint_table.recipe_map=Recipe Map
+multiblocked.gui.blueprint_table.controller_block=控制器
+multiblocked.gui.blueprint_table.part_block=部件
+multiblocked.gui.blueprint_table.renderer_assistant=渲染器辅助工具
+multiblocked.gui.blueprint_table.wiki=打开 GitHub Wiki
+
+multiblocked.gui.builder.controller.create=从选择的蓝图创建一个控制器
+multiblocked.gui.builder.part.create=创建一个部件
+multiblocked.gui.builder.recipe_map.create=创建一个新的 Recipe Map
+multiblocked.gui.builder.renderer.irenderer=渲染器帮助程序
+multiblocked.gui.builder.renderer.particle=粒子帮助程序
+multiblocked.gui.builder.renderer.shader=光影帮助程序
+multiblocked.gui.builder.template.create=为多方块结构生成器创建模板
+multiblocked.gui.builder.template.status=状态:
+multiblocked.gui.builder.template.size=大小:
+multiblocked.gui.builder.template.description=信息:
+multiblocked.gui.builder.template.from=从: %d, %d, %d
+multiblocked.gui.builder.template.to=到: %d, %d, %d
+multiblocked.gui.builder.template.raw=原始结构
+multiblocked.gui.builder.template.pattern=样式
+
+multiblocked.gui.widget.component.s1=第 1 步: 基本设置
+multiblocked.gui.widget.component.s2=第 2 步: 特性设置
+multiblocked.gui.widget.component.f=完成
+multiblocked.gui.widget.component.set_bg=设置背景贴图
+multiblocked.gui.widget.component.allowRotate=允许旋转
+multiblocked.gui.widget.component.jei=在 JEI 中显示
+multiblocked.gui.widget.component.opaque=不透明
+multiblocked.gui.widget.component.basic_renderer=普通渲染
+multiblocked.gui.widget.component.formed_renderer=成型渲染
+multiblocked.gui.widget.component.working_renderer=工作中渲染
+
+multiblocked.gui.widget.controller.consume=消耗催化剂
+multiblocked.gui.widget.controller.need_catalyst=如果这个多方块不需要催化剂，多方块结构将尝试每隔一段时间形成一次多方块结构
+multiblocked.gui.widget.controller.catalyst=催化剂|如果是空的，右键单击控制器将触发多方块结构的形成。
+multiblocked.gui.widget.controller.s3=第 3 步: 结构模式设置
+multiblocked.gui.widget.controller.s4=第 4 步:机器配方
+
+multiblocked.gui.widget.part.shared=可以与不同的多方块结构共享
+
+multiblocked.gui.dialogs.renderer.refresh=§4注意：刷新资源将导致游戏停滞一段时间。§r\n§2你必须刷新以显示未被加载的模型（如 .obj、.b3d 或 .geo 模型文件）。
+multiblocked.gui.dialogs.renderer.shader=打开一个光影文件
+multiblocked.gui.dialogs.renderer.renderer=渲染器
+
+multiblocked.gui.dialogs.pattern.pattern=样式
+multiblocked.gui.dialogs.pattern.repeat=重复的片结构 (1 <= 最小 <= 最大 <= 1)
+multiblocked.gui.dialogs.pattern.direction=相对方向
+multiblocked.gui.dialogs.pattern.char=Character
+multiblocked.gui.dialogs.pattern.string=String
+multiblocked.gui.dialogs.pattern.aisle=片结构
+multiblocked.gui.dialogs.pattern.predicate=Predicate
+multiblocked.gui.dialogs.pattern.create_predicate=创建一个 Predicate
+multiblocked.gui.dialogs.pattern.add_predicate=为当前符号添加选定的 Predicate
+multiblocked.gui.dialogs.pattern.remove_predicate=移除选择的 Predicate
+multiblocked.gui.dialogs.pattern.next_aisle=下一个片结构
+multiblocked.gui.dialogs.pattern.last_aisle=最后一个片结构
+
+multiblocked.gui.dialogs.recipe_map.add_recipe=添加新配方
+multiblocked.gui.dialogs.recipe_map.remove_recipe=移除选择的配方
+multiblocked.gui.dialogs.recipe_map.progress=选择进度条贴图
+multiblocked.gui.dialogs.recipe_map.add_in=添加一个输入材料
+multiblocked.gui.dialogs.recipe_map.add_out=添加一个输出材料
+multiblocked.top.recipe_progress=进度:
+
+multiblocked.gui.content.per_tick=每 Tick 消耗
+multiblocked.gui.content.chance_0=§c不消耗§r
+multiblocked.gui.content.chance_1=概率:§e %s %%§r
+multiblocked.gui.content.tips.per_tick=§a每 Tick§r
+
+multiblocked.gui.trait.energy.progress=EU 存储: %d / %d
+multiblocked.gui.trait.energy.tips=容量 (EU)
+
+multiblocked.gui.trait.fe.progress=FE 存储: %d / %d
+multiblocked.gui.trait.fe.tips.0=容量 (RF)
+multiblocked.gui.trait.fe.tips.1=最大传输 (RF/packet)
+
+multiblocked.gui.trait.aspect.amount=数量:
+multiblocked.gui.trait.gas.amount=
+
+multiblocked.gui.trait.item.ore_dict=矿辞
+multiblocked.gui.trait.item.add=添加一个新的物品匹配器
+
+multiblocked.gui.predicate.capability=容量
+multiblocked.gui.predicate.blocks.add=添加一个新方块
+multiblocked.gui.predicate.states.add=添加一个新 BlockState
+
+multiblocked.gui.predicate.preview=预览
+multiblocked.gui.predicate.jei=JEI
+multiblocked.gui.predicate.min=在此多方块结构中的最小数量
+multiblocked.gui.predicate.max=在此多方块结构中的最大数量
+multiblocked.gui.predicate.preview.1=在 JEI 中预览的限制数量
+multiblocked.gui.predicate.disabled=在结构形成的同时禁用原始模型的渲染
+multiblocked.gui.predicate.nbt=匹配 NBT Tag
+multiblocked.gui.predicate.tips=自定义提示
+multiblocked.gui.predicate.add_tips=添加提示
+
+multiblocked.gui.predicate.geo.0=是否需要全局渲染。如果你的模型足够大
+multiblocked.gui.predicate.particle.0=使用光影
+multiblocked.gui.predicate.particle.1=添加混合模式
+multiblocked.gui.predicate.particle.2=在后一层渲染
+multiblocked.gui.predicate.particle.3=粒子大小: 从 0 到 100
+multiblocked.gui.predicate.particle.4=地图光照\n-1: 跟随环境\n0-15: 发光
+multiblocked.gui.predicate.particle.5=渲染距离 (如果不在可视范围内，不要渲染)\n-1: 总是渲染
+
+multiblocked.gui.label.recipe_map=RecipeMap:
+multiblocked.gui.label.recipe_map_id=RecipeMap ID:
+multiblocked.gui.label.uid=uid:
+multiblocked.gui.label.duration=消耗时间:
+multiblocked.gui.label.ticks=ticks
+multiblocked.gui.label.chance=概率:
+multiblocked.gui.label.configurator=无配置器
+multiblocked.gui.label.scale=缩放
+multiblocked.gui.label.light=光照
+multiblocked.gui.label.render_range=渲染距离
+multiblocked.gui.label.tank_capability=储罐储量 (L):
+multiblocked.gui.label.amount=数量:
+multiblocked.gui.label.number=编号:
+multiblocked.gui.label.energy=能量:
+multiblocked.gui.label.focus=焦点:
+multiblocked.gui.label.registry_name=注册名:
+multiblocked.gui.label.catalyst=催化剂
+multiblocked.gui.label.repeat=重复:
+multiblocked.gui.label.tips=提示：你可以编辑控制器
+multiblocked.gui.label.dir=文件夹:
+multiblocked.gui.label.symbol=Character 特征:
+multiblocked.gui.label.block_settings=方块设置
+multiblocked.gui.label.component_registry_name=部件注册表名:
+multiblocked.gui.label.metaTileEntity_registry_name=MetaTileEntity 注册名:
+multiblocked.gui.label.type=类型:
+
+multiblocked.gui.label.save_pattern=保存样式
+multiblocked.gui.label.pattern_settings=样式设置

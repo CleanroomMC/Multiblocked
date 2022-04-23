@@ -320,11 +320,13 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
                 for (IItemStack drop :  definition.onDrops.apply(this, CraftTweakerMC.getIPlayer(player))) {
                     drops.add(CraftTweakerMC.getItemStack(drop));
                 }
-                return;
             } catch (Exception exception) {
                 definition.onDrops = null;
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onDrops", exception);
             }
+        }
+        for (CapabilityTrait trait : traits.values()) {
+            trait.onDrops(drops, player);
         }
         drops.add(definition.getStackForm());
     }

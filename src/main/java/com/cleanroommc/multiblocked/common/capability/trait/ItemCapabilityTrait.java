@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -39,6 +40,16 @@ public class ItemCapabilityTrait extends MultiCapabilityTrait {
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         int size = jsonArray.size();
         handler = new ItemStackHandler(size);
+    }
+
+    @Override
+    public void onDrops(NonNullList<ItemStack> drops, EntityPlayer player) {
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                drops.add(handler.getStackInSlot(i));
+            }
+        }
     }
 
     @Override

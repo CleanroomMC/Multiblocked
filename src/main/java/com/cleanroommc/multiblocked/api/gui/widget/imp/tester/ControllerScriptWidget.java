@@ -1,4 +1,4 @@
-package com.cleanroommc.multiblocked.api.gui.widget.imp.controller.tester;
+package com.cleanroommc.multiblocked.api.gui.widget.imp.tester;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 
-public class ControllerPatternWidget extends PageWidget {
+public class ControllerScriptWidget extends PageWidget {
 
     private static final ResourceTexture PAGE = new ResourceTexture("multiblocked:textures/gui/json_loader_page.png");
     private final ControllerTileTesterEntity controller;
@@ -40,7 +40,7 @@ public class ControllerPatternWidget extends PageWidget {
     private final DraggableScrollableWidgetGroup tfGroup;
     private File selected;
 
-    public ControllerPatternWidget(ControllerTileTesterEntity controller, TabContainer tabContainer) {
+    public ControllerScriptWidget(ControllerTileTesterEntity controller, TabContainer tabContainer) {
         super(PAGE, tabContainer); //176, 256
         this.controller = controller;
         this.addWidget(new ImageWidget(5, 5, 176 - 10, 150 - 55, ResourceBorderTexture.BORDERED_BACKGROUND_BLUE));

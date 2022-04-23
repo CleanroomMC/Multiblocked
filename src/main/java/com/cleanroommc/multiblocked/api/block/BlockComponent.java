@@ -140,9 +140,25 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
                 .toArray(EnumFacing[]::new);
     }
 
+    protected final ThreadLocal<ComponentTileEntity<?>> componentBroken = new ThreadLocal<>();
+
+
+    @Override
+    public void breakBlock(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
+        componentBroken.set(getComponent(worldIn, pos));
+        super.breakBlock(worldIn, pos, state);
+    }
+
+    @Override
+    public void harvestBlock(@Nonnull World worldIn, @Nonnull EntityPlayer player, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nullable TileEntity te, @Nonnull ItemStack stack) {
+        componentBroken.set(te instanceof ComponentTileEntity ? (ComponentTileEntity<?>)te : componentBroken.get());
+        super.harvestBlock(worldIn, player, pos, state, te, stack);
+        componentBroken.set(null);
+    }
+
     @Override
     public void getDrops(@Nonnull NonNullList<ItemStack> drops, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
-        ComponentTileEntity<?> instance = getComponent(world, pos);
+        ComponentTileEntity<?> instance = componentBroken.get();
         if (instance == null) return;
         instance.onDrops(drops, harvesters.get());
     }

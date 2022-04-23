@@ -182,10 +182,11 @@ multiblocked.gui.dialogs.recipe_map.add_in=Add an Input Ingredient
 multiblocked.gui.dialogs.recipe_map.add_out=Add an Output Ingredient
 multiblocked.top.recipe_progress=Progress:
 
-multiblocked.gui.content.per_tick=Consume Per Tick
-multiblocked.gui.content.chance_0=§cno cost§r
-multiblocked.gui.content.chance_1=chance:§e %s %%§r
-multiblocked.gui.content.tips.per_tick=§aper tick§r
+multiblocked.gui.content.per_tick=§aConsumed Per Tick§r
+multiblocked.gui.content.tips.per_tick_short=§a/tick§r
+multiblocked.gui.content.chance_0=§cNot Consumed§r
+multiblocked.gui.content.chance_0_short=§cNC§r
+multiblocked.gui.content.chance_1=Chance:§e %s%%§r
 
 multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
 multiblocked.gui.trait.energy.tips=Capability (EU)

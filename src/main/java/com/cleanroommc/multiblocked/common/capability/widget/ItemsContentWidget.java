@@ -47,7 +47,7 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
                 if (chance < 1) {
                     l.add(chance == 0 ? LocalizationUtils.format("multiblocked.gui.content.chance_0") : LocalizationUtils.format("multiblocked.gui.content.chance_1", String.format("%.1f", chance * 100)));
                     if (perTick) {
-                        l.add(LocalizationUtils.format("multiblocked.gui.content.tips.per_tick"));
+                        l.add(LocalizationUtils.format("multiblocked.gui.content.per_tick"));
                     }
                 }
             }));

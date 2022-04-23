@@ -1,45 +1,31 @@
-package com.cleanroommc.multiblocked.api.tile;
+package com.cleanroommc.multiblocked.api.tile.part;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
-import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.IOPageWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.tester.ControllerScriptWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.tester.ZSScriptWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
-import com.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
-import com.cleanroommc.multiblocked.api.pattern.Predicates;
-import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.tester.PartScriptWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.tester.ZSScriptWidget;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
 
-public class ControllerTileTesterEntity extends ControllerTileEntity {
-    public final static ControllerDefinition DEFAULT_DEFINITION = new ControllerDefinition(new ResourceLocation("multiblocked:controller_tester"), ControllerTileTesterEntity.class);
-
-    @Override
-    public boolean checkPattern() {
-        return getDefinition() != DEFAULT_DEFINITION && super.checkPattern();
-    }
+public class PartTileTesterEntity extends PartTileEntity<PartDefinition> {
+    public final static PartDefinition DEFAULT_DEFINITION = new PartDefinition(new ResourceLocation("multiblocked:part_tester"), PartTileTesterEntity.class);
 
     @Override
     public void setDefinition(ComponentDefinition definition) {
-        MultiblockWorldSavedData mwsd = MultiblockWorldSavedData.getOrCreate(world);
-        state = null;
-        if (pos != null && mwsd.mapping.containsKey(pos)) {
-            mwsd.removeMapping(mwsd.mapping.get(pos));
-        }
         if (definition == null) {
             definition = DEFAULT_DEFINITION;
         } else if (definition != DEFAULT_DEFINITION && world != null) {
@@ -56,27 +42,21 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
-        recipeLogic = new RecipeLogic(this);
+    public boolean onRightClick(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        super.onRightClick(player, hand, facing, hitX, hitY, hitZ);
+        return true;
     }
 
     @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
         if (Multiblocked.isClient() && Multiblocked.isSinglePlayer()) {
             TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
-            new ControllerScriptWidget(this, tabContainer);
+            new PartScriptWidget(this, tabContainer);
             if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
                 new ZSScriptWidget(tabContainer);
             }
             if (getDefinition() != DEFAULT_DEFINITION) {
                 if (!traits.isEmpty()) initTraitUI(tabContainer, entityPlayer);
-                if (isFormed()) {
-                    new RecipePage(this, tabContainer);
-                    new IOPageWidget(this, tabContainer);
-                } else {
-                    new StructurePageWidget(this.definition, tabContainer);
-                }
             }
             return new ModularUIBuilder(IGuiTexture.EMPTY, 196, 256)
                     .widget(tabContainer)
@@ -99,13 +79,9 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
         return compound;
     }
 
-    public static void registerTestController() {
-        DEFAULT_DEFINITION.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/controller_tester"));
+    public static void registerTestPart() {
+        DEFAULT_DEFINITION.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/part_tester"));
         DEFAULT_DEFINITION.isOpaqueCube = false;
-        DEFAULT_DEFINITION.basePattern = FactoryBlockPattern.start()
-                .aisle("@")
-                .where('@', Predicates.component(DEFAULT_DEFINITION))
-                .build();
         MbdComponents.registerComponent(DEFAULT_DEFINITION);
     }
 }

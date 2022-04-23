@@ -1,4 +1,4 @@
-package com.cleanroommc.multiblocked.api.gui.widget.imp.controller.tester;
+package com.cleanroommc.multiblocked.api.gui.widget.imp.tester;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.crafttweaker.CTHelper;

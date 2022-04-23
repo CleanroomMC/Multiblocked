@@ -395,6 +395,84 @@ public class RecipeBuilder {
         return output(LEMultiblockCapability.CAP, chance, le);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
+    @ZenMethod
+    public RecipeBuilder inputHotAir(int hotAir) {
+        return inputHotAir(1, hotAir);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
+    @ZenMethod
+    public RecipeBuilder outputHotAir(int hotAir) {
+        return outputHotAir(1, hotAir);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
+    @ZenMethod
+    public RecipeBuilder inputHotAir(float chance, int hotAir) {
+        keyBuilder.append(HotAirProdigyCapability.CAP.name).append(hotAir);
+        return input(HotAirProdigyCapability.CAP, chance, hotAir);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
+    @ZenMethod
+    public RecipeBuilder outputHotAir(float chance, int hotAir) {
+        keyBuilder.append(HotAirProdigyCapability.CAP.name).append(hotAir);
+        return output(HotAirProdigyCapability.CAP, chance, hotAir);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_NA)
+    @ZenMethod
+    public RecipeBuilder inputAura(int aura) {
+        return inputAura(1, aura);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_NA)
+    @ZenMethod
+    public RecipeBuilder outputAura(int aura) {
+        return outputAura(1, aura);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_NA)
+    @ZenMethod
+    public RecipeBuilder inputAura(float chance, int aura) {
+        keyBuilder.append(AuraMultiblockCapability.CAP.name).append(aura);
+        return input(AuraMultiblockCapability.CAP, chance, aura);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_NA)
+    @ZenMethod
+    public RecipeBuilder outputAura(float chance, int aura) {
+        keyBuilder.append(AuraMultiblockCapability.CAP.name).append(aura);
+        return output(AuraMultiblockCapability.CAP, chance, aura);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_EU2)
+    @ZenMethod
+    public RecipeBuilder inputGP(float gp) {
+        return inputGP(1, gp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_EU2)
+    @ZenMethod
+    public RecipeBuilder outputGP(float gp) {
+        return outputGP(1, gp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_EU2)
+    @ZenMethod
+    public RecipeBuilder inputGP(float chance, float gp) {
+        keyBuilder.append(GPExtraUtilities2Capability.CAP.name).append(gp);
+        return input(GPExtraUtilities2Capability.CAP, chance, gp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_EU2)
+    @ZenMethod
+    public RecipeBuilder outputGP(float chance, float gp) {
+        keyBuilder.append(GPExtraUtilities2Capability.CAP.name).append(gp);
+        return output(GPExtraUtilities2Capability.CAP, chance, gp);
+    }
+
     @ZenMethod
     public Recipe build() {
         ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputBuilder = new ImmutableMap.Builder<>();

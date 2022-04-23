@@ -15,7 +15,7 @@ public class BlockInfo {
     public static final BlockInfo EMPTY = new BlockInfo(Blocks.AIR);
 
     private final IBlockState blockState;
-    private final TileEntity tileEntity;
+    private TileEntity tileEntity;
     private final ItemStack itemStack;
 
     public BlockInfo(Block block) {
@@ -46,6 +46,10 @@ public class BlockInfo {
             }
         } catch (Exception ignored){ }
         return new BlockInfo(state);
+    }
+
+    public void setTileEntity(TileEntity tileEntity) {
+        this.tileEntity = tileEntity;
     }
 
     public IBlockState getBlockState() {

@@ -17,7 +17,12 @@ bot_mana.any.name=Any Botania Mana Containers
 multiblocked.capability.qmd_particle=QMD Particle
 qmd_particle.any.name=Any QMD Particle Containers
 multiblocked.capability.gtce_energy=GTCE Energy
-gtce_energy.any.name=Any GTCE Energy Containers
+multiblocked.capability.prodigy_hotair=ProdigyTech Hot Air
+prodigy_hotair.any.name=Any Hot Air Containers
+multiblocked.capability.natures_aura=Nature's Aura
+natures_aura.any.name=Any block containing TileEntity can be used as an IO for this capability
+multiblocked.capability.exu2_gp=ExtraUtilities2 GP
+exu2_gp.any.name=Any multiblock block with GP Trait
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 

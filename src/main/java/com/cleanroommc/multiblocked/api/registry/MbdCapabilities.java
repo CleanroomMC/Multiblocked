@@ -47,6 +47,15 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_LC)) {
             registerCapability(LEMultiblockCapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_PRODIGY)) {
+            registerCapability(HotAirProdigyCapability.CAP);
+        }
+        if (Loader.isModLoaded(Multiblocked.MODID_NA)) {
+            registerCapability(AuraMultiblockCapability.CAP);
+        }
+        if (Loader.isModLoaded(Multiblocked.MODID_EU2)){
+            registerCapability(GPExtraUtilities2Capability.CAP);
+        }
     }
 
     public static MultiblockCapability<?> get(String s) {

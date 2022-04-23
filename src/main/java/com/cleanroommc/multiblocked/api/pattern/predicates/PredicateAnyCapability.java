@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PredicateAnyCapability extends SimplePredicate {
     public String capability = "item";
@@ -73,11 +74,12 @@ public class PredicateAnyCapability extends SimplePredicate {
         super.getConfigWidget(groups);
         WidgetGroup group = new WidgetGroup(0, 0, 100, 20);
         groups.add(group);
-        group.addWidget(new SelectorWidget(0, 0, 120, 20, new ArrayList<>(
-                MbdCapabilities.CAPABILITY_REGISTRY.keySet()), -1)
-                .setValue(capability)
+        MultiblockCapability<?> current = MbdCapabilities.get(capability);
+        group.addWidget(new SelectorWidget(0, 0, 120, 20, MbdCapabilities.CAPABILITY_REGISTRY.values().stream().map(MultiblockCapability::getUnlocalizedName).collect(
+                Collectors.toList()), -1)
+                .setValue(current == null ? "" : current.getUnlocalizedName())
                 .setOnChanged(capability-> {
-                    this.capability = capability;
+                    this.capability = capability.replace("multiblocked.capability.", "");
                     buildPredicate();
                 })
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)

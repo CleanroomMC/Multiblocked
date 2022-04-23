@@ -24,6 +24,8 @@ multiblocked.capability.natures_aura=Nature's Aura
 natures_aura.any.name=Any block containing TileEntity can be used as an IO for this capability
 multiblocked.capability.exu2_gp=ExtraUtilities2 GP
 exu2_gp.any.name=Any multiblock block with GP Trait
+multiblocked.capability.lightningcraft_le=LightningCraft LE
+lightningcraft_le.any.name=Any LightningCraft LE Containers
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 
@@ -99,6 +101,7 @@ multiblocked.gui.tips.cancel=Cancel
 multiblocked.gui.tips.refresh=Refresh
 multiblocked.gui.tips.save_1=Save
 multiblocked.gui.tips.texture=Texture
+multiblocked.gui.tips.add=Add
 
 multiblocked.gui.tips.select_image=Select an Image
 multiblocked.gui.trait.add_slot=Add a Slot

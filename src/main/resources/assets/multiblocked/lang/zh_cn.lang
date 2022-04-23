@@ -246,3 +246,6 @@ multiblocked.gui.label.type=类型:
 multiblocked.gui.label.save_pattern=保存结构模板
 multiblocked.gui.label.pattern_settings=结构模板设置
 multiblocked.gui.label.save_recipe_map=保存Recipe Map
+multiblocked.capability.lightningcraft_le=雷电工艺
+lightningcraft_le.any.name=任何 雷电工艺 LE 容器
+multiblocked.gui.tips.add=添加

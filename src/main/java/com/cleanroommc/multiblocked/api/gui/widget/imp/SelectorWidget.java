@@ -40,6 +40,8 @@ public class SelectorWidget extends WidgetGroup {
         if (candidates.size() > 5) {
             popUp.setYScrollBarWidth(4).setYBarStyle(null, new ColorRectTexture(-1));
         }
+        popUp.setVisible(false);
+        popUp.setActive(false);
         currentString = "";
         y = 0;
         width = candidates.size() > 5 ? width -4 : width;

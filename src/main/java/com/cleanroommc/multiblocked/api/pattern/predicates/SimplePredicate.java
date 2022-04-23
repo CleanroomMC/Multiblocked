@@ -146,14 +146,14 @@ public class SimplePredicate {
                 blockWorldState.io = null;
             }
         }
-        if (nbtParser != null) {
+        if (nbtParser != null && !blockWorldState.world.isRemote) {
             TileEntity te = blockWorldState.getTileEntity();
             if (te != null) {
                 if (isCTParser && Loader.isModLoaded(Multiblocked.MODID_CT)) {
                     // TODO
                 } else {
                     NBTTagCompound nbt = te.serializeNBT();
-                    if (Pattern.matches(nbtParser, nbt.toString())) {
+                    if (Pattern.compile(nbtParser).matcher(nbt.toString()).find()) {
                         return true;
                     }
                 }

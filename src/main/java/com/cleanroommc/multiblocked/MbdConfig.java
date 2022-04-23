@@ -13,7 +13,7 @@ public final class MbdConfig {
     public static String location = "multiblocked";
 
     public static class NaturesAura {
-        @Config.Comment({"set the radius of aura value consumption", "Default: 20"})
+        @Config.Comment({"set the radius of aura value consumption.", "Default: 20"})
         public int radius = 20;
     }
 

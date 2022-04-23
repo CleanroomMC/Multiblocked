@@ -50,6 +50,7 @@ public class Multiblocked {
     public static final String MODID_PRODIGY = "prodigytech";
     public static final String MODID_NA = "naturesaura";
     public static final String MODID_EU2 = "extrautils2";
+    public static final String MODID_PE = "projecte";
     public static final String NAME = "Multiblocked";
     public static final String VERSION = "0.4.1";
     public static final Logger LOGGER = LogManager.getLogger(NAME);

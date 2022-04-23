@@ -24,6 +24,8 @@ multiblocked.capability.natures_aura=Nature's Aura
 natures_aura.any.name=Any block containing TileEntity can be used as an IO for this capability
 multiblocked.capability.exu2_gp=ExtraUtilities2 GP
 exu2_gp.any.name=Any multiblock block with GP Trait
+multiblocked.capability.projecte_emc=ProjectE EMC
+projecte_emc.any.name=Any multiblock block with EMC Trait
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 

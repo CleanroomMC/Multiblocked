@@ -53,8 +53,11 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_NA)) {
             registerCapability(AuraMultiblockCapability.CAP);
         }
-        if (Loader.isModLoaded(Multiblocked.MODID_EU2)){
+        if (Loader.isModLoaded(Multiblocked.MODID_EU2)) {
             registerCapability(GPExtraUtilities2Capability.CAP);
+        }
+        if (Loader.isModLoaded(Multiblocked.MODID_PE)) {
+            registerCapability(EMCProjectECapability.CAP);
         }
     }
 

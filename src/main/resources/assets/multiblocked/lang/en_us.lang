@@ -1,4 +1,4 @@
-multiblocked.multiblock.formed= Multiblock Formed!
+multiblocked.multiblock.formed=Multiblock Formed!
 
 multiblocked.capability.tc6_aspect=Thaumcraft Aspect
 tc6_aspect.any.name=Any Thaumcraft Aspect Holders
@@ -17,6 +17,7 @@ bot_mana.any.name=Any Botania Mana Containers
 multiblocked.capability.qmd_particle=QMD Particle
 qmd_particle.any.name=Any QMD Particle Containers
 multiblocked.capability.gtce_energy=GTCE Energy
+gtce_energy.any.name=Any GTCE Energy Containers
 multiblocked.capability.prodigy_hotair=ProdigyTech Hot Air
 prodigy_hotair.any.name=Any Hot Air Containers
 multiblocked.capability.natures_aura=Nature's Aura
@@ -189,7 +190,7 @@ multiblocked.gui.trait.fe.tips.0=Capability (RF)
 multiblocked.gui.trait.fe.tips.1=MaxReceive (RF/packet)
 
 multiblocked.gui.trait.aspect.amount=Amount:
-multiblocked.gui.trait.gas.amount=
+multiblocked.gui.trait.gas.amount=Gas Amount:
 
 multiblocked.gui.trait.item.ore_dict=oreDict
 multiblocked.gui.trait.item.add=Add a New Item Matcher
@@ -243,4 +244,5 @@ multiblocked.gui.label.metaTileEntity_registry_name=MetaTileEntity registry name
 multiblocked.gui.label.type=Type:
 
 multiblocked.gui.label.save_pattern=Save Pattern
+multiblocked.gui.label.save_recipe_map=Save Recipe Map
 multiblocked.gui.label.pattern_settings=Pattern Settings

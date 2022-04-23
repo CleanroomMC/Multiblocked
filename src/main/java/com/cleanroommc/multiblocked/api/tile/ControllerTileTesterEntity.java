@@ -29,11 +29,6 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
     public final static ControllerDefinition DEFAULT_DEFINITION = new ControllerDefinition(new ResourceLocation("multiblocked:controller_tester"), ControllerTileTesterEntity.class);
 
     @Override
-    public boolean checkPattern() {
-        return getDefinition() != DEFAULT_DEFINITION && super.checkPattern();
-    }
-
-    @Override
     public void setDefinition(ComponentDefinition definition) {
         MultiblockWorldSavedData mwsd = MultiblockWorldSavedData.getOrCreate(world);
         state = null;

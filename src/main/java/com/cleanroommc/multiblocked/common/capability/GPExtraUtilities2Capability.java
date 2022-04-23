@@ -95,11 +95,10 @@ public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
         @Override
         protected List<Float> handleRecipeInner(IO io, Recipe recipe, List<Float> left, boolean simulate) {
             TileEntity te = getTileEntity();
-            float sum = left.stream().reduce(0f, Float::sum);
-            if (te instanceof ComponentTileEntity && ((ComponentTileEntity<?>) te).hasTrait(GPExtraUtilities2Capability.CAP)) {
+            if (!simulate && te instanceof ComponentTileEntity && ((ComponentTileEntity<?>) te).hasTrait(GPExtraUtilities2Capability.CAP)) {
                 CapabilityTrait trait = ((ComponentTileEntity<?>) te).getTrait(GPExtraUtilities2Capability.CAP);
                 if (trait instanceof GPPlayerCapabilityTrait) {
-                    // TODO KEEP 1S ATM
+                    float sum = left.stream().reduce(0f, Float::sum);
                     ((GPPlayerCapabilityTrait) trait).updatePower(io == IO.IN ? sum : -sum, 20);
                 }
             }

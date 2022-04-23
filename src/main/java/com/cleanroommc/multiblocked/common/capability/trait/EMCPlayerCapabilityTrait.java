@@ -10,20 +10,20 @@ import net.minecraft.entity.player.EntityPlayerMP;
 public class EMCPlayerCapabilityTrait extends PlayerCapabilityTrait {
 
     public long emc;
-    public int clearTick;
     public EntityPlayer player;
-
-    private boolean needsSync = false;
 
     public EMCPlayerCapabilityTrait() {
         super(EMCProjectECapability.CAP);
     }
 
-    public long updateEMC(long emc, int clearTick, boolean simulate) {
-        this.clearTick = clearTick;
+    public IKnowledgeProvider getCapability() {
+        return player.getCapability(ProjectEAPI.KNOWLEDGE_CAPABILITY, null);
+    }
+
+    public long updateEMC(long emc, boolean simulate) {
         player = getPlayer();
         if (player instanceof EntityPlayerMP) {
-            IKnowledgeProvider emcCap = player.getCapability(ProjectEAPI.KNOWLEDGE_CAPABILITY, null);
+            IKnowledgeProvider emcCap = getCapability();
             if (emcCap != null) {
                 if (emcCap.getEmc() + emc > 0) {
                     this.emc = emcCap.getEmc() + emc;
@@ -31,41 +31,12 @@ public class EMCPlayerCapabilityTrait extends PlayerCapabilityTrait {
                     this.emc = 0;
                     return Math.abs(emcCap.getEmc() + emc);
                 }
-                if (!simulate) needsSync = true;
+                if (!simulate) {
+                    emcCap.setEmc(this.emc);
+                    emcCap.sync((EntityPlayerMP) player); // send to client
+                }
             }
         }
         return 0L;
-    }
-
-    @Override
-    public boolean hasUpdate() {
-        return true;
-    }
-
-    @Override
-    public void update() {
-        if (component.getTimer() % 20 == 0) {
-            if (player == null) {
-                player = getPlayer();
-                if (player instanceof EntityPlayerMP) {
-                    IKnowledgeProvider emcCap = player.getCapability(ProjectEAPI.KNOWLEDGE_CAPABILITY, null);
-                    if (emcCap != null) {
-                        if (needsSync) {
-                            emcCap.setEmc(this.emc);
-                        }
-                        this.emc = emcCap.getEmc();
-                    }
-                }
-            } else {
-                player = null;
-            }
-        }
-
-        if (clearTick > 0) {
-            clearTick--;
-            if (clearTick == 0) {
-                emc = 0;
-            }
-        }
     }
 }

@@ -29,7 +29,7 @@ public class GasStackWidget extends ContentWidget<GasStack> {
     protected void onContentUpdate() {
         if (Multiblocked.isClient() && content != null) {
             this.setHoverTooltip(TextFormatting.AQUA + content.getGas().getLocalizedName() + TextFormatting.RESET + "\n" + LocalizationUtils
-                    .format("multiblocked.gui.trait.gas.amount") + " "  + + content.amount);
+                    .format("multiblocked.gui.trait.gas.amount") + " " + content.amount);
         }
     }
 
@@ -48,7 +48,7 @@ public class GasStackWidget extends ContentWidget<GasStack> {
             GlStateManager.enableBlend();
             drawGas(minecraft, pos.x + 1, pos.y + 1, content);
             GlStateManager.scale(0.5, 0.5, 1);
-            String s = TextFormattingUtil.formatLongToCompactString(content.amount, 4);
+            String s = TextFormattingUtil.formatLongToCompactStringBuckets(content.amount, 3) + "B";
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
             fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 21, (pos.y + (size.height / 3f) + 6) * 2, 0xFFFFFF);
             GlStateManager.popMatrix();

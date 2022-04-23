@@ -54,7 +54,7 @@ controller_tester.name=Controller Test Block
 controller_tester.description=You could use this block to test your scripts without restart game. It's unsafe, which can only be used in the single play.
 
 multiblocked.fluid.empty=Empty
-multiblocked.fluid.amount=§9Amount: %,d/%,d mb
+multiblocked.fluid.amount=§9Amount: %,d/%,d mB
 multiblocked.fluid.temperature=§cTemperature: %,d K
 multiblocked.fluid.state_gas=§aState: Gaseous
 multiblocked.fluid.state_liquid=§aState: Liquid
@@ -233,7 +233,7 @@ multiblocked.gui.label.configurator=no configurator
 multiblocked.gui.label.scale=Scale
 multiblocked.gui.label.light=Light
 multiblocked.gui.label.render_range=Render Range
-multiblocked.gui.label.tank_capability=Tank Capability (mb):
+multiblocked.gui.label.tank_capability=Tank Capability (mB):
 multiblocked.gui.label.amount=Amount:
 multiblocked.gui.label.number=Number:
 multiblocked.gui.label.energy=Energy:

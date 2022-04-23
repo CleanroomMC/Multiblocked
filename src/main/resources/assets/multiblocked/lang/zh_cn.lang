@@ -24,6 +24,8 @@ multiblocked.capability.natures_aura=自然灵气
 natures_aura.any.name=任意具有TE的方块都能用作IO
 multiblocked.capability.exu2_gp=更多实用设备2 GP
 exu2_gp.any.name=任何具有GP容器特征的mbd方块
+multiblocked.capability.projecte_emc=等价交换 EMC
+projecte_emc.any.name=任何具有EMC容器特征的mbd方块
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 

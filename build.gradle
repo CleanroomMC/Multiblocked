@@ -96,6 +96,7 @@ dependencies {
     deobfCompile 'curse.maven:prodigy-tech-297414:2769520'
     deobfCompile 'curse.maven:patchouli-306770:3162874'
     deobfCompile 'curse.maven:natures-aura-306626:2882138'
+    deobfCompile 'curse.maven:project-e-226410:2702991'
 }
 
 sourceSets {

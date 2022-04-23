@@ -26,6 +26,8 @@ multiblocked.capability.exu2_gp=ExtraUtilities2 GP
 exu2_gp.any.name=Any multiblock block with GP Trait
 multiblocked.capability.lightningcraft_le=LightningCraft LE
 lightningcraft_le.any.name=Any LightningCraft LE Containers
+multiblocked.capability.projecte_emc=ProjectE EMC
+projecte_emc.any.name=Any multiblock block with EMC Trait
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 

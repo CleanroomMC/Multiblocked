@@ -141,7 +141,7 @@ public class JsonBlockPatternWidget extends DialogWidget {
             char next = (char) (pattern.symbolMap.keySet().stream().max(Comparator.comparingInt(a -> a)).get() + 1);
             pattern.symbolMap.put(next, new HashSet<>());
             updateSymbolButton();
-        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_wood.png"), new TextTexture("Add", -1).setDropShadow(true).setWidth(40)).setHoverBorderTexture(1, -1));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/button_wood.png"), new TextTexture("multiblocked.gui.tips.add", -1).setDropShadow(true).setWidth(40)).setHoverBorderTexture(1, -1));
         updateSymbolButton();
         patternTab.addWidget(new LabelWidget(174, 143, "multiblocked.gui.label.tips"));
 

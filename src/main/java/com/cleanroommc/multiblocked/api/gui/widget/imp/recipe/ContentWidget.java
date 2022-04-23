@@ -19,13 +19,11 @@ import mezz.jei.api.gui.IGhostIngredientHandler.Target;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -184,7 +182,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
         if (chance < 1) {
             tooltipText += "\n" + (chance == 0 ?
                     LocalizationUtils.format("multiblocked.gui.content.chance_0") :
-                    LocalizationUtils.format("multiblocked.gui.content.chance_1", String.format("%.1f", chance * 100)));
+                    LocalizationUtils.format("multiblocked.gui.content.chance_1", String.format("%.1f", chance * 100) + "%%"));
         }
         if (perTick) {
             tooltipText += "\n" + LocalizationUtils.format("multiblocked.gui.content.per_tick");

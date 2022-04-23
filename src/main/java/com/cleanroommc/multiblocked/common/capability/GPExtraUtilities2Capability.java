@@ -12,15 +12,11 @@ import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.trait.GPPlayerCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
+import com.google.gson.*;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -53,7 +49,7 @@ public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
 
     @Override
     public ContentWidget<? super Float> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new TextTexture("GP", color)).setUnit("gp");
+        return new NumberContentWidget().setContentTexture(new TextTexture("GP", color)).setUnit("GP");
     }
 
     @Override

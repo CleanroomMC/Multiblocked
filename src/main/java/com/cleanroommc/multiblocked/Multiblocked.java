@@ -52,7 +52,7 @@ public class Multiblocked {
     public static final String MODID_EU2 = "extrautils2";
     public static final String MODID_PE = "projecte";
     public static final String NAME = "Multiblocked";
-    public static final String VERSION = "0.4.1";
+    public static final String VERSION = "0.5.0";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();

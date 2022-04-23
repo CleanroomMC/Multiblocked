@@ -186,7 +186,7 @@ multiblocked.gui.content.per_tick=§aConsumed Per Tick§r
 multiblocked.gui.content.tips.per_tick_short=§a/tick§r
 multiblocked.gui.content.chance_0=§cNot Consumed§r
 multiblocked.gui.content.chance_0_short=§cNC§r
-multiblocked.gui.content.chance_1=Chance:§e %s%%§r
+multiblocked.gui.content.chance_1=Chance: §e%s%%§r
 
 multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
 multiblocked.gui.trait.energy.tips=Capability (EU)

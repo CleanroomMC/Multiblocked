@@ -59,6 +59,12 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_PE)) {
             registerCapability(EMCProjectECapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_BG)) {
+            registerCapability(LPBloodMagicCapability.CAP);
+        }
+        if (Loader.isModLoaded(Multiblocked.MODID_EMBERS)) {
+            registerCapability(EmberEmbersCapability.CAP);
+        }
     }
 
     public static MultiblockCapability<?> get(String s) {

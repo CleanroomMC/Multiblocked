@@ -26,6 +26,10 @@ multiblocked.capability.exu2_gp=更多实用设备2 GP
 exu2_gp.any.name=任何具有GP容器特征的mbd方块
 multiblocked.capability.projecte_emc=等价交换 EMC
 projecte_emc.any.name=任何具有EMC容器特征的mbd方块
+multiblocked.capability.bg_lp=血魔法 LP
+bg_lp.any.name=任何具有LP容器特征的mbd方块
+multiblocked.capability.ember=余烬 灰烬能量
+ember.any.name=任意余烬 灰烬能量 容器
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 
@@ -182,7 +186,6 @@ multiblocked.top.recipe_progress=进度:
 multiblocked.gui.content.per_tick=§a每 Tick 消耗§r
 multiblocked.gui.content.chance_0=§c不消耗§r
 multiblocked.gui.content.chance_1=概率:§e %s %%§r
-multiblocked.gui.content.tips.per_tick=§a每 Tick§r
 
 multiblocked.gui.trait.energy.progress=EU 存储: %d / %d
 multiblocked.gui.trait.energy.tips=容量 (EU)

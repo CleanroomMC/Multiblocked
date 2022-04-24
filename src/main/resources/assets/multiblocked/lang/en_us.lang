@@ -30,6 +30,8 @@ multiblocked.capability.projecte_emc=ProjectE EMC
 projecte_emc.any.name=Any multiblock block with EMC Trait
 multiblocked.capability.bg_lp=Blood Magic LP
 bg_lp.any.name=Any multiblock block with LP Trait
+multiblocked.capability.ember=Embers Ember
+ember.any.name=Any multiblock block with Ember Trait
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 

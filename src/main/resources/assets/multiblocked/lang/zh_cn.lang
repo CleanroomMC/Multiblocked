@@ -28,6 +28,8 @@ multiblocked.capability.projecte_emc=等价交换 EMC
 projecte_emc.any.name=任何具有EMC容器特征的mbd方块
 multiblocked.capability.bg_lp=血魔法 LP
 bg_lp.any.name=任何具有LP容器特征的mbd方块
+multiblocked.capability.ember=余烬 灰烬能量
+ember.any.name=任何具有灰烬能量容器特征的mbd方块
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 

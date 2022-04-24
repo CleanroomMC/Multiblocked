@@ -53,7 +53,7 @@ public class RecipeMapWidget extends DialogWidget {
         this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_page.png")));
         this.addWidget(new LabelWidget(40, 40, "multiblocked.gui.label.recipe_map_id"));
         this.addWidget(new TextFieldWidget(40, 55, 100, 15, true, null, s -> recipeMap.name = s).setCurrentString(recipeMap.name));
-        this.addWidget(new ButtonWidget(150, 52, 70, 20, this::onSave).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.label.save_recipe_map", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
+        this.addWidget(new ButtonWidget(150, 52, 95, 20, this::onSave).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.label.save_recipe_map", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
         this.addWidget(new ImageWidget(250, 3, 130, 128, ResourceBorderTexture.BORDERED_BACKGROUND_BLUE));
         this.addWidget(recipesList = new DraggableScrollableWidgetGroup(250, 7, 130, 120));
         this.addWidget(configurator = new WidgetGroup(250, 132, 130, 120));
@@ -88,7 +88,13 @@ public class RecipeMapWidget extends DialogWidget {
 
     @Override
     public Widget mouseClicked(int mouseX, int mouseY, int button) {
-        Widget widget = super.mouseClicked(mouseX, mouseY, button);
+        Widget widget;
+        if (contentCandidates != null && contentCandidates.isMouseOverElement(mouseX, mouseY)) {
+            widget = contentCandidates;
+            contentCandidates.mouseClicked(mouseX, mouseY, button);
+        } else {
+            widget = super.mouseClicked(mouseX, mouseY, button);
+        }
         if (contentCandidates != null) {
             if (widgets.contains(contentCandidates)) {
                 removeWidget(contentCandidates);

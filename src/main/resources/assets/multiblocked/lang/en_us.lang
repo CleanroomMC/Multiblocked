@@ -28,6 +28,8 @@ multiblocked.capability.lightningcraft_le=LightningCraft LE
 lightningcraft_le.any.name=Any LightningCraft LE Containers
 multiblocked.capability.projecte_emc=ProjectE EMC
 projecte_emc.any.name=Any multiblock block with EMC Trait
+multiblocked.capability.bg_lp=Blood Magic LP
+bg_lp.any.name=Any multiblock block with LP Trait
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 

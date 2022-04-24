@@ -499,6 +499,32 @@ public class RecipeBuilder {
         return output(EMCProjectECapability.CAP, chance, emc);
     }
 
+    @Optional.Method(modid = Multiblocked.MODID_BG)
+    @ZenMethod
+    public RecipeBuilder inputLP(long lp) {
+        return inputEMC(1, lp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_BG)
+    @ZenMethod
+    public RecipeBuilder outputLP(long lp) {
+        return outputEMC(1, lp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_BG)
+    @ZenMethod
+    public RecipeBuilder inputLP(float chance, long lp) {
+        keyBuilder.append(EMCProjectECapability.CAP.name).append(lp);
+        return input(EMCProjectECapability.CAP, chance, lp);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_BG)
+    @ZenMethod
+    public RecipeBuilder outputLP(float chance, long lp) {
+        keyBuilder.append(EMCProjectECapability.CAP.name).append(lp);
+        return output(EMCProjectECapability.CAP, chance, lp);
+    }
+
     @ZenMethod
     public Recipe build() {
         ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> inputBuilder = new ImmutableMap.Builder<>();

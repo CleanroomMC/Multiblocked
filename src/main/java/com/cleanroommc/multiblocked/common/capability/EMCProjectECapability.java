@@ -119,7 +119,7 @@ public class EMCProjectECapability extends MultiblockCapability<Long> {
             IKnowledgeProvider capability = trait.getCapability();
             if (capability == null) return false;
             if (lastEMC == capability.getEmc()) return false;
-            lastEMC = trait.getCapability().getEmc();
+            lastEMC = capability.getEmc();
             return true;
         }
     }

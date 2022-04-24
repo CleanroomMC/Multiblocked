@@ -97,6 +97,8 @@ dependencies {
     deobfCompile 'curse.maven:patchouli-306770:3162874'
     deobfCompile 'curse.maven:natures-aura-306626:2882138'
     deobfCompile 'curse.maven:project-e-226410:2702991'
+    deobfCompile 'curse.maven:blood-magic-224791:2822288'
+    deobfCompile 'curse.maven:guide-api-228832:2645992'
 }
 
 sourceSets {

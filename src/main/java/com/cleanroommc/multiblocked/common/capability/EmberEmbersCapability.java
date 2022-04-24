@@ -54,21 +54,14 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
 
     @Override
     public BlockInfo[] getCandidates() {
-        List<BlockInfo> list = new ArrayList<>();
-        DummyWorld dummyWorld = new DummyWorld();
-
-        for (Block block : RegistryManager.blocks) {
-            try {
-                if (block.hasTileEntity(block.getDefaultState())) {
-                    TileEntity tileEntity = block.createTileEntity(dummyWorld, block.getDefaultState());
-                    if (tileEntity != null && isBlockHasCapability(IO.BOTH, tileEntity)) {
-                        list.add(new BlockInfo(block.getDefaultState(), tileEntity));
-                    }
-                }
-            } catch (Throwable ignored) {}
-        }
-
-        return list.toArray(new BlockInfo[0]);
+        return new BlockInfo[] {
+                BlockInfo.fromBlockState(RegistryManager.charger.getDefaultState()),
+                BlockInfo.fromBlockState(RegistryManager.copper_cell.getDefaultState()),
+                BlockInfo.fromBlockState(RegistryManager.ember_funnel.getDefaultState()),
+                BlockInfo.fromBlockState(RegistryManager.ember_siphon.getDefaultState()),
+                BlockInfo.fromBlockState(RegistryManager.ember_injector.getDefaultState()),
+                BlockInfo.fromBlockState(RegistryManager.ember_activator.getDefaultState())
+        };
     }
 
     @Override
@@ -83,7 +76,7 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
 
     @Override
     public ContentWidget<? super Double> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new TextTexture("EB", color)).setUnit("Embers");
+        return new NumberContentWidget().setContentTexture(new TextTexture("EB", color)).setUnit("Ember");
     }
 
     public static class EmberEmbersCapabilityProxy extends CapCapabilityProxy<IEmberCapability, Double> {

@@ -469,7 +469,9 @@ public class RecipeBuilder {
     }
 
     @ZenMethod
-    public void buildAndRegister(){
-        recipeMap.addRecipe(build());
+    public Recipe buildAndRegister(){
+        Recipe recipe = build();
+        recipeMap.addRecipe(recipe);
+        return recipe;
     }
 }

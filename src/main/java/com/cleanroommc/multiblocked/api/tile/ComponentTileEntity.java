@@ -289,16 +289,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         super.markDirty();
     }
 
-    @Override
-    public void setExtraData(IData data) {
-
-    }
-
-    @Override
-    public IData getExtraData() {
-        return null;
-    }
-
     //************* TESR *************//
 
     @Override

@@ -13,6 +13,7 @@ import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.trait.EMCPlayerCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
+import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
@@ -115,8 +116,9 @@ public class EMCProjectECapability extends MultiblockCapability<Long> {
         protected boolean hasInnerChanged() {
             EMCPlayerCapabilityTrait trait = getTrait();
             if (trait == null) return false;
-            if (trait.getCapability() == null) return false;
-            if (lastEMC == trait.getCapability().getEmc()) return false;
+            IKnowledgeProvider capability = trait.getCapability();
+            if (capability == null) return false;
+            if (lastEMC == capability.getEmc()) return false;
             lastEMC = trait.getCapability().getEmc();
             return true;
         }

@@ -9,34 +9,29 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 public class EMCPlayerCapabilityTrait extends PlayerCapabilityTrait {
 
-    public long emc;
-    public EntityPlayer player;
-
     public EMCPlayerCapabilityTrait() {
         super(EMCProjectECapability.CAP);
     }
 
     public IKnowledgeProvider getCapability() {
-        return player.getCapability(ProjectEAPI.KNOWLEDGE_CAPABILITY, null);
+        EntityPlayer player = getPlayer();
+        return player == null ? null : player.getCapability(ProjectEAPI.KNOWLEDGE_CAPABILITY, null);
     }
 
     public long updateEMC(long emc, boolean simulate) {
-        player = getPlayer();
+        EntityPlayer player = getPlayer();
         if (player instanceof EntityPlayerMP) {
             IKnowledgeProvider emcCap = getCapability();
             if (emcCap != null) {
-                if (emcCap.getEmc() + emc > 0) {
-                    this.emc = emcCap.getEmc() + emc;
-                } else {
-                    this.emc = 0;
-                    return Math.abs(emcCap.getEmc() + emc);
-                }
+                long stored = emcCap.getEmc();
+                long emcL = Math.max(0, stored + emc);
                 if (!simulate) {
-                    emcCap.setEmc(this.emc);
+                    emcCap.setEmc(emcL);
                     emcCap.sync((EntityPlayerMP) player); // send to client
                 }
+                return Math.abs(emcL - (stored + emc));
             }
         }
-        return 0L;
+        return Math.abs(emc);
     }
 }

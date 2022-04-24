@@ -29,7 +29,7 @@ public class ParticleStackWidget extends ContentWidget<ParticleStack> {
             String tips = Lang.localise(content.getParticle().getUnlocalizedName()) + '\n' +
                             TextFormatting.YELLOW + Lang.localise("gui.qmd.particlestack.amount", Units.getSIFormat(content.getAmount(), "pu")) + '\n' +
                             TextFormatting.DARK_GREEN + Lang.localise("gui.qmd.particlestack.mean_energy", Units.getParticleEnergy(content.getMeanEnergy())) + '\n' +
-                            TextFormatting.RED + Lang.localise("gui.qmd.particlestack.focus", Units.getSIFormat(content.getFocus(), "")) + '\n';
+                            TextFormatting.RED + Lang.localise("gui.qmd.particlestack.focus", Units.getSIFormat(content.getFocus(), ""));
             this.setHoverTooltip(tips);
         }
     }

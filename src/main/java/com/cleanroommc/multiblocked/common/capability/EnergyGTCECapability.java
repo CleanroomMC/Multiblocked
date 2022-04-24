@@ -1,25 +1,28 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.trait.EnergyCapabilityTrait;
-import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
+import com.cleanroommc.multiblocked.common.capability.widget.TieredNumberContentWidget;
 import com.google.gson.*;
+import gregtech.api.GTValues;
 import gregtech.api.GregTechAPI;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.common.metatileentities.MetaTileEntities;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityEnergyHatch;
+import gregtech.integration.jei.utils.JEIHelpers;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
@@ -58,7 +61,10 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
 
     @Override
     public ContentWidget<? super Long> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new TextTexture("EU", color)).setUnit("EU");
+        return new TieredNumberContentWidget()
+                .setTierFunction(EU -> String.format(" (%s)", GTValues.VNF[JEIHelpers.getMinTierForVoltage(EU)] + TextFormatting.RESET))
+                .setContentTexture(new TextTexture("EU", color))
+                .setUnit("EU");
     }
 
     @Override

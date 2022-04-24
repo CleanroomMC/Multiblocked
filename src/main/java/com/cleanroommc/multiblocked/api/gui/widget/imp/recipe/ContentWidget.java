@@ -19,12 +19,11 @@ import mezz.jei.api.gui.IGhostIngredientHandler.Target;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -183,10 +182,10 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
         if (chance < 1) {
             tooltipText += "\n" + (chance == 0 ?
                     LocalizationUtils.format("multiblocked.gui.content.chance_0") :
-                    LocalizationUtils.format("multiblocked.gui.content.chance_1", String.format("%.1f", chance * 100)));
+                    LocalizationUtils.format("multiblocked.gui.content.chance_1", String.format("%.1f", chance * 100) + "%%"));
         }
         if (perTick) {
-            tooltipText += "\n" + LocalizationUtils.format("multiblocked.gui.content.tips.per_tick");
+            tooltipText += "\n" + LocalizationUtils.format("multiblocked.gui.content.per_tick");
         }
         super.setHoverTooltip(tooltipText);
         return this;
@@ -235,7 +234,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
         Size size = getSize();
         GlStateManager.scale(0.5, 0.5, 1);
         GlStateManager.disableDepth();
-        String s = chance == 0 ? "no cost" : String.format("%.1f", chance * 100) + "%";
+        String s = chance == 0 ? LocalizationUtils.format("multiblocked.gui.content.chance_0_short") : String.format("%.1f", chance * 100) + "%";
         int color = chance == 0 ? 0xff0000 : 0xFFFF00;
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 23, (pos.y + (size.height / 3f) + 6) * 2 - size.height, color);
@@ -249,7 +248,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
             Size size = getSize();
             GlStateManager.scale(0.5, 0.5, 1);
             GlStateManager.disableDepth();
-            String s = "per tick";
+            String s = LocalizationUtils.format("multiblocked.gui.content.tips.per_tick_short");
             int color = 0xFFFF00;
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
             fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 23, (pos.y + (size.height / 3f) + 6) * 2 - size.height + (chance == 1 ? 0 : 10), color);

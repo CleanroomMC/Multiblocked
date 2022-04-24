@@ -1,24 +1,20 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
+import com.google.gson.*;
 import net.minecraft.tileentity.TileEntity;
 import vazkii.botania.api.mana.IManaReceiver;
 import vazkii.botania.common.block.ModBlocks;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +48,7 @@ public class ManaBotaniaCapability extends MultiblockCapability<Integer> {
 
     @Override
     public ContentWidget<? super Integer> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new TextTexture("MN", color)).setUnit("mana");
+        return new NumberContentWidget().setContentTexture(new TextTexture("MN", color)).setUnit("Mana");
     }
 
     @Override

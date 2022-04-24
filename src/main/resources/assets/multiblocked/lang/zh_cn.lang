@@ -179,7 +179,7 @@ multiblocked.gui.dialogs.recipe_map.add_in=添加一个输入材料
 multiblocked.gui.dialogs.recipe_map.add_out=添加一个输出材料
 multiblocked.top.recipe_progress=进度:
 
-multiblocked.gui.content.per_tick=每 Tick 消耗
+multiblocked.gui.content.per_tick=§a每 Tick 消耗§r
 multiblocked.gui.content.chance_0=§c不消耗§r
 multiblocked.gui.content.chance_1=概率:§e %s %%§r
 multiblocked.gui.content.tips.per_tick=§a每 Tick§r

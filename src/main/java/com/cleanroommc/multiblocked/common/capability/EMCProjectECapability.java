@@ -71,7 +71,7 @@ public class EMCProjectECapability extends MultiblockCapability<Long> {
 
     @Override
     public ContentWidget<? super Long> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new TextTexture("EMC", color)).setUnit("emc");
+        return new NumberContentWidget().setContentTexture(new TextTexture("EMC", color)).setUnit("EMC");
     }
 
     @Override

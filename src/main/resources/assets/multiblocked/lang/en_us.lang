@@ -54,7 +54,7 @@ controller_tester.name=Controller Test Block
 controller_tester.description=You could use this block to test your scripts without restart game. It's unsafe, which can only be used in the single play.
 
 multiblocked.fluid.empty=Empty
-multiblocked.fluid.amount=§9Amount: %,d/%,d mb
+multiblocked.fluid.amount=§9Amount: %,d/%,d mB
 multiblocked.fluid.temperature=§cTemperature: %,d K
 multiblocked.fluid.state_gas=§aState: Gaseous
 multiblocked.fluid.state_liquid=§aState: Liquid
@@ -182,10 +182,11 @@ multiblocked.gui.dialogs.recipe_map.add_in=Add an Input Ingredient
 multiblocked.gui.dialogs.recipe_map.add_out=Add an Output Ingredient
 multiblocked.top.recipe_progress=Progress:
 
-multiblocked.gui.content.per_tick=Consume Per Tick
-multiblocked.gui.content.chance_0=§cno cost§r
-multiblocked.gui.content.chance_1=chance:§e %s %%§r
-multiblocked.gui.content.tips.per_tick=§aper tick§r
+multiblocked.gui.content.per_tick=§aConsumed Per Tick§r
+multiblocked.gui.content.tips.per_tick_short=§a/tick§r
+multiblocked.gui.content.chance_0=§cNot Consumed§r
+multiblocked.gui.content.chance_0_short=§cNC§r
+multiblocked.gui.content.chance_1=§eChance: %s
 
 multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
 multiblocked.gui.trait.energy.tips=Capability (EU)
@@ -232,7 +233,7 @@ multiblocked.gui.label.configurator=no configurator
 multiblocked.gui.label.scale=Scale
 multiblocked.gui.label.light=Light
 multiblocked.gui.label.render_range=Render Range
-multiblocked.gui.label.tank_capability=Tank Capability (mb):
+multiblocked.gui.label.tank_capability=Tank Capability (mB):
 multiblocked.gui.label.amount=Amount:
 multiblocked.gui.label.number=Number:
 multiblocked.gui.label.energy=Energy:

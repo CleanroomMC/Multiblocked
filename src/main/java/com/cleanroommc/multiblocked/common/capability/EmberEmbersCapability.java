@@ -9,14 +9,18 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.gson.*;
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
+import teamroots.embers.RegistryManager;
 import teamroots.embers.api.capabilities.EmbersCapabilities;
 import teamroots.embers.api.power.IEmberCapability;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,7 +54,21 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
 
     @Override
     public BlockInfo[] getCandidates() {
-        return new BlockInfo[0];
+        List<BlockInfo> list = new ArrayList<>();
+        DummyWorld dummyWorld = new DummyWorld();
+
+        for (Block block : RegistryManager.blocks) {
+            try {
+                if (block.hasTileEntity(block.getDefaultState())) {
+                    TileEntity tileEntity = block.createTileEntity(dummyWorld, block.getDefaultState());
+                    if (tileEntity != null && isBlockHasCapability(IO.BOTH, tileEntity)) {
+                        list.add(new BlockInfo(block.getDefaultState(), tileEntity));
+                    }
+                }
+            } catch (Throwable ignored) {}
+        }
+
+        return list.toArray(new BlockInfo[0]);
     }
 
     @Override

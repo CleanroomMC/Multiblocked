@@ -102,7 +102,7 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
             return sum <= 0 ? null : Collections.singletonList(sum);
         }
 
-        double lastEmber = Integer.MIN_VALUE;
+        double lastEmber = Double.MIN_VALUE;
 
         @Override
         protected boolean hasInnerChanged() {

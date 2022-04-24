@@ -33,9 +33,11 @@ public class PartTileTesterEntity extends PartTileEntity<PartDefinition> {
                 scheduleChunkForRenderUpdate();
             } else {
                 notifyBlockUpdate();
+                super.setDefinition(definition);
                 if (needAlwaysUpdate()) {
                     MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
                 }
+                return;
             }
         }
         super.setDefinition(definition);

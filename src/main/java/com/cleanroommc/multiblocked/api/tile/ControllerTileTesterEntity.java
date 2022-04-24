@@ -42,9 +42,11 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
                 scheduleChunkForRenderUpdate();
             } else {
                 notifyBlockUpdate();
+                super.setDefinition(definition);
                 if (needAlwaysUpdate()) {
                     MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
                 }
+                return;
             }
         }
         super.setDefinition(definition);

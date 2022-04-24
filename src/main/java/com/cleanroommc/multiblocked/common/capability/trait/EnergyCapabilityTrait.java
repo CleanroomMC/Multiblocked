@@ -92,6 +92,11 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
     }
 
     @Override
+    public boolean hasUpdate() {
+        return true;
+    }
+
+    @Override
     public void update() {
         handler.update();
     }

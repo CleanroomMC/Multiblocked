@@ -18,6 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 
 public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
@@ -91,14 +92,15 @@ public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
         @Override
         protected List<Float> handleRecipeInner(IO io, Recipe recipe, List<Float> left, boolean simulate) {
             TileEntity te = getTileEntity();
-            if (!simulate && te instanceof ComponentTileEntity && ((ComponentTileEntity<?>) te).hasTrait(GPExtraUtilities2Capability.CAP)) {
+            if (te instanceof ComponentTileEntity && ((ComponentTileEntity<?>) te).hasTrait(GPExtraUtilities2Capability.CAP)) {
                 CapabilityTrait trait = ((ComponentTileEntity<?>) te).getTrait(GPExtraUtilities2Capability.CAP);
                 if (trait instanceof GPPlayerCapabilityTrait) {
                     float sum = left.stream().reduce(0f, Float::sum);
-                    ((GPPlayerCapabilityTrait) trait).updatePower(io == IO.IN ? sum : -sum, 20);
+                    sum = ((GPPlayerCapabilityTrait) trait).updatePower(io == IO.IN ? sum : -sum, 20, simulate);
+                    return sum <= 0 ? null : Collections.singletonList(sum);
                 }
             }
-            return null;
+            return left;
         }
 
         @Override

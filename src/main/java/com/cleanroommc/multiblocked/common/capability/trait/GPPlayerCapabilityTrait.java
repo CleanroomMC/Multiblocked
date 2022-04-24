@@ -74,9 +74,21 @@ public class GPPlayerCapabilityTrait extends PlayerCapabilityTrait {
         return true;
     }
 
-    public void updatePower(float power, int clearTick) {
-        this.power = power;
-        this.clearTick = Math.max(clearTick, this.clearTick);
+    public float updatePower(float power, int clearTick, boolean simulation) {
+        EntityPlayer player = getPlayer();
+        float left = 0;
+        if (power > 0) {
+            if (player instanceof EntityPlayerMP && PowerManager.instance.assignedValuesPlayer.containsKey(player)) {
+                PowerManager.PowerFreq freq = PowerManager.instance.assignedValuesPlayer.get(player);
+                left = Math.min(freq.getPowerCreated(), power);
+                return left;
+            }
+        }
+        if (!simulation) {
+            this.power = power;
+            this.clearTick = Math.max(clearTick, this.clearTick);
+        }
+        return left;
     }
 
     @Override

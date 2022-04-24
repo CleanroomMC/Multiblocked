@@ -9,18 +9,19 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
-import com.cleanroommc.multiblocked.util.world.DummyWorld;
-import com.google.gson.*;
-import net.minecraft.block.Block;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
 import net.minecraft.tileentity.TileEntity;
 import teamroots.embers.RegistryManager;
 import teamroots.embers.api.capabilities.EmbersCapabilities;
 import teamroots.embers.api.power.IEmberCapability;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Color;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,6 +89,7 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
         @Override
         protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, boolean simulate) {
             IEmberCapability capability = getCapability();
+            if (capability == null) return left;
             double ember = capability.getEmber();
             double emberCapacity = capability.getEmberCapacity();
 

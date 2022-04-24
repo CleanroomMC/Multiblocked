@@ -105,6 +105,7 @@ public class LPBloodMagicCapability extends MultiblockCapability<Integer> {
         @Override
         protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, boolean simulate) {
             LPPlayerCapabilityTrait trait = getTrait();
+            if (trait == null) return left;
             int sum = left.stream().reduce(0, Integer::sum);
             sum = trait.updateLP(io == IO.IN ? -sum : sum, simulate);
             return sum <= 0 ? null : Collections.singletonList(sum);

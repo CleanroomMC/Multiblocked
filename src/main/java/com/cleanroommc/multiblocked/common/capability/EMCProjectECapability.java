@@ -105,6 +105,7 @@ public class EMCProjectECapability extends MultiblockCapability<Long> {
         @Override
         protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, boolean simulate) {
             EMCPlayerCapabilityTrait trait = getTrait();
+            if (trait == null) return left;
             long sum = left.stream().reduce(0L, Long::sum);
             sum = trait.updateEMC(io == IO.IN ? -sum : sum, simulate);
             return sum <= 0 ? null : Collections.singletonList(sum);

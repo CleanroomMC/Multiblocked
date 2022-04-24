@@ -3,22 +3,10 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.componen
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.GuiTextureGroup;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.*;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.PhantomSlotWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.TextBoxWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.RecipeMapBuilderWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.TemplateBuilderWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.JsonBlockPatternWidget;
@@ -102,7 +90,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         ResourceTexture PAGE = new ResourceTexture("multiblocked:textures/gui/structure_page.png");
         sceneWidget.addWidget(new SwitchWidget(138 - 20, 138 - 20, 16, 16, this::onFormedSwitch)
                 .setPressed(isFormed)
-                .setTexture(PAGE.getSubTexture(176 / 256.0, 184 / 256.0, 16 / 256.0, 16 / 256.0), PAGE.getSubTexture(176 / 256.0, 200 / 256.0, 16 / 256.0, 16 / 256.0))
+                .setTexture(PAGE.getSubTexture(222 / 256.0, 0, 16 / 256.0, 16 / 256.0), PAGE.getSubTexture(222 / 256.0, 16 / 256.0, 16 / 256.0, 16 / 256.0))
                 .setHoverTooltip("multiblocked.structure_page.switch"));
         S3.addWidget(new TextBoxWidget(200, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
         S3.addWidget(new ButtonWidget(200, 66, 100, 20,

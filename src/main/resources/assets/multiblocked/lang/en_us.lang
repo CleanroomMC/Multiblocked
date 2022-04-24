@@ -49,7 +49,7 @@ multiblocked.pattern.single=§6Only this block can be used§r
 multiblocked.pattern.replaceable_air=Replaceable by Air
 
 multiblocked.structure_page.candidates=Candidates
-multiblocked.structure_page.switch=§6formed§r/§coriginal§r
+multiblocked.structure_page.switch=§6Formed§r / §cOriginal§r
 
 blueprint_table.name=Blueprint Table Core
 blueprint_table.description=Multiblock Creator and Customizer

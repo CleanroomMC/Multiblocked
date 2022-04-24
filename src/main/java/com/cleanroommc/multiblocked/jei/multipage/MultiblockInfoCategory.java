@@ -26,7 +26,7 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoWra
 
     public MultiblockInfoCategory(IJeiHelpers helpers) {
         IGuiHelper guiHelper = helpers.getGuiHelper();
-        this.background = guiHelper.createBlankDrawable(176, 256);
+        this.background = guiHelper.createBlankDrawable(176, 220);
         this.icon = guiHelper.createDrawableIngredient(BlueprintTableTileEntity.tableDefinition.getStackForm());
     }
 

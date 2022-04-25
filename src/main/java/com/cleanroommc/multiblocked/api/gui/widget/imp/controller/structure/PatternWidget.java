@@ -6,6 +6,9 @@ import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import com.cleanroommc.multiblocked.api.gui.util.ClickData;
+import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.pattern.TraceabilityPredicate;
@@ -15,13 +18,6 @@ import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
 import com.cleanroommc.multiblocked.util.CycleItemStackHandler;
 import com.cleanroommc.multiblocked.util.ItemStackKey;
-import com.cleanroommc.multiblocked.api.gui.util.ClickData;
-import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SceneWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import net.minecraft.block.Block;
@@ -41,13 +37,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
@@ -57,14 +47,13 @@ public class PatternWidget extends WidgetGroup {
 
     private static final ResourceTexture PAGE = new ResourceTexture("multiblocked:textures/gui/structure_page.png");
     private static final Map<ControllerDefinition, PatternWidget> CACHE = new HashMap<>();
-    private static final IGuiTexture BACKGROUND = PAGE.getSubTexture(0, 0, 176 / 256.0, 1);
-    private static final IGuiTexture RIGHT_BUTTON = PAGE.getSubTexture(176 / 256.0, 0, 5 / 256.0, 17 / 256.0);
-    private static final IGuiTexture RIGHT_BUTTON_HOVER = PAGE.getSubTexture(181 / 256.0, 0, 5 / 256.0, 17 / 256.0);
-    private static final IGuiTexture LEFT_BUTTON = PAGE.getSubTexture(176 / 256.0, 17 / 256.0, 5 / 256.0, 17 / 256.0);
-    private static final IGuiTexture LEFT_BUTTON_HOVER = PAGE.getSubTexture(181 / 256.0, 17 / 256.0, 5 / 256.0, 17 / 256.0);
-    private static final IGuiTexture TIPS = PAGE.getSubTexture(176 / 256.0, 32 / 256.0, 20 / 256.0, 20 / 256.0);
-    private static final IGuiTexture FORMED_BUTTON = PAGE.getSubTexture(176 / 256.0, 184 / 256.0, 16 / 256.0, 16 / 256.0);
-    private static final IGuiTexture FORMED_BUTTON_PRESSED = PAGE.getSubTexture(176 / 256.0, 200 / 256.0, 16 / 256.0, 16 / 256.0);
+    private static final IGuiTexture BACKGROUND = PAGE.getSubTexture(0, 0, 176 / 256.0, 221 / 256.0);
+    private static final IGuiTexture LEFT_BUTTON = PAGE.getSubTexture(238 / 256.0, 54 / 256.0, 18 / 256.0, 18 / 256.0);
+    private static final IGuiTexture LEFT_BUTTON_HOVER = PAGE.getSubTexture(238 / 256.0, 36 / 256.0, 18 / 256.0, 18 / 256.0);
+    private static final IGuiTexture RIGHT_BUTTON = PAGE.getSubTexture(238 / 256.0, 18 / 256.0, 18 / 256.0, 18 / 256.0);
+    private static final IGuiTexture RIGHT_BUTTON_HOVER = PAGE.getSubTexture(238 / 256.0, 0, 18 / 256.0, 18 / 256.0);
+    private static final IGuiTexture FORMED_BUTTON = PAGE.getSubTexture(222 / 256.0, 0, 16 / 256.0, 16 / 256.0);
+    private static final IGuiTexture FORMED_BUTTON_PRESSED = PAGE.getSubTexture(222 / 256.0, 16 / 256.0, 16 / 256.0, 16 / 256.0);
 
     private final SceneWidget sceneWidget;
     private final ButtonWidget leftButton;
@@ -79,35 +68,41 @@ public class PatternWidget extends WidgetGroup {
     private SlotWidget[] candidates;
 
     private PatternWidget(ControllerDefinition controllerDefinition) {
-        super(0, 0, 176, 256);
+        super(0, 0, 176, 219);
         setClientSideWidget();
         allItemStackInputs = new ArrayList<>();
         predicates = new ArrayList<>();
-        addWidget(sceneWidget = new SceneWidget(6, 51, 164, 143, world)
+
+        addWidget(new ImageWidget(7, 7, 162, 16,
+                new TextTexture(controllerDefinition.location.getPath() + ".name", -1)
+                        .setType(TextTexture.TextType.ROLL)
+                        .setWidth(162)
+                        .setDropShadow(true))
+                .setHoverTooltip(controllerDefinition.getDescription()));
+
+        addWidget(sceneWidget = new SceneWidget(6, 30, 164, 143, world)
                 .useCacheBuffer()
                 .setOnSelected(this::onPosSelected)
                 .setRenderFacing(false)
                 .setRenderFacing(false));
+
         this.controllerDefinition = controllerDefinition;
+
         HashSet<ItemStackKey> drops = new HashSet<>();
         drops.add(new ItemStackKey(this.controllerDefinition.getStackForm()));
         this.patterns = controllerDefinition.getDesigns().stream()
                 .map(it -> initializePattern(it, drops))
                 .toArray(MBPattern[]::new);
+
         drops.forEach(it -> allItemStackInputs.add(it.getItemStack()));
-        addWidget(leftButton = new ButtonWidget(7, 198, 5, 17, LEFT_BUTTON, (x)->reset(index - 1)).setHoverTexture(LEFT_BUTTON_HOVER));
-        addWidget(rightButton = new ButtonWidget(164, 198, 5, 17, RIGHT_BUTTON, (x)->reset(index + 1)).setHoverTexture(RIGHT_BUTTON_HOVER));
-        addWidget(switchWidget = (SwitchWidget) new SwitchWidget(150, 173, 16, 16, this::onFormedSwitch)
+
+        addWidget(switchWidget = (SwitchWidget) new SwitchWidget(151, 33, 16, 16, this::onFormedSwitch)
                 .setTexture(FORMED_BUTTON, FORMED_BUTTON_PRESSED)
                 .setHoverTooltip("multiblocked.structure_page.switch"));
-        addWidget(new ImageWidget(149, 27, 20, 20, TIPS).setHoverTooltip(controllerDefinition.getDescription()));
-        addWidget(new ImageWidget(7, 7, 162, 16,
-                new TextTexture(controllerDefinition.location.getPath() + ".name", -1)
-                        .setType(TextTexture.TextType.ROLL)
-                        .setWidth(162)
-                        .setDropShadow(true)));
-        addWidget(new ImageWidget(17, 196, 142, 18,
-                new TextTexture("multiblocked.structure_page.candidates", 0xff000000)));
+
+        addWidget(leftButton = new ButtonWidget(9, 151, 18, 18, LEFT_BUTTON, (x) -> reset(index - 1)).setHoverTexture(LEFT_BUTTON_HOVER));
+
+        addWidget(rightButton = new ButtonWidget(149, 151, 18, 18, RIGHT_BUTTON, (x) -> reset(index + 1)).setHoverTexture(RIGHT_BUTTON_HOVER));
     }
 
     public static PatternWidget getPatternWidget(ControllerDefinition controllerDefinition) {
@@ -139,7 +134,7 @@ public class PatternWidget extends WidgetGroup {
         slotWidgets = new SlotWidget[Math.min(pattern.parts.size(), 18)];
         IItemHandler itemHandler = new ItemStackHandler(pattern.parts);
         for (int i = 0; i < slotWidgets.length; i++) {
-            slotWidgets[i] = new SlotWidget(itemHandler, i, 7 + (i % 9) * 18, 214 + (i / 9) * 18, false, false);
+            slotWidgets[i] = new SlotWidget(itemHandler, i, 7 + (i % 9) * 18, 176 + (i / 9) * 18, false, false);
             addWidget(slotWidgets[i]);
         }
         leftButton.setVisible(index > 0);
@@ -186,7 +181,7 @@ public class PatternWidget extends WidgetGroup {
                     new CycleItemStackHandler(candidateStacks);
             for (int i = 0; i < candidateStacks.size(); i++) {
                 int finalI = i;
-                candidates[i] = new SlotWidget(itemHandler, i, 8 + (i / 6) * 18, 55 + (i % 6) * 18, false, false)
+                candidates[i] = new SlotWidget(itemHandler, i, 9 + (i / 6) * 18, 33 + (i % 6) * 18, false, false)
                         .setBackgroundTexture(new ColorRectTexture(0x4fffffff))
                         .setOnAddedTooltips((slot, list) -> list.addAll(predicateTips.get(finalI)));
                 addWidget(candidates[i]);

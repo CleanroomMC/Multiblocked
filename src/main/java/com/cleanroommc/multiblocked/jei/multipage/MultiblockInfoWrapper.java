@@ -12,7 +12,7 @@ public class MultiblockInfoWrapper extends ModularWrapper {
     public final ControllerDefinition definition;
 
     public MultiblockInfoWrapper(ControllerDefinition definition) {
-        super(PatternWidget.getPatternWidget(definition), 176, 256);
+        super(PatternWidget.getPatternWidget(definition), 176, 220);
         this.definition = definition;
     }
 

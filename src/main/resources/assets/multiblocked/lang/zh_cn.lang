@@ -194,7 +194,8 @@ multiblocked.gui.trait.energy.tips=容量 (EU)
 
 multiblocked.gui.trait.fe.progress=FE 存储: %d / %d
 multiblocked.gui.trait.fe.tips.0=容量 (RF)
-multiblocked.gui.trait.fe.tips.1=最大传输 (RF/packet)
+multiblocked.gui.trait.fe.tips.1=最大接受 (RF/packet)
+multiblocked.gui.trait.fe.tips.2=最大输出 (RF/packet)
 
 multiblocked.gui.trait.aspect.amount=数量:
 multiblocked.gui.trait.gas.amount=气体量:

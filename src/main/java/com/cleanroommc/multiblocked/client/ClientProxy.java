@@ -65,7 +65,9 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event) {
-        MultiblockWorldSavedData.clearDisabled();
+        if (Minecraft.getMinecraft().world == event.getWorld()) {
+            MultiblockWorldSavedData.clearDisabled();
+        }
     }
 
     @SubscribeEvent

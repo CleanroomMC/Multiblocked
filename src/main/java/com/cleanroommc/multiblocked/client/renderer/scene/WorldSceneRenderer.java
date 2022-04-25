@@ -131,11 +131,13 @@ public abstract class WorldSceneRenderer {
 
     public WorldSceneRenderer deleteCacheBuffer() {
         if (useCache) {
-            for (int i = 0; i < BlockRenderLayer.values().length; ++i) {
-                if (this.vertexBuffers[i] != null) {
-                    this.vertexBuffers[i].deleteGlBuffers();
+            Minecraft.getMinecraft().addScheduledTask(()->{
+                for (int i = 0; i < BlockRenderLayer.values().length; ++i) {
+                    if (this.vertexBuffers[i] != null) {
+                        this.vertexBuffers[i].deleteGlBuffers();
+                    }
                 }
-            }
+            });
             if (cacheState.get() == CacheState.COMPILING && thread != null) {
                 thread.interrupt();
                 thread = null;

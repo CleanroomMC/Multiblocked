@@ -11,10 +11,12 @@ import com.google.gson.JsonElement;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -55,7 +57,14 @@ public class ItemCapabilityTrait extends MultiCapabilityTrait {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        handler.deserializeNBT(compound.getCompoundTag("_"));
+        NBTTagList tagList = compound.getCompoundTag("_").getTagList("Items", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < tagList.tagCount(); i++) {
+            NBTTagCompound itemTags = tagList.getCompoundTagAt(i);
+            int slot = itemTags.getInteger("Slot");
+            if (slot >= 0 && slot < handler.getSlots()) {
+                handler.setStackInSlot(slot, new ItemStack(itemTags));
+            }
+        }
     }
 
     @Override

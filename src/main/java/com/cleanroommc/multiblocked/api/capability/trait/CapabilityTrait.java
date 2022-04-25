@@ -3,7 +3,6 @@ package com.cleanroommc.multiblocked.api.capability.trait;
 import com.cleanroommc.multiblocked.api.capability.IInnerCapabilityProvider;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.google.gson.JsonElement;
 import net.minecraft.entity.player.EntityPlayer;
@@ -85,16 +84,7 @@ public abstract class CapabilityTrait implements IInnerCapabilityProvider {
     }
 
     public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                group.addWidget(new SlotWidget(player.inventory, col + (row + 1) * 9, 7 + col * 18, 173 + row * 18)
-                        .setLocationInfo(true, false));
-            }
-        }
-        for (int slot = 0; slot < 9; slot++) {
-            group.addWidget(new SlotWidget(player.inventory, slot, 7 + slot * 18, 231)
-                    .setLocationInfo(true, true));
-        }
+
     }
 
     public void openConfigurator(WidgetGroup dialog) {

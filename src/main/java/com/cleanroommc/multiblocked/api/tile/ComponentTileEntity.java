@@ -14,6 +14,7 @@ import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabButton;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
@@ -443,6 +444,16 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
                                 new ResourceTexture("multiblocked:textures/gui/custom_gui_tab_button.png").getSubTexture(0, 0, 1, 0.5),
                                 new ResourceTexture("multiblocked:textures/gui/custom_gui_tab_button.png").getSubTexture(0, 0.5, 1, 0.5)), group);
         group.addWidget(new ImageWidget(0, 0, 176, 256, new ResourceTexture(JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png"))));
+        if (traits.size() > 0 ) {
+            for (int row = 0; row < 3; row++) {
+                for (int col = 0; col < 9; col++) {
+                    group.addWidget(new SlotWidget(entityPlayer.inventory, col + (row + 1) * 9, 7 + col * 18, 173 + row * 18).setLocationInfo(true, false));
+                }
+            }
+            for (int slot = 0; slot < 9; slot++) {
+                group.addWidget(new SlotWidget(entityPlayer.inventory, slot, 7 + slot * 18, 231).setLocationInfo(true, true));
+            }
+        }
         for (CapabilityTrait trait : traits.values()) {
             trait.createUI(this, group, entityPlayer);
         }

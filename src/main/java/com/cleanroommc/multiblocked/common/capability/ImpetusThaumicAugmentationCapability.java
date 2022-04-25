@@ -40,7 +40,7 @@ public class ImpetusThaumicAugmentationCapability extends MultiblockCapability<L
 
     @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return getCapability(CapabilityImpetusStorage.IMPETUS_STORAGE, tileEntity).isEmpty();
+        return !getCapability(CapabilityImpetusStorage.IMPETUS_STORAGE, tileEntity).isEmpty();
     }
 
     @Override

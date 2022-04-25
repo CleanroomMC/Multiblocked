@@ -10,6 +10,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
 import com.google.common.collect.Lists;
@@ -18,12 +19,11 @@ import mezz.jei.api.gui.IGhostIngredientHandler.Target;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -156,14 +156,14 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
      * Configurator.
      */
     public void openConfigurator(WidgetGroup dialog){
-        dialog.addWidget(new LabelWidget(5, 8, "Chance:"));
+        dialog.addWidget(new LabelWidget(5, 8, "multiblocked.gui.label.chance"));
         dialog.addWidget(new TextFieldWidget(125 - 60, 5, 30, 15, true, null, number -> setContent(io, content, Float.parseFloat(number), perTick)).setNumbersOnly(0f, 1f).setCurrentString(chance + ""));
         dialog.addWidget(new SwitchWidget(125 - 25 , 5, 15, 15, (cd, r) -> setContent(io, content, chance, r))
                 .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
                 .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
                 .setHoverBorderTexture(1, -1)
                 .setPressed(perTick)
-                .setHoverTooltip("per tick"));
+                .setHoverTooltip("multiblocked.gui.content.per_tick"));
     }
 
     public ContentWidget<T> setBackground(IGuiTexture background) {
@@ -180,10 +180,12 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
     @Override
     public ContentWidget<T> setHoverTooltip(String tooltipText) {
         if (chance < 1) {
-            tooltipText += chance == 0 ? (TextFormatting.RED + "\nno cost") : ("\nchance: " + TextFormatting.YELLOW + String.format("%.1f", chance * 100) + "%%")  + TextFormatting.RESET;
+            tooltipText += "\n" + (chance == 0 ?
+                    LocalizationUtils.format("multiblocked.gui.content.chance_0") :
+                    LocalizationUtils.format("multiblocked.gui.content.chance_1", String.format("%.1f", chance * 100) + "%%"));
         }
         if (perTick) {
-            tooltipText += (TextFormatting.GREEN + "\nper tick") + TextFormatting.RESET;
+            tooltipText += "\n" + LocalizationUtils.format("multiblocked.gui.content.per_tick");
         }
         super.setHoverTooltip(tooltipText);
         return this;
@@ -232,7 +234,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
         Size size = getSize();
         GlStateManager.scale(0.5, 0.5, 1);
         GlStateManager.disableDepth();
-        String s = chance == 0 ? "no cost" : String.format("%.1f", chance * 100) + "%";
+        String s = chance == 0 ? LocalizationUtils.format("multiblocked.gui.content.chance_0_short") : String.format("%.1f", chance * 100) + "%";
         int color = chance == 0 ? 0xff0000 : 0xFFFF00;
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 23, (pos.y + (size.height / 3f) + 6) * 2 - size.height, color);
@@ -246,7 +248,7 @@ public abstract class ContentWidget<T> extends SelectableWidgetGroup {
             Size size = getSize();
             GlStateManager.scale(0.5, 0.5, 1);
             GlStateManager.disableDepth();
-            String s = "per tick";
+            String s = LocalizationUtils.format("multiblocked.gui.content.tips.per_tick_short");
             int color = 0xFFFF00;
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
             fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 23, (pos.y + (size.height / 3f) + 6) * 2 - size.height + (chance == 1 ? 0 : 10), color);

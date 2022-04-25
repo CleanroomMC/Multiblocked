@@ -6,6 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.common.capability.FEMultiblockCapability;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.NBTTagCompound;
@@ -53,7 +54,7 @@ public class FECapabilityTrait extends ProgressCapabilityTrait {
 
     @Override
     protected String dynamicHoverTips(double progress) {
-        return String.format("FE Stored: %d / %d", (int)(handler.getMaxEnergyStored() * progress), handler.getMaxEnergyStored());
+        return LocalizationUtils.format("multiblocked.gui.trait.fe.progress", (int)(handler.getMaxEnergyStored() * progress), handler.getMaxEnergyStored());
     }
 
     @Override
@@ -81,17 +82,17 @@ public class FECapabilityTrait extends ProgressCapabilityTrait {
         dialog.addWidget(new TextFieldWidget(60, 5, 100, 15, true, null, s -> capacity = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(capacity + "")
-                .setHoverTooltip("capability (RF)"));
+                .setHoverTooltip("multiblocked.gui.trait.fe.tips.0"));
 
         dialog.addWidget(new TextFieldWidget(60, 25, 100, 15, true, null, s -> capacity = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(maxReceive + "")
-                .setHoverTooltip("maxReceive (RF/packet)"));
+                .setHoverTooltip("multiblocked.gui.trait.fe.tips.1"));
 
         dialog.addWidget(new TextFieldWidget(60, 45, 100, 15, true, null, s -> capacity = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(maxExtract + "")
-                .setHoverTooltip("maxExtract (RF/packet)"));
+                .setHoverTooltip("multiblocked.gui.trait.fe.tips.2"));
     }
 
     @Nullable

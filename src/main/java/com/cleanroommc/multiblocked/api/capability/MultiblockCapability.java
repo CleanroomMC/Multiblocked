@@ -81,7 +81,7 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
             @Override
             public void openConfigurator(WidgetGroup dialog) {
                 super.openConfigurator(dialog);
-                dialog.addWidget(new LabelWidget(5, 30, ()->"missing configurator!!!"));
+                dialog.addWidget(new LabelWidget(5, 30, "multiblocked.gui.label.configurator"));
             }
 
         }.setBackground(new ColorRectTexture(color));

@@ -54,11 +54,11 @@ public class PredicateBlocks extends SimplePredicate {
         for (IBlockState blockState : blockList) {
             addBlockSelectorWidget(blockList, container, blockState);
         }
-        group.addWidget(new LabelWidget(0, 6, ()->"Block Settings").setTextColor(-1).setDrop(true));
+        group.addWidget(new LabelWidget(0, 6, "multiblocked.gui.label.block_settings"));
         group.addWidget(new ButtonWidget(162, 0, 20, 20, cd -> {
             blockList.add(null);
             addBlockSelectorWidget(blockList, container, null);
-        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("add a new block"));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.predicate.blocks.add"));
         return groups;
     }
 
@@ -73,7 +73,7 @@ public class PredicateBlocks extends SimplePredicate {
                 container.widgets.get(i).addSelfPosition(0, -21);
             }
             container.waitToRemoved(bsw);
-        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("remove"));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.remove"));
         if (blockState != null) {
             bsw.setBlock(blockState);
         }

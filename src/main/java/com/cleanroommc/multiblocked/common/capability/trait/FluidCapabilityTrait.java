@@ -134,7 +134,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
     @Override
     protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot, int index) {
         super.initSettingDialog(dialog, slot, index);
-        dialog.addWidget(new LabelWidget(5, 60, "tank capability (L): "));
+        dialog.addWidget(new LabelWidget(5, 60, "multiblocked.gui.label.tank_capability"));
         dialog.addWidget(new TextFieldWidget(5, 70, 100, 15, true, null, s -> tankCapability[index] = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(tankCapability[index] + ""));

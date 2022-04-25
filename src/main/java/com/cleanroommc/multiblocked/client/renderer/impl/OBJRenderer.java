@@ -64,7 +64,7 @@ public class OBJRenderer extends IModelRenderer {
                     if (r != null && r.isFile()) {
                         tfw.setCurrentString("multiblocked:obj/" + r.getPath().replace(path.getPath(), "").substring(1).replace('\\', '/'));
                     }
-                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
+                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("multiblocked.gui.tips.file_selector"));
 
         return () -> {
             if (tfw.getCurrentString().isEmpty()) {

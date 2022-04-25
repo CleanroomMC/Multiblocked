@@ -104,6 +104,14 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         return world != null && !isRemote() && (definition.needUpdateTick() || traits.values().stream().anyMatch(CapabilityTrait::hasUpdate));
     }
 
+    public boolean hasTrait(MultiblockCapability<?> capability) {
+        return traits.get(capability) != null;
+    }
+
+    public CapabilityTrait getTrait(MultiblockCapability<?> capability) {
+        return traits.get(capability);
+    }
+
     @Override
     public ComponentTileEntity<?> getInner() {
         return this;
@@ -281,16 +289,6 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
         super.markDirty();
     }
 
-    @Override
-    public void setExtraData(IData data) {
-
-    }
-
-    @Override
-    public IData getExtraData() {
-        return null;
-    }
-
     //************* TESR *************//
 
     @Override
@@ -312,11 +310,13 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
                 for (IItemStack drop :  definition.onDrops.apply(this, CraftTweakerMC.getIPlayer(player))) {
                     drops.add(CraftTweakerMC.getItemStack(drop));
                 }
-                return;
             } catch (Exception exception) {
                 definition.onDrops = null;
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onDrops", exception);
             }
+        }
+        for (CapabilityTrait trait : traits.values()) {
+            trait.onDrops(drops, player);
         }
         drops.add(definition.getStackForm());
     }

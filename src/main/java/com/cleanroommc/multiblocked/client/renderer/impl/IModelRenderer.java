@@ -172,7 +172,7 @@ public class IModelRenderer implements ICustomRenderer {
                     if (r != null && r.isFile()) {
                         tfw.setCurrentString("multiblocked:" + r.getPath().replace(path.getPath(), "").substring(1).replace(".json", "").replace('\\', '/'));
                     }
-                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
+                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("multiblocked.gui.tips.file_selector"));
         if (current instanceof IModelRenderer && ((IModelRenderer) current).modelLocation != null) {
             tfw.setCurrentString(((IModelRenderer) current).modelLocation.toString());
         }

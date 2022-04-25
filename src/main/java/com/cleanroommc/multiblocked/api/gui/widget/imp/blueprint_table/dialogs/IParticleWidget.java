@@ -75,9 +75,9 @@ public class IParticleWidget extends DialogWidget {
                 .setRenderSelect(false)
                 .setRenderFacing(false));
         this.addWidget(new ButtonWidget(305, 55, 40, 20, this::execute)
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("execute"));
+                .setHoverTooltip("multiblocked.gui.tips.execute"));
 
         String init = "import mods.multiblocked.MBDRegistry;";
         try {
@@ -102,9 +102,9 @@ public class IParticleWidget extends DialogWidget {
                 .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xdf000000)))
                 .addWidget(new TextBoxWidget(2, 2, getSize().width - 4, Collections.singletonList(HELP)).setFontColor(-1).setShadow(true))
                 .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorBorderTexture(1, -1))))
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("help", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.help", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("help"));
+                .setHoverTooltip("multiblocked.gui.tips.help"));
     }
 
     public static ParticleManager getParticleManager() {

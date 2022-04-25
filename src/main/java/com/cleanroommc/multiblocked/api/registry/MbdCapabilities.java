@@ -50,6 +50,21 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_PRODIGY)) {
             registerCapability(HotAirProdigyCapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_NA)) {
+            registerCapability(AuraMultiblockCapability.CAP);
+        }
+        if (Loader.isModLoaded(Multiblocked.MODID_EU2)) {
+            registerCapability(GPExtraUtilities2Capability.CAP);
+        }
+        if (Loader.isModLoaded(Multiblocked.MODID_PE)) {
+            registerCapability(EMCProjectECapability.CAP);
+        }
+        if (Loader.isModLoaded(Multiblocked.MODID_BG)) {
+            registerCapability(LPBloodMagicCapability.CAP);
+        }
+        if (Loader.isModLoaded(Multiblocked.MODID_EMBERS)) {
+            registerCapability(EmberEmbersCapability.CAP);
+        }
         if (Loader.isModLoaded(Multiblocked.MODID_TA)) {
             registerCapability(ImpetusThaumicAugmentationCapability.CAP);
         }

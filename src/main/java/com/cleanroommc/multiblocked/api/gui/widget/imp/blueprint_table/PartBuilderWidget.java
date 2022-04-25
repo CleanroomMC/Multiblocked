@@ -58,7 +58,7 @@ public class PartBuilderWidget extends WidgetGroup {
                     e.printStackTrace();
                 }
             }
-        }).setHoverBorderTexture(1, -1).setHoverTooltip("open folder"));
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.open_folder"));
         this.addWidget(new ButtonWidget(200 - 4 - 20, 51, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> {
             new PartWidget(this, new PartDefinition(new ResourceLocation("mod_id:component_id")), jsonObject -> {
 
@@ -67,7 +67,7 @@ public class PartBuilderWidget extends WidgetGroup {
                 }
                 updateList();
             });
-        }).setHoverBorderTexture(1, -1).setHoverTooltip("create a new part block"));
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.builder.part.create"));
         initScene();
         updateList();
     }
@@ -125,7 +125,7 @@ public class PartBuilderWidget extends WidgetGroup {
                                 });
                             } catch (Exception ignored) {}
                         }
-                    }).setHoverBorderTexture(1, -1).setHoverTooltip("setting"))
+                    }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.settings"))
                     .addWidget(new ImageWidget(32, 0, 100, 20, new TextTexture(file.getName().replace(".json", "")).setWidth(100).setType(TextTexture.TextType.ROLL)))
                     .addWidget(new ImageWidget(4, 2, 18, 18, new ItemStackTexture(Items.PAPER)));
             files.add(widgetGroup);

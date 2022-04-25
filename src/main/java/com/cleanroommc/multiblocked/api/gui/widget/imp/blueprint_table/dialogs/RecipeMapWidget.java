@@ -51,9 +51,9 @@ public class RecipeMapWidget extends DialogWidget {
         this.onSave = onSave;
         this.recipes = new ArrayList<>();
         this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_page.png")));
-        this.addWidget(new LabelWidget(40, 40, "RecipeMap ID:"));
+        this.addWidget(new LabelWidget(40, 40, "multiblocked.gui.label.recipe_map_id"));
         this.addWidget(new TextFieldWidget(40, 55, 100, 15, true, null, s -> recipeMap.name = s).setCurrentString(recipeMap.name));
-        this.addWidget(new ButtonWidget(150, 52, 70, 20, this::onSave).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("Save Pattern", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
+        this.addWidget(new ButtonWidget(150, 52, 95, 20, this::onSave).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.label.save_recipe_map", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
         this.addWidget(new ImageWidget(250, 3, 130, 128, ResourceBorderTexture.BORDERED_BACKGROUND_BLUE));
         this.addWidget(recipesList = new DraggableScrollableWidgetGroup(250, 7, 130, 120));
         this.addWidget(configurator = new WidgetGroup(250, 132, 130, 120));
@@ -62,7 +62,7 @@ public class RecipeMapWidget extends DialogWidget {
             Recipe recipe = new Recipe(UUID.randomUUID().toString(), ImmutableMap.of(), ImmutableMap.of(), ImmutableMap.of(), ImmutableMap.of(), 1);
             recipes.add(new RecipeItem(recipe));
             recipesList.addWidget(recipes.get(recipes.size() - 1));
-        }).setHoverBorderTexture(1, -1).setHoverTooltip("add a new recipe"));
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.add_recipe"));
         for (Recipe recipe : recipeMap.recipes.values()) {
             recipes.add(new RecipeItem(recipe));
             recipesList.addWidget(recipes.get(recipes.size() - 1));
@@ -88,7 +88,13 @@ public class RecipeMapWidget extends DialogWidget {
 
     @Override
     public Widget mouseClicked(int mouseX, int mouseY, int button) {
-        Widget widget = super.mouseClicked(mouseX, mouseY, button);
+        Widget widget;
+        if (contentCandidates != null && contentCandidates.isMouseOverElement(mouseX, mouseY)) {
+            widget = contentCandidates;
+            contentCandidates.mouseClicked(mouseX, mouseY, button);
+        } else {
+            widget = super.mouseClicked(mouseX, mouseY, button);
+        }
         if (contentCandidates != null) {
             if (widgets.contains(contentCandidates)) {
                 removeWidget(contentCandidates);
@@ -133,7 +139,7 @@ public class RecipeMapWidget extends DialogWidget {
                 }
                 recipes.remove(this);
                 recipesList.waitToRemoved(RecipeItem.this);
-            }).setHoverBorderTexture(1, -1).setHoverTooltip("remove recipe"));
+            }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.remove_recipe"));
         }
 
         @Override
@@ -267,9 +273,9 @@ public class RecipeMapWidget extends DialogWidget {
             WidgetGroup group = RecipeMapWidget.this.recipeIO;
             group.clearAllWidgets();
             group.addWidget(new ImageWidget(-10, -10, group.getSize().width + 20, group.getSize().height + 20, ResourceBorderTexture.BORDERED_BACKGROUND));
-            group.addWidget(new LabelWidget(5, 5,"uid:"));
+            group.addWidget(new LabelWidget(5, 5,"multiblocked.gui.label.uid"));
             group.addWidget(new TextFieldWidget(30, 5,  120, 10, true, () -> uid, s -> uid = s)
-                    .setHoverTooltip("ensure a unique id"));
+                    .setHoverTooltip("multiblocked.gui.tips.unique"));
             inputs.clear();
             outputs.clear();
             DraggableScrollableWidgetGroup inputs = new DraggableScrollableWidgetGroup(5, 20, 64, 64).setBackground(new ColorRectTexture(0x3f000000));
@@ -283,10 +289,10 @@ public class RecipeMapWidget extends DialogWidget {
                     recipeMap.progressTexture = texture;
                     progressWidget.setProgressBar(texture.getSubTexture(0.0, 0.0, 1.0, 0.5), texture.getSubTexture(0.0, 0.5, 1.0, 0.5));
                 }
-            })).setHoverTexture(new ColorRectTexture(0xaf888888)).setHoverTooltip("set the progress texture"));
-            group.addWidget(new LabelWidget(5, 90, "Duration:"));
+            })).setHoverTexture(new ColorRectTexture(0xaf888888)).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.progress"));
+            group.addWidget(new LabelWidget(5, 90, "multiblocked.gui.label.duration"));
             group.addWidget(new TextFieldWidget(60, 90,  60, 10, true, () -> duration + "", s -> duration = Integer.parseInt(s)).setNumbersOnly(1, Integer.MAX_VALUE));
-            group.addWidget(new LabelWidget(122, 90, "ticks"));
+            group.addWidget(new LabelWidget(122, 90, "multiblocked.gui.label.ticks"));
             updateIOContentWidgets();
             int index = 0;
             for (List<ContentWidget<?>> widgets : this.inputs.values()) {
@@ -301,7 +307,7 @@ public class RecipeMapWidget extends DialogWidget {
                     new ResourceTexture("multiblocked:textures/gui/add.png"),
                     cd -> addContent(this.inputs,
                             X - inputs.getScrollXOffset() + group.getSelfPosition().x + 5,
-                            Y - inputs.getScrollYOffset() + group.getSelfPosition().y + 5)).setHoverBorderTexture(1, -1).setHoverTooltip("add input content"));
+                            Y - inputs.getScrollYOffset() + group.getSelfPosition().y + 5)).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.add_in"));
 
             index = 0;
             for (List<ContentWidget<?>> widgets : this.outputs.values()) {
@@ -315,7 +321,7 @@ public class RecipeMapWidget extends DialogWidget {
             outputs.addWidget(new ButtonWidget(X2 + 2, Y2 + 2, 16 , 16,
                     new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> addContent(this.outputs,
                     X2 - outputs.getScrollXOffset() + group.getSelfPosition().x + 176 - 74 + 5,
-                    Y2 - outputs.getScrollYOffset() + group.getSelfPosition().y + 5)).setHoverBorderTexture(1, -1).setHoverTooltip("add output content"));
+                    Y2 - outputs.getScrollYOffset() + group.getSelfPosition().y + 5)).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.add_out"));
         }
 
         private void addContent(Map<MultiblockCapability<?>, List<ContentWidget<?>>> contents, int mouseX, int mouseY) {
@@ -349,7 +355,7 @@ public class RecipeMapWidget extends DialogWidget {
                     (input ? inputs: outputs).get(capability).remove(widget);
                     updateRecipe();
                     updateRecipeWidget();
-                }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("remove"));
+                }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.remove"));
                 selectedContent = widget;
             }
             WidgetGroup group = RecipeMapWidget.this.configurator;

@@ -15,6 +15,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.util.CycleItemStackHandler;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -44,9 +45,9 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
             itemHandler = new CycleItemStackHandler(stacks);
             addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false).setDrawOverlay(false).setOnAddedTooltips((s, l)-> {
                 if (chance < 1) {
-                    l.add(chance == 0 ? (TextFormatting.RED + "no cost") : ("chance: " + TextFormatting.YELLOW + String.format("%.1f", chance * 100) + "%%")  + TextFormatting.RESET);
+                    l.add(chance == 0 ? LocalizationUtils.format("multiblocked.gui.content.chance_0") : LocalizationUtils.format("multiblocked.gui.content.chance_1", String.format("%.1f", chance * 100)));
                     if (perTick) {
-                        l.add(TextFormatting.GREEN + "\nper tick" + TextFormatting.RESET);
+                        l.add(LocalizationUtils.format("multiblocked.gui.content.per_tick"));
                     }
                 }
             }));
@@ -71,7 +72,7 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
         super.openConfigurator(dialog);
         int x = 5;
         int y = 25;
-        dialog.addWidget(new LabelWidget(5, y + 3, "Amount:"));
+        dialog.addWidget(new LabelWidget(5, y + 3, "multiblocked.gui.label.amount"));
         dialog.addWidget(new TextFieldWidget(125 - 60, y, 60, 15, true, null, number -> {
             content = content.isOre() ? new ItemsIngredient(Integer.parseInt(number), content.getOreDict()) : new ItemsIngredient(Integer.parseInt(number), content.matchingStacks);
             onContentUpdate();
@@ -98,7 +99,7 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
                 String oreDict = OreDictionary.getOreName(ids[0]);
                 content = new ItemsIngredient(content.getAmount(), oreDict);
                 ore.setCurrentString(oreDict);
-                phantomSlotWidget.setHoverTooltip("oreDict: " + Arrays.stream(ids).mapToObj(OreDictionary::getOreName).reduce("", (a, b) -> a + "\n" + b));
+                phantomSlotWidget.setHoverTooltip(LocalizationUtils.format("multiblocked.gui.trait.item.ore_dict") + ": " + Arrays.stream(ids).mapToObj(OreDictionary::getOreName).reduce("", (a, b) -> a + "\n" + b));
             } else {
                 content = new ItemsIngredient(content.getAmount(), "");
                 ore.setCurrentString("");
@@ -111,10 +112,10 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
             content = new ItemsIngredient(content.getAmount(), oreDict);
             ItemStack[] matches = content.getMatchingStacks();
             handler.setStackInSlot(0, matches.length > 0 ? matches[0] : ItemStack.EMPTY);
-            phantomSlotWidget.setHoverTooltip("oreDict: \n" + content.getOreDict());
+            phantomSlotWidget.setHoverTooltip(LocalizationUtils.format("multiblocked.gui.trait.item.ore_dict") + ":\n"  + content.getOreDict());
             onContentUpdate();
         });
-        ore.setHoverTooltip("oreDict");
+        ore.setHoverTooltip("multiblocked.gui.trait.item.ore_dic");
         dialog.addWidget(new SwitchWidget(x, y + 22, 50, 15, (cd, r)->{
             groupOre.setVisible(r);
             content = r ? new ItemsIngredient(content.getAmount(), ore.getCurrentString()) : new ItemsIngredient(content.getAmount(), content.matchingStacks);
@@ -137,17 +138,17 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
         if (content.isOre()) {
             ItemStack[] matches = content.getMatchingStacks();
             handler.setStackInSlot(0, matches.length > 0 ? matches[0] : ItemStack.EMPTY);
-            phantomSlotWidget.setHoverTooltip("oreDict: \n" + content.getOreDict());
+            phantomSlotWidget.setHoverTooltip(LocalizationUtils.format("multiblocked.gui.trait.item.ore_dict") + ":\n"  + content.getOreDict());
         } else {
             updateIngredientWidget(container);
         }
-        groupIngredient.addWidget(new LabelWidget(x + 50, 5, ()->"Settings").setTextColor(-1).setDrop(true));
+        groupIngredient.addWidget(new LabelWidget(x + 50, 5, "multiblocked.gui.tips.settings"));
         groupIngredient.addWidget(new ButtonWidget(100, 0, 20, 20, cd -> {
             ItemStack[] stacks = content.matchingStacks;
             content = new ItemsIngredient(content.getAmount(), ArrayUtils.add(stacks, new ItemStack(Items.IRON_INGOT)));
             updateIngredientWidget(container);
             onContentUpdate();
-        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("add a new item matcher"));
+        }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/add.png")).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.trait.item.add"));
     }
 
     private void updateIngredientWidget(DraggableScrollableWidgetGroup container) {
@@ -172,7 +173,7 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
                 content = new ItemsIngredient(content.getAmount(), ArrayUtils.remove(matchingStacks, finalI));
                 updateIngredientWidget(container);
                 onContentUpdate();
-            }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("remove"));
+            }).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/remove.png")).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.remove"));
         }
     }
 

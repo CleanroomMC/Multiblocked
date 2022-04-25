@@ -42,7 +42,7 @@ public interface ICustomRenderer extends IRenderer {
      * @return called when updated.
      */
     default Supplier<IRenderer> createConfigurator(WidgetGroup parent, DraggableScrollableWidgetGroup group, IRenderer current) {
-        group.addWidget(new LabelWidget(5,5,"no configurator"));
+        group.addWidget(new LabelWidget(5,5,"multiblocked.gui.label.configurator"));
         return null;
     }
 

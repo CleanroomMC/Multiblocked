@@ -1,27 +1,39 @@
-multiblocked.multiblock.formed= Multiblock Formed!
+multiblocked.multiblock.formed=Multiblock Formed!
 
 multiblocked.capability.tc6_aspect=Thaumcraft Aspect
-tc6_aspect.any.name=Available Aspect Containers
+tc6_aspect.any.name=Any Thaumcraft Aspect Holders
 multiblocked.capability.forge_energy=Forge Energy
-forge_energy.any.name=Available Forge Energy Containers
+forge_energy.any.name=Any Forge Energy Containers
 multiblocked.capability.fluid=Fluid
-fluid.any.name=Available Fluid Containers
+fluid.any.name=Any Fluid Tanks
 multiblocked.capability.mek_gas=Mekanism Gas
-mek_gas.any.name=Available Mekanism Gas Containers
+mek_gas.any.name=Any Mekanism Gas Tanks
 multiblocked.capability.mek_heat=Mekanism Heat
-mek_heat.any.name=Available Mekanism Heat Containers
+mek_heat.any.name=Any Mekanism Heaters
 multiblocked.capability.item=Item
-item.any.name=Available Item Containers
-multiblocked.capability.bot_mana=Botaina Mana
-bot_mana.any.name=Available Botaina Mana Containers
+item.any.name=Any Item Containers
+multiblocked.capability.bot_mana=Botania Mana
+bot_mana.any.name=Any Botania Mana Containers
 multiblocked.capability.qmd_particle=QMD Particle
-qmd_particle.any.name=Available QMD Particle Storages
+qmd_particle.any.name=Any QMD Particle Containers
 multiblocked.capability.gtce_energy=GTCE Energy
-gtce_energy.any.name=Available GTCE Energy Container
+gtce_energy.any.name=Any GTCE Energy Containers
 multiblocked.capability.prodigy_hotair=ProdigyTech Hot Air
-prodigy_hotair.any.name=Available Hot Air Containers
+prodigy_hotair.any.name=Any Hot Air Containers
+multiblocked.capability.natures_aura=Nature's Aura
+natures_aura.any.name=Any block containing TileEntity can be used as an IO for this capability
+multiblocked.capability.exu2_gp=ExtraUtilities2 GP
+exu2_gp.any.name=Any multiblock block with GP Trait
+multiblocked.capability.lightningcraft_le=LightningCraft LE
+lightningcraft_le.any.name=Any LightningCraft LE Containers
+multiblocked.capability.projecte_emc=ProjectE EMC
+projecte_emc.any.name=Any multiblock block with EMC Trait
+multiblocked.capability.bg_lp=Blood Magic LP
+bg_lp.any.name=Any multiblock block with LP Trait
+multiblocked.capability.ember=Embers Ember
+ember.any.name=Any Embers Ember Containers
 multiblocked.capability.ta_impetus=TA Impetus Energy
-ta_impetus.any.name=Available Thaumic Augmentation Impetus Container
+ta_impetus.any.name=Any Thaumic Augmentation Impetus Container
 
 multiblocked.content.miss=IO: %s Capability: %s miss widget
 
@@ -41,13 +53,14 @@ multiblocked.pattern.replaceable_air=Replaceable by Air
 multiblocked.structure_page.candidates=Candidates
 multiblocked.structure_page.switch=§6formed§r/§coriginal§r
 
-blueprint_table.name=Multiblocked Blueprint Table
-blueprint_table.description=Help you customize multiblock
+blueprint_table.name=Blueprint Table Core
+blueprint_table.description=Multiblock Creator and Customizer
+blueprint_table_part.name=Blueprint Table
 controller_tester.name=Controller Test Block
 controller_tester.description=You could use this block to test your scripts without restart game. It's unsafe, which can only be used in the single play.
 
 multiblocked.fluid.empty=Empty
-multiblocked.fluid.amount=§9Amount: %,d/%,d L
+multiblocked.fluid.amount=§9Amount: %,d/%,d mB
 multiblocked.fluid.temperature=§cTemperature: %,d K
 multiblocked.fluid.state_gas=§aState: Gaseous
 multiblocked.fluid.state_liquid=§aState: Liquid
@@ -55,10 +68,10 @@ multiblocked.fluid.state_liquid=§aState: Liquid
 item.multiblocked.blueprint.name=Blueprint
 
 multiblocked.recipe.duration=Duration: %ds
-multiblocked.recipe.status.working=status: §cworking§r
-multiblocked.recipe.status.idle=status: §aidle§r
-multiblocked.recipe.status.suspend=status: §3suspend§r
-multiblocked.recipe.remaining=remaining time: %ds
+multiblocked.recipe.status.working=Status: §cWorking§r
+multiblocked.recipe.status.idle=sStatus: §aIdle§r
+multiblocked.recipe.status.suspend=Status: §3Suspend§r
+multiblocked.recipe.remaining=Remaining time: %ds
 
 multiblocked.renderer.null=Null
 multiblocked.renderer.imodel=Java Model
@@ -69,4 +82,179 @@ multiblocked.renderer.tparticle=Textured Particle
 multiblocked.renderer.blockstate=BlockState Model
 multiblocked.renderer.gregtech=GregTech Model
 
+# gui lang
+multiblocked.gui.tips.settings=Settings
+multiblocked.gui.tips.block_register=Block Name
+multiblocked.gui.tips.block_meta=BlockState Metadata
+multiblocked.gui.tips.open_folder=Open Folder
+multiblocked.gui.tips.building_scene=Building Scene!
+multiblocked.gui.tips.pretty=Pretty Format
+multiblocked.gui.tips.copy=Copy to Clipboard
+multiblocked.gui.tips.execute=Execute
+multiblocked.gui.tips.help=Help
+multiblocked.gui.tips.update=Update
+multiblocked.gui.tips.save=Note: Update Before Saving
+multiblocked.gui.tips.min=Min
+multiblocked.gui.tips.max=Max
+multiblocked.gui.tips.io=IO
+multiblocked.gui.tips.json=JSON
+multiblocked.gui.tips.switch_view=Switch View
+multiblocked.gui.tips.configuration=Configuration
+multiblocked.gui.tips.unique=Ensure this ID is unique
+multiblocked.gui.tips.remove=Remove
+multiblocked.gui.shift_click=shift-click
+multiblocked.gui.tips.file_selector=Select File
+multiblocked.gui.tips.confirm=Confirm
+multiblocked.gui.tips.cancel=Cancel
+multiblocked.gui.tips.refresh=Refresh
+multiblocked.gui.tips.save_1=Save
+multiblocked.gui.tips.texture=Texture
+multiblocked.gui.tips.add=Add
+
+multiblocked.gui.tips.select_image=Select an Image
+multiblocked.gui.trait.add_slot=Add a Slot
+multiblocked.gui.trait.remove_slot=Remove Selected Slot
+multiblocked.gui.trait.capability_io=Capability IO (e.g., Pipe Interaction)
+multiblocked.gui.trait.gui_io=Gui IO (e.g. Gui Interaction)
+multiblocked.gui.trait.auto_io=Auto IO
+multiblocked.gui.trait.passive_io=Passive IO
+multiblocked.gui.trait.auto=Auto Input/Output | Capability IO cannot be BOTH | Only Front Facing
+multiblocked.gui.trait.set_width=Set Width
+multiblocked.gui.trait.set_height=Set Height
+
+
+multiblocked.gui.blueprint_table.builder_template=Builder Template
+multiblocked.gui.blueprint_table.recipe_map=Recipe Map
+multiblocked.gui.blueprint_table.controller_block=Controller
+multiblocked.gui.blueprint_table.part_block=Part
+multiblocked.gui.blueprint_table.renderer_assistant=Renderer Assistant
+multiblocked.gui.blueprint_table.wiki=Open GitHub Wiki
+
+multiblocked.gui.builder.controller.create=Create a Controller from Specified Blueprint
+multiblocked.gui.builder.part.create=Create a Part
+multiblocked.gui.builder.recipe_map.create=Create a New Recipe Map
+multiblocked.gui.builder.renderer.irenderer=IRenderer Helper
+multiblocked.gui.builder.renderer.particle=Particle Helper
+multiblocked.gui.builder.renderer.shader=Shader Helper
+multiblocked.gui.builder.template.create=Create Template for Multiblock Builder
+multiblocked.gui.builder.template.status=Status:
+multiblocked.gui.builder.template.size=Size:
+multiblocked.gui.builder.template.description=Description:
+multiblocked.gui.builder.template.from=From: %d, %d, %d
+multiblocked.gui.builder.template.to=To: %d, %d, %d
+multiblocked.gui.builder.template.raw=Raw
+multiblocked.gui.builder.template.pattern=Pattern
+
+multiblocked.gui.widget.component.s1=Step 1: Basic Setup
+multiblocked.gui.widget.component.s2=Step 2: Trait Setup
+multiblocked.gui.widget.component.f=Finish
+multiblocked.gui.widget.component.set_bg=Set Background Texture
+multiblocked.gui.widget.component.allowRotate=Allow Rotation
+multiblocked.gui.widget.component.jei=Show in JEI
+multiblocked.gui.widget.component.opaque=Is Opaque
+multiblocked.gui.widget.component.basic_renderer=Basic Renderer
+multiblocked.gui.widget.component.formed_renderer=Formed Renderer
+multiblocked.gui.widget.component.working_renderer=Working Renderer
+
+multiblocked.gui.widget.controller.consume=Consume Catalyst
+multiblocked.gui.widget.controller.need_catalyst=If this multiblock requires no catalyst, the multiblock will attempt to formed every second
+multiblocked.gui.widget.controller.catalyst=Catalyst | If empty, right-clicking the controller will trigger the formation of the multiblock
+multiblocked.gui.widget.controller.s3=Step 3: Structure Pattern Setup
+multiblocked.gui.widget.controller.s4=Step 4: Machine's Recipe Map
+
+multiblocked.gui.widget.part.shared=Can be Shared with Different, Adjacent Multiblocks
+
+multiblocked.gui.dialogs.renderer.refresh=§4NOTE: Refreshing resources will cause the game to stall for a while.§r\n§2You must refresh to display models which had not been loaded yet (Such as any .obj, .b3d or .geo model files).§r\n§3This also applies to new textures.§r
+multiblocked.gui.dialogs.renderer.shader=Open a Shader File
+multiblocked.gui.dialogs.renderer.renderer=Renderer
+
+multiblocked.gui.dialogs.pattern.pattern=Pattern
+multiblocked.gui.dialogs.pattern.repeat=Repetition of Aisle (1 <= min <= max <= 1)
+multiblocked.gui.dialogs.pattern.direction=Relative Directions
+multiblocked.gui.dialogs.pattern.char=Character
+multiblocked.gui.dialogs.pattern.string=String
+multiblocked.gui.dialogs.pattern.aisle=Aisle
+multiblocked.gui.dialogs.pattern.predicate=Predicate
+multiblocked.gui.dialogs.pattern.create_predicate=Create a Predicate
+multiblocked.gui.dialogs.pattern.add_predicate=Add Selected Predicate for Current Symbol
+multiblocked.gui.dialogs.pattern.remove_predicate=Remove Selected Predicate
+multiblocked.gui.dialogs.pattern.next_aisle=Next Aisle
+multiblocked.gui.dialogs.pattern.last_aisle=Last Aisle
+
+multiblocked.gui.dialogs.recipe_map.add_recipe=Add a New Recipe
+multiblocked.gui.dialogs.recipe_map.remove_recipe=Remove Selected recipe
+multiblocked.gui.dialogs.recipe_map.progress=Set a Progress Bar Texture
+multiblocked.gui.dialogs.recipe_map.add_in=Add an Input Ingredient
+multiblocked.gui.dialogs.recipe_map.add_out=Add an Output Ingredient
 multiblocked.top.recipe_progress=Progress:
+
+multiblocked.gui.content.per_tick=§aConsumed/Produced Per Tick§r
+multiblocked.gui.content.tips.per_tick_short=§a/tick§r
+multiblocked.gui.content.chance_0=§cNot Consumed§r
+multiblocked.gui.content.chance_0_short=§cNC§r
+multiblocked.gui.content.chance_1=§eChance: %s
+
+multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
+multiblocked.gui.trait.energy.tips=Capability (EU)
+
+multiblocked.gui.trait.fe.progress=FE Stored: %d / %d
+multiblocked.gui.trait.fe.tips.0=Capability (RF)
+multiblocked.gui.trait.fe.tips.1=MaxReceive (RF/packet)
+
+multiblocked.gui.trait.aspect.amount=Amount:
+multiblocked.gui.trait.gas.amount=Gas Amount:
+
+multiblocked.gui.trait.item.ore_dict=oreDict
+multiblocked.gui.trait.item.add=Add a New Item Matcher
+
+multiblocked.gui.predicate.capability=Capability
+multiblocked.gui.predicate.blocks.add=Add a New Block
+multiblocked.gui.predicate.states.add=Add a New BlockState
+
+multiblocked.gui.predicate.preview=Preview
+multiblocked.gui.predicate.jei=JEI
+multiblocked.gui.predicate.min=minimum count limit in the structure
+multiblocked.gui.predicate.max=maximum count limit in the structure
+multiblocked.gui.predicate.preview.1=exact limit in the jei preview
+multiblocked.gui.predicate.disabled=disable the original model rendering while the structure formed
+multiblocked.gui.predicate.nbt=match the nbt tag
+multiblocked.gui.predicate.tips=Custom Tips
+multiblocked.gui.predicate.add_tips=Add Tooltips
+
+multiblocked.gui.predicate.geo.0=Whether global rendering is required. Do it if your model is large enough
+multiblocked.gui.predicate.particle.0=Use Shader
+multiblocked.gui.predicate.particle.1=addition blend mode
+multiblocked.gui.predicate.particle.2=render in the back layer
+multiblocked.gui.predicate.particle.3=particle scale: from 0 to 100
+multiblocked.gui.predicate.particle.4=lighting map\n-1: follow the environment\n0-15: lighting
+multiblocked.gui.predicate.particle.5=render range (do not render if out of eye range)\n-1: always render
+
+multiblocked.gui.label.recipe_map=RecipeMap:
+multiblocked.gui.label.recipe_map_id=RecipeMap ID:
+multiblocked.gui.label.uid=uid:
+multiblocked.gui.label.duration=Duration:
+multiblocked.gui.label.ticks=ticks
+multiblocked.gui.label.chance=Chance:
+multiblocked.gui.label.configurator=no configurator
+multiblocked.gui.label.scale=Scale
+multiblocked.gui.label.light=Light
+multiblocked.gui.label.render_range=Render Range
+multiblocked.gui.label.tank_capability=Tank Capability (mB):
+multiblocked.gui.label.amount=Amount:
+multiblocked.gui.label.number=Number:
+multiblocked.gui.label.energy=Energy:
+multiblocked.gui.label.focus=Focus:
+multiblocked.gui.label.registry_name=Registry Name:
+multiblocked.gui.label.catalyst=Catalyst
+multiblocked.gui.label.repeat=Repeat:
+multiblocked.gui.label.tips=tips: you cant modify controller
+multiblocked.gui.label.dir=Dir:
+multiblocked.gui.label.symbol=Symbol Character:
+multiblocked.gui.label.block_settings=Block Settings
+multiblocked.gui.label.component_registry_name=Component registry name:
+multiblocked.gui.label.metaTileEntity_registry_name=MetaTileEntity registry name:
+multiblocked.gui.label.type=Type:
+
+multiblocked.gui.label.save_pattern=Save Pattern
+multiblocked.gui.label.save_recipe_map=Save Recipe Map
+multiblocked.gui.label.pattern_settings=Pattern Settings

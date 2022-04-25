@@ -48,9 +48,14 @@ public class Multiblocked {
     public static final String MODID_LC = "lightningcraft";
     public static final String MODID_TOP = "theoneprobe";
     public static final String MODID_PRODIGY = "prodigytech";
+    public static final String MODID_NA = "naturesaura";
+    public static final String MODID_EU2 = "extrautils2";
+    public static final String MODID_PE = "projecte";
+    public static final String MODID_BG = "bloodmagic";
+    public static final String MODID_EMBERS = "embers";
     public static final String MODID_TA = "thaumicaugmentation";
     public static final String NAME = "Multiblocked";
-    public static final String VERSION = "0.4.1";
+    public static final String VERSION = "0.5.1";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();

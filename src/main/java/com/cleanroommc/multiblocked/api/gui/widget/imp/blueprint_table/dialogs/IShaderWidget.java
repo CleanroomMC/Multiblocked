@@ -53,9 +53,9 @@ public class IShaderWidget extends DialogWidget {
             }
             tfGroup.computeMax();
         })
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("update", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.update", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("update"));
+                .setHoverTooltip("multiblocked.gui.tips.update"));
         File path = new File(Multiblocked.location, "assets/multiblocked/shaders");
         this.addWidget(new ButtonWidget(350, 55, 20, 20, cd -> DialogWidget.showFileDialog(this, "select a shader file", path, true,
                 DialogWidget.suffixFilter(".frag"), r -> {
@@ -69,16 +69,16 @@ public class IShaderWidget extends DialogWidget {
                     }
                 }))
                 .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1))
-                .setHoverTooltip("open a shader file"));
+                .setHoverTooltip("multiblocked.gui.dialogs.renderer.shader"));
         tfGroup.addWidget(textBox);
 
         this.addWidget(new ButtonWidget(305, 15, 40, 20, cd -> new DialogWidget(this, true)
                 .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorRectTexture(0xdf000000)))
                 .addWidget(new TextBoxWidget(2, 2, getSize().width - 4, Collections.singletonList(HELP)).setFontColor(-1).setShadow(true))
                 .addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ColorBorderTexture(1, -1))))
-                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("help", -1).setDropShadow(true))
+                .setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.help", -1).setDropShadow(true))
                 .setHoverBorderTexture(1, -1)
-                .setHoverTooltip("help"));
+                .setHoverTooltip("multiblocked.gui.tips.help"));
     }
 
     @Override

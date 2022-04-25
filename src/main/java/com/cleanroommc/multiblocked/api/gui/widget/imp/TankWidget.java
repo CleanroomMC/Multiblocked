@@ -2,11 +2,11 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp;
 
 import com.cleanroommc.multiblocked.api.gui.ingredient.IIngredientSlot;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
-import com.cleanroommc.multiblocked.util.Position;
-import com.cleanroommc.multiblocked.util.Size;
 import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
+import com.cleanroommc.multiblocked.util.Position;
+import com.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -115,7 +115,7 @@ public class TankWidget extends Widget implements IIngredientSlot {
             if (showTips) {
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(0.5, 0.5, 1);
-                String s = TextFormattingUtil.formatLongToCompactString(lastFluidInTank.amount, 4) + "L";
+                String s = TextFormattingUtil.formatLongToCompactStringBuckets(lastFluidInTank.amount, 3) + "B";
                 FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
                 fontRenderer.drawStringWithShadow(s, (pos.x + (size.width / 3f)) * 2 - fontRenderer.getStringWidth(s) + 21, (pos.y + (size.height / 3f) + 6) * 2, 0xFFFFFF);
                 GlStateManager.popMatrix();

@@ -87,7 +87,7 @@ public class RecipeMap {
     }
 
     public String getUnlocalizedName() {
-        return Multiblocked.MODID + ".recupe_map." + name;
+        return Multiblocked.MODID + ".recipe_map." + name;
     }
 
     @ZenMethod

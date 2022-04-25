@@ -100,25 +100,25 @@ public class TextureParticleRenderer extends ParticleRenderer implements ICustom
                             tfw.setCurrentString("multiblocked:" + r.getPath().replace(png.getPath(), "textures").replace('\\', '/'));
                         }
                     }
-                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
+                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("multiblocked.gui.tips.file_selector"));
         tfw.setCurrentString(renderer.texture.toString());
-        group.addWidget(createBoolSwitch(1, 25, "isShader", "use Shader", renderer.isShader, r->{
+        group.addWidget(createBoolSwitch(1, 25, "isShader", "multiblocked.gui.predicate.particle.0", renderer.isShader, r->{
             if (renderer.isShader != r) {
                 renderer.isShader = r;
                 tfw.setCurrentString("");
             }
         }));
-        group.addWidget(createBoolSwitch(1, 40, "isAddBlend", "addition blend mode", renderer.isAddBlend, r -> renderer.isAddBlend = r));
-        group.addWidget(createBoolSwitch(1, 55, "isBackLayer", "render in the back layer", renderer.isBackLayer, r -> renderer.isBackLayer = r));
+        group.addWidget(createBoolSwitch(1, 40, "isAddBlend", "multiblocked.gui.predicate.particle.1", renderer.isAddBlend, r -> renderer.isAddBlend = r));
+        group.addWidget(createBoolSwitch(1, 55, "isBackLayer", "multiblocked.gui.predicate.particle.2", renderer.isBackLayer, r -> renderer.isBackLayer = r));
         group.addWidget(new TextFieldWidget(1,75,70,10,true, null, num->renderer.scale = Float.parseFloat(num))
-                .setNumbersOnly(0f, 100f).setCurrentString(renderer.scale+"").setHoverTooltip("particle scale: from 0 to 100"));
-        group.addWidget(new LabelWidget(75, 75, "Scale"));
+                .setNumbersOnly(0f, 100f).setCurrentString(renderer.scale+"").setHoverTooltip("multiblocked.gui.predicate.particle.3"));
+        group.addWidget(new LabelWidget(75, 75, "multiblocked.gui.label.scale"));
         group.addWidget(new TextFieldWidget(1,90,70,10,true, null, num->renderer.light = Integer.parseInt(num))
-                .setNumbersOnly(-1, 15).setCurrentString(renderer.light+"").setHoverTooltip("lighting map \n -1: follow the environment \n 0-15: lighting"));
-        group.addWidget(new LabelWidget(75, 90, "Light"));
+                .setNumbersOnly(-1, 15).setCurrentString(renderer.light+"").setHoverTooltip("multiblocked.gui.predicate.particle.4"));
+        group.addWidget(new LabelWidget(75, 90, "multiblocked.gui.label.light"));
         group.addWidget(new TextFieldWidget(1,105,70,10,true, null, num->renderer.renderRange = Integer.parseInt(num))
-                .setNumbersOnly(-1, 1000).setCurrentString(renderer.renderRange+"").setHoverTooltip("render range (do not render if out of eye range) \n -1: always render"));
-        group.addWidget(new LabelWidget(75, 105, "Render Range"));
+                .setNumbersOnly(-1, 1000).setCurrentString(renderer.renderRange+"").setHoverTooltip("multiblocked.gui.predicate.particle.5"));
+        group.addWidget(new LabelWidget(75, 105, "multiblocked.gui.label.render_range"));
         return () -> {
             if (tfw.getCurrentString().isEmpty()) {
                 return null;

@@ -18,6 +18,18 @@ multiblocked.capability.qmd_particle=QMD 粒子
 qmd_particle.any.name=任意 QMD 粒子容器
 multiblocked.capability.gtce_energy=GTCE 能量
 gtce_energy.any.name=任意 GTCE 能量容器
+multiblocked.capability.prodigy_hotair=奇才妙械 热空气
+prodigy_hotair.any.name=任意 奇才妙械 热空气容器
+multiblocked.capability.natures_aura=自然灵气
+natures_aura.any.name=任意具有TE的方块都能用作IO
+multiblocked.capability.exu2_gp=更多实用设备2 GP
+exu2_gp.any.name=任何具有GP容器特征的mbd方块
+multiblocked.capability.projecte_emc=等价交换 EMC
+projecte_emc.any.name=任何具有EMC容器特征的mbd方块
+multiblocked.capability.bg_lp=血魔法 LP
+bg_lp.any.name=任何具有LP容器特征的mbd方块
+multiblocked.capability.ember=余烬 灰烬能量
+ember.any.name=任意余烬 灰烬能量 容器
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 
@@ -118,7 +130,7 @@ multiblocked.gui.builder.part.create=创建一个部件
 multiblocked.gui.builder.recipe_map.create=创建一个新的 Recipe Map
 multiblocked.gui.builder.renderer.irenderer=渲染器帮助程序
 multiblocked.gui.builder.renderer.particle=粒子帮助程序
-multiblocked.gui.builder.renderer.shader=光影帮助程序
+multiblocked.gui.builder.renderer.shader=着色器帮助程序
 multiblocked.gui.builder.template.create=为多方块结构生成器创建模板
 multiblocked.gui.builder.template.status=状态:
 multiblocked.gui.builder.template.size=大小:
@@ -162,7 +174,7 @@ multiblocked.gui.dialogs.pattern.create_predicate=创建一个 Predicate
 multiblocked.gui.dialogs.pattern.add_predicate=为当前符号添加选定的 Predicate
 multiblocked.gui.dialogs.pattern.remove_predicate=移除选择的 Predicate
 multiblocked.gui.dialogs.pattern.next_aisle=下一个片结构
-multiblocked.gui.dialogs.pattern.last_aisle=最后一个片结构
+multiblocked.gui.dialogs.pattern.last_aisle=上一个片结构
 
 multiblocked.gui.dialogs.recipe_map.add_recipe=添加新配方
 multiblocked.gui.dialogs.recipe_map.remove_recipe=移除选择的配方
@@ -171,10 +183,9 @@ multiblocked.gui.dialogs.recipe_map.add_in=添加一个输入材料
 multiblocked.gui.dialogs.recipe_map.add_out=添加一个输出材料
 multiblocked.top.recipe_progress=进度:
 
-multiblocked.gui.content.per_tick=每 Tick 消耗
+multiblocked.gui.content.per_tick=§a每 Tick 消耗§r
 multiblocked.gui.content.chance_0=§c不消耗§r
 multiblocked.gui.content.chance_1=概率:§e %s %%§r
-multiblocked.gui.content.tips.per_tick=§a每 Tick§r
 
 multiblocked.gui.trait.energy.progress=EU 存储: %d / %d
 multiblocked.gui.trait.energy.tips=容量 (EU)
@@ -184,7 +195,7 @@ multiblocked.gui.trait.fe.tips.0=容量 (RF)
 multiblocked.gui.trait.fe.tips.1=最大传输 (RF/packet)
 
 multiblocked.gui.trait.aspect.amount=数量:
-multiblocked.gui.trait.gas.amount=
+multiblocked.gui.trait.gas.amount=气体量:
 
 multiblocked.gui.trait.item.ore_dict=矿辞
 multiblocked.gui.trait.item.add=添加一个新的物品匹配器
@@ -230,7 +241,7 @@ multiblocked.gui.label.registry_name=注册名:
 multiblocked.gui.label.catalyst=催化剂
 multiblocked.gui.label.repeat=重复:
 multiblocked.gui.label.tips=提示：你可以编辑控制器
-multiblocked.gui.label.dir=文件夹:
+multiblocked.gui.label.dir=方向:
 multiblocked.gui.label.symbol=Character 特征:
 multiblocked.gui.label.block_settings=方块设置
 multiblocked.gui.label.component_registry_name=方块注册名:
@@ -239,3 +250,7 @@ multiblocked.gui.label.type=类型:
 
 multiblocked.gui.label.save_pattern=保存结构模板
 multiblocked.gui.label.pattern_settings=结构模板设置
+multiblocked.gui.label.save_recipe_map=保存Recipe Map
+multiblocked.capability.lightningcraft_le=雷电工艺
+lightningcraft_le.any.name=任何 雷电工艺 LE 容器
+multiblocked.gui.tips.add=添加

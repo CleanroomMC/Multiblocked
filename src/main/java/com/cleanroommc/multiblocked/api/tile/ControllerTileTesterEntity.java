@@ -9,12 +9,12 @@ import com.cleanroommc.multiblocked.api.gui.util.ModularUIBuilder;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.IOPageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.RecipePage;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.StructurePageWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.tester.ControllerPatternWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.tester.ZSScriptWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.tester.ControllerScriptWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.tester.ZSScriptWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.pattern.FactoryBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.Predicates;
-import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.impl.IModelRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
@@ -42,19 +42,27 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
                 scheduleChunkForRenderUpdate();
             } else {
                 notifyBlockUpdate();
+                super.setDefinition(definition);
                 if (needAlwaysUpdate()) {
                     MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
                 }
+                return;
             }
         }
         super.setDefinition(definition);
     }
 
     @Override
+    public void onStructureFormed() {
+        super.onStructureFormed();
+        recipeLogic = new RecipeLogic(this);
+    }
+
+    @Override
     public ModularUI createUI(EntityPlayer entityPlayer) {
         if (Multiblocked.isClient() && Multiblocked.isSinglePlayer()) {
             TabContainer tabContainer = new TabContainer(0, 0, 200, 232);
-            new ControllerPatternWidget(this, tabContainer);
+            new ControllerScriptWidget(this, tabContainer);
             if (Loader.isModLoaded(Multiblocked.MODID_CT)) {
                 new ZSScriptWidget(tabContainer);
             }
@@ -89,7 +97,6 @@ public class ControllerTileTesterEntity extends ControllerTileEntity {
     }
 
     public static void registerTestController() {
-        DEFAULT_DEFINITION.recipeMap.inputCapabilities.add(MbdCapabilities.ITEM);
         DEFAULT_DEFINITION.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/controller_tester"));
         DEFAULT_DEFINITION.isOpaqueCube = false;
         DEFAULT_DEFINITION.basePattern = FactoryBlockPattern.start()

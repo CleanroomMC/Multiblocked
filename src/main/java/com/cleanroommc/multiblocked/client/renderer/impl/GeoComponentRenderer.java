@@ -145,9 +145,9 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
                     if (r != null && r.isFile()) {
                         tfw.setCurrentString(r.getName().replace(".geo.json", ""));
                     }
-                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("select file"));
+                })).setButtonTexture(new ResourceTexture("multiblocked:textures/gui/darkened_slot.png"), new TextTexture("F", -1)).setHoverTooltip("multiblocked.gui.tips.file_selector"));
         group.addWidget(tfw);
-        group.addWidget(createBoolSwitch(1,25, "isGlobal", "Whether global rendering is required. Do it if your model is large enough", isGlobal.get(), isGlobal::set));
+        group.addWidget(createBoolSwitch(1,25, "isGlobal", "multiblocked.gui.predicate.geo.0", isGlobal.get(), isGlobal::set));
         return () -> {
             if (tfw.getCurrentString().isEmpty()) {
                 return null;

@@ -22,12 +22,12 @@ public class BlueprintTableWidget extends WidgetGroup {
         this.table = table;
         this.addWidget(0, new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_table.png")));
         this.addWidget(new ButtonWidget(40, 40, 40, 40, new ItemStackTexture(
-                MbdItems.BUILDER), this::templateBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("builder template"));
-        this.addWidget(new ButtonWidget(90, 40, 40, 40, new ItemStackTexture(Items.PAPER), this::recipeMapBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("recipe map"));
-        this.addWidget(new ButtonWidget(140, 40, 40, 40, new ItemStackTexture(BlueprintTableTileEntity.tableDefinition.getStackForm()), this::controllerBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("controller block"));
-        this.addWidget(new ButtonWidget(40, 90, 40, 40, new ItemStackTexture(BlueprintTableTileEntity.partDefinition.getStackForm()), this::partBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("part block"));
-        this.addWidget(new ButtonWidget(90, 90, 40, 40, new ItemStackTexture(Items.END_CRYSTAL), this::rendererBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("renderer assistant"));
-        this.addWidget(new ButtonWidget(140, 90, 40, 40, new ResourceTexture("multiblocked:textures/gui/wiki.png"), this::openWikiPage).setHoverBorderTexture(1, -1).setHoverTooltip("open wiki page"));
+                MbdItems.BUILDER), this::templateBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.blueprint_table.builder_template"));
+        this.addWidget(new ButtonWidget(90, 40, 40, 40, new ItemStackTexture(Items.PAPER), this::recipeMapBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.blueprint_table.recipe_map"));
+        this.addWidget(new ButtonWidget(140, 40, 40, 40, new ItemStackTexture(BlueprintTableTileEntity.tableDefinition.getStackForm()), this::controllerBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.blueprint_table.controller_block"));
+        this.addWidget(new ButtonWidget(40, 90, 40, 40, new ItemStackTexture(BlueprintTableTileEntity.partDefinition.getStackForm()), this::partBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.blueprint_table.part_block"));
+        this.addWidget(new ButtonWidget(90, 90, 40, 40, new ItemStackTexture(Items.END_CRYSTAL), this::rendererBuilder).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.blueprint_table.renderer_assistant"));
+        this.addWidget(new ButtonWidget(140, 90, 40, 40, new ResourceTexture("multiblocked:textures/gui/wiki.png"), this::openWikiPage).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.blueprint_table.wiki"));
     }
 
     private void openWikiPage(ClickData clickData) {

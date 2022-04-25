@@ -1,4 +1,4 @@
-package com.cleanroommc.multiblocked.api.gui.widget.imp.controller.tester;
+package com.cleanroommc.multiblocked.api.gui.widget.imp.tester;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 
-public class ControllerPatternWidget extends PageWidget {
+public class ControllerScriptWidget extends PageWidget {
 
     private static final ResourceTexture PAGE = new ResourceTexture("multiblocked:textures/gui/json_loader_page.png");
     private final ControllerTileTesterEntity controller;
@@ -40,7 +40,7 @@ public class ControllerPatternWidget extends PageWidget {
     private final DraggableScrollableWidgetGroup tfGroup;
     private File selected;
 
-    public ControllerPatternWidget(ControllerTileTesterEntity controller, TabContainer tabContainer) {
+    public ControllerScriptWidget(ControllerTileTesterEntity controller, TabContainer tabContainer) {
         super(PAGE, tabContainer); //176, 256
         this.controller = controller;
         this.addWidget(new ImageWidget(5, 5, 176 - 10, 150 - 55, ResourceBorderTexture.BORDERED_BACKGROUND_BLUE));
@@ -53,7 +53,7 @@ public class ControllerPatternWidget extends PageWidget {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }).setHoverBorderTexture(1, -1).setHoverTooltip("open folder"));
+        }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.open_folder"));
         this.addWidget(new ButtonWidget(30, 105, 140, 20, null, this::loadJson).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("load script", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
         tfGroup = new DraggableScrollableWidgetGroup(5, 130, 176 - 10, 120)
                 .setBackground(new ColorRectTexture(0xaf444444))

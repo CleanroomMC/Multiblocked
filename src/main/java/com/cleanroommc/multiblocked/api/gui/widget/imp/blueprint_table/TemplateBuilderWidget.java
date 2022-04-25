@@ -32,6 +32,7 @@ import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -83,7 +84,7 @@ public class TemplateBuilderWidget extends WidgetGroup {
                 .setRenderFacing(false)
                 .setClientSideWidget());
         this.addWidget(new ImageWidget(200 - 4, 120 - 4, 150 + 8, 98 + 8, ResourceBorderTexture.BORDERED_BACKGROUND_BLUE));
-        templateButton.setHoverTooltip("Create template for multiblock builder");
+        templateButton.setHoverTooltip("multiblocked.gui.builder.template.create");
         templateButton.setVisible(false);
     }
 
@@ -226,7 +227,7 @@ public class TemplateBuilderWidget extends WidgetGroup {
     }
 
     private String size() {
-        String result = "size: ";
+        String result = LocalizationUtils.format("multiblocked.gui.builder.template.size");
         if (selected != null) {
             BlockPos[] poses = ItemBlueprint.getPos(selected);
             if (poses != null) {
@@ -237,20 +238,22 @@ public class TemplateBuilderWidget extends WidgetGroup {
     }
 
     private String description() {
-        String result = "description:\n";
+        String result = LocalizationUtils.format("multiblocked.gui.builder.template.description") + "\n";
         if (selected != null) {
             BlockPos[] poses = ItemBlueprint.getPos(selected);
             if (poses != null) {
-                result += String.format("from: %d, %d, %d\n", poses[0].getX(), poses[0].getY(), poses[0].getZ());
-                result += String.format("to: %d, %d, %d", poses[0].getX(), poses[0].getY(), poses[0].getZ());
+                result += LocalizationUtils.format("multiblocked.gui.builder.template.from", poses[0].getX(), poses[0].getY(), poses[0].getZ()) + "\n";
+                result += LocalizationUtils.format("multiblocked.gui.builder.template.to", poses[0].getX(), poses[0].getY(), poses[0].getZ());
             }
         }
         return result;
     }
 
     private String status() {
-        return "status: " + (selected == null ? "" : ItemBlueprint.isRaw(selected) ?
-                TextFormatting.YELLOW + "raw" : TextFormatting.GREEN + "pattern");
+        return LocalizationUtils.format("multiblocked.gui.builder.template.status") + " " +
+                (selected == null ? "" : ItemBlueprint.isRaw(selected) ?
+                        TextFormatting.YELLOW + LocalizationUtils.format("multiblocked.gui.builder.template.raw") :
+                        TextFormatting.GREEN + LocalizationUtils.format("multiblocked.gui.builder.template.pattern"));
     }
 
     @SideOnly(Side.CLIENT)

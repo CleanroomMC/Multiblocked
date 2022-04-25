@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
+import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.trait.SingleCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
@@ -12,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +26,7 @@ import thecodex6824.thaumicaugmentation.api.impetus.CapabilityImpetusStorage;
 import thecodex6824.thaumicaugmentation.api.impetus.IImpetusStorage;
 import thecodex6824.thaumicaugmentation.api.impetus.ImpetusStorage;
 import thecodex6824.thaumicaugmentation.api.impetus.node.CapabilityImpetusNode;
+import thecodex6824.thaumicaugmentation.api.impetus.node.ConsumeResult;
 import thecodex6824.thaumicaugmentation.api.impetus.node.NodeHelper;
 import thecodex6824.thaumicaugmentation.api.impetus.node.prefab.BufferedImpetusProsumer;
 import thecodex6824.thaumicaugmentation.api.util.DimensionalBlockPos;
@@ -92,19 +95,19 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        if (compound.hasKey("impetus")) {
-            NBTTagCompound impetus = compound.getCompoundTag("impetus");
+        if (compound.hasKey("node")) {
+            NBTTagCompound impetus = compound.getCompoundTag("node");
             node.deserializeNBT(impetus);
-            storage.deserializeNBT(impetus);
         }
+        storage.setEnergyStored(compound.getLong("impetus"));
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         NBTTagCompound nbt = node.serializeNBT();
-        nbt.merge(storage.serializeNBT());
-        compound.setTag("impetus", nbt);
+        nbt.setTag("node", nbt);
+        compound.setLong("impetus", storage.getEnergyStored());
     }
 
     @Override
@@ -133,9 +136,7 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
     @Override
     public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
         super.createUI(component, group, player);
-        group.addWidget(new LabelWidget(50, 80, () ->
-            String.format("Impetus Stored: %d / %d", storage.getEnergyStored(), storage.getMaxEnergyStored())
-        ));
+        group.addWidget(new LabelWidget(50, 80, String.format("Impetus Stored: %d / %d", storage.getEnergyStored(), storage.getMaxEnergyStored())));
     }
 
     @Override
@@ -145,6 +146,29 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
         }
         node.destroy();
         ThaumicAugmentation.proxy.deregisterRenderableImpetusNode(node);
+    }
+
+    @Override
+    public void receiveCustomData(int id, PacketBuffer buffer) {
+        if (id == 0) {
+            storage.setEnergyStored(buffer.readLong());
+        }
+    }
+
+    @Override
+    public void update() {
+        if (capabilityIO != IO.OUT) {
+            ConsumeResult result = node.consume(Math.min(maxReceive, storage.getMaxEnergyStored() - storage.getEnergyStored()), false);
+            if (result.energyConsumed != 0) {
+                writeCustomData(0, (buffer) -> buffer.writeLong(storage.getEnergyStored()));
+                component.markAsDirty();
+            }
+        }
+    }
+
+    @Override
+    public boolean hasUpdate() {
+        return true;
     }
 
     @Override
@@ -225,13 +249,13 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
         if (capability == CapabilityImpetusStorage.IMPETUS_STORAGE) {
             return CapabilityImpetusStorage.IMPETUS_STORAGE.cast(storage);
         }
-        return super.getCapability(capability, facing);
+        return null;
     }
 
     @Nullable
     @Override
     public <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        return getCapability(capability, facing);
+        return capability == CapabilityImpetusStorage.IMPETUS_STORAGE ? CapabilityImpetusStorage.IMPETUS_STORAGE.cast(storage) : null;
     }
 
     public void updateSettings() {
@@ -249,6 +273,10 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
             ImpetusStorageProxy.this.maxEnergy = ImpetusCapabilityTrait.this.capacity;
             ImpetusStorageProxy.this.maxExtract = ImpetusCapabilityTrait.this.maxExtract;
             ImpetusStorageProxy.this.maxReceive = ImpetusCapabilityTrait.this.maxReceive;
+        }
+
+        void setEnergyStored(long energy) {
+            ImpetusStorageProxy.this.energy = energy;
         }
     }
 

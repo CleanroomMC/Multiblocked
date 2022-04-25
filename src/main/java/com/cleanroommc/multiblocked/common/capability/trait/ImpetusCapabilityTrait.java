@@ -1,17 +1,14 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.IO;
-import com.cleanroommc.multiblocked.api.capability.trait.SingleCapabilityTrait;
-import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.capability.trait.ProgressCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
-import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.ImpetusThaumicAugmentationCapability;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
@@ -37,7 +34,7 @@ import javax.annotation.Nullable;
 /**
  * @author youyihj
  */
-public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
+public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
     private ImpetusStorageProxy storage;
     private ImpetusNodeProxy node;
     private int capacity;
@@ -93,6 +90,16 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
     }
 
     @Override
+    protected String dynamicHoverTips(double progress) {
+        return LocalizationUtils.format("multiblocked.gui.trait.impetus.progress", storage.getEnergyStored(), capacity);
+    }
+
+    @Override
+    protected double getProgress() {
+        return storage.getEnergyStored() * 1.0 / capacity;
+    }
+
+    @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         if (compound.hasKey("node")) {
@@ -131,12 +138,6 @@ public class ImpetusCapabilityTrait extends SingleCapabilityTrait {
                 pos.getY() + world.rand.nextFloat(), pos.getZ() + world.rand.nextFloat(), 1.5F, Aspect.ELDRITCH.getColor(), false);
 
         return true;
-    }
-
-    @Override
-    public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
-        super.createUI(component, group, player);
-        group.addWidget(new LabelWidget(50, 80, String.format("Impetus Stored: %d / %d", storage.getEnergyStored(), storage.getMaxEnergyStored())));
     }
 
     @Override

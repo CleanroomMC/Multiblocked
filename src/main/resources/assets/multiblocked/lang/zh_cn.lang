@@ -30,6 +30,8 @@ multiblocked.capability.bg_lp=血魔法 LP
 bg_lp.any.name=任何具有LP容器特征的mbd方块
 multiblocked.capability.ember=余烬 灰烬能量
 ember.any.name=任意余烬 灰烬能量 容器
+multiblocked.capability.ta_impetus=TA 元动能量
+ta_impetus.any.name=任何神秘进阶元动容器
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 
@@ -196,6 +198,7 @@ multiblocked.gui.trait.fe.tips.1=最大传输 (RF/packet)
 
 multiblocked.gui.trait.aspect.amount=数量:
 multiblocked.gui.trait.gas.amount=气体量:
+multiblocked.gui.trait.impetus.progress=元动能量存储: %d / %d
 
 multiblocked.gui.trait.item.ore_dict=矿辞
 multiblocked.gui.trait.item.add=添加一个新的物品匹配器

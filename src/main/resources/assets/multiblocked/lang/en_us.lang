@@ -201,6 +201,8 @@ multiblocked.gui.trait.fe.progress=FE Stored: %d / %d
 multiblocked.gui.trait.fe.tips.0=Capability (RF)
 multiblocked.gui.trait.fe.tips.1=MaxReceive (RF/packet)
 
+multiblocked.gui.trait.impetus.progress=Impetus Stored: %d / %d
+
 multiblocked.gui.trait.aspect.amount=Amount:
 multiblocked.gui.trait.gas.amount=Gas Amount:
 

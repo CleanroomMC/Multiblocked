@@ -346,13 +346,13 @@ public class RecipeBuilder {
     @Optional.Method(modid = Multiblocked.MODID_GTCE)
     @ZenMethod
     public RecipeBuilder inputEU(int eu) {
-        return inputMana(1, eu);
+        return inputEU(1, eu);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_GTCE)
     @ZenMethod
     public RecipeBuilder outputEU(int eu) {
-        return outputMana(1, eu);
+        return outputEU(1, eu);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_GTCE)

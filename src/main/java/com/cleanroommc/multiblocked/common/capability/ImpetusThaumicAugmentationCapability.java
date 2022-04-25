@@ -55,7 +55,7 @@ public class ImpetusThaumicAugmentationCapability extends MultiblockCapability<L
 
     @Override
     public ContentWidget<? super Long> createContentWidget() {
-        return new NumberContentWidget().setContentTexture(new TextTexture("IM", color)).setUnit("");
+        return new NumberContentWidget().setContentTexture(new TextTexture("IM", color)).setUnit("Impetus");
     }
 
     @Override

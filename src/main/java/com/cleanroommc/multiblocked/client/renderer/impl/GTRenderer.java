@@ -58,10 +58,27 @@ public class GTRenderer extends IModelRenderer {
 
     }
 
-    public GTRenderer(ResourceLocation baseTexture, ResourceLocation frontOverlay) {
+    public GTRenderer(ResourceLocation baseTexture, ResourceLocation... frontOverlay) {
         super();
         this.baseTexture = baseTexture;
-        this.frontOverlay = frontOverlay;
+        if (frontOverlay.length > 0) {
+            this.frontOverlay = frontOverlay[0];
+        }
+        if (frontOverlay.length > 1) {
+            this.backOverlay = frontOverlay[1];
+        }
+        if (frontOverlay.length > 2) {
+            this.leftOverlay = frontOverlay[2];
+        }
+        if (frontOverlay.length > 3) {
+            this.rightOverlay = frontOverlay[3];
+        }
+        if (frontOverlay.length > 4) {
+            this.upOverlay = frontOverlay[4];
+        }
+        if (frontOverlay.length > 5) {
+            this.downOverlay = frontOverlay[5];
+        }
         if (Multiblocked.isClient()) {
             registerTextureSwitchEvent();
             blockModels = new EnumMap<>(EnumFacing.class);

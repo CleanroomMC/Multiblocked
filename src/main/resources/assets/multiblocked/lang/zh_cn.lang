@@ -199,7 +199,17 @@ multiblocked.gui.trait.fe.tips.2=最大输出 (RF/packet)
 
 multiblocked.gui.trait.aspect.amount=数量:
 multiblocked.gui.trait.gas.amount=气体量:
+
 multiblocked.gui.trait.impetus.progress=元动能量存储: %d / %d
+multiblocked.gui.trait.impetus.tips.0=容量
+multiblocked.gui.trait.impetus.tips.1=最大接受 (每 packet)
+multiblocked.gui.trait.impetus.tips.2=最大输出 (每 packet)
+multiblocked.gui.trait.impetus.tips.3=最大输入节点数量
+multiblocked.gui.trait.impetus.tips.4=最大输出节点数量
+multiblocked.gui.trait.impetus.tips.5=光束终点 X 偏移量
+multiblocked.gui.trait.impetus.tips.6=光束终点 Y 偏移量
+multiblocked.gui.trait.impetus.tips.7=光束终点 Z 偏移量
+
 
 multiblocked.gui.trait.item.ore_dict=矿辞
 multiblocked.gui.trait.item.add=添加一个新的物品匹配器

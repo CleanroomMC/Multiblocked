@@ -91,7 +91,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
 
     @Override
     protected String dynamicHoverTips(double progress) {
-        return LocalizationUtils.format("multiblocked.gui.trait.impetus.progress", storage.getEnergyStored(), capacity);
+        return LocalizationUtils.format("multiblocked.gui.trait.impetus.progress", ((long) (capacity * progress)), capacity);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
         })
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(capacity + "")
-                .setHoverTooltip("capacity"));
+                .setHoverTooltip("multiblocked.gui.trait.impetus.tips.0"));
 
         dialog.addWidget(new TextFieldWidget(60, 45, 100, 15, true, null, s -> {
             maxReceive = Integer.parseInt(s);
@@ -190,7 +190,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
         })
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(maxReceive + "")
-                .setHoverTooltip("maxReceive (per package)"));
+                .setHoverTooltip("multiblocked.gui.trait.impetus.tips.1"));
 
         dialog.addWidget(new TextFieldWidget(60, 65, 100, 15, true, null, s -> {
             maxExtract = Integer.parseInt(s);
@@ -198,7 +198,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
         })
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(maxExtract + "")
-                .setHoverTooltip("maxExtract (per package)"));
+                .setHoverTooltip("multiblocked.gui.trait.impetus.tips.2"));
 
         dialog.addWidget(new TextFieldWidget(60, 85, 100, 15, true, null, s -> {
             maxInputs = Integer.parseInt(s);
@@ -206,7 +206,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
         })
                 .setNumbersOnly(0, 10)
                 .setCurrentString(maxInputs + "")
-                .setHoverTooltip("maxInputs"));
+                .setHoverTooltip("multiblocked.gui.trait.impetus.tips.3"));
 
         dialog.addWidget(new TextFieldWidget(60, 105, 100, 15, true, null, s -> {
             maxOutputs = Integer.parseInt(s);
@@ -214,7 +214,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
         })
                 .setNumbersOnly(0, 10)
                 .setCurrentString(maxOutputs + "")
-                .setHoverTooltip("maxOutputs"));
+                .setHoverTooltip("multiblocked.gui.trait.impetus.tips.4"));
 
         dialog.addWidget(new TextFieldWidget(60, 125, 100, 15, true, null, s -> {
             beamEndpointXOffset = Float.parseFloat(s);
@@ -222,7 +222,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
         })
                 .setNumbersOnly(-5.0f, 5.0f)
                 .setCurrentString(beamEndpointXOffset + "")
-                .setHoverTooltip("beamEndPointXOffset"));
+                .setHoverTooltip("multiblocked.gui.trait.impetus.tips.5"));
 
         dialog.addWidget(new TextFieldWidget(60, 145, 100, 15, true, null, s -> {
             beamEndpointYOffset = Float.parseFloat(s);
@@ -230,7 +230,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
         })
                 .setNumbersOnly(-5.0f, 5.0f)
                 .setCurrentString(beamEndpointYOffset + "")
-                .setHoverTooltip("beamEndpointYOffset"));
+                .setHoverTooltip("multiblocked.gui.trait.impetus.tips.6"));
 
         dialog.addWidget(new TextFieldWidget(60, 165, 100, 15, true, null, s -> {
             beamEndpointZOffset = Float.parseFloat(s);
@@ -238,7 +238,7 @@ public class ImpetusCapabilityTrait extends ProgressCapabilityTrait {
         })
                 .setNumbersOnly(-5.0f, 5.0f)
                 .setCurrentString(beamEndpointZOffset + "")
-                .setHoverTooltip("beamEndpointZOffset"));
+                .setHoverTooltip("multiblocked.gui.trait.impetus.tips.7"));
     }
 
     @Nullable

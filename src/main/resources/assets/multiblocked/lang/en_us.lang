@@ -203,6 +203,14 @@ multiblocked.gui.trait.fe.tips.1=MaxReceive (RF/packet)
 multiblocked.gui.trait.fe.tips.2=MaxExtract (RF/packet)
 
 multiblocked.gui.trait.impetus.progress=Impetus Stored: %d / %d
+multiblocked.gui.trait.impetus.tips.0=Capacity
+multiblocked.gui.trait.impetus.tips.1=Max receive (per packet)
+multiblocked.gui.trait.impetus.tips.2=Max extract (per packet)
+multiblocked.gui.trait.impetus.tips.3=Maximum of input nodes
+multiblocked.gui.trait.impetus.tips.4=Maximum of output nodes
+multiblocked.gui.trait.impetus.tips.5=Beam endpoint X offset
+multiblocked.gui.trait.impetus.tips.6=Beam endpoint Y offset
+multiblocked.gui.trait.impetus.tips.7=Beam endpoint Z offset
 
 multiblocked.gui.trait.aspect.amount=Amount:
 multiblocked.gui.trait.gas.amount=Gas Amount:

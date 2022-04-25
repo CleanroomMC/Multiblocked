@@ -70,6 +70,16 @@ public abstract class CapabilityTrait implements IInnerCapabilityProvider {
     public void receiveCustomData(int id, PacketBuffer buffer) {
     }
 
+    public boolean receiveClientEvent(int id, int type) {
+        return false;
+    }
+
+    public void invalidate() {}
+
+    public void onLoad() {}
+
+    public void onChunkUnload() {}
+
     public final void writeCustomData(int id, Consumer<PacketBuffer> writer) {
         this.component.writeTraitData(this, id, writer);
     }

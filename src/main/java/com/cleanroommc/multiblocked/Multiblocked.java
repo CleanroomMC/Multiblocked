@@ -53,6 +53,7 @@ public class Multiblocked {
     public static final String MODID_PE = "projecte";
     public static final String MODID_BG = "bloodmagic";
     public static final String MODID_EMBERS = "embers";
+    public static final String MODID_TA = "thaumicaugmentation";
     public static final String NAME = "Multiblocked";
     public static final String VERSION = "0.5.1";
     public static final Logger LOGGER = LogManager.getLogger(NAME);

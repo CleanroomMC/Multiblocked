@@ -5,14 +5,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameType;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldProviderSurface;
-import net.minecraft.world.WorldSettings;
-import net.minecraft.world.WorldType;
+import net.minecraft.world.*;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +29,7 @@ public class DummyWorld extends World {
         this.calculateInitialSkylight();
         this.calculateInitialWeather();
         this.getWorldBorder().setSize(30000000);
+        ObfuscationReflectionHelper.setPrivateValue(World.class, this, null, "field_72994_J");
     }
 
     @Override
@@ -79,5 +77,11 @@ public class DummyWorld extends World {
     @Override
     protected boolean isChunkLoaded(int x, int z, boolean allowEmpty) {
         return chunkProvider.isChunkGeneratedAt(x, z);
+    }
+
+    @Override
+    // De-allocated lightUpdateBlockList, default return
+    public boolean checkLightFor(EnumSkyBlock lightType, BlockPos pos) {
+        return true;
     }
 }

@@ -21,6 +21,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.util.Size;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.GlStateManager;
@@ -308,6 +309,10 @@ public class RecipeMapWidget extends DialogWidget {
                     cd -> addContent(this.inputs,
                             X - inputs.getScrollXOffset() + group.getSelfPosition().x + 5,
                             Y - inputs.getScrollYOffset() + group.getSelfPosition().y + 5)).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.add_in"));
+            if (index > 8) {
+                inputs.setSize(new Size(64 + 4, 64));
+                inputs.setYScrollBarWidth(4).setYBarStyle(null, new ColorRectTexture(-1));
+            }
 
             index = 0;
             for (List<ContentWidget<?>> widgets : this.outputs.values()) {
@@ -322,6 +327,10 @@ public class RecipeMapWidget extends DialogWidget {
                     new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> addContent(this.outputs,
                     X2 - outputs.getScrollXOffset() + group.getSelfPosition().x + 176 - 74 + 5,
                     Y2 - outputs.getScrollYOffset() + group.getSelfPosition().y + 5)).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.add_out"));
+            if (index > 8) {
+                outputs.setSize(new Size(64 + 4, 64));
+                outputs.setYScrollBarWidth(4).setYBarStyle(null, new ColorRectTexture(-1));
+            }
         }
 
         private void addContent(Map<MultiblockCapability<?>, List<ContentWidget<?>>> contents, int mouseX, int mouseY) {

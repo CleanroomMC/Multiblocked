@@ -26,6 +26,10 @@ public abstract class ModularWrapper implements IRecipeWrapper {
         guiContainer = new JEIModularUIGuiContainer(gui);
     }
 
+    public Widget getWidget() {
+        return widget;
+    }
+
     public void setRecipeLayout(RecipeLayout layout) {
         guiContainer.setRecipeLayout(layout);
     }

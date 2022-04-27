@@ -6,6 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.util.Size;
 import com.google.common.collect.ImmutableList;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
@@ -58,6 +59,10 @@ public class RecipeWidget extends WidgetGroup {
                 index++;
             }
         }
+        if (index > 9) {
+            inputs.setSize(new Size(64 + 4, 64));
+            inputs.setYScrollBarWidth(4).setYBarStyle(null, new ColorRectTexture(-1));
+        }
 
         index = 0;
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.outputs.entrySet()) {
@@ -73,6 +78,10 @@ public class RecipeWidget extends WidgetGroup {
                 outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out.getFirst(), out.getSecond(), true).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
+        }
+        if (index > 9) {
+            outputs.setSize(new Size(64 + 4, 64));
+            outputs.setYScrollBarWidth(4).setYBarStyle(null, new ColorRectTexture(-1));
         }
     }
 }

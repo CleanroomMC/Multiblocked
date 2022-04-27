@@ -96,15 +96,26 @@ public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
                 CapabilityTrait trait = ((ComponentTileEntity<?>) te).getTrait(GPExtraUtilities2Capability.CAP);
                 if (trait instanceof GPPlayerCapabilityTrait) {
                     float sum = left.stream().reduce(0f, Float::sum);
-                    sum = ((GPPlayerCapabilityTrait) trait).updatePower(io == IO.IN ? sum : -sum, 20, simulate);
+                    sum = ((GPPlayerCapabilityTrait) trait).updatePower(io == IO.IN ? sum : -sum, 2, simulate);
                     return sum <= 0 ? null : Collections.singletonList(sum);
                 }
             }
             return left;
         }
 
+        float lastPower;
         @Override
         protected boolean hasInnerChanged() {
+            TileEntity te = getTileEntity();
+            if (te instanceof ComponentTileEntity && ((ComponentTileEntity<?>) te).hasTrait(GPExtraUtilities2Capability.CAP)) {
+                CapabilityTrait trait = ((ComponentTileEntity<?>) te).getTrait(GPExtraUtilities2Capability.CAP);
+                if (trait instanceof GPPlayerCapabilityTrait) {
+                    if (lastPower != ((GPPlayerCapabilityTrait) trait).getPowerCreated()) {
+                        lastPower = ((GPPlayerCapabilityTrait) trait).getPowerCreated();
+                        return true;
+                    }
+                }
+            }
             return false;
         }
     }

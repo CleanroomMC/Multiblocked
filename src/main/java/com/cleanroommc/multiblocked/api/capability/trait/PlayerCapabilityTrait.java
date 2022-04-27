@@ -1,6 +1,5 @@
 package com.cleanroommc.multiblocked.api.capability.trait;
 
-import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
@@ -42,7 +41,7 @@ public abstract class PlayerCapabilityTrait extends CapabilityTrait {
     }
 
     public String getPlayerName() {
-        return playerName;
+        return playerName.isEmpty() ? (playerName = getPlayer() == null ? "" : getPlayer().getName()) : playerName;
     }
 
     @Nullable
@@ -53,21 +52,19 @@ public abstract class PlayerCapabilityTrait extends CapabilityTrait {
     @Override
     public void setComponent(ComponentTileEntity<?> component) {
         super.setComponent(component);
-        if (component != null && component.getOwner() != null) {
-            playerName = component.getOwner().getName();
-        }
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         playerName = compound.getString("player");
+        getPlayerName();
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setString("player", playerName);
+        compound.setString("player", getPlayerName());
     }
 
     @Override
@@ -101,7 +98,7 @@ public abstract class PlayerCapabilityTrait extends CapabilityTrait {
             @Override
             public void writeInitialData(PacketBuffer buffer) {
                 super.writeInitialData(buffer);
-                buffer.writeString(playerName);
+                buffer.writeString(getPlayerName());
             }
 
             @Override

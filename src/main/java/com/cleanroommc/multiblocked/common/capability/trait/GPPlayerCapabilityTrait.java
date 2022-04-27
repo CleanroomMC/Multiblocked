@@ -80,8 +80,7 @@ public class GPPlayerCapabilityTrait extends PlayerCapabilityTrait {
         if (power > 0) {
             if (player instanceof EntityPlayerMP && PowerManager.instance.assignedValuesPlayer.containsKey(player)) {
                 PowerManager.PowerFreq freq = PowerManager.instance.assignedValuesPlayer.get(player);
-                left = Math.min(freq.getPowerCreated(), power);
-                return left;
+                left = power - Math.min(freq.getPowerCreated(), power);
             }
         }
         if (!simulation) {
@@ -89,6 +88,14 @@ public class GPPlayerCapabilityTrait extends PlayerCapabilityTrait {
             this.clearTick = Math.max(clearTick, this.clearTick);
         }
         return left;
+    }
+
+    public float getPowerCreated() {
+        if (player instanceof EntityPlayerMP && PowerManager.instance.assignedValuesPlayer.containsKey(player)) {
+            PowerManager.PowerFreq freq = PowerManager.instance.assignedValuesPlayer.get(player);
+            return freq.getPowerCreated();
+        }
+        return 0;
     }
 
     @Override

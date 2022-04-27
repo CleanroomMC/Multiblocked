@@ -597,7 +597,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
         }
         this.frontFacing = compound.hasKey("frontFacing") ? EnumFacing.byIndex(compound.getByte("frontFacing")) : this.frontFacing;
-        if (compound.hasKey("owner")) {
+        if (compound.hasUniqueId("owner")) {
             this.owner = compound.getUniqueId("owner");
         }
         if (Loader.isModLoaded(Multiblocked.MODID_CT)) {

@@ -111,7 +111,9 @@ public class BlockPattern {
                         worldState.setError(null);
                         TraceabilityPredicate predicate = this.blockMatches[c][b][a];
                         BlockPos pos = setActualRelativeOffset(x, y, z, facing).add(centerPos.getX(), centerPos.getY(), centerPos.getZ());
-                        worldState.update(pos, predicate);
+                        if (!worldState.update(pos, predicate)) {
+                            return false;
+                        }
                         if (!predicate.isAny()) {
                             worldState.addPosCache(pos);
                             if (savePredicate) {

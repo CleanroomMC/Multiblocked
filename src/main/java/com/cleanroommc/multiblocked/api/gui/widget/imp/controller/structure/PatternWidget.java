@@ -161,7 +161,7 @@ public class PatternWidget extends WidgetGroup {
             predicates.clear();
             predicates.addAll(predicate.common);
             predicates.addAll(predicate.limited);
-            predicates.removeIf(p -> p.candidates == null);
+            predicates.removeIf(p -> p == null || p.candidates == null); // why it happens?
             if (candidates != null) {
                 for (SlotWidget candidate : candidates) {
                     removeWidget(candidate);

@@ -55,13 +55,18 @@ public class MultiblockState {
         cache = new LongOpenHashSet();
     }
 
-    public void update(BlockPos posIn, TraceabilityPredicate predicate) {
+    public boolean update(BlockPos posIn, TraceabilityPredicate predicate) {
         this.pos = posIn;
         this.state = null;
         this.tileEntity = null;
         this.tileEntityInitialized = false;
         this.predicate = predicate;
         this.error = null;
+        if (!world.isBlockLoaded(posIn)) {
+            error = UNLOAD_ERROR;
+            return false;
+        }
+        return true;
     }
 
     public ControllerTileEntity getController() {

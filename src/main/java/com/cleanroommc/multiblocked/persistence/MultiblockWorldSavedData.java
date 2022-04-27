@@ -134,7 +134,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
                 }
             }
             if (tileEntity instanceof IAsyncThreadUpdate) {
-                asyncComponents.add((ControllerTileEntity) tileEntity);
+                asyncComponents.add((IAsyncThreadUpdate) tileEntity);
                 createSearchingThread();
             }
         }

@@ -29,8 +29,8 @@ public class ExpandIRenderer {
     }
 
     @ZenMethodStatic
-    public static IRenderer createOBJRenderer(String model) {
-        return new OBJRenderer(new ResourceLocation(model));
+    public static IRenderer createOBJRenderer(String model, boolean flip) {
+        return new OBJRenderer(new ResourceLocation(model), flip);
     }
 
     @ZenMethodStatic

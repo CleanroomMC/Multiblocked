@@ -12,17 +12,12 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        if (project.use_mixins) {
-            classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
-        }
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-
-if (project.use_mixins) {
-    apply plugin: 'org.spongepowered.mixin'
-}
+apply plugin: 'org.spongepowered.mixin'
 
 version = project.mod_version
 group = project.maven_group
@@ -39,14 +34,10 @@ minecraft {
     runDir = 'run'
     mappings = 'stable_39'
     def args = []
-    if (project.use_coremod) {
-        args << '-Dfml.coreMods.load=' + coremod_plugin_class_name
-    }
-    if (project.use_mixins) {
-        args << '-Dmixin.hotSwap=true'
-        args << '-Dmixin.checks.interfaces=true'
-        args << '-Dmixin.debug.export=true'
-    }
+    args << '-Dfml.coreMods.load=' + coremod_plugin_class_name
+    args << '-Dmixin.hotSwap=true'
+    args << '-Dmixin.checks.interfaces=true'
+    args << '-Dmixin.debug.export=true'
     clientJvmArgs.addAll(args)
     serverJvmArgs.addAll(args)
 }
@@ -71,9 +62,7 @@ repositories {
 
 dependencies {
 
-    if (project.use_mixins) {
-        compile 'zone.rong:mixinbooter:4.2'
-    }
+    compile 'zone.rong:mixinbooter:4.2'
 
     compile 'software.bernie.geckolib:forge-1.12.2-geckolib:3.0.21'
     compile 'CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.673'
@@ -131,13 +120,9 @@ processResources {
 jar {
     manifest {
         def attribute_map = [:]
-        if (project.use_coremod) {
-            attribute_map['FMLCorePlugin'] = project.coremod_plugin_class_name
-        }
-        if (project.use_mixins) {
-            attribute_map['TweakClass'] = 'org.spongepowered.asm.launch.MixinTweaker'
-        }
+        attribute_map['FMLCorePlugin'] = project.coremod_plugin_class_name
         attribute_map['FMLAT'] = 'multiblocked_at.cfg'
+        attribute_map['FMLCorePluginContainsFMLMod'] = true
         attribute_map['ForceLoadAsMod'] = true
         attributes(attribute_map)
     }

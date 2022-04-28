@@ -47,6 +47,9 @@ repositories {
         url = 'https://maven.cleanroommc.com'
     }
     maven {
+        url 'https://cfa2.cursemaven.com'
+    }
+    maven {
         url 'https://cursemaven.com'
     }
     maven { // CraftTweaker

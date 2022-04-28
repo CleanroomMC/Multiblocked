@@ -8,15 +8,24 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
+import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import com.cleanroommc.multiblocked.client.model.custommodel.CustomBakedModel;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.common.model.TRSRTransformation;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,15 +53,26 @@ public class OBJRenderer extends IModelRenderer {
     @Override
     protected IModel getModel() {
         try {
-            if (flip_v) {
-                return OBJLoader.INSTANCE.loadModel(modelLocation).process(ImmutableMap.<String, String>builder().put("flip-v", "true").build());
-            } else {
-                return OBJLoader.INSTANCE.loadModel(modelLocation);
-            }
+            return OBJLoader.INSTANCE.loadModel(modelLocation).process(ImmutableMap.<String, String>builder()
+                    .put("flip-v", flip_v ? "true" : "false")
+                    .put("ambient", "false").build());
         } catch (Exception e) {
             Multiblocked.LOGGER.error(e);
         }
         return ModelLoaderRegistry.getMissingModel();
+    }
+
+    @Override
+    protected CustomBakedModel getBlockBakedModel(BlockPos pos, IBlockAccess blockAccess) {
+        TileEntity tileEntity = blockAccess.getTileEntity(pos);
+        EnumFacing frontFacing = EnumFacing.NORTH;
+        if (tileEntity instanceof ComponentTileEntity<?>) {
+            frontFacing = ((ComponentTileEntity<?>) tileEntity).getFrontFacing();
+        }
+        return blockModels.computeIfAbsent(frontFacing, facing -> new CustomBakedModel(getModel().bake(
+                TRSRTransformation.from(facing),
+                DefaultVertexFormats.ITEM,
+                ModelLoader.defaultTextureGetter())));
     }
 
     @Override

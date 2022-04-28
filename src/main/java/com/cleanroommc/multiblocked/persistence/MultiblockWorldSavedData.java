@@ -217,6 +217,7 @@ public class MultiblockWorldSavedData extends WorldSavedData {
     public void createSearchingThread() {
         if (thread != null && !thread.isInterrupted()) return;
         thread = new Thread(this::searchingTask);
+        thread.setDaemon(true);
         thread.start();
     }
 

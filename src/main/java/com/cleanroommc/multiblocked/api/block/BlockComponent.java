@@ -60,7 +60,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         if (definition != null) {
             setCreativeTab(Multiblocked.CREATIVE_TAB);
             setRegistryName(definition.location);
-            setTranslationKey(definition.location.getPath());
+            setTranslationKey(definition.location.getNamespace() + "." + definition.location.getPath());
         }
         setSoundType(SoundType.METAL);
         setHardness(1.5F);
@@ -151,7 +151,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public void harvestBlock(@Nonnull World worldIn, @Nonnull EntityPlayer player, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nullable TileEntity te, @Nonnull ItemStack stack) {
-        componentBroken.set(te instanceof ComponentTileEntity ? (ComponentTileEntity<?>)te : componentBroken.get());
+        componentBroken.set(te instanceof ComponentTileEntity ? (ComponentTileEntity<?>) te : componentBroken.get());
         super.harvestBlock(worldIn, player, pos, state, te, stack);
         componentBroken.set(null);
     }

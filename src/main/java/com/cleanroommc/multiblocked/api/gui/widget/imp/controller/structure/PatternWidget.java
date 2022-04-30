@@ -267,8 +267,9 @@ public class PatternWidget extends WidgetGroup {
 
     private void loadControllerFormed(Collection<BlockPos> poses, ControllerTileEntity controllerBase) {
         controllerBase.state = new MultiblockState(world, controllerBase.getPos());
-        controllerBase.getPattern().checkPatternAt(controllerBase.state, true);
-        controllerBase.onStructureFormed();
+        if (controllerBase.getPattern().checkPatternAt(controllerBase.state, true)) {
+            controllerBase.onStructureFormed();
+        }
         if (controllerBase.isFormed()) {
             LongSet set = controllerBase.state.getMatchContext().getOrDefault("renderMask", LongSets.EMPTY_SET);
             Set<BlockPos> modelDisabled = set.stream().map(BlockPos::fromLong).collect(Collectors.toSet());

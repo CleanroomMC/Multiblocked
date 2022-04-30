@@ -42,12 +42,20 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
 
     @Override
     public void writeInitialData(PacketBuffer buffer) {
-        widgets.forEach(widget -> widget.writeInitialData(buffer));
+        for (Widget widget : widgets) {
+            if (!widget.isClientSideWidget) {
+                widget.writeInitialData(buffer);
+            }
+        }
     }
 
     @Override
     public void readInitialData(PacketBuffer buffer) {
-        widgets.forEach(widget -> widget.readInitialData(buffer));
+        for (Widget widget : widgets) {
+            if (!widget.isClientSideWidget) {
+                widget.readInitialData(buffer);
+            }
+        }
     }
 
     @Override

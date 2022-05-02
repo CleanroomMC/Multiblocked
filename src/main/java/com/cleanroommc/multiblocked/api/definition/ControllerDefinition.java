@@ -113,7 +113,7 @@ public class ControllerDefinition extends ComponentDefinition {
     }
 
     public String getDescription() {
-        return location.getPath() + ".description";
+        return location.getNamespace() + "." + location.getPath() + ".description";
     }
 
     @Override

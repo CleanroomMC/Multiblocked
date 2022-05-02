@@ -53,10 +53,11 @@ multiblocked.pattern.replaceable_air=Replaceable by Air
 multiblocked.structure_page.candidates=Candidates
 multiblocked.structure_page.switch=§6Formed§r / §cOriginal§r
 
-blueprint_table.name=Blueprint Table Core
+tile.multiblocked.blueprint_table.name=Blueprint Table Core
+tile.multiblocked.blueprint_table_part.name=Blueprint Table
+tile.multiblocked.controller_tester.name=Controller Test Block
+tile.multiblocked.part_tester.name=Part Test Block
 blueprint_table.description=Multiblock Creator and Customizer
-blueprint_table_part.name=Blueprint Table
-controller_tester.name=Controller Test Block
 controller_tester.description=You could use this block to test your scripts without restart game. It's unsafe, which can only be used in the single play.
 
 multiblocked.fluid.empty=Empty
@@ -66,6 +67,7 @@ multiblocked.fluid.state_gas=§aState: Gaseous
 multiblocked.fluid.state_liquid=§aState: Liquid
 
 item.multiblocked.blueprint.name=Blueprint
+item.multiblocked.multiblock_builder.name=Multiblock Builder
 
 multiblocked.recipe.duration=Duration: %ds
 multiblocked.recipe.status.working=Status: §cWorking§r

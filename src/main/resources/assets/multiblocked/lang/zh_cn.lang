@@ -51,10 +51,11 @@ multiblocked.pattern.replaceable_air=可以替换为空气
 multiblocked.structure_page.candidates=备选
 multiblocked.structure_page.switch=§6已形成§r/§c未形成§r
 
-blueprint_table.name=蓝图工作台核心
+tile.multiblocked.blueprint_table.name=蓝图工作台核心
+tile.multiblocked.blueprint_table_part.name=蓝图工作台
+tile.multiblocked.controller_tester.name=测试控制器方块
+tile.multiblocked.part_tester.name=测试控制器方块
 blueprint_table.description=多方块创建器与定制工具
-blueprint_table_part.name=蓝图工作台
-controller_tester.name=测试控制器方块
 controller_tester.description=你可以用这个方块来测试你的脚本且而不需要重启游戏。它是不安全的，只能在单人游戏中使用。
 
 multiblocked.fluid.empty=空
@@ -64,6 +65,7 @@ multiblocked.fluid.state_gas=§a状态: 气态
 multiblocked.fluid.state_liquid=§a状态: 液态
 
 item.multiblocked.blueprint.name=蓝图
+item.multiblocked.multiblock_builder.name=多方块构建器
 
 multiblocked.recipe.duration=耗时: %ds
 multiblocked.recipe.status.working=状态: §c工作中§r

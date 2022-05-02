@@ -24,12 +24,6 @@ public class ItemComponent extends ItemBlock {
         return ((BlockComponent)block).definition;
     }
 
-    @Nonnull
-    @Override
-    public String getTranslationKey(@Nonnull ItemStack stack) {
-        return getDefinition().location.getPath();
-    }
-
     @Nullable
     @Override
     public String getCreatorModId(@Nonnull ItemStack itemStack) {

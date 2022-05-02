@@ -32,7 +32,7 @@ public class ItemMultiblockBuilder extends Item {
     public ItemMultiblockBuilder() {
         setRegistryName(Multiblocked.MODID, "multiblock_builder");
         setCreativeTab(Multiblocked.CREATIVE_TAB);
-        setTranslationKey(Multiblocked.MODID + "multiblock_builder");
+        setTranslationKey(Multiblocked.MODID + "." + "multiblock_builder");
     }
 
     public static boolean isItemMultiblockBuilder(ItemStack stack) {
@@ -128,7 +128,7 @@ public class ItemMultiblockBuilder extends Item {
                     return false;
                 }
             }
-            if (a== null || b == null) return false;
+            if (a == null || b == null) return false;
             return (builder.test(a) && blueprint.test(b)) || (builder.test(b) && blueprint.test(a));
         }
 
@@ -148,7 +148,7 @@ public class ItemMultiblockBuilder extends Item {
                     return ItemStack.EMPTY;
                 }
             }
-            if (a== null || b == null) return ItemStack.EMPTY;
+            if (a == null || b == null) return ItemStack.EMPTY;
             ItemStack builder = new ItemStack(MbdItems.BUILDER);
             ItemMultiblockBuilder.setPattern(builder);
             if (ItemBlueprint.isItemBlueprint(a) && !ItemBlueprint.isRaw(a)) {

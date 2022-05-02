@@ -57,8 +57,8 @@ tile.multiblocked.blueprint_table.name=Blueprint Table Core
 tile.multiblocked.blueprint_table_part.name=Blueprint Table
 tile.multiblocked.controller_tester.name=Controller Test Block
 tile.multiblocked.part_tester.name=Part Test Block
-blueprint_table.description=Multiblock Creator and Customizer
-controller_tester.description=You could use this block to test your scripts without restart game. It's unsafe, which can only be used in the single play.
+multiblocked.blueprint_table.description=Multiblock Creator and Customizer
+multiblocked.controller_tester.description=You could use this block to test your scripts without restart game. It's unsafe, which can only be used in the single play.
 
 multiblocked.fluid.empty=Empty
 multiblocked.fluid.amount=§9Amount: %,d/%,d mB

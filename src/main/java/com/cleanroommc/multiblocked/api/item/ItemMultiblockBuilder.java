@@ -88,7 +88,7 @@ public class ItemMultiblockBuilder extends Item {
             } else {
                 ResourceLocation location = new ResourceLocation(stack.getOrCreateSubCompound("pattern").getString("controller"));
                 tooltip.add("pattern build");
-                tooltip.add(String.format("Controller: %s", I18n.format(location.getPath() + ".name")));
+                tooltip.add(String.format("Controller: %s", I18n.format(location.getNamespace() + "." + location.getPath() + ".name")));
             }
         }
     }

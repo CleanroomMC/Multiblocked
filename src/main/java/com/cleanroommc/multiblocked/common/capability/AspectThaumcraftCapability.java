@@ -89,7 +89,7 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
         @Override
         protected List<AspectStack> handleRecipeInner(IO io, Recipe recipe, List<AspectStack> left, boolean simulate) {
             IAspectContainer capability = getCapability();
-            if (capability == null) return left;
+            if (capability == null || capability.getAspects() == null) return left;
             Iterator<AspectStack> iterator = left.iterator();
             if (io == IO.IN) {
                 while (iterator.hasNext()) {

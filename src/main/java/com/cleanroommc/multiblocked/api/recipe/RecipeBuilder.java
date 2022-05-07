@@ -501,53 +501,53 @@ public class RecipeBuilder {
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
     public RecipeBuilder inputLP(long lp) {
-        return inputEMC(1, lp);
+        return inputLP(1, lp);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
     public RecipeBuilder outputLP(long lp) {
-        return outputEMC(1, lp);
+        return outputLP(1, lp);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
     public RecipeBuilder inputLP(float chance, long lp) {
-        keyBuilder.append(EMCProjectECapability.CAP.name).append(lp);
-        return input(EMCProjectECapability.CAP, chance, lp);
+        keyBuilder.append(LPBloodMagicCapability.CAP.name).append(lp);
+        return input(LPBloodMagicCapability.CAP, chance, lp);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
     public RecipeBuilder outputLP(float chance, long lp) {
-        keyBuilder.append(EMCProjectECapability.CAP.name).append(lp);
-        return output(EMCProjectECapability.CAP, chance, lp);
+        keyBuilder.append(LPBloodMagicCapability.CAP.name).append(lp);
+        return output(LPBloodMagicCapability.CAP, chance, lp);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
     public RecipeBuilder inputEmber(long ember) {
-        return inputEMC(1, ember);
+        return inputEmber(1, ember);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
     public RecipeBuilder outputEmber(long ember) {
-        return outputEMC(1, ember);
+        return outputEmber(1, ember);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
     public RecipeBuilder inputEmber(float chance, long ember) {
-        keyBuilder.append(EMCProjectECapability.CAP.name).append(ember);
-        return input(EMCProjectECapability.CAP, chance, ember);
+        keyBuilder.append(EmberEmbersCapability.CAP.name).append(ember);
+        return input(EmberEmbersCapability.CAP, chance, ember);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
     public RecipeBuilder outputEmber(float chance, long ember) {
-        keyBuilder.append(EMCProjectECapability.CAP.name).append(ember);
-        return output(EMCProjectECapability.CAP, chance, ember);
+        keyBuilder.append(EmberEmbersCapability.CAP.name).append(ember);
+        return output(EmberEmbersCapability.CAP, chance, ember);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_TA)

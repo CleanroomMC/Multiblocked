@@ -500,52 +500,52 @@ public class RecipeBuilder {
     }
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
-    public RecipeBuilder inputLP(long lp) {
+    public RecipeBuilder inputLP(int lp) {
         return inputLP(1, lp);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
-    public RecipeBuilder outputLP(long lp) {
+    public RecipeBuilder outputLP(int lp) {
         return outputLP(1, lp);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
-    public RecipeBuilder inputLP(float chance, long lp) {
+    public RecipeBuilder inputLP(float chance, int lp) {
         keyBuilder.append(LPBloodMagicCapability.CAP.name).append(lp);
         return input(LPBloodMagicCapability.CAP, chance, lp);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
-    public RecipeBuilder outputLP(float chance, long lp) {
+    public RecipeBuilder outputLP(float chance, int lp) {
         keyBuilder.append(LPBloodMagicCapability.CAP.name).append(lp);
         return output(LPBloodMagicCapability.CAP, chance, lp);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
-    public RecipeBuilder inputEmber(long ember) {
+    public RecipeBuilder inputEmber(double ember) {
         return inputEmber(1, ember);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
-    public RecipeBuilder outputEmber(long ember) {
+    public RecipeBuilder outputEmber(double ember) {
         return outputEmber(1, ember);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
-    public RecipeBuilder inputEmber(float chance, long ember) {
+    public RecipeBuilder inputEmber(float chance, double ember) {
         keyBuilder.append(EmberEmbersCapability.CAP.name).append(ember);
         return input(EmberEmbersCapability.CAP, chance, ember);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
-    public RecipeBuilder outputEmber(float chance, long ember) {
+    public RecipeBuilder outputEmber(float chance, double ember) {
         keyBuilder.append(EmberEmbersCapability.CAP.name).append(ember);
         return output(EmberEmbersCapability.CAP, chance, ember);
     }

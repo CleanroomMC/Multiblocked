@@ -104,13 +104,22 @@ public class ItemsIngredient extends Ingredient {
 
     @Override
     public boolean apply(@Nullable ItemStack input) {
-        if (ores == null) return super.apply(input);
         if (input == null) {
             return false;
         }
-        for (ItemStack target : this.ores) {
-            if (OreDictionary.itemMatches(target, input, false)) {
-                return true;
+        if (this.ores == null) {
+            for (ItemStack matchingStack : this.matchingStacks) {
+                if (matchingStack.getItem() == input.getItem()) {
+                    int metadata = matchingStack.getMetadata();
+                    return (metadata == OreDictionary.WILDCARD_VALUE || metadata == input.getMetadata()) &&
+                            (!matchingStack.hasTagCompound() || ItemStack.areItemStackShareTagsEqual(matchingStack, input));
+                }
+            }
+        } else {
+            for (ItemStack target : this.ores) {
+                if (OreDictionary.itemMatches(target, input, false)) {
+                    return true;
+                }
             }
         }
         return false;

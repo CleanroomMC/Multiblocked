@@ -85,7 +85,7 @@ public class HotAirProdigyCapability extends MultiblockCapability<Integer> {
         @Override
         protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, boolean simulate) {
             IHotAir capability = getCapability();
-            if (capability == null || capability.getOutAirTemperature() <= left.get(0)) return left;
+            if (capability == null || capability.getOutAirTemperature() < left.get(0)) return left;
             return null;
         }
 

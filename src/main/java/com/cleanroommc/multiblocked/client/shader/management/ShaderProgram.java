@@ -1,6 +1,5 @@
 package com.cleanroommc.multiblocked.client.shader.management;
 
-import codechicken.lib.render.OpenGLUtils;
 import com.cleanroommc.multiblocked.client.shader.uniform.IUniformCallback;
 import com.cleanroommc.multiblocked.client.shader.uniform.UniformCache;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
@@ -48,7 +47,7 @@ public class ShaderProgram {
 			this.uniformCache.invalidate();
 			GL20.glLinkProgram(programId);
 			if (GL20.glGetProgrami(programId, GL20.GL_LINK_STATUS) == 0) {
-				throw new RuntimeException(String.format("ShaderProgram validation has failed!\n%s", OpenGLUtils.glGetProgramInfoLog(programId)));
+				throw new RuntimeException(String.format("ShaderProgram validation has failed!\n%s", GL20.glGetProgramInfoLog(programId, GL20.glGetProgrami(programId, 35716))));
 			}
 			this.unLinked = false;
 		}

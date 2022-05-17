@@ -31,6 +31,9 @@ public class JsonBlockPattern {
         structureDir = new RelativeDirection[] {RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.FRONT};
         predicates.put("any", SimplePredicate.ANY);
         predicates.put("air", SimplePredicate.AIR);
+        symbolMap.computeIfAbsent(' ', key -> new HashSet<>()).add("any"); // any
+        symbolMap.computeIfAbsent('-', key -> new HashSet<>()).add("air"); // air
+        symbolMap.computeIfAbsent('@', key -> new HashSet<>()).add("controller"); // controller
     }
 
     public JsonBlockPattern(World world, ResourceLocation location, BlockPos controllerPos, EnumFacing facing, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
@@ -50,9 +53,6 @@ public class JsonBlockPattern {
             aisleRepetition[0] = 1;
             aisleRepetition[1] = 1;
         }
-        symbolMap.computeIfAbsent(' ', key -> new HashSet<>()).add("any"); // any
-        symbolMap.computeIfAbsent('-', key -> new HashSet<>()).add("air"); // air
-        symbolMap.computeIfAbsent('@', key -> new HashSet<>()).add("controller"); // controller
 
         predicates.put("controller", new PredicateComponent(location)); // controller
 

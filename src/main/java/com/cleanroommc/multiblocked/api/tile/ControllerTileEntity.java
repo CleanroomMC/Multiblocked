@@ -96,6 +96,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         return getPattern().checkPatternAt(state, false);
     }
 
+    public boolean shouldCheckPattern() {
+        if (definition.shouldCheckPattern == null) return true;
+        return definition.shouldCheckPattern.apply(this);
+    }
+
     @Override
     public boolean isValidFrontFacing(EnumFacing facing) {
         return definition.allowRotate && facing.getAxis() != EnumFacing.Axis.Y;
@@ -382,7 +387,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 if (state == null) state = new MultiblockState(world, pos);
                 ItemStack held = player.getHeldItem(hand);
                 if (definition.catalyst.isEmpty() || held.isItemEqual(definition.catalyst)) {
-                    if (checkPattern()) { // formed
+                    if (shouldCheckPattern() && checkPattern()) { // formed
                         player.swingArm(hand);
                         ITextComponent formedMsg = new TextComponentTranslation(getUnlocalizedName()).appendSibling(new TextComponentTranslation("multiblocked.multiblock.formed"));
                         player.sendStatusMessage(formedMsg, true);
@@ -428,7 +433,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             if (getPattern().checkPatternAt(new MultiblockState(world, pos), false)) {
                 FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
                     if (state == null) state = new MultiblockState(world, pos);
-                    if (checkPattern()) { // formed
+                    if (shouldCheckPattern() && checkPattern()) { // formed
                         MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
                         onStructureFormed();
                     }

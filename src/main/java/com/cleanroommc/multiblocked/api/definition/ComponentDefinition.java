@@ -73,6 +73,8 @@ public class ComponentDefinition {
     @ZenProperty
     public transient IStatusChanged statusChanged;
     @ZenProperty
+    public transient IShouldCheckPattern shouldCheckPattern;
+    @ZenProperty
     public transient IReceiveCustomData receiveCustomData;
     @ZenProperty
     public transient IWriteInitialData writeInitialData;

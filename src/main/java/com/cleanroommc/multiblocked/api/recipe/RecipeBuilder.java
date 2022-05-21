@@ -44,6 +44,7 @@ public class RecipeBuilder {
     protected ITextComponent text;
     protected StringBuilder keyBuilder = new StringBuilder(); // to make each recipe has a unique identifier and no need to set name yourself.
     protected boolean perTick;
+    protected String fixedName;
 
     @ZenConstructor
     public RecipeBuilder(RecipeMap recipeMap) {
@@ -72,6 +73,7 @@ public class RecipeBuilder {
         data.forEach(copy.data::put);
         copy.duration = this.duration;
         copy.keyBuilder = new StringBuilder(keyBuilder.toString());
+        copy.fixedName = null;
         return copy;
     }
 
@@ -108,6 +110,12 @@ public class RecipeBuilder {
     @ZenMethod
     public RecipeBuilder perTick(boolean perTick) {
         this.perTick = perTick;
+        return this;
+    }
+
+    @ZenMethod
+    public RecipeBuilder name(String name) {
+        this.fixedName = name;
         return this;
     }
 
@@ -594,7 +602,7 @@ public class RecipeBuilder {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Tuple<Object, Float>>> entry : this.tickOutputBuilder.entrySet()) {
             tickOutputBuilder.put(entry.getKey(), entry.getValue().build());
         }
-        return new Recipe(keyBuilder.toString(), inputBuilder.build(), outputBuilder.build(), tickInputBuilder.build(), tickOutputBuilder.build(), data.isEmpty() ? Recipe.EMPTY : ImmutableMap.copyOf(data), text, duration);
+        return new Recipe(fixedName == null ? keyBuilder.toString() : fixedName, inputBuilder.build(), outputBuilder.build(), tickInputBuilder.build(), tickOutputBuilder.build(), data.isEmpty() ? Recipe.EMPTY : ImmutableMap.copyOf(data), text, duration);
     }
 
     @ZenMethod

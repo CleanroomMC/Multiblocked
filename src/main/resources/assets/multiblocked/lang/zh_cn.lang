@@ -82,6 +82,8 @@ multiblocked.renderer.tparticle=粒子贴图
 multiblocked.renderer.blockstate=BlockState 模型
 multiblocked.renderer.gregtech=GregTech 模型
 
+multiblocked.jei.multiblock_info=多方块机器页
+
 # gui lang
 multiblocked.gui.tips.settings=设置
 multiblocked.gui.tips.block_register=方块名称

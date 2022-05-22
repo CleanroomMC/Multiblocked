@@ -84,6 +84,8 @@ multiblocked.renderer.tparticle=Textured Particle
 multiblocked.renderer.blockstate=BlockState Model
 multiblocked.renderer.gregtech=GregTech Model
 
+multiblocked.jei.multiblock_info=Multiblock Page
+
 # gui lang
 multiblocked.gui.tips.settings=Settings
 multiblocked.gui.tips.block_register=Block Name

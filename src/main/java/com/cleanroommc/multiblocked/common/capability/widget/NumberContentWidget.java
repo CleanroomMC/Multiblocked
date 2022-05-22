@@ -17,6 +17,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
+import javax.annotation.Nullable;
+
 public class NumberContentWidget extends ContentWidget<Number> {
     protected boolean isDecimal;
     protected IGuiTexture contentTexture;
@@ -30,6 +32,11 @@ public class NumberContentWidget extends ContentWidget<Number> {
     public NumberContentWidget setUnit(String unit) {
         this.unit = unit;
         return this;
+    }
+
+    @Override
+    public Object getJEIIngredient(Number content) {
+        return null;
     }
 
     @Override

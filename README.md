@@ -4,6 +4,8 @@
 
 The goal was to make it as easy as possible for modpack/mod authors to create multiblocks to interacte IO from other mods, and provide as much detail control as possible. Mbd is essentially both a tweaker mod and a library mod that provides rendering and logic APIs.
 
+#### Other versions: [1.16.5+](https://github.com/Low-Drag-MC/Multiblocked)
+
 ------
 
 #### Features:
@@ -21,3 +23,5 @@ The goal was to make it as easy as possible for modpack/mod authors to create mu
    Provides ways for add **emissive textures** for all models.  
 
    Provides **particle system** that supports rendering textured particles，laser particles and shader particles.  
+
+5. Take advantage of async threads for incredible performance, 20tps forever. 

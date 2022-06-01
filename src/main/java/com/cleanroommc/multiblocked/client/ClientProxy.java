@@ -12,6 +12,7 @@ import com.cleanroommc.multiblocked.client.renderer.BlueprintRegionRenderer;
 import com.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import com.cleanroommc.multiblocked.client.renderer.ComponentTESR;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.MultiblockPreviewRenderer;
 import com.cleanroommc.multiblocked.client.shader.Shaders;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import net.minecraft.client.Minecraft;
@@ -73,6 +74,7 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public static void onRenderWorldLast(RenderWorldLastEvent event) {
         BlueprintRegionRenderer.render(event);
+        MultiblockPreviewRenderer.renderWorldLastEvent(event);
     }
 
     @SubscribeEvent

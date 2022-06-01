@@ -21,6 +21,7 @@ import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.MultiblockPreviewRenderer;
 import com.cleanroommc.multiblocked.persistence.IAsyncThreadUpdate;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.google.common.collect.ImmutableList;
@@ -383,6 +384,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onRightClick", exception);
             }
         }
+
+        if (this.getWorld().isRemote && !this.isFormed() && player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
+            MultiblockPreviewRenderer.renderMultiBlockPreview(this, 60000);
+            return true;
+        }
+
         if (!world.isRemote) {
             if (!isFormed() && definition.catalyst != null) {
                 if (state == null) state = new MultiblockState(world, pos);

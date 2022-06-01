@@ -36,7 +36,7 @@ public class BlockSelectorWidget extends WidgetGroup {
         metaField = (TextFieldWidget) new TextFieldWidget(142, 0, 20, 20, true, null, s -> {
             meta = Integer.parseInt(s);
             onUpdate();
-        }).setNumbersOnly(0, 16).setHoverTooltip("multiblocked.gui.tips.block_meta");
+        }).setNumbersOnly(0, 15).setHoverTooltip("multiblocked.gui.tips.block_meta");
 
         addWidget(new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, 1, 1)
                 .setClearSlotOnRightClick(true)

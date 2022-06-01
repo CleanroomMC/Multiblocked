@@ -37,6 +37,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -92,6 +93,7 @@ public class PatternWidget extends WidgetGroup {
         drops.add(new ItemStackKey(this.controllerDefinition.getStackForm()));
         this.patterns = controllerDefinition.getDesigns().stream()
                 .map(it -> initializePattern(it, drops))
+                .filter(Objects::nonNull)
                 .toArray(MBPattern[]::new);
 
         drops.forEach(it -> allItemStackInputs.add(it.getItemStack()));
@@ -255,7 +257,7 @@ public class PatternWidget extends WidgetGroup {
             loadControllerFormed(predicateMap.keySet(), controllerBase);
             predicateMap = controllerBase.state.getMatchContext().get("predicates");
         }
-        return new MBPattern(blockMap, parts.values().stream().sorted((one, two) -> {
+        return controllerBase == null ? null : new MBPattern(blockMap, parts.values().stream().sorted((one, two) -> {
             if (one.isController) return -1;
             if (two.isController) return +1;
             if (one.isTile && !two.isTile) return -1;
@@ -330,12 +332,16 @@ public class PatternWidget extends WidgetGroup {
     }
 
     private static class MBPattern {
+        @Nonnull
         final NonNullList<ItemStack> parts;
+        @Nonnull
         final Map<BlockPos, TraceabilityPredicate> predicateMap;
+        @Nonnull
         final Map<BlockPos, BlockInfo> blockMap;
+        @Nonnull
         final ControllerTileEntity controllerBase;
 
-        public MBPattern(Map<BlockPos, BlockInfo> blockMap, ItemStack[] parts, Map<BlockPos, TraceabilityPredicate> predicateMap, ControllerTileEntity controllerBase) {
+        public MBPattern(@Nonnull Map<BlockPos, BlockInfo> blockMap, @Nonnull ItemStack[] parts, @Nonnull Map<BlockPos, TraceabilityPredicate> predicateMap, @Nonnull ControllerTileEntity controllerBase) {
             this.parts = NonNullList.from(ItemStack.EMPTY, parts);
             this.blockMap = blockMap;
             this.predicateMap = predicateMap;

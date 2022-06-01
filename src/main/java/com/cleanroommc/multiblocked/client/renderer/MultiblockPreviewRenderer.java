@@ -170,6 +170,7 @@ public class MultiblockPreviewRenderer {
 
         TargetBlockAccess targetBA = new TargetBlockAccess(world, BlockPos.ORIGIN);
         for (BlockPos pos : blockMap.keySet()) {
+            if (controllerPos.equals(pos)) continue;
             targetBA.setPos(pos);
             GlStateManager.pushMatrix();
             BlockPos.MutableBlockPos tPos = new BlockPos.MutableBlockPos(pos.subtract(controllerPos));

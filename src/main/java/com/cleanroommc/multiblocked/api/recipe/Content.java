@@ -8,13 +8,20 @@ import stanhebben.zenscript.annotations.ZenProperty;
 @ZenRegister
 @ZenClass("mods.multiblocked.recipe.Content")
 public class Content {
-    public final Object content;
+    public transient Object content;
     @ZenProperty
-    public final float chance;
-    
-    public Content(Tuple<Object, Float> tuple) {
-        content = tuple.getFirst();
-        chance = tuple.getSecond();
+    public float chance;
+    @ZenProperty
+    public String slotName;
+
+    public Content(Object content, float chance, String slotName) {
+        this.content = content;
+        this.chance = chance;
+        this.slotName = slotName;
+    }
+
+    public Object getContent() {
+        return content;
     }
     
 }

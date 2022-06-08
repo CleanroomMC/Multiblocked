@@ -15,12 +15,16 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget;
+import com.cleanroommc.multiblocked.api.recipe.Content;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.api.recipe.RecipeCondition;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.api.registry.MbdRecipeConditions;
 import com.cleanroommc.multiblocked.util.Size;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -44,6 +48,7 @@ public class RecipeMapWidget extends DialogWidget {
     protected WidgetGroup contentCandidates;
     protected final List<RecipeItem> recipes;
     protected final Consumer<RecipeMap> onSave;
+    protected WidgetGroup conditionGroup;
 
     public RecipeMapWidget(WidgetGroup parent, RecipeMap recipeMap, Consumer<RecipeMap> onSave) {
         super(parent, true);
@@ -52,15 +57,16 @@ public class RecipeMapWidget extends DialogWidget {
         this.onSave = onSave;
         this.recipes = new ArrayList<>();
         this.addWidget(new ImageWidget(0, 0, getSize().width, getSize().height, new ResourceTexture("multiblocked:textures/gui/blueprint_page.png")));
-        this.addWidget(new LabelWidget(40, 40, "multiblocked.gui.label.recipe_map_id"));
-        this.addWidget(new TextFieldWidget(40, 55, 100, 15, true, null, s -> recipeMap.name = s).setCurrentString(recipeMap.name));
-        this.addWidget(new ButtonWidget(150, 52, 95, 20, this::onSave).setButtonTexture(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.label.save_recipe_map", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
+        this.addWidget(new LabelWidget(20, 25, "ID:"));
+        this.addWidget(new TextFieldWidget(40, 20, 130, 15,  true, null, s -> recipeMap.name = s).setCurrentString(recipeMap.name));
+        this.addWidget(new ButtonWidget(180, 17, 40, 20, this::onSave).setButtonTexture(
+                ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.tips.save_1", -1).setDropShadow(true)).setHoverBorderTexture(1, -1));
         this.addWidget(new ImageWidget(250, 3, 130, 128, ResourceBorderTexture.BORDERED_BACKGROUND_BLUE));
         this.addWidget(recipesList = new DraggableScrollableWidgetGroup(250, 7, 130, 120));
         this.addWidget(configurator = new WidgetGroup(250, 132, 130, 120));
-        this.addWidget(recipeIO = new WidgetGroup(50, 100, 176, 100));
+        this.addWidget(recipeIO = new WidgetGroup(50, 50, 176, 100));
         this.addWidget(new ButtonWidget(230, 10, 20, 20, new ResourceTexture("multiblocked:textures/gui/add.png"), cd -> {
-            Recipe recipe = new Recipe(UUID.randomUUID().toString(), ImmutableMap.of(), ImmutableMap.of(), ImmutableMap.of(), ImmutableMap.of(), 1);
+            Recipe recipe = new Recipe(UUID.randomUUID().toString(), ImmutableMap.of(), ImmutableMap.of(), ImmutableMap.of(), ImmutableMap.of(), ImmutableList.of(), 1);
             recipes.add(new RecipeItem(recipe));
             recipesList.addWidget(recipes.get(recipes.size() - 1));
         }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.add_recipe"));
@@ -68,6 +74,7 @@ public class RecipeMapWidget extends DialogWidget {
             recipes.add(new RecipeItem(recipe));
             recipesList.addWidget(recipes.get(recipes.size() - 1));
         }
+        this.addWidget(conditionGroup = new WidgetGroup(50, 170, 176, 70));
     }
 
     @Override
@@ -114,6 +121,7 @@ public class RecipeMapWidget extends DialogWidget {
         private int duration;
         private final Map<MultiblockCapability<?>, List<ContentWidget<?>>> inputs;
         private final Map<MultiblockCapability<?>, List<ContentWidget<?>>> outputs;
+        private final Map<String, RecipeCondition> conditions;
         private ContentWidget<?> selectedContent;
         private ButtonWidget removed;
 
@@ -124,6 +132,7 @@ public class RecipeMapWidget extends DialogWidget {
             this.duration = recipe.duration;
             inputs = new HashMap<>();
             outputs = new HashMap<>();
+            conditions = new HashMap<>();
             this.addWidget(new ImageWidget(0, 0, 120, 20, new ColorRectTexture(0x5f49F75C)));
             this.addWidget(new ButtonWidget(104, 4, 12, 12, new ResourceTexture("multiblocked:textures/gui/remove.png"), cd -> {
                 boolean find = false;
@@ -141,6 +150,9 @@ public class RecipeMapWidget extends DialogWidget {
                 recipes.remove(this);
                 recipesList.waitToRemoved(RecipeItem.this);
             }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.dialogs.recipe_map.remove_recipe"));
+            for (RecipeCondition condition : recipe.conditions) {
+                conditions.put(condition.getType(), condition.createTemplate().deserialize(condition.serialize()));
+            }
         }
 
         @Override
@@ -192,21 +204,27 @@ public class RecipeMapWidget extends DialogWidget {
         }
 
         private void updateRecipe() {
-            recipe = new Recipe(uid, rebuild(inputs, false), rebuild(outputs, false), rebuild(inputs, true), rebuild(outputs, true), duration);
+            recipe = new Recipe(uid,
+                    rebuild(inputs, false),
+                    rebuild(outputs, false),
+                    rebuild(inputs, true),
+                    rebuild(outputs, true),
+                    ImmutableList.copyOf(conditions.values()),
+                    duration);
         }
 
-        private ImmutableMap<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> rebuild(Map<MultiblockCapability<?>, List<ContentWidget<?>>> contents, boolean perTick) {
-            ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> builder = new ImmutableMap.Builder<>();
+        private ImmutableMap<MultiblockCapability<?>, ImmutableList<Content>> rebuild(Map<MultiblockCapability<?>, List<ContentWidget<?>>> contents, boolean perTick) {
+            ImmutableMap.Builder<MultiblockCapability<?>, ImmutableList<Content>> builder = new ImmutableMap.Builder<>();
             for (Map.Entry<MultiblockCapability<?>, List<ContentWidget<?>>> entry : contents.entrySet()) {
                 MultiblockCapability<?> capability = entry.getKey();
                 if (capability != null && !entry.getValue().isEmpty()) {
-                    ImmutableList.Builder<Tuple<Object, Float>> listBuilder = new ImmutableList.Builder<>();
+                    ImmutableList.Builder<Content> listBuilder = new ImmutableList.Builder<>();
                     for (ContentWidget<?> content : entry.getValue()) {
                         if (content.getPerTick() == perTick) {
-                            listBuilder.add(new Tuple<>(content.getContent(), content.getChance()));
+                            listBuilder.add(new Content(content.getContent(), content.getChance(), content.getSlotName()));
                         }
                     }
-                    ImmutableList<Tuple<Object, Float>> list = listBuilder.build();
+                    ImmutableList<Content> list = listBuilder.build();
                     if (!list.isEmpty()) {
                         builder.put(capability, listBuilder.build());
                     }
@@ -224,45 +242,45 @@ public class RecipeMapWidget extends DialogWidget {
         private void updateIOContentWidgets() {
             inputs.clear();
             outputs.clear();
-            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.inputs.entrySet()) {
+            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.inputs.entrySet()) {
                 MultiblockCapability<?> capability = entry.getKey();
-                for (Tuple<Object, Float> in : entry.getValue()) {
+                for (Content in : entry.getValue()) {
                     ContentWidget<?> contentWidget = (ContentWidget<?>) capability.createContentWidget()
                             .setOnPhantomUpdate(w -> onContentSelectedOrUpdate(true, capability, w))
-                            .setContent(IO.IN, in.getFirst(), in.getSecond(), false)
+                            .setContent(IO.IN, in, false)
                             .setOnSelected(w -> onContentSelectedOrUpdate(true, capability, (ContentWidget<?>) w))
                             .setSelectedTexture(-1, 0);
                     this.inputs.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
                 }
             }
-            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.tickInputs.entrySet()) {
+            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.tickInputs.entrySet()) {
                 MultiblockCapability<?> capability = entry.getKey();
-                for (Tuple<Object, Float> in : entry.getValue()) {
+                for (Content in : entry.getValue()) {
                     ContentWidget<?> contentWidget = (ContentWidget<?>) capability.createContentWidget()
                             .setOnPhantomUpdate(w -> onContentSelectedOrUpdate(true, capability, w))
-                            .setContent(IO.IN, in.getFirst(), in.getSecond(), true)
+                            .setContent(IO.IN, in, true)
                             .setOnSelected(w -> onContentSelectedOrUpdate(true, capability, (ContentWidget<?>) w))
                             .setSelectedTexture(-1, 0);
                     this.inputs.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
                 }
             }
 
-            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.outputs.entrySet()) {
+            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.outputs.entrySet()) {
                 MultiblockCapability<?> capability = entry.getKey();
-                for (Tuple<Object, Float> out : entry.getValue()) {
+                for (Content out : entry.getValue()) {
                     ContentWidget<?> contentWidget= (ContentWidget<?>) capability
                             .createContentWidget().setOnPhantomUpdate(w -> onContentSelectedOrUpdate(false, capability, w))
-                            .setContent(IO.OUT, out.getFirst(), out.getSecond(), false)
+                            .setContent(IO.OUT, out, false)
                             .setOnSelected(w -> onContentSelectedOrUpdate(false, capability, (ContentWidget<?>) w));
                     this.outputs.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
                 }
             }
-            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.tickOutputs.entrySet()) {
+            for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.tickOutputs.entrySet()) {
                 MultiblockCapability<?> capability = entry.getKey();
-                for (Tuple<Object, Float> out : entry.getValue()) {
+                for (Content out : entry.getValue()) {
                     ContentWidget<?> contentWidget= (ContentWidget<?>) capability
                             .createContentWidget().setOnPhantomUpdate(w -> onContentSelectedOrUpdate(false, capability, w))
-                            .setContent(IO.OUT, out.getFirst(), out.getSecond(), true)
+                            .setContent(IO.OUT, out, true)
                             .setOnSelected(w -> onContentSelectedOrUpdate(false, capability, (ContentWidget<?>) w));
                     this.outputs.computeIfAbsent(capability, c -> new ArrayList<>()).add(contentWidget);
                 }
@@ -272,6 +290,8 @@ public class RecipeMapWidget extends DialogWidget {
         public void updateRecipeWidget() {
             RecipeMapWidget.this.configurator.clearAllWidgets();
             WidgetGroup group = RecipeMapWidget.this.recipeIO;
+            WidgetGroup conditionGroup = RecipeMapWidget.this.conditionGroup;
+            conditionGroup.clearAllWidgets();
             group.clearAllWidgets();
             group.addWidget(new ImageWidget(-10, -10, group.getSize().width + 20, group.getSize().height + 20, ResourceBorderTexture.BORDERED_BACKGROUND));
             group.addWidget(new LabelWidget(5, 5,"multiblocked.gui.label.uid"));
@@ -330,6 +350,43 @@ public class RecipeMapWidget extends DialogWidget {
             if (index > 8) {
                 outputs.setSize(new Size(64 + 4, 64));
                 outputs.setYScrollBarWidth(4).setYBarStyle(null, new ColorRectTexture(-1));
+            }
+
+            DraggableScrollableWidgetGroup conditionsGroup = new DraggableScrollableWidgetGroup(0, 0, 86, 70)
+                    .setBackground(new ColorRectTexture(0x6f444444));
+            WidgetGroup configurator = new WidgetGroup(90, 0, 70, 70);
+            conditionGroup.addWidget(new ImageWidget(-5, -5, conditionGroup.getSize().width + 10, conditionGroup.getSize().height + 10, ResourceBorderTexture.BORDERED_BACKGROUND));
+            conditionGroup.addWidget(conditionsGroup);
+            conditionGroup.addWidget(configurator);
+            int i = 0;
+            for (RecipeCondition condition : MbdRecipeConditions.RECIPE_CONDITIONS_REGISTRY.values()) {
+                int x = 5 + (i % 4) * 20;
+                int y = 2 + i / 4 * 20;
+                boolean has = this.conditions.containsKey(condition.getType());
+                WidgetGroup buttonGroup = new WidgetGroup(x, y, 16, 16);
+                ButtonWidget config = (ButtonWidget) new ButtonWidget(10, 0, 6, 6, cd -> {
+                    configurator.clearAllWidgets();
+                    RecipeCondition cond = this.conditions.get(condition.getType());
+                    if (cond != null) {
+                        cond.openConfigurator(configurator);
+                    }
+                })
+                        .setButtonTexture(new ResourceTexture("multiblocked:textures/gui/option.png"))
+                        .setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.configuratio");
+                config.setVisible(has);
+                config.setActive(has);
+                buttonGroup.addWidget(new SwitchWidget(0, 0, 16, 16, (cd, pressed)->{
+                    config.setVisible(pressed);
+                    config.setActive(pressed);
+                    if (pressed) {
+                        this.conditions.put(condition.getType(), condition.createTemplate());
+                    } else {
+                        this.conditions.remove(condition.getType());
+                    }
+                }).setPressed(has).setTexture(condition.getInValidTexture(), condition.getValidTexture()).setHoverTooltip(condition.getTranlationKey()));
+                buttonGroup.addWidget(config);
+                conditionsGroup.addWidget(buttonGroup);
+                i++;
             }
         }
 

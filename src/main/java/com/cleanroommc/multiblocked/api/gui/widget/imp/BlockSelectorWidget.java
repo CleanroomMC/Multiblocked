@@ -66,7 +66,11 @@ public class BlockSelectorWidget extends WidgetGroup {
     }
 
     public IBlockState getBlock() {
-        return block == null ? null : block.getStateFromMeta(meta);
+        try {
+            return block == null ? null : block.getStateFromMeta(meta);
+        } catch (Exception e) {
+            return block == null ? null : block.getDefaultState();
+        }
     }
 
     public BlockSelectorWidget setBlock(IBlockState blockState) {
@@ -79,7 +83,7 @@ public class BlockSelectorWidget extends WidgetGroup {
         } else {
             block = blockState.getBlock();
             meta = block.getMetaFromState(blockState);
-            handler.setStackInSlot(0, block == null ? ItemStack.EMPTY : new ItemStack(Item.getItemFromBlock(block), 1, block.damageDropped(block.getStateFromMeta(meta))));
+            handler.setStackInSlot(0, block == null ? ItemStack.EMPTY : new ItemStack(Item.getItemFromBlock(block), 1, block.damageDropped(getBlock())));
             blockField.setCurrentString(block.getRegistryName() == null ? "" : block.getRegistryName().toString());
             metaField.setCurrentString(meta + "");
         }
@@ -92,9 +96,9 @@ public class BlockSelectorWidget extends WidgetGroup {
     }
 
     private void onUpdate() {
-        handler.setStackInSlot(0, block == null ? ItemStack.EMPTY : new ItemStack(Item.getItemFromBlock(block), 1, block.damageDropped(block.getStateFromMeta(meta))));
+        handler.setStackInSlot(0, block == null ? ItemStack.EMPTY : new ItemStack(Item.getItemFromBlock(block), 1, block.damageDropped(getBlock())));
         if (onBlockStateUpdate != null) {
-            onBlockStateUpdate.accept(block == null ? null : block.getStateFromMeta(meta));
+            onBlockStateUpdate.accept(getBlock());
         }
     }
 }

@@ -55,7 +55,7 @@ public class Multiblocked {
     public static final String MODID_EMBERS = "embers";
     public static final String MODID_TA = "thaumicaugmentation";
     public static final String NAME = "Multiblocked";
-    public static final String VERSION = "0.6.0";
+    public static final String VERSION = "0.6.1";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();

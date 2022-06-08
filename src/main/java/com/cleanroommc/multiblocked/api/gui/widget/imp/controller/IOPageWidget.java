@@ -335,6 +335,7 @@ public class IOPageWidget extends PageWidget {
         if (id == -1) {
             MultiblockCapability<?> capability = MbdCapabilities.get(buffer.readString(Short.MAX_VALUE));
             Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities = controller.getCapabilities();
+            Map<Long, Set<String>> slotsMap = controller.state != null && controller.state.getMatchContext() != null ? controller.state.getMatchContext().get("slots") : null;
             if (buffer.readBoolean()) {
                 IO io = buffer.readEnumValue(IO.class);
                 capabilities.get(io, capability).remove(pos.toLong());
@@ -351,6 +352,7 @@ public class IOPageWidget extends PageWidget {
                     }
                     CapabilityProxy<?> proxy = capability.createProxy(io, entity);
                     proxy.facing = buffer.readEnumValue(EnumFacing.class);
+                    proxy.slots = slotsMap == null ? null : slotsMap.get(entity.getPos().toLong());
                     capabilities.get(io, capability).put(pos.toLong(), proxy);
                 }
             }
@@ -358,6 +360,7 @@ public class IOPageWidget extends PageWidget {
         } else if (id == -2) {
             MultiblockCapability<?> capability = MbdCapabilities.get(buffer.readString(Short.MAX_VALUE));
             Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilities = controller.getCapabilities();
+            Map<Long, Set<String>> slotsMap = controller.state != null && controller.state.getMatchContext() != null ? controller.state.getMatchContext().get("slots") : null;
             IO io = buffer.readEnumValue(IO.class);
             TileEntity entity = controller.getWorld().getTileEntity(pos);
             if (entity != null && capability.isBlockHasCapability(io, entity)) {
@@ -366,6 +369,7 @@ public class IOPageWidget extends PageWidget {
                 }
                 CapabilityProxy<?> proxy = capability.createProxy(io, entity);
                 proxy.facing = buffer.readEnumValue(EnumFacing.class);
+                proxy.slots = slotsMap == null ? null : slotsMap.get(entity.getPos().toLong());
                 capabilities.get(io, capability).put(pos.toLong(), proxy);
             }
             controller.markAsDirty();

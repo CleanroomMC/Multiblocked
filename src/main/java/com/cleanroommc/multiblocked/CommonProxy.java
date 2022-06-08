@@ -13,6 +13,7 @@ import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.registry.MbdItems;
 import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
+import com.cleanroommc.multiblocked.api.registry.MbdRecipeConditions;
 import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileTesterEntity;
@@ -48,6 +49,7 @@ public class CommonProxy {
         MbdCapabilities.registerCapabilities();
         MbdRenderers.registerRenderers();
         MbdPredicates.registerPredicates();
+        MbdRecipeConditions.registerConditions();
     }
 
     public void init() {

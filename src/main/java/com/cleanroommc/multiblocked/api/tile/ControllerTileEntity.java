@@ -165,6 +165,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         }
         // init capabilities
         Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap = state.getMatchContext().get("capabilities");
+        Map<Long, Set<String>> slotsMap = state.getMatchContext().get("slots");
         if (capabilityMap != null) {
             capabilities = Tables.newCustomTable(new EnumMap<>(IO.class), Object2ObjectOpenHashMap::new);
             for (Map.Entry<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> entry : capabilityMap.entrySet()) {
@@ -185,6 +186,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                     }
                                     CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity);
                                     proxy.facing = facing;
+                                    proxy.slots = slotsMap == null ? null : slotsMap.get(tileEntity.getPos().toLong());
                                     capabilities.get(io, capability).put(entry.getKey().longValue(), proxy);
                                 }
                             }
@@ -197,6 +199,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                                     }
                                     CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity);
+                                    proxy.slots = slotsMap == null ? null : slotsMap.get(tileEntity.getPos().toLong());
                                     capabilities.get(io, capability).put(entry.getKey().longValue(), proxy);
                                 }
                             }

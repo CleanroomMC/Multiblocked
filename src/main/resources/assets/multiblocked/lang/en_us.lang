@@ -35,7 +35,11 @@ ember.any.name=Any Embers Ember Containers
 multiblocked.capability.ta_impetus=TA Impetus Energy
 ta_impetus.any.name=Any Thaumic Augmentation Impetus Container
 
-multiblocked.content.miss=IO: %s Capability: %s miss widget
+multiblocked.gui.content.more_option=more options
+multiblocked.gui.content.back=back
+multiblocked.gui.content.slot_name=IO slot name
+
+multiblocked.content.miss=IO=%s Capability=%s miss widget
 
 multiblocked.pattern.error=Expected components (%s) at (%s)
 multiblocked.pattern.error.share=This part cant be shared
@@ -273,3 +277,22 @@ multiblocked.gui.label.type=Type:
 multiblocked.gui.label.save_pattern=Save Pattern
 multiblocked.gui.label.save_recipe_map=Save Recipe Map
 multiblocked.gui.label.pattern_settings=Pattern Settings
+
+multiblocked.gui.condition.reverse=reverse (executed if condition failed),
+multiblocked.gui.condition.reverse.label=isReverse,
+multiblocked.gui.condition.rain.level=Rain Level,
+multiblocked.gui.condition.thunder.level=Thunder Level,
+multiblocked.gui.condition.pos_y.min=Min Position Y,
+multiblocked.gui.condition.pos_y.max=Max Position Y,
+
+multiblocked.recipe.condition.thunder=Thunder,
+multiblocked.recipe.condition.thunder.tooltip=Rain Level=%d,
+multiblocked.recipe.condition.rain=Rain,
+multiblocked.recipe.condition.rain.tooltip=Rain Level=%d,
+multiblocked.recipe.condition.dimension=Dimension,
+multiblocked.recipe.condition.dimension.tooltip=Dimension=%s,
+multiblocked.recipe.condition.biome=Biome,
+multiblocked.recipe.condition.pos_y=Position Y,
+multiblocked.recipe.condition.pos_y.tooltip=%d <= Y <= %d
+
+multiblocked.gui.predicate.slot=match the IO slot

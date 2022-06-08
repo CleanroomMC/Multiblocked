@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import com.cleanroommc.multiblocked.api.recipe.Content;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.util.Size;
 import com.google.common.collect.ImmutableList;
@@ -45,17 +46,17 @@ public class RecipeWidget extends WidgetGroup {
             this.addWidget(new LabelWidget(80, 73, recipe.text.getFormattedText()).setTextColor(0xff000000).setDrop(false));
         }
         int index = 0;
-        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.inputs.entrySet()) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.inputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();
-            for (Tuple<Object, Float> in : entry.getValue()) {
-                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, in.getFirst(), in.getSecond(), false).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+            for (Content in : entry.getValue()) {
+                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, in, false).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
         }
-        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.tickInputs.entrySet()) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.tickInputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();
-            for (Tuple<Object, Float> in : entry.getValue()) {
-                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, in.getFirst(), in.getSecond(), true).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+            for (Content in : entry.getValue()) {
+                inputs.addWidget(capability.createContentWidget().setContent(IO.IN, in, true).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
         }
@@ -65,17 +66,17 @@ public class RecipeWidget extends WidgetGroup {
         }
 
         index = 0;
-        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.outputs.entrySet()) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.outputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();
-            for (Tuple<Object, Float> out : entry.getValue()) {
-                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out.getFirst(), out.getSecond(), false).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+            for (Content out : entry.getValue()) {
+                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out, false).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
         }
-        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Tuple<Object, Float>>> entry : recipe.tickOutputs.entrySet()) {
+        for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.tickOutputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();
-            for (Tuple<Object, Float> out : entry.getValue()) {
-                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out.getFirst(), out.getSecond(), true).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
+            for (Content out : entry.getValue()) {
+                outputs.addWidget(capability.createContentWidget().setContent(IO.OUT, out, true).setSelfPosition(2 + 20 * (index % 3), 2 + 20 * (index / 3)));
                 index++;
             }
         }

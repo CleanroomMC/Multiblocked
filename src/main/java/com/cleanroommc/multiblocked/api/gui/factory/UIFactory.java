@@ -67,6 +67,7 @@ public abstract class UIFactory<T> {
         EntityPlayerSP entityPlayer = minecraft.player;
 
         ModularUI uiTemplate = createUITemplate(holder, entityPlayer);
+        if (uiTemplate == null) return;
         uiTemplate.initWidgets();
         ModularUIGuiContainer ModularUIGuiContainer = new ModularUIGuiContainer(uiTemplate);
         ModularUIGuiContainer.inventorySlots.windowId = windowId;

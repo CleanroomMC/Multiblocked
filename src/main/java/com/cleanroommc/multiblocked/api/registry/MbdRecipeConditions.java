@@ -28,5 +28,6 @@ public class MbdRecipeConditions {
         registerCondition(RainingCondition.INSTANCE);
         registerCondition(PositionYCondition.INSTANCE);
         registerCondition(BiomeCondition.INSTANCE);
+        registerCondition(BlockCondition.INSTANCE);
     }
 }

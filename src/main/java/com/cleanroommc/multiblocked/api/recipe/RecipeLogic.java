@@ -26,7 +26,7 @@ public class RecipeLogic {
     @ZenProperty
     public Recipe lastRecipe;
     @ZenProperty
-    public List<Recipe> lastFaildMattches;
+    public List<Recipe> lastFailedMatches;
     @ZenProperty
     public int progress;
     @ZenProperty
@@ -61,13 +61,13 @@ public class RecipeLogic {
             findAndHandleRecipe();
         } else if (timer % 5 == 0) {
             checkAsyncRecipeSearching(this::findAndHandleRecipe);
-            if (lastFaildMattches != null) {
-                for (Recipe recipe : lastFaildMattches) {
+            if (lastFailedMatches != null) {
+                for (Recipe recipe : lastFailedMatches) {
                     if (recipe.checkConditions(this)) {
                         setupRecipe(recipe);
                     }
                     if (lastRecipe != null && getStatus() == Status.WORKING) {
-                        lastFaildMattches = null;
+                        lastFailedMatches = null;
                         return;
                     }
                 }
@@ -125,7 +125,7 @@ public class RecipeLogic {
     @ZenMethod
     public void findAndHandleRecipe() {
         Recipe recipe;
-        lastFaildMattches = null;
+        lastFailedMatches = null;
         if (lastRecipe != null && lastRecipe.matchRecipe(this.controller) && lastRecipe.matchTickRecipe(this.controller) && lastRecipe.checkConditions(this)) {
             recipe = lastRecipe;
             lastRecipe = null;
@@ -138,13 +138,13 @@ public class RecipeLogic {
                     setupRecipe(match);
                 }
                 if (lastRecipe != null && getStatus() == Status.WORKING) {
-                    lastFaildMattches = null;
+                    lastFailedMatches = null;
                     break;
                 }
-                if (lastFaildMattches == null) {
-                    lastFaildMattches = new ArrayList<>();
+                if (lastFailedMatches == null) {
+                    lastFailedMatches = new ArrayList<>();
                 }
-                lastFaildMattches.add(match);
+                lastFailedMatches.add(match);
             }
         }
     }

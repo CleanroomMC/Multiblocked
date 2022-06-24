@@ -361,7 +361,7 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
         private PlayState predicate(AnimationEvent<ComponentFactory> event) {
             AnimationController<ComponentFactory> controller = event.getController();
             String lastStatus = currentStatus;
-            currentStatus = component.getStatus();
+            currentStatus = component == null ? "unformed" : component.getStatus();
             if (!Objects.equals(lastStatus, currentStatus)) {
                 if (currentStatus == null) return PlayState.STOP;
                 AnimationBuilder animationBuilder = new AnimationBuilder();

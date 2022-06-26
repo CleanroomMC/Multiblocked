@@ -1,14 +1,11 @@
 package com.cleanroommc.multiblocked.util;
 
-import com.cleanroommc.multiblocked.api.capability.IO;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class JsonUtil {
     public static int[] getIntArray(JsonElement array) {

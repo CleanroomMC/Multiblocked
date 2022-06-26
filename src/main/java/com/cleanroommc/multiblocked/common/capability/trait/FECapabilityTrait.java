@@ -84,12 +84,12 @@ public class FECapabilityTrait extends ProgressCapabilityTrait {
                 .setCurrentString(capacity + "")
                 .setHoverTooltip("multiblocked.gui.trait.fe.tips.0"));
 
-        dialog.addWidget(new TextFieldWidget(60, 25, 100, 15, true, null, s -> capacity = Integer.parseInt(s))
+        dialog.addWidget(new TextFieldWidget(60, 25, 100, 15, true, null, s -> maxReceive = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(maxReceive + "")
                 .setHoverTooltip("multiblocked.gui.trait.fe.tips.1"));
 
-        dialog.addWidget(new TextFieldWidget(60, 45, 100, 15, true, null, s -> capacity = Integer.parseInt(s))
+        dialog.addWidget(new TextFieldWidget(60, 45, 100, 15, true, null, s -> maxExtract = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(maxExtract + "")
                 .setHoverTooltip("multiblocked.gui.trait.fe.tips.2"));

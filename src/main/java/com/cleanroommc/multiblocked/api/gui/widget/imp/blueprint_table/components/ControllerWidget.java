@@ -106,7 +106,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                 S4 = new WidgetGroup(0, 0, getSize().width, getSize().height));
         S4.addWidget(new LabelWidget(80, 55, "multiblocked.gui.label.recipe_map"));
         S4.addWidget(new TextFieldWidget(80, 70, 100, 15, true, () -> this.recipeMap, s -> this.recipeMap = s));
-        S4.addWidget(new RecipeMapBuilderWidget(this, 188, 50, 150, 170).setOnRecipeMapSelected(recipeMap1 -> this.recipeMap = recipeMap1.name));
+        S4.addWidget(new RecipeMapBuilderWidget(this, 188, 50, 150, 170).setOnRecipeMapSelected(recipeMap1 -> this.recipeMap = (recipeMap1 == null || recipeMap1.name == null) ? "error!!!" : recipeMap1.name));
     }
 
     @Override

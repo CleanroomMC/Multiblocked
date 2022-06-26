@@ -74,6 +74,7 @@ public class DialogWidget extends WidgetGroup {
 
     @Override
     public Widget mouseClicked(int mouseX, int mouseY, int button) {
+        if (!isMouseOverElement(mouseX, mouseY)) return null;
         Widget widget = super.mouseClicked(mouseX, mouseY, button);
         return widget == null ? this : widget;
     }

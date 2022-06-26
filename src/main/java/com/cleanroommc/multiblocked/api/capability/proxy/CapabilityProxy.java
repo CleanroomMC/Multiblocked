@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public abstract class CapabilityProxy<K> {
     public final MultiblockCapability<? super K> capability;
     public EnumFacing facing;
+    public Set<String> slots;
     private long latestPeriodID;
 
     private TileEntity tileEntity;

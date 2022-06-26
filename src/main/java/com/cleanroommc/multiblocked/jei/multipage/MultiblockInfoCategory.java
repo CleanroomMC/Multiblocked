@@ -57,7 +57,7 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoWra
     @Nonnull
     @Override
     public String getTitle() {
-        return I18n.format(UID);
+        return I18n.format("multiblocked.jei.multiblock_info");
     }
 
     @Nonnull

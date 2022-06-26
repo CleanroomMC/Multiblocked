@@ -21,6 +21,7 @@ import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.MultiblockPreviewRenderer;
 import com.cleanroommc.multiblocked.persistence.IAsyncThreadUpdate;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.google.common.collect.ImmutableList;
@@ -43,6 +44,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -69,6 +71,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     private Map<Long, Map<MultiblockCapability<?>, Tuple<IO, EnumFacing>>> settings;
     protected LongOpenHashSet parts;
     protected RecipeLogic recipeLogic;
+    protected AxisAlignedBB renderBox;
 
     public BlockPattern getPattern() {
         if (definition.dynamicPattern != null) {
@@ -94,6 +97,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     public boolean checkPattern() {
         if (state == null) return false;
         return getPattern().checkPatternAt(state, false);
+    }
+
+    public boolean shouldCheckPattern() {
+        if (definition.shouldCheckPattern == null) return true;
+        return definition.shouldCheckPattern.apply(this);
     }
 
     @Override
@@ -159,6 +167,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         }
         // init capabilities
         Map<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> capabilityMap = state.getMatchContext().get("capabilities");
+        Map<Long, Set<String>> slotsMap = state.getMatchContext().get("slots");
         if (capabilityMap != null) {
             capabilities = Tables.newCustomTable(new EnumMap<>(IO.class), Object2ObjectOpenHashMap::new);
             for (Map.Entry<Long, EnumMap<IO, Set<MultiblockCapability<?>>>> entry : capabilityMap.entrySet()) {
@@ -179,6 +188,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                     }
                                     CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity);
                                     proxy.facing = facing;
+                                    proxy.slots = slotsMap == null ? null : slotsMap.get(tileEntity.getPos().toLong());
                                     capabilities.get(io, capability).put(entry.getKey().longValue(), proxy);
                                 }
                             }
@@ -191,6 +201,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                                     }
                                     CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity);
+                                    proxy.slots = slotsMap == null ? null : slotsMap.get(tileEntity.getPos().toLong());
                                     capabilities.get(io, capability).put(entry.getKey().longValue(), proxy);
                                 }
                             }
@@ -281,12 +292,25 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             for (long blockPos : disabled) {
                 buffer.writeLong(blockPos);
             }
+            int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+            for (BlockPos pos : state.getCache()) {
+                minX = Math.min(minX, pos.getX());
+                minY = Math.min(minY, pos.getY());
+                minZ = Math.min(minZ, pos.getZ());
+
+                maxX = Math.max(maxX, pos.getX());
+                maxY = Math.max(maxY, pos.getY());
+                maxZ = Math.max(maxZ, pos.getZ());
+            }
+            buffer.writeBlockPos(new BlockPos(minX, minY, minZ));
+            buffer.writeBlockPos(new BlockPos(maxX + 1, maxY + 1, maxZ + 1));
         }
     }
 
     protected void readState(PacketBuffer buffer) {
         if (buffer.readBoolean()) {
             state = new MultiblockState(world, pos);
+            state.setError(null);
             int size = buffer.readVarInt();
             if (size > 0) {
                 ImmutableList.Builder<BlockPos> listBuilder = new ImmutableList.Builder<>();
@@ -295,11 +319,13 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 }
                 MultiblockWorldSavedData.addDisableModel(state.controllerPos, listBuilder.build());
             }
+            renderBox = new AxisAlignedBB(buffer.readBlockPos(), buffer.readBlockPos());
         } else {
             if (state != null) {
                 MultiblockWorldSavedData.removeDisableModel(state.controllerPos);
             }
             state = null;
+            renderBox = null;
         }
     }
 
@@ -377,12 +403,18 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "onRightClick", exception);
             }
         }
+
+        if (this.getWorld().isRemote && !this.isFormed() && player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
+            MultiblockPreviewRenderer.renderMultiBlockPreview(this, 60000);
+            return true;
+        }
+
         if (!world.isRemote) {
             if (!isFormed() && definition.catalyst != null) {
                 if (state == null) state = new MultiblockState(world, pos);
                 ItemStack held = player.getHeldItem(hand);
                 if (definition.catalyst.isEmpty() || held.isItemEqual(definition.catalyst)) {
-                    if (checkPattern()) { // formed
+                    if (shouldCheckPattern() && checkPattern()) { // formed
                         player.swingArm(hand);
                         ITextComponent formedMsg = new TextComponentTranslation(getUnlocalizedName()).appendSibling(new TextComponentTranslation("multiblocked.multiblock.formed"));
                         player.sendStatusMessage(formedMsg, true);
@@ -422,13 +454,19 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 .build(this, entityPlayer);
     }
 
+    @Nonnull
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return getRenderer().isGlobalRenderer(this) ? INFINITE_EXTENT_AABB : renderBox == null ? super.getRenderBoundingBox() : renderBox;
+    }
+
     @Override
     public void asyncThreadLogic(long periodID) {
         if (!isFormed() && getDefinition().catalyst == null && (getOffset() + periodID) % 4 == 0) {
             if (getPattern().checkPatternAt(new MultiblockState(world, pos), false)) {
                 FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
                     if (state == null) state = new MultiblockState(world, pos);
-                    if (checkPattern()) { // formed
+                    if (shouldCheckPattern() && checkPattern()) { // formed
                         MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
                         onStructureFormed();
                     }

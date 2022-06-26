@@ -14,6 +14,7 @@ import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ZenClass("mods.multiblocked.recipe.RecipeLogic")
@@ -24,6 +25,8 @@ public class RecipeLogic {
     public final ControllerDefinition definition;
     @ZenProperty
     public Recipe lastRecipe;
+    @ZenProperty
+    public List<Recipe> lastFailedMatches;
     @ZenProperty
     public int progress;
     @ZenProperty
@@ -58,13 +61,30 @@ public class RecipeLogic {
             findAndHandleRecipe();
         } else if (timer % 5 == 0) {
             checkAsyncRecipeSearching(this::findAndHandleRecipe);
+            if (lastFailedMatches != null) {
+                for (Recipe recipe : lastFailedMatches) {
+                    if (recipe.checkConditions(this)) {
+                        setupRecipe(recipe);
+                    }
+                    if (lastRecipe != null && getStatus() == Status.WORKING) {
+                        lastFailedMatches = null;
+                        return;
+                    }
+                }
+            }
         }
     }
 
     @ZenMethod
     public void handleRecipeWorking() {
-        progress++;
-        handleTickRecipe(lastRecipe);
+        if (lastRecipe.checkConditions(this)) {
+            setStatus(Status.WORKING);
+            progress++;
+            handleTickRecipe(lastRecipe);
+        } else {
+            setStatus(Status.SUSPEND);
+        }
+        markDirty();
     }
 
     private void checkAsyncRecipeSearching(Runnable changed) {
@@ -105,7 +125,8 @@ public class RecipeLogic {
     @ZenMethod
     public void findAndHandleRecipe() {
         Recipe recipe;
-        if (lastRecipe != null && lastRecipe.matchRecipe(this.controller) && lastRecipe.matchTickRecipe(this.controller)) {
+        lastFailedMatches = null;
+        if (lastRecipe != null && lastRecipe.matchRecipe(this.controller) && lastRecipe.matchTickRecipe(this.controller) && lastRecipe.checkConditions(this)) {
             recipe = lastRecipe;
             lastRecipe = null;
             setupRecipe(recipe);
@@ -113,10 +134,17 @@ public class RecipeLogic {
             List<Recipe> matches = this.definition.recipeMap.searchRecipe(this.controller);
             lastRecipe = null;
             for (Recipe match : matches) {
-                setupRecipe(match);
+                if (match.checkConditions(this)) {
+                    setupRecipe(match);
+                }
                 if (lastRecipe != null && getStatus() == Status.WORKING) {
+                    lastFailedMatches = null;
                     break;
                 }
+                if (lastFailedMatches == null) {
+                    lastFailedMatches = new ArrayList<>();
+                }
+                lastFailedMatches.add(match);
             }
         }
     }
@@ -200,7 +228,7 @@ public class RecipeLogic {
             }
         }
         lastRecipe.handleRecipeIO(IO.OUT, this.controller);
-        if (lastRecipe.matchRecipe(this.controller) && lastRecipe.matchTickRecipe(this.controller)) {
+        if (lastRecipe.matchRecipe(this.controller) && lastRecipe.matchTickRecipe(this.controller) && lastRecipe.checkConditions(this)) {
             setupRecipe(lastRecipe);
         } else {
             setStatus(Status.IDLE);
@@ -220,6 +248,7 @@ public class RecipeLogic {
         if (lastRecipe != null) {
             status = compound.hasKey("status") ? Status.values()[compound.getInteger("status")] : Status.WORKING;
             duration = lastRecipe.duration;
+            progress = compound.hasKey("progress") ? compound.getInteger("progress") : 0;
         }
     }
 
@@ -227,6 +256,7 @@ public class RecipeLogic {
         if (lastRecipe != null && status != Status.IDLE) {
             compound.setString("recipe", lastRecipe.uid);
             compound.setInteger("status", status.ordinal());
+            compound.setInteger("progress", progress);
         }
         return compound;
     }

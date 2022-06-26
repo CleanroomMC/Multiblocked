@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked;
 
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
@@ -13,12 +14,16 @@ import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.registry.MbdItems;
 import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
+import com.cleanroommc.multiblocked.api.registry.MbdRecipeConditions;
 import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileTesterEntity;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileTesterEntity;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import com.google.gson.JsonObject;
 import crafttweaker.CraftTweakerAPI;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -48,6 +53,7 @@ public class CommonProxy {
         MbdCapabilities.registerCapabilities();
         MbdRenderers.registerRenderers();
         MbdPredicates.registerPredicates();
+        MbdRecipeConditions.registerConditions();
     }
 
     public void init() {
@@ -87,15 +93,13 @@ public class CommonProxy {
         MbdComponents.registerComponentFromFile(
                 Multiblocked.GSON, 
                 new File(Multiblocked.location, "definition/controller"),
-                ControllerDefinition.class, 
-                (definition, config) -> {
-                    definition.basePattern = Multiblocked.GSON.fromJson(config.get("basePattern"), JsonBlockPattern.class).build();
-                    definition.recipeMap = RecipeMap.RECIPE_MAP_REGISTRY.getOrDefault(config.get("recipeMap").getAsString(), RecipeMap.EMPTY);
-                });
+                ControllerDefinition.class,
+                CommonProxy::controllerPost);
         MbdComponents.registerComponentFromFile(
                 Multiblocked.GSON,
                 new File(Multiblocked.location, "definition/part"),
-                PartDefinition.class, null);
+                PartDefinition.class,
+                CommonProxy::componentPost);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -117,5 +121,22 @@ public class CommonProxy {
         ForgeRegistries.RECIPES.register(new BuilderRecipeLogic().setRegistryName(Multiblocked.MODID, "builder"));
     }
 
+    private static void componentPost(ComponentDefinition definition, JsonObject config) {
+        if (definition.baseRenderer instanceof BlockStateRenderer) {
+            definition.baseRenderer = Multiblocked.GSON.fromJson(config.get("baseRenderer"), IRenderer.class);
+        }
+        if (definition.formedRenderer instanceof BlockStateRenderer) {
+            definition.formedRenderer = Multiblocked.GSON.fromJson(config.get("formedRenderer"), IRenderer.class);
+        }
+        if (definition.workingRenderer instanceof BlockStateRenderer) {
+            definition.workingRenderer = Multiblocked.GSON.fromJson(config.get("workingRenderer"), IRenderer.class);
+        }
+    }
+
+    public static void controllerPost(ControllerDefinition definition, JsonObject config) {
+        definition.basePattern = Multiblocked.GSON.fromJson(config.get("basePattern"), JsonBlockPattern.class).build();
+        definition.recipeMap = RecipeMap.RECIPE_MAP_REGISTRY.getOrDefault(config.get("recipeMap").getAsString(), RecipeMap.EMPTY);
+        componentPost(definition, config);
+    }
 }
 

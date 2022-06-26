@@ -127,7 +127,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
     
     public String getUnlocalizedName() {
-        return getLocation().getPath() + ".name";
+        return "tile." + getLocation().getNamespace() + "." + getLocation().getPath() + ".name";
     }
     
     public String getLocalizedName() {

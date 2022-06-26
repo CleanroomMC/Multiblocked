@@ -19,6 +19,11 @@ public interface ICTController extends ICTComponent, ICapabilityProxyHolder {
         return getInner().checkPattern();
     }
 
+    @ZenMethod
+    default boolean shouldCheckPattern() {
+        return getInner().shouldCheckPattern();
+    }
+
     @ZenGetter
     default RecipeLogic recipeLogic() {
         return getInner().getRecipeLogic();

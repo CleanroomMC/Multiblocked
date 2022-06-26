@@ -22,6 +22,7 @@ import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
@@ -36,7 +37,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -56,6 +60,7 @@ public class SimplePredicate {
     public int previewCount = -1;
     public boolean disableRenderFormed = false;
     public IO io = IO.BOTH;
+    public String slotName;
     public String customTips;
     public String nbtParser;
     public boolean isCTParser;
@@ -161,6 +166,11 @@ public class SimplePredicate {
             blockWorldState.setError(new PatternStringError("The NBT fails to match"));
             return false;
         }
+        if (slotName != null) {
+            Map<Long, Set<String>> slots = blockWorldState.getMatchContext().getOrCreate("slots", Long2ObjectArrayMap::new);
+            slots.computeIfAbsent(blockWorldState.pos.toLong(), s->new HashSet<>()).add(slotName);
+            return true;
+        }
         return true;
     }
 
@@ -184,7 +194,7 @@ public class SimplePredicate {
         groups.add(group);
         group.setClientSideWidget();
         group.addWidget(new LabelWidget(0, 0, () -> LocalizationUtils.format("multiblocked.gui.label.type") + " " + type).setTextColor(-1).setDrop(true));
-        TextFieldWidget min, max, preview, nbt, tooltips;
+        TextFieldWidget min, max, preview, nbt, tooltips, slot;
 
         group.addWidget(min = new TextFieldWidget(55, 15, 30, 15, true, () -> minCount + "", s -> {
             minCount = Integer.parseInt(s);
@@ -251,6 +261,16 @@ public class SimplePredicate {
                 .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("tips (Y)", -1).setDropShadow(true))
                 .setHoverTooltip("multiblocked.gui.predicate.add_tips"));
 
+        group.addWidget(slot = new TextFieldWidget(155, 52, 100, 15, true, null, s -> slotName = s));
+        slot.setCurrentString(slotName == null ? "" : slotName).setHoverTooltip("slot name").setVisible(slotName != null);
+        group.addWidget(new SwitchWidget(100, 52, 50, 15, (cd, r)->{
+            slot.setVisible(r);
+            slotName = r ? "" : null;
+        }).setPressed(slotName != null).setHoverBorderTexture(1, -1)
+                .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("slot (N)", -1).setDropShadow(true))
+                .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/button_common.png"), new TextTexture("slot (Y)", -1).setDropShadow(true))
+                .setHoverTooltip("multiblocked.gui.predicate.slot"));
+
         group.addWidget(new SelectorWidget(130, 70, 40, 15, Arrays.asList("IN", "OUT", "BOTH", "NULL"), -1)
                 .setValue(io == null ? "NULL" : io.name())
                 .setIsUp(true)
@@ -291,6 +311,9 @@ public class SimplePredicate {
         if (isCTParser) {
             jsonObject.addProperty("isCTParser", true);
         }
+        if (slotName != null) {
+            jsonObject.addProperty("slotName", slotName);
+        }
         return jsonObject;
     }
 
@@ -302,6 +325,7 @@ public class SimplePredicate {
         io = JsonUtils.getString(jsonObject, "io", "").equals("null") ? null : IO.valueOf(JsonUtils.getString(jsonObject, "io", IO.BOTH.name()));
         nbtParser = JsonUtils.getString(jsonObject, "nbtParser", nbtParser);
         customTips = JsonUtils.getString(jsonObject, "customTips", customTips);
+        slotName = JsonUtils.getString(jsonObject, "slotName", slotName);
         isCTParser = JsonUtils.getBoolean(jsonObject, "isCTParser", isCTParser);
     }
     

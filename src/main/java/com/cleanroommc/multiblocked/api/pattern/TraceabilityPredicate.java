@@ -160,6 +160,20 @@ public class TraceabilityPredicate {
         return this;
     }
 
+    @ZenMethod
+    public TraceabilityPredicate setNBTParser(String nbtParser) {
+        common.forEach(predicate -> predicate.nbtParser = nbtParser);
+        limited.forEach(predicate -> predicate.nbtParser = nbtParser);
+        return this;
+    }
+
+    @ZenMethod
+    public TraceabilityPredicate setSlotName(String slotName) {
+        common.forEach(predicate -> predicate.slotName = slotName);
+        limited.forEach(predicate -> predicate.slotName = slotName);
+        return this;
+    }
+
     public boolean test(MultiblockState blockWorldState) {
         blockWorldState.io = IO.BOTH;
         boolean flag = false;

@@ -93,6 +93,7 @@ dependencies {
     deobfCompile 'curse.maven:guide-api-228832:2645992'
     deobfCompile 'curse.maven:embers-rekindled-300777:3695248'
     deobfCompile 'curse.maven:thaumic-augmentation-319441:3536155'
+    deobfCompile 'curse.maven:pneumaticcraft-repressurized-281849:2978408'
 }
 
 sourceSets {

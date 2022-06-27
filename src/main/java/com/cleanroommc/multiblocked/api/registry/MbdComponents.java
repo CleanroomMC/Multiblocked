@@ -1,15 +1,15 @@
 package com.cleanroommc.multiblocked.api.registry;
 
+import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.block.BlockComponent;
+import com.cleanroommc.multiblocked.api.block.ItemComponent;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
+import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.block.BlockComponent;
-import com.cleanroommc.multiblocked.api.block.ItemComponent;
-import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.block.Block;
@@ -22,11 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class MbdComponents {

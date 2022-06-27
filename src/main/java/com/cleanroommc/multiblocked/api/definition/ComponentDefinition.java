@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @ZenRegister
 public class ComponentDefinition {
     public final ResourceLocation location;
-    public transient final Class<? extends ComponentTileEntity<?>> clazz;
+    public transient Class<? extends ComponentTileEntity<?>> clazz;
     public transient final EnumMap<EnumFacing, List<AxisAlignedBB>> baseAABB;
     public transient final EnumMap<EnumFacing, List<AxisAlignedBB>> formedAABB;
     public JsonObject traits;
@@ -167,6 +167,13 @@ public class ComponentDefinition {
 
     public boolean needUpdateTick() {
         return updateTick != null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setTileEntityClass(Class<?> clazz) {
+        if (ComponentTileEntity.class.isAssignableFrom(clazz)) {
+            this.clazz = (Class<? extends ComponentTileEntity<?>>) clazz;
+        }
     }
     
 }

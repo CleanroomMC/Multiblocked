@@ -216,6 +216,9 @@ multiblocked.gui.trait.impetus.tips.5=光束终点 X 偏移量
 multiblocked.gui.trait.impetus.tips.6=光束终点 Y 偏移量
 multiblocked.gui.trait.impetus.tips.7=光束终点 Z 偏移量
 
+multiblocked.gui.trait.pressure.current=当前压强: %s bar
+multiblocked.gui.trait.pressure.air=当前空气: %s mL
+multiblocked.gui.trait.pressure.volume=体积: %s mL
 multiblocked.gui.trait.pressure.tips.0=危险压强
 multiblocked.gui.trait.pressure.tips.1=致命压强
 multiblocked.gui.trait.pressure.tips.2=体积

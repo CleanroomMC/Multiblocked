@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.trait.InterfaceUser;
 import com.cleanroommc.multiblocked.api.capability.trait.SingleCapabilityTrait;
+import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
@@ -9,8 +10,10 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.PneumaticPressureCapability;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -18,7 +21,9 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.tubes.IPneumaticPosProvider;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
@@ -27,6 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * @author youyihj
@@ -107,7 +113,7 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
     @Override
     public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
         super.createUI(component, group, player);
-        group.addWidget(new PressureWidget(x, y, dangerPressure, criticalPressure, airHandler.getPressure()));
+        group.addWidget(new PressureWidget(x, y, dangerPressure, criticalPressure, airHandler.getPressure(), airHandler.getVolume(), airHandler.getAir()));
     }
 
     @Override
@@ -154,17 +160,34 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
         private float dangerPressure;
         private float criticalPressure;
         private float pressure;
+        private int volume;
+        private int air;
 
-        public PressureWidget(int xPosition, int yPosition, float dangerPressure, float criticalPressure, float pressure) {
+        public PressureWidget(int xPosition, int yPosition, float dangerPressure, float criticalPressure, float pressure, int volume, int air) {
             super(new Position(xPosition, yPosition), new Size(44, 44));
             this.dangerPressure = dangerPressure;
             this.criticalPressure = criticalPressure;
             this.pressure = pressure;
+            this.volume = volume;
+            this.air = air;
         }
 
         @Override
         public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
             GuiUtils.drawPressureGauge(Minecraft.getMinecraft().fontRenderer, -1.0f, criticalPressure, dangerPressure,  -3.4028235E38F, pressure, getPosition().x, getPosition().y, 0);
+        }
+
+        @Override
+        public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
+            if (gui != null && isMouseOverElement(mouseX + 22, mouseY + 22)) {
+                GlStateManager.enableDepth();
+                List<String> tooltip = Lists.newArrayList(
+                        LocalizationUtils.format("multiblocked.gui.trait.pressure.current", pressure),
+                        LocalizationUtils.format("multiblocked.gui.trait.pressure.air", air),
+                        LocalizationUtils.format("multiblocked.gui.trait.pressure.volume", volume)
+                );
+                DrawerHelper.drawHoveringText(ItemStack.EMPTY, tooltip, 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
+            }
         }
 
         @Override
@@ -181,20 +204,33 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
                 pressure = airHandler.getPressure();
                 writeUpdateInfo(2, buffer -> buffer.writeFloat(pressure));
             }
+            if (airHandler.getVolume() != volume) {
+                volume = airHandler.getVolume();
+                writeUpdateInfo(3, buffer -> buffer.writeInt(volume));
+            }
+            if (airHandler.getAir() != air) {
+                air = airHandler.getAir();
+                writeUpdateInfo(4, buffet -> buffet.writeInt(air));
+            }
         }
 
         @Override
         public void readUpdateInfo(int id, PacketBuffer buffer) {
-            float value = buffer.readFloat();
             switch (id) {
                 case 0:
-                    dangerPressure = value;
+                    dangerPressure = buffer.readFloat();
                     break;
                 case 1:
-                    criticalPressure = value;
+                    criticalPressure = buffer.readFloat();
                     break;
                 case 2:
-                    pressure = value;
+                    pressure = buffer.readFloat();
+                    break;
+                case 3:
+                    volume = buffer.readInt();
+                    break;
+                case 4:
+                    air = buffer.readInt();
                     break;
             }
         }

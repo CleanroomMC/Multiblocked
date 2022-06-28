@@ -222,6 +222,9 @@ multiblocked.gui.trait.impetus.tips.5=Beam endpoint X offset
 multiblocked.gui.trait.impetus.tips.6=Beam endpoint Y offset
 multiblocked.gui.trait.impetus.tips.7=Beam endpoint Z offset
 
+multiblocked.gui.trait.pressure.current=Current Pressure: %s bar
+multiblocked.gui.trait.pressure.air=Current Air: %s mL
+multiblocked.gui.trait.pressure.volume=Volume: %s mL
 multiblocked.gui.trait.pressure.tips.0=Danger Pressure
 multiblocked.gui.trait.pressure.tips.1=Critical Pressure
 multiblocked.gui.trait.pressure.tips.2=Volume

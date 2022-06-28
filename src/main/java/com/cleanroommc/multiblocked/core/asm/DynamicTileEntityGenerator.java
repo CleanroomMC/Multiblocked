@@ -4,11 +4,8 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.trait.InterfaceUser;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
-import org.apache.commons.io.FileUtils;
 import org.objectweb.asm.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -76,11 +73,6 @@ public class DynamicTileEntityGenerator implements Opcodes {
         classWriter.visitEnd();
         byte[] bytecode = classWriter.toByteArray();
         CustomClassLoader.INSTANCE.bytecodes.put(className.replace("/", "."), bytecode);
-        try {
-            FileUtils.writeByteArrayToFile(new File("classes/" + className + ".class"), bytecode);
-        } catch (IOException ignored) {
-
-        }
         try {
             return CustomClassLoader.INSTANCE.findClass(className.replace("/", "."));
         } catch (ClassNotFoundException e) {

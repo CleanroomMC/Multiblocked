@@ -20,6 +20,7 @@ import me.desht.pneumaticcraft.common.block.tubes.IPneumaticPosProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.math.BlockPos;
@@ -106,7 +107,7 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
     @Override
     public void createUI(ComponentTileEntity<?> component, WidgetGroup group, EntityPlayer player) {
         super.createUI(component, group, player);
-        group.addWidget(new PressureWidget(new Position(x, y)));
+        group.addWidget(new PressureWidget(x, y, dangerPressure, criticalPressure, airHandler.getPressure()));
     }
 
     @Override
@@ -145,17 +146,57 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
         int air = airHandler.getAir();
         airHandler = PneumaticCraftAPIHandler.getInstance().getAirHandlerSupplier().createAirHandler(dangerPressure, criticalPressure, volume);
         airHandler.addAir(air);
+        airHandler.validate(component);
     }
 
     public class PressureWidget extends Widget {
 
-        public PressureWidget(Position selfPosition) {
-            super(selfPosition, new Size(44, 44));
+        private float dangerPressure;
+        private float criticalPressure;
+        private float pressure;
+
+        public PressureWidget(int xPosition, int yPosition, float dangerPressure, float criticalPressure, float pressure) {
+            super(new Position(xPosition, yPosition), new Size(44, 44));
+            this.dangerPressure = dangerPressure;
+            this.criticalPressure = criticalPressure;
+            this.pressure = pressure;
         }
 
         @Override
         public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
-            GuiUtils.drawPressureGauge(Minecraft.getMinecraft().fontRenderer, -1.0f, criticalPressure, dangerPressure,  -3.4028235E38F, airHandler.getPressure(), mouseX, mouseY, 0);
+            GuiUtils.drawPressureGauge(Minecraft.getMinecraft().fontRenderer, -1.0f, criticalPressure, dangerPressure,  -3.4028235E38F, pressure, getPosition().x, getPosition().y, 0);
+        }
+
+        @Override
+        public void detectAndSendChanges() {
+            if (PneumaticMachineTrait.this.dangerPressure - dangerPressure != 0) {
+                dangerPressure = PneumaticMachineTrait.this.dangerPressure;
+                writeUpdateInfo(0, buffer -> buffer.writeFloat(dangerPressure));
+            }
+            if (PneumaticMachineTrait.this.criticalPressure - criticalPressure != 0) {
+                criticalPressure = PneumaticMachineTrait.this.criticalPressure;
+                writeUpdateInfo(1, buffer -> buffer.writeFloat(criticalPressure));
+            }
+            if (airHandler.getPressure() - pressure != 0) {
+                pressure = airHandler.getPressure();
+                writeUpdateInfo(2, buffer -> buffer.writeFloat(pressure));
+            }
+        }
+
+        @Override
+        public void readUpdateInfo(int id, PacketBuffer buffer) {
+            float value = buffer.readFloat();
+            switch (id) {
+                case 0:
+                    dangerPressure = value;
+                    break;
+                case 1:
+                    criticalPressure = value;
+                    break;
+                case 2:
+                    pressure = value;
+                    break;
+            }
         }
     }
 }

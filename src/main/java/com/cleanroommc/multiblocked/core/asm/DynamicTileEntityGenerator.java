@@ -97,7 +97,7 @@ public class DynamicTileEntityGenerator implements Opcodes {
         methodVisitor.visitLabel(label0);
         methodVisitor.visitLineNumber(13, label0);
         methodVisitor.visitVarInsn(ALOAD, 0);
-        methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/cleanroommc/multiblocked/api/tile/part/PartTileEntity", "<init>", "()V", false);
+        methodVisitor.visitMethodInsn(INVOKESPECIAL, PART_TILE_ENTITY_CLASS_NAME, "<init>", "()V", false);
         methodVisitor.visitInsn(RETURN);
         Label label1 = new Label();
         methodVisitor.visitLabel(label1);
@@ -209,7 +209,7 @@ public class DynamicTileEntityGenerator implements Opcodes {
             methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common/collect/ImmutableMap$Builder", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Lcom/google/common/collect/ImmutableMap$Builder;", false);
         }
         methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common/collect/ImmutableMap$Builder", "build", "()Lcom/google/common/collect/ImmutableMap;", false);
-        methodVisitor.visitFieldInsn(PUTSTATIC, "com/cleanroommc/multiblocked/api/tile/TestComponent", "TRAIT_SETTERS", "Ljava/util/Map;");
+        methodVisitor.visitFieldInsn(PUTSTATIC, className, "TRAIT_SETTERS", "Ljava/util/Map;");
         methodVisitor.visitInsn(RETURN);
         methodVisitor.visitMaxs(3, 0);
         methodVisitor.visitEnd();

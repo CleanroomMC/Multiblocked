@@ -69,7 +69,6 @@ public class MbdCapabilities {
             registerCapability(ImpetusThaumicAugmentationCapability.CAP);
         }
         if (Loader.isModLoaded(Multiblocked.MODID_PNC)) {
-            registerCapability(PneumaticCompressedAirCapability.CAP);
             registerCapability(PneumaticPressureCapability.CAP);
         }
     }

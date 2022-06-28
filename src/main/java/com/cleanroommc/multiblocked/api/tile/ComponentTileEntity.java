@@ -374,12 +374,19 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     @Override
+    public void validate() {
+        super.validate();
+        traits.values().forEach(CapabilityTrait::validate);
+    }
+
+    @Override
     public void invalidate() {
         super.invalidate();
         traits.values().forEach(CapabilityTrait::invalidate);
     }
 
     public void onNeighborChanged() {
+        traits.values().forEach(CapabilityTrait::onNeighborChanged);
         if (definition.onNeighborChanged != null) {
             try {
                 definition.onNeighborChanged.apply(this);

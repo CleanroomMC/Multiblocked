@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.trait.InterfaceUser;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
+import com.google.common.collect.Lists;
 import org.objectweb.asm.*;
 
 import java.lang.reflect.Method;
@@ -17,15 +18,19 @@ import java.util.Map;
  * @author youyihj
  */
 public class DynamicTileEntityGenerator implements Opcodes {
-    private static final String PART_TILE_ENTITY_CLASS_NAME = "com/cleanroommc/multiblocked/api/tile/part/PartDynamicTileEntity";
+    private static final String PART_TILE_ENTITY_CLASS_NAME = "com/cleanroommc/multiblocked/api/tile/part/PartTileEntity";
+    private static final String CONTROLLER_TILE_ENTITY_CLASS_NAME = "com/cleanroommc/multiblocked/api/tile/ControllerTileEntity";
+    private static final String DYNAMIC_COMPONENT_TILE_CLASS_NAME = "com/cleanroommc/multiblocked/api/tile/IDynamicComponentTile";
     private static final String TRAIT_SETTERS_SIGNATURE_FORMAT = "Ljava/util/Map<Ljava/lang/String;Ljava/util/function/BiConsumer<L%s;Lcom/cleanroommc/multiblocked/api/capability/trait/CapabilityTrait;>;>;";
+    private final String superClassName;
     private final List<CapabilityTrait> traits;
     private final List<Class<?>> interfaces = new ArrayList<>();
     private final String name;
 
-    public DynamicTileEntityGenerator(String name, List<CapabilityTrait> traits) {
+    public DynamicTileEntityGenerator(String name, List<CapabilityTrait> traits, boolean isController) {
         this.name = name;
         this.traits = traits;
+        this.superClassName = isController ? CONTROLLER_TILE_ENTITY_CLASS_NAME : PART_TILE_ENTITY_CLASS_NAME;
         for (CapabilityTrait trait : traits) {
             Class<?> clazz = trait.getClass().getAnnotation(InterfaceUser.class).value();
             if (!clazz.isInterface()) {
@@ -37,15 +42,15 @@ public class DynamicTileEntityGenerator implements Opcodes {
 
     public Class<?> generateClass() {
         ClassWriter classWriter = new ClassWriter(0);
-        List<String> interfaceNames = new ArrayList<>();
-        StringBuilder signature = new StringBuilder("L").append(PART_TILE_ENTITY_CLASS_NAME).append("<L");
+        List<String> interfaceNames = Lists.newArrayList(DYNAMIC_COMPONENT_TILE_CLASS_NAME);
+        StringBuilder signature = new StringBuilder("L").append(superClassName).append(";");
         String className = "com/cleanroommc/multiblocked/api/tile/part/dynamic/" + name;
-        signature.append(className).append(";>;");
+        signature.append("L").append(DYNAMIC_COMPONENT_TILE_CLASS_NAME).append("<L").append(className).append(";>;");
         for (Class<?> anInterface : interfaces) {
             interfaceNames.add(Type.getInternalName(anInterface));
             signature.append(Type.getDescriptor(anInterface));
         }
-        classWriter.visit(V1_8, ACC_PUBLIC | ACC_SUPER, className, signature.toString(), PART_TILE_ENTITY_CLASS_NAME, interfaceNames.toArray(new String[0]));
+        classWriter.visit(V1_8, ACC_PUBLIC | ACC_SUPER, className, signature.toString(), superClassName, interfaceNames.toArray(new String[0]));
         classWriter.visitSource(name + ".dynamic", null);
         classWriter.visitInnerClass("com/google/common/collect/ImmutableMap$Builder", "com/google/common/collect/ImmutableMap", "Builder", ACC_PUBLIC | ACC_STATIC);
         classWriter.visitInnerClass("java/lang/invoke/MethodHandles$Lookup", "java/lang/invoke/MethodHandles", "Lookup", ACC_PUBLIC | ACC_FINAL | ACC_STATIC);
@@ -57,7 +62,7 @@ public class DynamicTileEntityGenerator implements Opcodes {
         }
         classInitializer(classWriter, className);
         {
-            MethodVisitor methodVisitor = classWriter.visitMethod(ACC_PROTECTED, "getTraitSetters", "()Ljava/util/Map;", "()" + String.format(TRAIT_SETTERS_SIGNATURE_FORMAT, className), null);
+            MethodVisitor methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "getTraitSetters", "()Ljava/util/Map;", "()" + String.format(TRAIT_SETTERS_SIGNATURE_FORMAT, className), null);
             methodVisitor.visitCode();
             Label label0 = new Label();
             methodVisitor.visitLabel(label0);
@@ -89,7 +94,7 @@ public class DynamicTileEntityGenerator implements Opcodes {
         methodVisitor.visitLabel(label0);
         methodVisitor.visitLineNumber(13, label0);
         methodVisitor.visitVarInsn(ALOAD, 0);
-        methodVisitor.visitMethodInsn(INVOKESPECIAL, PART_TILE_ENTITY_CLASS_NAME, "<init>", "()V", false);
+        methodVisitor.visitMethodInsn(INVOKESPECIAL, superClassName, "<init>", "()V", false);
         methodVisitor.visitInsn(RETURN);
         Label label1 = new Label();
         methodVisitor.visitLabel(label1);

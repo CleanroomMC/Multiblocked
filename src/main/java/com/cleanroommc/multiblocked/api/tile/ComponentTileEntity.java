@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IInnerCapabilityProvider;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.trait.InterfaceUser;
 import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTComponent;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
@@ -57,6 +58,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -97,6 +99,16 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
                 trait.serialize(entry.getValue());
                 trait.setComponent(this);
                 traits.put(capability, trait);
+            }
+        }
+        if (this instanceof IDynamicComponentTile) {
+            IDynamicComponentTile<Object> dynamicComponentTile = (IDynamicComponentTile<Object>) this;
+            Map<String, ? extends BiConsumer<Object, CapabilityTrait>> traitSetters = dynamicComponentTile.getTraitSetters();
+            for (CapabilityTrait trait : traits.values()) {
+                Class<? extends CapabilityTrait> traitClass = trait.getClass();
+                if (traitClass.isAnnotationPresent(InterfaceUser.class)) {
+                    traitSetters.get(traitClass.getAnnotation(InterfaceUser.class).value().getSimpleName()).accept(this, trait);
+                }
             }
         }
     }

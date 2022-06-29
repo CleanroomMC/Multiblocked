@@ -12,12 +12,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.J
 import com.cleanroommc.multiblocked.api.item.ItemMultiblockBuilder.BuilderRecipeLogic;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
-import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
-import com.cleanroommc.multiblocked.api.registry.MbdComponents;
-import com.cleanroommc.multiblocked.api.registry.MbdItems;
-import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
-import com.cleanroommc.multiblocked.api.registry.MbdRecipeConditions;
-import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
+import com.cleanroommc.multiblocked.api.registry.*;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileTesterEntity;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileTesterEntity;
@@ -130,6 +125,7 @@ public class CommonProxy {
         ForgeRegistries.RECIPES.register(new BuilderRecipeLogic().setRegistryName(Multiblocked.MODID, "builder"));
     }
 
+    @SuppressWarnings("unchecked")
     private static void componentPost(ComponentDefinition definition, JsonObject config) {
         if (definition.baseRenderer instanceof BlockStateRenderer) {
             definition.baseRenderer = Multiblocked.GSON.fromJson(config.get("baseRenderer"), IRenderer.class);
@@ -140,17 +136,6 @@ public class CommonProxy {
         if (definition.workingRenderer instanceof BlockStateRenderer) {
             definition.workingRenderer = Multiblocked.GSON.fromJson(config.get("workingRenderer"), IRenderer.class);
         }
-    }
-
-    public static void controllerPost(ControllerDefinition definition, JsonObject config) {
-        definition.basePattern = Multiblocked.GSON.fromJson(config.get("basePattern"), JsonBlockPattern.class).build();
-        definition.recipeMap = RecipeMap.RECIPE_MAP_REGISTRY.getOrDefault(config.get("recipeMap").getAsString(), RecipeMap.EMPTY);
-        componentPost(definition, config);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static void partPost(PartDefinition definition, JsonObject config) {
-        componentPost(definition, config);
         List<CapabilityTrait> useInterfaceTraits = new ArrayList<>();
         for (Map.Entry<String, JsonElement> entry : definition.traits.entrySet()) {
             MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
@@ -162,10 +147,20 @@ public class CommonProxy {
             }
         }
         if (!useInterfaceTraits.isEmpty()) {
-            Class<?> teClazz = new DynamicTileEntityGenerator(definition.location.getPath(), useInterfaceTraits).generateClass();
+            Class<?> teClazz = new DynamicTileEntityGenerator(definition.location.getPath(), useInterfaceTraits, definition instanceof ControllerDefinition).generateClass();
             definition.setTileEntityClass(teClazz);
             GameRegistry.registerTileEntity(((Class<TileEntity>) teClazz), definition.location);
         }
+    }
+
+    public static void controllerPost(ControllerDefinition definition, JsonObject config) {
+        definition.basePattern = Multiblocked.GSON.fromJson(config.get("basePattern"), JsonBlockPattern.class).build();
+        definition.recipeMap = RecipeMap.RECIPE_MAP_REGISTRY.getOrDefault(config.get("recipeMap").getAsString(), RecipeMap.EMPTY);
+        componentPost(definition, config);
+    }
+
+    public static void partPost(PartDefinition definition, JsonObject config) {
+        componentPost(definition, config);
     }
 }
 

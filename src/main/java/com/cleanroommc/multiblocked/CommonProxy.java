@@ -147,7 +147,7 @@ public class CommonProxy {
             }
         }
         if (!useInterfaceTraits.isEmpty()) {
-            Class<?> teClazz = new DynamicTileEntityGenerator(definition.location.getPath(), useInterfaceTraits, definition instanceof ControllerDefinition).generateClass();
+            Class<?> teClazz = new DynamicTileEntityGenerator(definition.location.getPath(), useInterfaceTraits, definition.clazz).generateClass();
             definition.setTileEntityClass(teClazz);
             GameRegistry.registerTileEntity(((Class<TileEntity>) teClazz), definition.location);
         }

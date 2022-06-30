@@ -3,6 +3,7 @@ package com.cleanroommc.multiblocked.core.asm;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.trait.InterfaceUser;
+import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
 import com.google.common.collect.Lists;
 import org.objectweb.asm.*;
@@ -18,8 +19,6 @@ import java.util.Map;
  * @author youyihj
  */
 public class DynamicTileEntityGenerator implements Opcodes {
-    private static final String PART_TILE_ENTITY_CLASS_NAME = "com/cleanroommc/multiblocked/api/tile/part/PartTileEntity";
-    private static final String CONTROLLER_TILE_ENTITY_CLASS_NAME = "com/cleanroommc/multiblocked/api/tile/ControllerTileEntity";
     private static final String DYNAMIC_COMPONENT_TILE_CLASS_NAME = "com/cleanroommc/multiblocked/api/tile/IDynamicComponentTile";
     private static final String TRAIT_SETTERS_SIGNATURE_FORMAT = "Ljava/util/Map<Ljava/lang/String;Ljava/util/function/BiConsumer<L%s;Lcom/cleanroommc/multiblocked/api/capability/trait/CapabilityTrait;>;>;";
     private final String superClassName;
@@ -27,10 +26,10 @@ public class DynamicTileEntityGenerator implements Opcodes {
     private final List<Class<?>> interfaces = new ArrayList<>();
     private final String name;
 
-    public DynamicTileEntityGenerator(String name, List<CapabilityTrait> traits, boolean isController) {
+    public DynamicTileEntityGenerator(String name, List<CapabilityTrait> traits, Class<? extends ComponentTileEntity<?>> superClass) {
         this.name = name;
         this.traits = traits;
-        this.superClassName = isController ? CONTROLLER_TILE_ENTITY_CLASS_NAME : PART_TILE_ENTITY_CLASS_NAME;
+        this.superClassName = superClass.getName().replace('.','/');
         for (CapabilityTrait trait : traits) {
             Class<?> clazz = trait.getClass().getAnnotation(InterfaceUser.class).value();
             if (!clazz.isInterface()) {

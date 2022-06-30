@@ -1,6 +1,8 @@
 package com.cleanroommc.multiblocked;
 
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.trait.InterfaceUser;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
@@ -10,24 +12,22 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.J
 import com.cleanroommc.multiblocked.api.item.ItemMultiblockBuilder.BuilderRecipeLogic;
 import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
-import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
-import com.cleanroommc.multiblocked.api.registry.MbdComponents;
-import com.cleanroommc.multiblocked.api.registry.MbdItems;
-import com.cleanroommc.multiblocked.api.registry.MbdPredicates;
-import com.cleanroommc.multiblocked.api.registry.MbdRecipeConditions;
-import com.cleanroommc.multiblocked.api.registry.MbdRenderers;
+import com.cleanroommc.multiblocked.api.registry.*;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileTesterEntity;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileTesterEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
+import com.cleanroommc.multiblocked.core.asm.DynamicTileEntityGenerator;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import crafttweaker.CraftTweakerAPI;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -35,10 +35,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import software.bernie.geckolib3.GeckoLib;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = Multiblocked.MODID)
 public class CommonProxy {
@@ -99,7 +103,7 @@ public class CommonProxy {
                 Multiblocked.GSON,
                 new File(Multiblocked.location, "definition/part"),
                 PartDefinition.class,
-                CommonProxy::componentPost);
+                CommonProxy::partPost);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -121,6 +125,7 @@ public class CommonProxy {
         ForgeRegistries.RECIPES.register(new BuilderRecipeLogic().setRegistryName(Multiblocked.MODID, "builder"));
     }
 
+    @SuppressWarnings("unchecked")
     private static void componentPost(ComponentDefinition definition, JsonObject config) {
         if (definition.baseRenderer instanceof BlockStateRenderer) {
             definition.baseRenderer = Multiblocked.GSON.fromJson(config.get("baseRenderer"), IRenderer.class);
@@ -131,11 +136,30 @@ public class CommonProxy {
         if (definition.workingRenderer instanceof BlockStateRenderer) {
             definition.workingRenderer = Multiblocked.GSON.fromJson(config.get("workingRenderer"), IRenderer.class);
         }
+        List<CapabilityTrait> useInterfaceTraits = new ArrayList<>();
+        for (Map.Entry<String, JsonElement> entry : definition.traits.entrySet()) {
+            MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
+            if (capability != null && capability.hasTrait()) {
+                CapabilityTrait trait = capability.createTrait();
+                if (trait.getClass().isAnnotationPresent(InterfaceUser.class)) {
+                    useInterfaceTraits.add(trait);
+                }
+            }
+        }
+        if (!useInterfaceTraits.isEmpty()) {
+            Class<?> teClazz = new DynamicTileEntityGenerator(definition.location.getPath(), useInterfaceTraits, definition instanceof ControllerDefinition).generateClass();
+            definition.setTileEntityClass(teClazz);
+            GameRegistry.registerTileEntity(((Class<TileEntity>) teClazz), definition.location);
+        }
     }
 
     public static void controllerPost(ControllerDefinition definition, JsonObject config) {
         definition.basePattern = Multiblocked.GSON.fromJson(config.get("basePattern"), JsonBlockPattern.class).build();
         definition.recipeMap = RecipeMap.RECIPE_MAP_REGISTRY.getOrDefault(config.get("recipeMap").getAsString(), RecipeMap.EMPTY);
+        componentPost(definition, config);
+    }
+
+    public static void partPost(PartDefinition definition, JsonObject config) {
         componentPost(definition, config);
     }
 }

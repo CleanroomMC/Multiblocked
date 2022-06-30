@@ -1,7 +1,10 @@
 package com.cleanroommc.multiblocked.api.tile.part;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
+import com.cleanroommc.multiblocked.api.capability.trait.InterfaceUser;
 import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTPart;
+import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
@@ -16,10 +19,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiConsumer;
 
 /**
  * A TileEntity that defies the part of multi.

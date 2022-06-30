@@ -61,6 +61,9 @@ repositories {
     maven {
         url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
+    maven {
+        url 'https://modmaven.dev/'
+    }
 }
 
 dependencies {
@@ -93,6 +96,7 @@ dependencies {
     deobfCompile 'curse.maven:guide-api-228832:2645992'
     deobfCompile 'curse.maven:embers-rekindled-300777:3695248'
     deobfCompile 'curse.maven:thaumic-augmentation-319441:3536155'
+    deobfCompile 'me.desht.pneumaticcraft:pneumaticcraft-repressurized:1.12.2-0.11.9-384'
 }
 
 sourceSets {

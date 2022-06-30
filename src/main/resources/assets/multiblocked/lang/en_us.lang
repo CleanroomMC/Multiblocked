@@ -34,6 +34,8 @@ multiblocked.capability.ember=Embers Ember
 ember.any.name=Any Embers Ember Containers
 multiblocked.capability.ta_impetus=TA Impetus Energy
 ta_impetus.any.name=Any Thaumic Augmentation Impetus Container
+multiblocked.capability.pneumatic_pressure=PnC Pressure
+pneumatic_pressure.any.name=Any Pneumatic Pressure Container
 
 multiblocked.gui.content.more_option=more options
 multiblocked.gui.content.back=back
@@ -219,6 +221,13 @@ multiblocked.gui.trait.impetus.tips.4=Maximum of output nodes
 multiblocked.gui.trait.impetus.tips.5=Beam endpoint X offset
 multiblocked.gui.trait.impetus.tips.6=Beam endpoint Y offset
 multiblocked.gui.trait.impetus.tips.7=Beam endpoint Z offset
+
+multiblocked.gui.trait.pressure.current=Current Pressure: %s bar
+multiblocked.gui.trait.pressure.air=Current Air: %s mL
+multiblocked.gui.trait.pressure.volume=Volume: %s mL
+multiblocked.gui.trait.pressure.tips.0=Danger Pressure
+multiblocked.gui.trait.pressure.tips.1=Critical Pressure
+multiblocked.gui.trait.pressure.tips.2=Volume
 
 multiblocked.gui.trait.aspect.amount=Amount:
 multiblocked.gui.trait.gas.amount=Gas Amount:

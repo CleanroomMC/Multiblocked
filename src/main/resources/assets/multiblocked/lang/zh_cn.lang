@@ -32,6 +32,8 @@ multiblocked.capability.ember=余烬 灰烬能量
 ember.any.name=任意余烬 灰烬能量 容器
 multiblocked.capability.ta_impetus=TA 元动能量
 ta_impetus.any.name=任何神秘进阶元动容器
+multiblocked.capability.pneumatic_pressure=PnC 压力
+pneumatic_pressure.any.name=任何气动工艺压力容器
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 
@@ -214,6 +216,12 @@ multiblocked.gui.trait.impetus.tips.5=光束终点 X 偏移量
 multiblocked.gui.trait.impetus.tips.6=光束终点 Y 偏移量
 multiblocked.gui.trait.impetus.tips.7=光束终点 Z 偏移量
 
+multiblocked.gui.trait.pressure.current=当前压强: %s bar
+multiblocked.gui.trait.pressure.air=当前空气: %s mL
+multiblocked.gui.trait.pressure.volume=体积: %s mL
+multiblocked.gui.trait.pressure.tips.0=危险压强
+multiblocked.gui.trait.pressure.tips.1=致命压强
+multiblocked.gui.trait.pressure.tips.2=体积
 
 multiblocked.gui.trait.item.ore_dict=矿辞
 multiblocked.gui.trait.item.add=添加一个新的物品匹配器

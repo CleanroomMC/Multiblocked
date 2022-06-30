@@ -68,6 +68,9 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_TA)) {
             registerCapability(ImpetusThaumicAugmentationCapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_PNC)) {
+            registerCapability(PneumaticPressureCapability.CAP);
+        }
     }
 
     public static MultiblockCapability<?> get(String s) {

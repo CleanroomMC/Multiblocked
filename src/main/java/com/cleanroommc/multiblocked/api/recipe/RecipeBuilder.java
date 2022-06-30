@@ -597,6 +597,20 @@ public class RecipeBuilder {
         return output(ImpetusThaumicAugmentationCapability.CAP, chance, impetus);
     }
 
+
+    @Optional.Method(modid = Multiblocked.MODID_PNC)
+    @ZenMethod
+    public RecipeBuilder inputPressure(float chance, float pressure) {
+        keyBuilder.append(PneumaticPressureCapability.CAP.name).append(pressure);
+        return input(PneumaticPressureCapability.CAP, chance, pressure);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_PNC)
+    @ZenMethod
+    public RecipeBuilder inputPressure(float pressure) {
+        return inputPressure(1, pressure);
+    }
+
     // conditions
     @ZenMethod
     public RecipeBuilder dimension(String dimension, boolean reverse) {

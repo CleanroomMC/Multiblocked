@@ -120,7 +120,7 @@ public class PneumaticPressureCapability extends MultiblockCapability<Float> {
             int consumeAir = (int) (sum * 50);
             if (handler != null && io == IO.IN) {
                 int air = handler.getAir();
-                if (Math.signum(air) == Math.signum(consumeAir) && Math.abs(air) >= Math.abs(consumeAir)) {
+                if (Math.signum(air) == Math.signum(consumeAir) && Math.abs(air) >= Math.abs(consumeAir) && Math.abs(handler.getPressure()) >= Math.abs(sum)) {
                     if (!simulate) {
                         handler.addAir(-consumeAir);
                     }

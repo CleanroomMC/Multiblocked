@@ -210,7 +210,7 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
             }
             if (airHandler.getAir() != air) {
                 air = airHandler.getAir();
-                writeUpdateInfo(4, buffet -> buffet.writeInt(air));
+                writeUpdateInfo(4, buffer -> buffer.writeInt(air));
             }
         }
 
@@ -231,6 +231,8 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
                     break;
                 case 4:
                     air = buffer.readInt();
+                    airHandler.addAir(-airHandler.getAir());
+                    airHandler.addAir(air);
                     break;
             }
         }

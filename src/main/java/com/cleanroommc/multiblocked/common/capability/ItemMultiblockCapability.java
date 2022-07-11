@@ -1,10 +1,10 @@
 package com.cleanroommc.multiblocked.common.capability;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
-import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
@@ -12,11 +12,10 @@ import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.trait.ItemCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.ItemsContentWidget;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
+import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
+import com.google.gson.*;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -25,8 +24,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
     public static final ItemMultiblockCapability CAP = new ItemMultiblockCapability();
 
     private ItemMultiblockCapability() {
-        super("item", new Color(0xD96106).getRGB());
+        super("item", new Color(0xD96106).getRGB(), new ItemJeiAdapter());
     }
 
     @Override
@@ -184,6 +184,24 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
                 limits[i] = capability.getSlotLimit(i);
             }
             return true;
+        }
+    }
+
+    public static class ItemJeiAdapter implements IJeiIngredientAdapter<ItemsIngredient, ItemStack> {
+
+        @Override
+        public Class<ItemsIngredient> getInternalIngredientType() {
+            return ItemsIngredient.class;
+        }
+
+        @Override
+        public IIngredientType<ItemStack> getJeiIngredientType() {
+            return VanillaTypes.ITEM;
+        }
+
+        @Override
+        public List<ItemStack> apply(ItemsIngredient itemsIngredient) {
+            return Arrays.asList(itemsIngredient.getMatchingStacks());
         }
     }
 }

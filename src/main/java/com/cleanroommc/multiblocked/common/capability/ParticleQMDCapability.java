@@ -7,21 +7,25 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.ParticleStackWidget;
+import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import lach_01298.qmd.block.QMDBlocks;
+import lach_01298.qmd.jei.ingredient.ParticleType;
 import lach_01298.qmd.particle.ITileParticleStorage;
 import lach_01298.qmd.particle.ParticleStack;
 import lach_01298.qmd.particle.ParticleStorage;
 import lach_01298.qmd.particle.Particles;
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,7 +33,7 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
     public static final ParticleQMDCapability CAP = new ParticleQMDCapability();
 
     private ParticleQMDCapability() {
-        super("qmd_particle", new Color(0xCDD59DBC, true).getRGB());
+        super("qmd_particle", new Color(0xCDD59DBC, true).getRGB(), new ParticleJeiAdapter());
     }
 
     @Override
@@ -208,6 +212,24 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
                 lastCapacity[i] = tank.getCapacity();
             }
             return true;
+        }
+    }
+
+    public static class ParticleJeiAdapter implements IJeiIngredientAdapter<ParticleStack, ParticleStack> {
+
+        @Override
+        public Class<ParticleStack> getInternalIngredientType() {
+            return ParticleStack.class;
+        }
+
+        @Override
+        public IIngredientType<ParticleStack> getJeiIngredientType() {
+            return ParticleType.Particle;
+        }
+
+        @Override
+        public List<ParticleStack> apply(ParticleStack particleStack) {
+            return Collections.singletonList(particleStack);
         }
     }
 }

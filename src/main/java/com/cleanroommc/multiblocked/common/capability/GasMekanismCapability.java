@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.GasStackWidget;
+import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -16,14 +17,17 @@ import mekanism.api.gas.GasRegistry;
 import mekanism.api.gas.GasStack;
 import mekanism.api.gas.GasTankInfo;
 import mekanism.api.gas.IGasHandler;
+import mekanism.client.jei.MekanismJEI;
 import mekanism.common.MekanismBlocks;
 import mekanism.common.capabilities.Capabilities;
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,7 +35,7 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     public static final GasMekanismCapability CAP = new GasMekanismCapability();
 
     private GasMekanismCapability() {
-        super("mek_gas", new Color(0x85909E).getRGB());
+        super("mek_gas", new Color(0x85909E).getRGB(), new GasJeiAdapter());
     }
 
     @Override
@@ -180,6 +184,24 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
                 lastMaxs[i] = tank.getMaxGas();
             }
             return true;
+        }
+    }
+
+    public static class GasJeiAdapter implements IJeiIngredientAdapter<GasStack, GasStack> {
+
+        @Override
+        public Class<GasStack> getInternalIngredientType() {
+            return GasStack.class;
+        }
+
+        @Override
+        public IIngredientType<GasStack> getJeiIngredientType() {
+            return MekanismJEI.TYPE_GAS;
+        }
+
+        @Override
+        public List<GasStack> apply(GasStack gasStack) {
+            return Collections.singletonList(gasStack);
         }
     }
 }

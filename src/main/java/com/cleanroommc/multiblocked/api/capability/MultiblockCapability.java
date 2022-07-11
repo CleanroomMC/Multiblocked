@@ -10,6 +10,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializer;
@@ -23,6 +24,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -36,10 +38,17 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     public final String name;
     @ZenProperty
     public final int color;
+    @Nullable
+    public final IJeiIngredientAdapter<T, ?> jeiIngredientAdapter;
 
-    protected MultiblockCapability(String name, int color) {
+    protected MultiblockCapability(String name, int color, IJeiIngredientAdapter<T, ?> jeiIngredientAdapter) {
         this.name = name;
         this.color = color;
+        this.jeiIngredientAdapter = jeiIngredientAdapter;
+    }
+
+    protected MultiblockCapability(String name, int color) {
+        this(name, color, null);
     }
 
     public String getUnlocalizedName() {

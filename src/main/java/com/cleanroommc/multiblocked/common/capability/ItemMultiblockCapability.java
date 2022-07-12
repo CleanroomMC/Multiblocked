@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredient> {
     public static final ItemMultiblockCapability CAP = new ItemMultiblockCapability();
@@ -200,8 +201,8 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
         }
 
         @Override
-        public List<ItemStack> apply(ItemsIngredient itemsIngredient) {
-            return Arrays.asList(itemsIngredient.getMatchingStacks());
+        public Stream<ItemStack> apply(ItemsIngredient itemsIngredient) {
+            return Arrays.stream(itemsIngredient.getMatchingStacks());
         }
     }
 }

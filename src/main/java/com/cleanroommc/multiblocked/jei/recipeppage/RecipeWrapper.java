@@ -38,7 +38,7 @@ public class RecipeWrapper extends ModularWrapper {
                 List<Object> jeiIngredients = contents.stream()
                         .map(Content::getContent)
                         .map(adapter.getInternalIngredientType()::cast)
-                        .flatMap(it -> adapter.apply(it).stream())
+                        .flatMap(adapter)
                         .collect(Collectors.toList());
                 ingredients.setInputs(adapter.getJeiIngredientType(), jeiIngredients);
             }
@@ -49,7 +49,7 @@ public class RecipeWrapper extends ModularWrapper {
                 List<Object> jeiIngredients = contents.stream()
                         .map(Content::getContent)
                         .map(adapter.getInternalIngredientType()::cast)
-                        .flatMap(it -> adapter.apply(it).stream())
+                        .flatMap(adapter)
                         .collect(Collectors.toList());
                 ingredients.setOutput(adapter.getJeiIngredientType(), jeiIngredients);
             }

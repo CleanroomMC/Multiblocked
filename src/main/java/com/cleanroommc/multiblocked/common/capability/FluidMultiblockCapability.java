@@ -1,9 +1,9 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
-import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
@@ -32,9 +32,9 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
     public static final FluidMultiblockCapability CAP = new FluidMultiblockCapability();
@@ -221,8 +221,8 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
         }
 
         @Override
-        public List<FluidStack> apply(FluidStack fluidStack) {
-            return Collections.singletonList(fluidStack);
+        public Stream<FluidStack> apply(FluidStack fluidStack) {
+            return Stream.of(fluidStack);
         }
     }
 }

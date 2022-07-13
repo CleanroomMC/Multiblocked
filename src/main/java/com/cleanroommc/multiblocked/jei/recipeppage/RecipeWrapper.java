@@ -51,7 +51,7 @@ public class RecipeWrapper extends ModularWrapper {
                         .map(adapter.getInternalIngredientType()::cast)
                         .flatMap(adapter)
                         .collect(Collectors.toList());
-                ingredients.setOutput(adapter.getJeiIngredientType(), jeiIngredients);
+                ingredients.setOutputs(adapter.getJeiIngredientType(), jeiIngredients);
             }
         });
     }

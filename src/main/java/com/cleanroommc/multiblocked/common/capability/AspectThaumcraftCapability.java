@@ -1,18 +1,17 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
-import com.cleanroommc.multiblocked.common.capability.widget.AspectStackWidget;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.common.capability.widget.AspectStackWidget;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
+import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
+import com.cleanroommc.multiblocked.jei.ingredient.AspectListIngredient;
+import com.google.gson.*;
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.tileentity.TileEntity;
 import org.apache.commons.lang3.ArrayUtils;
 import thaumcraft.api.aspects.Aspect;
@@ -21,16 +20,17 @@ import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.blocks.BlocksTC;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack> {
     public static final AspectThaumcraftCapability CAP = new AspectThaumcraftCapability();
 
     private AspectThaumcraftCapability() {
-        super("tc6_aspect", new Color(0xCB00C8).getRGB());
+        super("tc6_aspect", new Color(0xCB00C8).getRGB(), new AspectJeiAdapter());
     }
 
     @Override
@@ -140,5 +140,23 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
             return true;
         }
 
+    }
+
+    public static class AspectJeiAdapter implements IJeiIngredientAdapter<AspectStack, AspectList> {
+
+        @Override
+        public Class<AspectStack> getInternalIngredientType() {
+            return AspectStack.class;
+        }
+
+        @Override
+        public IIngredientType<AspectList> getJeiIngredientType() {
+            return AspectListIngredient.INSTANCE;
+        }
+
+        @Override
+        public Stream<AspectList> apply(AspectStack aspectStack) {
+            return Stream.of(aspectStack.toAspectList());
+        }
     }
 }

@@ -1,119 +1,90 @@
 package com.cleanroommc.multiblocked.jei.recipeppage;
 
-import com.cleanroommc.multiblocked.api.recipe.Content;
-import com.cleanroommc.multiblocked.common.capability.AspectThaumcraftCapability;
-import com.cleanroommc.multiblocked.common.capability.GasMekanismCapability;
-import com.cleanroommc.multiblocked.common.capability.ParticleQMDCapability;
-import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
-import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.gui.ingredient.IIngredientSlot;
+import com.cleanroommc.multiblocked.api.gui.widget.Widget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.RecipeWidget;
-import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
+import com.cleanroommc.multiblocked.api.recipe.Content;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
+import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
+import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.cleanroommc.multiblocked.jei.ModularWrapper;
-import com.cleanroommc.multiblocked.jei.ingredient.AspectListIngredient;
-import lach_01298.qmd.jei.ingredient.ParticleType;
-import lach_01298.qmd.particle.ParticleStack;
-import mekanism.api.gas.GasStack;
-import mekanism.client.jei.MekanismJEI;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Loader;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.input.MouseHelper;
+import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecipeWrapper extends ModularWrapper {
 
     public final Recipe recipe;
+    public final RecipeWidget widget;
 
     public RecipeWrapper(RecipeWidget widget) {
         super(widget, widget.getSize().width, widget.getSize().height);
-        recipe = widget.recipe;
+        this.widget = widget;
+        this.recipe = widget.recipe;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void getIngredients(@Nonnull IIngredients ingredients) {
-        if (recipe.inputs.containsKey(MbdCapabilities.ITEM)) {
-            ingredients.setInputs(VanillaTypes.ITEM, recipe.inputs.get(
-                    MbdCapabilities.ITEM).stream()
-                    .map(Content::getContent)
-                    .map(ItemsIngredient.class::cast)
-                    .flatMap(r-> Arrays.stream(r.getMatchingStacks()))
-                    .collect(Collectors.toList()));
-        }
-        if (recipe.outputs.containsKey(MbdCapabilities.ITEM)) {
-            ingredients.setOutputs(VanillaTypes.ITEM, recipe.outputs.get(
-                    MbdCapabilities.ITEM).stream()
-                    .map(Content::getContent)
-                    .map(ItemsIngredient.class::cast)
-                    .flatMap(r -> Arrays.stream(r.getMatchingStacks()))
-                    .collect(Collectors.toList()));
-        }
+        recipe.inputs.forEach((capability, contents) -> {
+            IJeiIngredientAdapter<Object, Object> adapter = (IJeiIngredientAdapter<Object, Object>) capability.jeiIngredientAdapter;
+            if (adapter != null) {
+                List<Object> jeiIngredients = contents.stream()
+                        .map(Content::getContent)
+                        .map(adapter.getInternalIngredientType()::cast)
+                        .flatMap(adapter)
+                        .collect(Collectors.toList());
+                ingredients.setInputs(adapter.getJeiIngredientType(), jeiIngredients);
+            }
+        });
+        recipe.outputs.forEach((capability, contents) -> {
+            IJeiIngredientAdapter<Object, Object> adapter = (IJeiIngredientAdapter<Object, Object>) capability.jeiIngredientAdapter;
+            if (adapter != null) {
+                List<Object> jeiIngredients = contents.stream()
+                        .map(Content::getContent)
+                        .map(adapter.getInternalIngredientType()::cast)
+                        .flatMap(adapter)
+                        .collect(Collectors.toList());
+                ingredients.setOutput(adapter.getJeiIngredientType(), jeiIngredients);
+            }
+        });
+    }
 
-        if (recipe.inputs.containsKey(MbdCapabilities.FLUID)) {
+    @Override
+    public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+        // needs gui screen xy position
+        mouseX = MouseHelper.getX();
+        mouseY = MouseHelper.getY();
+        IFocus.Mode mode;
+        if (mouseButton == 0) {
+            mode = IFocus.Mode.OUTPUT;
+        } else if (mouseButton == 1) {
+            mode = IFocus.Mode.INPUT;
+        } else return false;
+        IIngredientSlot clicked = findClickedSlot(widget.inputs, mouseX, mouseY);
+        if (clicked == null) clicked = findClickedSlot(widget.outputs, mouseX, mouseY);
+        if (clicked != null) {
+            Object ingredient = clicked.getIngredientOverMouse(mouseX, mouseY);
+            if (ingredient != null) {
+                JeiPlugin.jeiRuntime.getRecipesGui().show(JeiPlugin.jeiRuntime.getRecipeRegistry().createFocus(mode, ingredient));
+                return true;
+            }
+        }
+        return false;
+    }
 
-            ingredients.setInputs(VanillaTypes.FLUID, recipe.inputs.get(
-                    MbdCapabilities.FLUID).stream()
-                    .map(Content::getContent)
-                    .map(FluidStack.class::cast)
-                    .collect(Collectors.toList()));
-        }
-        if (recipe.outputs.containsKey(MbdCapabilities.FLUID)) {
-            ingredients.setOutputs(VanillaTypes.FLUID, recipe.outputs.get(
-                    MbdCapabilities.FLUID).stream()
-                    .map(Content::getContent)
-                    .map(FluidStack.class::cast)
-                    .collect(Collectors.toList()));
-        }
-
-        if (Loader.isModLoaded(Multiblocked.MODID_TC6)) {
-            if (recipe.inputs.containsKey(AspectThaumcraftCapability.CAP)) {
-                ingredients.setInputs(AspectListIngredient.INSTANCE, recipe.inputs.get(AspectThaumcraftCapability.CAP).stream()
-                        .map(Content::getContent)
-                        .map(AspectStack.class::cast)
-                        .map(AspectStack::toAspectList)
-                        .collect(Collectors.toList()));
-            }
-            if (recipe.outputs.containsKey(AspectThaumcraftCapability.CAP)) {
-                ingredients.setOutputs(AspectListIngredient.INSTANCE, recipe.outputs.get(AspectThaumcraftCapability.CAP).stream()
-                        .map(Content::getContent)
-                        .map(AspectStack.class::cast)
-                        .map(AspectStack::toAspectList)
-                        .collect(Collectors.toList()));
+    private IIngredientSlot findClickedSlot(DraggableScrollableWidgetGroup group, int mouseX, int mouseY) {
+        for (Widget w : group.widgets) {
+            if (w instanceof IIngredientSlot && w.isMouseOverElement(mouseX, mouseY)) {
+                return ((IIngredientSlot) w);
             }
         }
-
-        if (Loader.isModLoaded(Multiblocked.MODID_MEK)) {
-            if (recipe.inputs.containsKey(GasMekanismCapability.CAP)) {
-                ingredients.setInputs(MekanismJEI.TYPE_GAS, recipe.inputs.get(GasMekanismCapability.CAP).stream()
-                        .map(Content::getContent)
-                        .map(GasStack.class::cast)
-                        .collect(Collectors.toList()));
-            }
-            if (recipe.outputs.containsKey(GasMekanismCapability.CAP)) {
-                ingredients.setOutputs(MekanismJEI.TYPE_GAS, recipe.outputs.get(GasMekanismCapability.CAP).stream()
-                        .map(Content::getContent)
-                        .map(GasStack.class::cast)
-                        .collect(Collectors.toList()));
-            }
-        }
-
-        if (Loader.isModLoaded(Multiblocked.MODID_QMD)) {
-            if (recipe.inputs.containsKey(ParticleQMDCapability.CAP)) {
-                ingredients.setInputs(ParticleType.Particle, recipe.inputs.get(ParticleQMDCapability.CAP).stream()
-                        .map(Content::getContent)
-                        .map(ParticleStack.class::cast)
-                        .collect(Collectors.toList()));
-            }
-            if (recipe.outputs.containsKey(ParticleQMDCapability.CAP)) {
-                ingredients.setOutputs(ParticleType.Particle, recipe.outputs.get(ParticleQMDCapability.CAP).stream()
-                        .map(Content::getContent)
-                        .map(ParticleStack.class::cast)
-                        .collect(Collectors.toList()));
-            }
-        }
+        return null;
     }
 }

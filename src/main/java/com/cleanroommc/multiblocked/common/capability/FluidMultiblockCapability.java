@@ -1,9 +1,9 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
-import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
@@ -11,11 +11,14 @@ import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.trait.FluidCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.FluidContentWidget;
+import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
 import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -31,12 +34,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> {
     public static final FluidMultiblockCapability CAP = new FluidMultiblockCapability();
 
     private  FluidMultiblockCapability() {
-        super("fluid", new Color(0x3C70EE).getRGB());
+        super("fluid", new Color(0x3C70EE).getRGB(), new FluidJeiAdapter());
     }
 
     @Override
@@ -201,6 +205,24 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
                 lastCaps[i] = tank.getCapacity();
             }
             return true;
+        }
+    }
+
+    public static class FluidJeiAdapter implements IJeiIngredientAdapter<FluidStack, FluidStack> {
+
+        @Override
+        public Class<FluidStack> getInternalIngredientType() {
+            return FluidStack.class;
+        }
+
+        @Override
+        public IIngredientType<FluidStack> getJeiIngredientType() {
+            return VanillaTypes.FLUID;
+        }
+
+        @Override
+        public Stream<FluidStack> apply(FluidStack fluidStack) {
+            return Stream.of(fluidStack);
         }
     }
 }

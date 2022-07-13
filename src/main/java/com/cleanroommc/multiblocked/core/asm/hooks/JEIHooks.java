@@ -38,9 +38,7 @@ public class JEIHooks {
                 final int x = Mouse.getEventX() * recipesGui.width / recipesGui.mc.displayWidth;
                 final int y = recipesGui.height - Mouse.getEventY() * recipesGui.height / recipesGui.mc.displayHeight - 1;
                 if (recipesGui.isMouseOver(x, y)) {
-                    if (Mouse.getEventDWheel() != 0) {
-                        return true;
-                    }
+                    return Mouse.getEventDWheel() != 0;
                 }
             }
         }

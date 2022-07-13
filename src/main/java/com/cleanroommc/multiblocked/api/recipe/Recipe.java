@@ -1,31 +1,22 @@
 package com.cleanroommc.multiblocked.api.recipe;
 
 import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.ICapabilityProxyHolder;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Table;
 import crafttweaker.annotations.ZenRegister;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.text.ITextComponent;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @ZenClass("mods.multiblocked.recipe.Recipe")
 @ZenRegister
@@ -108,8 +99,7 @@ public class Recipe {
     public boolean matchRecipe(ICapabilityProxyHolder holder) {
         if (!holder.hasProxies()) return false;
         if (!matchRecipe(IO.IN, holder, inputs)) return false;
-        if (!matchRecipe(IO.OUT, holder, outputs)) return false;
-        return true;
+        return matchRecipe(IO.OUT, holder, outputs);
     }
 
     @ZenMethod
@@ -117,7 +107,7 @@ public class Recipe {
         if (hasTick()) {
             if (!holder.hasProxies()) return false;
             if (!matchRecipe(IO.IN, holder, tickInputs)) return false;
-            if (!matchRecipe(IO.OUT, holder, tickOutputs)) return false;
+            return matchRecipe(IO.OUT, holder, tickOutputs);
         }
         return true;
     }

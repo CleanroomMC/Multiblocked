@@ -71,7 +71,7 @@ public class ModelFactory {
     private final ModelTemplate template;
     private final Map<String, String> sprites;
 
-    private IModelState state;
+    private final IModelState state;
     private VertexFormat format;
     private UnaryOperator<IModel> mutation;
 

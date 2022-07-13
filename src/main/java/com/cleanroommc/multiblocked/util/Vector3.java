@@ -135,7 +135,7 @@ public class Vector3 {
     }
 
     public Vector3 add(BlockPos pos) {
-        return this.add((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+        return this.add(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public Vector3 subtract(double dx, double dy, double dz) {
@@ -154,7 +154,7 @@ public class Vector3 {
     }
 
     public Vector3 subtract(BlockPos pos) {
-        return this.subtract((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+        return this.subtract(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public Vector3 multiply(double fx, double fy, double fz) {
@@ -188,7 +188,7 @@ public class Vector3 {
     }
 
     public Vector3 divide(BlockPos pos) {
-        return this.divide((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+        return this.divide(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public Vector3 floor() {

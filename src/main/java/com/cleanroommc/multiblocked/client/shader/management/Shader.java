@@ -77,7 +77,7 @@ public class Shader {
     }
 
     @SideOnly(Side.CLIENT)
-    public static enum ShaderType {
+    public enum ShaderType {
         VERTEX("vertex", ".vert", OpenGlHelper.GL_VERTEX_SHADER),
         FRAGMENT("fragment", ".frag", OpenGlHelper.GL_FRAGMENT_SHADER);
 

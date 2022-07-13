@@ -114,7 +114,7 @@ public class IOPageWidget extends PageWidget {
                 .setDropShadow(true)));
         selectors = new SelectorWidget[3];
 
-        List<String> facings = Arrays.stream(EnumFacing.VALUES).map(EnumFacing::name).collect(Collectors.toList());;
+        List<String> facings = Arrays.stream(EnumFacing.VALUES).map(EnumFacing::name).collect(Collectors.toList());
         addWidget(selectors[0] = new SelectorWidget(11, 142, 50, 12, facings, -1).setIsUp(true).setOnChanged(facing -> setFacing(EnumFacing.valueOf(facing), 0)));
         addWidget(selectors[1] = new SelectorWidget(63, 142, 50, 12, facings, -1).setIsUp(true).setOnChanged(facing -> setFacing(EnumFacing.valueOf(facing), 1)));
         addWidget(selectors[2] = new SelectorWidget(115, 142, 50, 12, facings, -1).setIsUp(true).setOnChanged(facing -> setFacing(EnumFacing.valueOf(facing), 2)));
@@ -218,10 +218,7 @@ public class IOPageWidget extends PageWidget {
                 Tuple<IO, EnumFacing> tuple = capabilitySettings.get(capability);
                 IO originalIO = tuple == null ? null : tuple.getFirst();
                 EnumFacing originalFacing = tuple == null ? EnumFacing.UP : tuple.getSecond();
-                boolean find = false;
-                if (enumMap.get(io) != null && enumMap.get(io).contains(capability)) {
-                    find = true;
-                }
+                boolean find = enumMap.get(io) != null && enumMap.get(io).contains(capability);
                 if (enumMap.get(IO.BOTH) != null && enumMap.get(IO.BOTH).contains(capability)) {
                     find = true;
                 }

@@ -19,7 +19,7 @@ public abstract class UniformEntry<T> {
 
 		public static Function<int[], UniformEntry<int[]>> NEW = IntUniformEntry::new;
 
-		private int[] cache;
+		private final int[] cache;
 
 		public IntUniformEntry(int... cache) {
 			this.cache = cache;
@@ -43,7 +43,7 @@ public abstract class UniformEntry<T> {
 
 		public static Function<float[], UniformEntry<float[]>> NEW = FloatUniformEntry::new;
 
-		private float[] cache;
+		private final float[] cache;
 
 		public FloatUniformEntry(float... cache) {
 			this.cache = cache;
@@ -85,7 +85,7 @@ public abstract class UniformEntry<T> {
 
 		public static Function<Boolean, UniformEntry<Boolean>> NEW = BooleanUniformEntry::new;
 
-		private boolean bool;
+		private final boolean bool;
 
 		public BooleanUniformEntry(boolean bool) {
 			this.bool = bool;

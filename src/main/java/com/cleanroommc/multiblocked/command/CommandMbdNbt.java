@@ -43,7 +43,7 @@ public class CommandMbdNbt extends CommandBase {
                 if (result != null) {
                     TileEntity te = playerMP.world.getTileEntity(result.getBlockPos());
                     if (te != null) {
-                        MultiblockedNetworking.sendToPlayer(new SPacketCommand("nbt: " + te.serializeNBT().toString()), playerMP);
+                        MultiblockedNetworking.sendToPlayer(new SPacketCommand("nbt: " + te.serializeNBT()), playerMP);
                         return;
                     }
                 }

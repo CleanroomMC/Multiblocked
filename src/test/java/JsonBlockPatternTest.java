@@ -15,7 +15,7 @@ class JsonBlockPatternTest {
 
     public static void main(String[] args) {
         System.out.println(String.format("%.1f", 0.001));
-        IO ios[] = getEnumArray(IO.class);
+        IO[] ios = getEnumArray(IO.class);
         JsonBlockPattern pattern = new JsonBlockPattern();
         pattern.pattern = new String[][] {
                 {"TXX", " E "},

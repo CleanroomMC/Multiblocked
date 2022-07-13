@@ -59,12 +59,12 @@ public class CTHelper {
             loadSuccessful = false;
         } catch(ParseException ex) {
             ERROR = loaderName + ": Error parsing " + ex.getFile().getFileName() + ":" + ex.getLine() + " -- " + ex.getExplanation();
-            ERROR += "\n" + new SingleError(ex.getFile().getFileName(), ex.getLine(), ex.getLineOffset(), ex.getExplanation(), SingleError.Level.ERROR).toString();
+            ERROR += "\n" + new SingleError(ex.getFile().getFileName(), ex.getLine(), ex.getLineOffset(), ex.getExplanation(), SingleError.Level.ERROR);
             loadSuccessful = false;
         } catch(Exception ex) {
-            ERROR = loaderName + ": Error loading " + ex.toString();
+            ERROR = loaderName + ": Error loading " + ex;
             if (parser != null) {
-                ERROR += "\n" + new SingleError(parser.getFile().getFileName(), parser.getLine(), parser.getLineOffset(), "Generic ERROR", SingleError.Level.ERROR).toString();
+                ERROR += "\n" + new SingleError(parser.getFile().getFileName(), parser.getLine(), parser.getLineOffset(), "Generic ERROR", SingleError.Level.ERROR);
             }
             loadSuccessful = false;
         }

@@ -23,6 +23,7 @@ import it.unimi.dsi.fastutil.longs.LongSets;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -290,10 +291,16 @@ public class PatternWidget extends WidgetGroup {
         for (Map.Entry<BlockPos, BlockInfo> entry : blocks.entrySet()) {
             BlockPos pos = entry.getKey();
             IBlockState blockState = ((World) PatternWidget.world).getBlockState(pos);
-            ItemStack itemStack = blockState.getBlock().getPickBlock(blockState, new RayTraceResult(
-                    new Vec3d(0.5, 1, 0.5).add(pos.getX(), pos.getY(), pos.getZ()),
-                    EnumFacing.UP,
-                    pos), PatternWidget.world, pos, Minecraft.getMinecraft().player);
+            EntityPlayerSP player = Minecraft.getMinecraft().player;
+            ItemStack itemStack;
+            if (player == null) {
+                itemStack = blockState.getBlock().getItem(PatternWidget.world, BlockPos.ORIGIN, blockState);
+            } else {
+                itemStack = blockState.getBlock().getPickBlock(blockState, new RayTraceResult(
+                        new Vec3d(0.5, 1, 0.5).add(pos.getX(), pos.getY(), pos.getZ()),
+                        EnumFacing.UP,
+                        pos), PatternWidget.world, pos, player);
+            }
 
             ItemStackKey itemStackKey = new ItemStackKey(itemStack);
             PartInfo partInfo = partsMap.get(itemStackKey);

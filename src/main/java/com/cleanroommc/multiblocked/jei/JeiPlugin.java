@@ -52,7 +52,7 @@ public class JeiPlugin implements IModPlugin {
             Multiblocked.LOGGER.error(e);
         }
     }
-    public static IJeiRuntime jeiRuntime;
+    private static IJeiRuntime jeiRuntime;
 
     public static IRecipeWrapper getWrapper(RecipeLayout layout) {
         try {
@@ -133,5 +133,9 @@ public class JeiPlugin implements IModPlugin {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static IJeiRuntime getJeiRuntime() {
+        return jeiRuntime != null ? jeiRuntime : (jeiRuntime = Internal.getRuntime());
     }
 }

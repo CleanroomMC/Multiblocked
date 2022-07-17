@@ -11,6 +11,7 @@ import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
 import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.cleanroommc.multiblocked.jei.ModularWrapper;
 import com.google.common.collect.ImmutableList;
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.input.MouseHelper;
@@ -79,7 +80,8 @@ public class RecipeWrapper extends ModularWrapper {
         if (clicked != null) {
             Object ingredient = clicked.getIngredientOverMouse(mouseX, mouseY);
             if (ingredient != null) {
-                JeiPlugin.jeiRuntime.getRecipesGui().show(JeiPlugin.jeiRuntime.getRecipeRegistry().createFocus(mode, ingredient));
+                IJeiRuntime jeiRuntime = JeiPlugin.getJeiRuntime();
+                jeiRuntime.getRecipesGui().show(jeiRuntime.getRecipeRegistry().createFocus(mode, ingredient));
                 return true;
             }
         }

@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.jei.recipeppage;
 
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.ingredient.IIngredientSlot;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
@@ -9,6 +10,7 @@ import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
 import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.cleanroommc.multiblocked.jei.ModularWrapper;
+import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.input.MouseHelper;
@@ -16,6 +18,7 @@ import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class RecipeWrapper extends ModularWrapper {
@@ -32,7 +35,7 @@ public class RecipeWrapper extends ModularWrapper {
     @Override
     @SuppressWarnings("unchecked")
     public void getIngredients(@Nonnull IIngredients ingredients) {
-        recipe.inputs.forEach((capability, contents) -> {
+        BiConsumer<MultiblockCapability<?>, ImmutableList<Content>> inputConsumer = (capability, contents) -> {
             IJeiIngredientAdapter<Object, Object> adapter = (IJeiIngredientAdapter<Object, Object>) capability.jeiIngredientAdapter;
             if (adapter != null) {
                 List<Object> jeiIngredients = contents.stream()
@@ -42,8 +45,8 @@ public class RecipeWrapper extends ModularWrapper {
                         .collect(Collectors.toList());
                 ingredients.setInputs(adapter.getJeiIngredientType(), jeiIngredients);
             }
-        });
-        recipe.outputs.forEach((capability, contents) -> {
+        };
+        BiConsumer<MultiblockCapability<?>, ImmutableList<Content>> outputConsumer = (capability, contents) -> {
             IJeiIngredientAdapter<Object, Object> adapter = (IJeiIngredientAdapter<Object, Object>) capability.jeiIngredientAdapter;
             if (adapter != null) {
                 List<Object> jeiIngredients = contents.stream()
@@ -53,7 +56,11 @@ public class RecipeWrapper extends ModularWrapper {
                         .collect(Collectors.toList());
                 ingredients.setOutputs(adapter.getJeiIngredientType(), jeiIngredients);
             }
-        });
+        };
+        recipe.inputs.forEach(inputConsumer);
+        recipe.tickInputs.forEach(inputConsumer);
+        recipe.outputs.forEach(outputConsumer);
+        recipe.tickOutputs.forEach(outputConsumer);
     }
 
     @Override

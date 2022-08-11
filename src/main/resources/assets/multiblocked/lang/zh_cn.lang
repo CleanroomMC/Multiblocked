@@ -69,6 +69,8 @@ multiblocked.fluid.state_liquid=§a状态: 液态
 item.multiblocked.blueprint.name=蓝图
 item.multiblocked.multiblock_builder.name=多方块构建器
 
+itemGroup.multiblocked=Multiblocked
+
 multiblocked.recipe.duration=耗时: %ds
 multiblocked.recipe.status.working=状态: §c工作中§r
 multiblocked.recipe.status.idle=状态: §a待机§r
@@ -279,4 +281,26 @@ multiblocked.gui.label.pattern_settings=结构模板设置
 multiblocked.gui.label.save_recipe_map=保存Recipe Map
 multiblocked.capability.lightningcraft_le=雷电工艺
 lightningcraft_le.any.name=任何 雷电工艺 LE 容器
-multiblocked.gui.tips.add=添加
+multiblocked.gui.tips.add=添加multiblocked.gui.content.more_option=more options
+multiblocked.gui.content.back=back
+multiblocked.gui.content.slot_name=IO slot name
+multiblocked.gui.content.tips.per_tick_short=§a/tick§r
+multiblocked.gui.content.chance_0_short=§cNC§r
+multiblocked.gui.condition.reverse=reverse (executed if condition failed),
+multiblocked.gui.condition.reverse.label=isReverse,
+multiblocked.gui.condition.rain.level=Rain Level,
+multiblocked.gui.condition.thunder.level=Thunder Level,
+multiblocked.gui.condition.pos_y.min=Min Position Y,
+multiblocked.gui.condition.pos_y.max=Max Position Y,
+multiblocked.recipe.condition.thunder=Thunder,
+multiblocked.recipe.condition.thunder.tooltip=Rain Level
+multiblocked.recipe.condition.rain=Rain,
+multiblocked.recipe.condition.rain.tooltip=Rain Level
+multiblocked.recipe.condition.dimension=Dimension,
+multiblocked.recipe.condition.dimension.tooltip=Dimension
+multiblocked.recipe.condition.biome=Biome,
+multiblocked.recipe.condition.pos_y=Position Y,
+multiblocked.recipe.condition.pos_y.tooltip=%d <
+multiblocked.gui.condition.block.count=Minimum Count
+multiblocked.recipe.condition.block=Block
+multiblocked.gui.predicate.slot=match the IO slot

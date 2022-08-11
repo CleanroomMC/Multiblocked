@@ -75,6 +75,8 @@ multiblocked.fluid.state_liquid=§aState: Liquid
 item.multiblocked.blueprint.name=Blueprint
 item.multiblocked.multiblock_builder.name=Multiblock Builder
 
+itemGroup.multiblocked=Multiblocked
+
 multiblocked.recipe.duration=Duration: %ds
 multiblocked.recipe.status.working=Status: §cWorking§r
 multiblocked.recipe.status.idle=sStatus: §aIdle§r

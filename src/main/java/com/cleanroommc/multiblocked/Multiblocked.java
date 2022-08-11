@@ -79,7 +79,7 @@ public class Multiblocked {
     @SidedProxy(modId = MODID, clientSide = "com.cleanroommc.multiblocked.client.ClientProxy", serverSide = "com.cleanroommc.multiblocked.CommonProxy")
     public static CommonProxy proxy;
 
-    public static final CreativeTabs CREATIVE_TAB = new CreativeTabs("example_tab") {
+    public static final CreativeTabs CREATIVE_TAB = new CreativeTabs("multiblocked") {
         @Override
         @Nonnull
         public ItemStack createIcon() {

@@ -179,7 +179,7 @@ public class RecipeLogic {
             lastRecipe = recipe;
             setStatus(Status.WORKING);
             progress = 0;
-            duration = recipe.duration;
+            duration = definition.calcRecipeDuration == null ? recipe.duration : definition.calcRecipeDuration.apply(this, recipe, recipe.duration);
             markDirty();
         }
     }
@@ -247,7 +247,7 @@ public class RecipeLogic {
         lastRecipe = compound.hasKey("recipe") ? definition.recipeMap.recipes.get(compound.getString("recipe")) : null;
         if (lastRecipe != null) {
             status = compound.hasKey("status") ? Status.values()[compound.getInteger("status")] : Status.WORKING;
-            duration = lastRecipe.duration;
+            duration = compound.hasKey("duration") ? compound.getInteger("duration") : lastRecipe.duration;
             progress = compound.hasKey("progress") ? compound.getInteger("progress") : 0;
         }
     }
@@ -257,6 +257,7 @@ public class RecipeLogic {
             compound.setString("recipe", lastRecipe.uid);
             compound.setInteger("status", status.ordinal());
             compound.setInteger("progress", progress);
+            compound.setInteger("duration", duration);
         }
         return compound;
     }
@@ -271,7 +272,8 @@ public class RecipeLogic {
         @ZenProperty
         SUSPEND("suspend");
 
-        public String name;
+        @ZenProperty
+        public final String name;
         Status(String name) {
             this.name = name;
         }

@@ -32,6 +32,7 @@ public class RecipePage extends PageWidget{
     private RecipeWidget recipeWidget;
     private RecipeLogic.Status status;
     private int progress;
+    private int duration;
     
     public RecipePage(ControllerTileEntity controller, TabContainer tabContainer) {
         super(resourceTexture, tabContainer);
@@ -39,7 +40,7 @@ public class RecipePage extends PageWidget{
         this.status = RecipeLogic.Status.IDLE;
         this.addWidget(tips = new DraggableScrollableWidgetGroup(8, 34, 160, 112));
         tips.addWidget(new LabelWidget(5, 5, () -> I18n.format("multiblocked.recipe.status." + status.name)).setTextColor(-1));
-        tips.addWidget(new LabelWidget(5, 20, () -> I18n.format("multiblocked.recipe.remaining", recipe == null ? 0 : (recipe.duration - progress) / 20)).setTextColor(-1));
+        tips.addWidget(new LabelWidget(5, 20, () -> I18n.format("multiblocked.recipe.remaining", recipe == null ? 0 : (duration - progress) / 20)).setTextColor(-1));
         this.addWidget(new SwitchWidget(153, 131, 12, 12, (cd, r) -> {
             controller.asyncRecipeSearching = r;
             if (!cd.isRemote) {
@@ -98,7 +99,7 @@ public class RecipePage extends PageWidget{
 
     private double getProgress() {
         if (recipe == null) return 0;
-        return progress * 1. / recipe.duration;
+        return progress * 1. / duration;
     }
 
     @Override
@@ -123,6 +124,7 @@ public class RecipePage extends PageWidget{
             RecipeLogic recipeLogic = controller.getRecipeLogic();
             if (recipe != recipeLogic.lastRecipe) {
                 recipe = recipeLogic.lastRecipe;
+                duration = recipeLogic.duration;
                 writeUpdateInfo(-1, this::writeRecipe);
             }
             if (status != recipeLogic.getStatus() || progress != recipeLogic.progress) {
@@ -152,12 +154,14 @@ public class RecipePage extends PageWidget{
         }
         else {
             buffer.writeBoolean(true);
+            buffer.writeVarInt(duration);
             buffer.writeString(recipe.uid);
         }
     }
 
     private void readRecipe(PacketBuffer buffer) {
         if (buffer.readBoolean()) {
+            duration = buffer.readVarInt();
             recipe = controller.getDefinition().recipeMap.recipes.get(buffer.readString(Short.MAX_VALUE));
             if (recipeWidget != null) {
                 removeWidget(recipeWidget);

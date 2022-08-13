@@ -47,6 +47,8 @@ public class ControllerDefinition extends ComponentDefinition {
     public transient IRecipeFinish recipeFinish;
     @ZenProperty
     public transient IApplyContentModifier applyContentModifier;
+    @ZenProperty
+    public transient ICalcRecipeDuration calcRecipeDuration;
     public ItemStack catalyst; // if null, checking pattern per second
     @ZenProperty
     public boolean consumeCatalyst;

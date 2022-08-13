@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
@@ -41,6 +42,11 @@ public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
     @Override
     public Float copyInner(Float content) {
         return content;
+    }
+
+    @Override
+    public Float copyInnerByModifier(Float content, ContentModifier modifier) {
+        return ((float) modifier.apply(content));
     }
 
     @Override

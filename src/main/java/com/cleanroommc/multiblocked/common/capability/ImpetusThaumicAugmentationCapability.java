@@ -8,6 +8,7 @@ import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.trait.ImpetusCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
@@ -46,6 +47,11 @@ public class ImpetusThaumicAugmentationCapability extends MultiblockCapability<L
     @Override
     public Long copyInner(Long content) {
         return content;
+    }
+
+    @Override
+    public Long copyInnerByModifier(Long content, ContentModifier modifier) {
+        return ((long) modifier.apply(content));
     }
 
     @Override

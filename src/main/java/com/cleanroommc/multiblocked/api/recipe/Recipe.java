@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.ICapabilityProxyHolder;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.crafttweaker.functions.IApplyContentModifier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Table;
@@ -96,39 +97,48 @@ public class Recipe {
      * @return result
      */
     @ZenMethod
-    public boolean matchRecipe(ICapabilityProxyHolder holder) {
+    public boolean matchRecipe(ICapabilityProxyHolder holder, RecipeLogic logic) {
         if (!holder.hasProxies()) return false;
-        if (!matchRecipe(IO.IN, holder, inputs)) return false;
-        return matchRecipe(IO.OUT, holder, outputs);
+        if (!matchRecipe(IO.IN, holder, inputs, logic, false)) return false;
+        return matchRecipe(IO.OUT, holder, outputs, logic, false);
     }
 
     @ZenMethod
-    public boolean matchTickRecipe(ICapabilityProxyHolder holder) {
+    public boolean matchTickRecipe(ICapabilityProxyHolder holder, RecipeLogic logic) {
         if (hasTick()) {
             if (!holder.hasProxies()) return false;
-            if (!matchRecipe(IO.IN, holder, tickInputs)) return false;
-            return matchRecipe(IO.OUT, holder, tickOutputs);
+            if (!matchRecipe(IO.IN, holder, tickInputs, logic, true)) return false;
+            return matchRecipe(IO.OUT, holder, tickOutputs, logic, true);
         }
         return true;
     }
 
     @SuppressWarnings("ALL")
-    private boolean matchRecipe(IO io, ICapabilityProxyHolder holder, ImmutableMap<MultiblockCapability<?>, ImmutableList<Content>> contents) {
+    private boolean matchRecipe(IO io, ICapabilityProxyHolder holder, ImmutableMap<MultiblockCapability<?>, ImmutableList<Content>> contents, RecipeLogic logic, boolean isTickIO) {
         Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : contents.entrySet()) {
             Set<CapabilityProxy<?>> used = new HashSet<>();
             List content = new ArrayList<>();
             Map<String, List> contentSlot = new HashMap<>();
+            MultiblockCapability cap = entry.getKey();
             for (Content cont : entry.getValue()) {
+                IApplyContentModifier applyContentModifier = logic.controller.getDefinition().applyContentModifier;
+                Object capContent = cont.content;
+                if (applyContentModifier != null) {
+                    ContentModifier modifier = applyContentModifier.apply(logic, this, cont, cap, io, isTickIO);
+                    if (modifier != null) {
+                        capContent = cap.copyInnerByModifier(capContent, modifier);
+                    }
+                }
                 if (cont.slotName == null) {
-                    content.add(cont.content);
+                    content.add(capContent);
                 } else {
-                    contentSlot.computeIfAbsent(cont.slotName, s->new ArrayList<>()).add(cont.content);
+                    contentSlot.computeIfAbsent(cont.slotName, s->new ArrayList<>()).add(capContent);
                 }
             }
             if (content.isEmpty() && contentSlot.isEmpty()) continue;
-            if (capabilityProxies.contains(io, entry.getKey())) {
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey()).values()) { // search same io type
+            if (capabilityProxies.contains(io, cap)) {
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(io, cap).values()) { // search same io type
                     if (used.contains(proxy)) continue;
                     used.add(proxy);
                     if (content != null) {
@@ -148,8 +158,8 @@ public class Recipe {
                 }
             }
             if (content == null && contentSlot.isEmpty()) continue;
-            if (capabilityProxies.contains(IO.BOTH, entry.getKey())) {
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
+            if (capabilityProxies.contains(IO.BOTH, cap)) {
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, cap).values()) { // search both type
                     if (used.contains(proxy)) continue;
                     used.add(proxy);
                     if (content != null) {
@@ -174,36 +184,47 @@ public class Recipe {
     }
 
     @ZenMethod
-    public boolean handleTickRecipeIO(IO io, ICapabilityProxyHolder holder) {
+    public boolean handleTickRecipeIO(IO io, ICapabilityProxyHolder holder, RecipeLogic logic) {
         if (!holder.hasProxies() || io == IO.BOTH) return false;
-        return handleRecipe(io, holder, io == IO.IN ? tickInputs : tickOutputs);
+        return handleRecipe(io, holder, io == IO.IN ? tickInputs : tickOutputs, logic, true);
     }
 
     @ZenMethod
-    public boolean handleRecipeIO (IO io, ICapabilityProxyHolder holder) {
+    public boolean handleRecipeIO (IO io, ICapabilityProxyHolder holder, RecipeLogic logic) {
         if (!holder.hasProxies() || io == IO.BOTH) return false;
-        return handleRecipe(io, holder, io == IO.IN ? inputs : outputs);
+        return handleRecipe(io, holder, io == IO.IN ? inputs : outputs, logic, false);
     }
 
     @SuppressWarnings("ALL")
-    public boolean handleRecipe(IO io, ICapabilityProxyHolder holder, ImmutableMap<MultiblockCapability<?>, ImmutableList<Content>> contents) {
+    public boolean handleRecipe(IO io, ICapabilityProxyHolder holder, ImmutableMap<MultiblockCapability<?>, ImmutableList<Content>> contents, RecipeLogic logic, boolean isTick) {
         Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> capabilityProxies = holder.getCapabilities();
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : contents.entrySet()) {
+            MultiblockCapability cap = entry.getKey();
             Set<CapabilityProxy<?>> used = new HashSet<>();
             List content = new ArrayList<>();
             Map<String, List> contentSlot = new HashMap<>();
             for (Content cont : entry.getValue()) {
-                if (cont.chance == 1 || Multiblocked.RNG.nextFloat() < cont.chance) { // chance input
+                float chance = cont.chance;
+                IApplyContentModifier applyContentModifier = logic.controller.getDefinition().applyContentModifier;
+                Object capContent = cont.content;
+                if (applyContentModifier != null) {
+                    ContentModifier modifier = applyContentModifier.apply(logic, this, cont, cap, io, isTick);
+                    if (modifier != null) {
+                        capContent = cap.copyInnerByModifier(capContent, modifier);
+                        chance = modifier.applyToChance(chance);
+                    }
+                }
+                if (chance == 1 || Multiblocked.RNG.nextFloat() < chance) { // chance input
                     if (cont.slotName == null) {
-                        content.add(cont.content);
+                        content.add(capContent);
                     } else {
-                        contentSlot.computeIfAbsent(cont.slotName, s->new ArrayList<>()).add(cont.content);
+                        contentSlot.computeIfAbsent(cont.slotName, s->new ArrayList<>()).add(capContent);
                     }
                 }
             }
             if (content.isEmpty() && contentSlot.isEmpty()) continue;
-            if (capabilityProxies.contains(io, entry.getKey())) {
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(io, entry.getKey()).values()) { // search same io type
+            if (capabilityProxies.contains(io, cap)) {
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(io, cap).values()) { // search same io type
                     if (used.contains(proxy)) continue;
                     used.add(proxy);
                     if (content != null) {
@@ -223,8 +244,8 @@ public class Recipe {
                 }
             }
             if (content == null && contentSlot.isEmpty()) continue;
-            if (capabilityProxies.contains(IO.BOTH, entry.getKey())){
-                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, entry.getKey()).values()) { // search both type
+            if (capabilityProxies.contains(IO.BOTH, cap)){
+                for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, cap).values()) { // search both type
                     if (used.contains(proxy)) continue;
                     used.add(proxy);
                     if (content != null) {

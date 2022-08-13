@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.JsonDeserializationContext;
@@ -46,6 +47,11 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
     @Override
     public Double copyInner(Double content) {
         return content;
+    }
+
+    @Override
+    public Double copyInnerByModifier(Double content, ContentModifier modifier) {
+        return modifier.apply(content);
     }
 
     @Override

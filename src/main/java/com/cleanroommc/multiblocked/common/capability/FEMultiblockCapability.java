@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.trait.FECapabilityTrait;
@@ -46,6 +47,11 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
     @Override
     public Integer copyInner(Integer content) {
         return content;
+    }
+
+    @Override
+    public Integer copyInnerByModifier(Integer content, ContentModifier modifier) {
+        return (int) modifier.apply(content);
     }
 
     @Override

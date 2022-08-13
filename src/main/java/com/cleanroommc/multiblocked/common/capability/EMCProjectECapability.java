@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
@@ -43,6 +44,11 @@ public class EMCProjectECapability extends MultiblockCapability<Long> {
     @Override
     public Long copyInner(Long content) {
         return content;
+    }
+
+    @Override
+    public Long copyInnerByModifier(Long content, ContentModifier modifier) {
+        return ((long) modifier.apply(content));
     }
 
     @Override

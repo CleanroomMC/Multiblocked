@@ -113,11 +113,11 @@ public class RecipeMap {
     }
 
     @ZenMethod
-    public List<Recipe> searchRecipe(ICapabilityProxyHolder holder) {
+    public List<Recipe> searchRecipe(ICapabilityProxyHolder holder, RecipeLogic logic) {
         if (!holder.hasProxies()) return Collections.emptyList();
         List<Recipe> matches = new ArrayList<>();
         for (Recipe recipe : recipes.values()) {
-            if (recipe.matchRecipe(holder) && recipe.matchTickRecipe(holder)) {
+            if (recipe.matchRecipe(holder, logic) && recipe.matchTickRecipe(holder, logic)) {
                 matches.add(recipe);
             }
         }

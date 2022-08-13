@@ -9,6 +9,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
 import com.google.gson.JsonDeserializer;
@@ -69,6 +70,11 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
      * deep copy of this content. recipe need it for searching and such things
      */
     public abstract T copyInner(T content);
+
+    /**
+     * deep copy with a new amount of this content by the given modifier.
+     */
+    public abstract T copyInnerByModifier(T content, ContentModifier modifier);
     
     /**
      * create a proxy of this block.

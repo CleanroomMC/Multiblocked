@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.GasStackWidget;
 import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
@@ -47,6 +48,13 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
     @Override
     public GasStack copyInner(GasStack content) {
         return content.copy();
+    }
+
+    @Override
+    public GasStack copyInnerByModifier(GasStack content, ContentModifier modifier) {
+        GasStack copy = content.copy();
+        copy.amount = ((int) modifier.apply(content.amount));
+        return copy;
     }
 
     @Override

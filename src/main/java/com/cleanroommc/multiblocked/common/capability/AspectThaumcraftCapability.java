@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.AspectStackWidget;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
@@ -51,6 +52,13 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
     @Override
     public AspectStack copyInner(AspectStack content) {
         return content.copy();
+    }
+
+    @Override
+    public AspectStack copyInnerByModifier(AspectStack content, ContentModifier modifier) {
+        AspectStack copy = content.copy();
+        copy.amount = ((int) modifier.apply(content.amount));
+        return copy;
     }
 
     @Override

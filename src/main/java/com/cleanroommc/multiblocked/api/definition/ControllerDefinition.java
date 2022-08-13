@@ -1,18 +1,17 @@
 package com.cleanroommc.multiblocked.api.definition;
 
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.*;
-import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.item.IItemStack;
-import crafttweaker.api.minecraft.CraftTweakerMC;
-import crafttweaker.mc1120.item.MCItemStack;
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.crafttweaker.functions.*;
 import com.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.mc1120.item.MCItemStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
@@ -46,6 +45,8 @@ public class ControllerDefinition extends ComponentDefinition {
     public transient ISetupRecipe setupRecipe;
     @ZenProperty
     public transient IRecipeFinish recipeFinish;
+    @ZenProperty
+    public transient IApplyContentModifier applyContentModifier;
     public ItemStack catalyst; // if null, checking pattern per second
     @ZenProperty
     public boolean consumeCatalyst;

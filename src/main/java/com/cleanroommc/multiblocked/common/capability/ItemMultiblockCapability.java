@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
@@ -51,6 +52,13 @@ public class ItemMultiblockCapability extends MultiblockCapability<ItemsIngredie
     @Override
     public ItemsIngredient copyInner(ItemsIngredient content) {
         return content.copy();
+    }
+
+    @Override
+    public ItemsIngredient copyInnerByModifier(ItemsIngredient content, ContentModifier modifier) {
+        ItemsIngredient copy = content.copy();
+        copy.setAmount((int) modifier.apply(content.getAmount()));
+        return copy;
     }
 
     @Override

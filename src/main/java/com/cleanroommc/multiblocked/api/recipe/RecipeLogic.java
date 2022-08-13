@@ -126,12 +126,12 @@ public class RecipeLogic {
     public void findAndHandleRecipe() {
         Recipe recipe;
         lastFailedMatches = null;
-        if (lastRecipe != null && lastRecipe.matchRecipe(this.controller) && lastRecipe.matchTickRecipe(this.controller) && lastRecipe.checkConditions(this)) {
+        if (lastRecipe != null && lastRecipe.matchRecipe(this.controller, this) && lastRecipe.matchTickRecipe(this.controller, this) && lastRecipe.checkConditions(this)) {
             recipe = lastRecipe;
             lastRecipe = null;
             setupRecipe(recipe);
         } else {
-            List<Recipe> matches = this.definition.recipeMap.searchRecipe(this.controller);
+            List<Recipe> matches = this.definition.recipeMap.searchRecipe(this.controller, this);
             lastRecipe = null;
             for (Recipe match : matches) {
                 if (match.checkConditions(this)) {
@@ -152,9 +152,9 @@ public class RecipeLogic {
     @ZenMethod
     public void handleTickRecipe(Recipe recipe) {
         if (recipe.hasTick()) {
-            if (recipe.matchTickRecipe(this.controller)) {
-                recipe.handleTickRecipeIO(IO.IN, this.controller);
-                recipe.handleTickRecipeIO(IO.OUT, this.controller);
+            if (recipe.matchTickRecipe(this.controller, this)) {
+                recipe.handleTickRecipeIO(IO.IN, this.controller, this);
+                recipe.handleTickRecipeIO(IO.OUT, this.controller, this);
                 setStatus(Status.WORKING);
             } else {
                 progress--;
@@ -175,7 +175,7 @@ public class RecipeLogic {
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "setupRecipe", exception);
             }
         }
-        if (recipe.handleRecipeIO(IO.IN, this.controller)) {
+        if (recipe.handleRecipeIO(IO.IN, this.controller, this)) {
             lastRecipe = recipe;
             setStatus(Status.WORKING);
             progress = 0;
@@ -227,8 +227,8 @@ public class RecipeLogic {
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "recipeFinish", exception);
             }
         }
-        lastRecipe.handleRecipeIO(IO.OUT, this.controller);
-        if (lastRecipe.matchRecipe(this.controller) && lastRecipe.matchTickRecipe(this.controller) && lastRecipe.checkConditions(this)) {
+        lastRecipe.handleRecipeIO(IO.OUT, this.controller, this);
+        if (lastRecipe.matchRecipe(this.controller, this) && lastRecipe.matchTickRecipe(this.controller, this) && lastRecipe.checkConditions(this)) {
             setupRecipe(lastRecipe);
         } else {
             setStatus(Status.IDLE);

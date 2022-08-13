@@ -7,6 +7,7 @@ import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.json.FluidStackTypeAdapter;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.trait.FluidCapabilityTrait;
@@ -58,6 +59,12 @@ public class FluidMultiblockCapability extends MultiblockCapability<FluidStack> 
         return content.copy();
     }
 
+    @Override
+    public FluidStack copyInnerByModifier(FluidStack content, ContentModifier modifier) {
+        FluidStack copy = content.copy();
+        copy.amount = ((int) modifier.apply(content.amount));
+        return copy;
+    }
 
     @Override
     public FluidCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {

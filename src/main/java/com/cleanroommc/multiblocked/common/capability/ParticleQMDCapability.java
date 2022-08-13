@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
+import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.widget.ParticleStackWidget;
 import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
@@ -50,6 +51,13 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
     @Override
     public ParticleStack copyInner(ParticleStack content) {
         return content.copy();
+    }
+
+    @Override
+    public ParticleStack copyInnerByModifier(ParticleStack content, ContentModifier modifier) {
+        ParticleStack copy = content.copy();
+        copy.setAmount((int) modifier.apply(content.getAmount()));
+        return copy;
     }
 
     @Override

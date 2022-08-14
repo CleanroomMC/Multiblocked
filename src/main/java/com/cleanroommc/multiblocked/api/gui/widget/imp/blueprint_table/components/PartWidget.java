@@ -13,7 +13,7 @@ public class PartWidget extends ComponentWidget<PartDefinition>{
     public PartWidget(WidgetGroup group, PartDefinition definition, Consumer<JsonObject> onSave) {
         super(group, definition, onSave);
         int x = 47;
-        S1.addWidget(createBoolSwitch(x + 100, 90, "canShared", "multiblocked.gui.widget.part.shared=", definition.canShared, r -> definition.canShared = r));
+        S1.addWidget(createBoolSwitch(x + 100, 90, "canShared", "multiblocked.gui.widget.part.shared", definition.canShared, r -> definition.canShared = r));
 
     }
 }

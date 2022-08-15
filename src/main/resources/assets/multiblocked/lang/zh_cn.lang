@@ -205,6 +205,9 @@ multiblocked.gui.trait.fe.tips.0=容量 (RF)
 multiblocked.gui.trait.fe.tips.1=最大接受 (RF/packet)
 multiblocked.gui.trait.fe.tips.2=最大输出 (RF/packet)
 
+multiblocked.gui.trait.mana.tips.0=容量 (Mana)
+multiblocked.gui.trait.mana.tips.1=允许从火花接收魔力
+
 multiblocked.gui.trait.aspect.amount=数量:
 multiblocked.gui.trait.gas.amount=气体量:
 

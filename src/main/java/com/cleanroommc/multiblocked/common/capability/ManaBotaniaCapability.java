@@ -3,11 +3,13 @@ package com.cleanroommc.multiblocked.common.capability;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
+import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
+import com.cleanroommc.multiblocked.common.capability.trait.ManaCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
 import net.minecraft.tileentity.TileEntity;
@@ -75,6 +77,16 @@ public class ManaBotaniaCapability extends MultiblockCapability<Integer> {
     @Override
     public JsonElement serialize(Integer integer, Type type, JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(integer);
+    }
+
+    @Override
+    public boolean hasTrait() {
+        return true;
+    }
+
+    @Override
+    public CapabilityTrait createTrait() {
+        return new ManaCapabilityTrait();
     }
 
     public static class ManaBotainaCapabilityProxy extends CapabilityProxy<Integer> {

@@ -209,6 +209,9 @@ multiblocked.gui.content.chance_1=§eChance: %s
 multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
 multiblocked.gui.trait.energy.tips=Capability (EU)
 
+multiblocked.gui.trait.mana.tips.0=Capacity (Mana)
+multiblocked.gui.trait.mana.tips.1=Can receive mana from spark
+
 multiblocked.gui.trait.fe.progress=FE Stored: %d / %d
 multiblocked.gui.trait.fe.tips.0=Capability (RF)
 multiblocked.gui.trait.fe.tips.1=MaxReceive (RF/packet)

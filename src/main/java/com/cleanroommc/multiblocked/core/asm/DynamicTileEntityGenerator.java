@@ -29,7 +29,7 @@ public class DynamicTileEntityGenerator implements Opcodes {
     public DynamicTileEntityGenerator(String name, List<CapabilityTrait> traits, Class<? extends ComponentTileEntity<?>> superClass) {
         this.name = name;
         this.traits = traits;
-        this.superClassName = superClass.getName().replace('.','/');
+        this.superClassName = Type.getInternalName(superClass);
         for (CapabilityTrait trait : traits) {
             Class<?> clazz = trait.getClass().getAnnotation(InterfaceUser.class).value();
             if (!clazz.isInterface()) {
@@ -134,7 +134,18 @@ public class DynamicTileEntityGenerator implements Opcodes {
                 methodVisitor.visitVarInsn(ALOAD, 0);
                 methodVisitor.visitFieldInsn(GETFIELD, className, fieldName, fieldSignature);
                 for (int i = 0; i < parameterTypes.length; i++) {
-                    methodVisitor.visitVarInsn(ALOAD, i + 1);
+                    int loadCode = ALOAD;
+                    Class<?> parameterType = parameterTypes[i];
+                    if (parameterType == Integer.TYPE || parameterType == Short.TYPE || parameterType == Character.TYPE || parameterType == Boolean.TYPE) {
+                        loadCode = ILOAD;
+                    } else if (parameterType == Long.TYPE) {
+                        loadCode = LLOAD;
+                    } else if (parameterType == Float.TYPE) {
+                        loadCode = FLOAD;
+                    } else if (parameterType == Double.TYPE) {
+                        loadCode = DLOAD;
+                    }
+                    methodVisitor.visitVarInsn(loadCode, i + 1);
                 }
                 methodVisitor.visitMethodInsn(INVOKEINTERFACE, Type.getInternalName(anInterface), method.getName(), Type.getMethodDescriptor(method), true);
                 int returnCode = ARETURN;

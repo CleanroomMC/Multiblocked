@@ -136,22 +136,20 @@ public class DynamicTileEntityGenerator implements Opcodes {
                 for (int i = 0; i < parameterTypes.length; i++) {
                     int loadCode = ALOAD;
                     Class<?> parameterType = parameterTypes[i];
-                    if (parameterType == Integer.TYPE || parameterType == Short.TYPE || parameterType == Character.TYPE || parameterType == Boolean.TYPE) {
-                        loadCode = ILOAD;
-                    } else if (parameterType == Long.TYPE) {
+                    if (parameterType == Long.TYPE) {
                         loadCode = LLOAD;
                     } else if (parameterType == Float.TYPE) {
                         loadCode = FLOAD;
                     } else if (parameterType == Double.TYPE) {
                         loadCode = DLOAD;
+                    } else if (parameterType.isPrimitive()) {
+                        loadCode = ILOAD;
                     }
                     methodVisitor.visitVarInsn(loadCode, i + 1);
                 }
                 methodVisitor.visitMethodInsn(INVOKEINTERFACE, Type.getInternalName(anInterface), method.getName(), Type.getMethodDescriptor(method), true);
                 int returnCode = ARETURN;
-                if (returnType == Integer.TYPE || returnType == Short.TYPE || returnType == Character.TYPE || returnType == Boolean.TYPE) {
-                    returnCode = IRETURN;
-                } else if (returnType == Long.TYPE) {
+                if (returnType == Long.TYPE) {
                     returnCode = LRETURN;
                 } else if (returnType == Float.TYPE) {
                     returnCode = FRETURN;
@@ -159,6 +157,8 @@ public class DynamicTileEntityGenerator implements Opcodes {
                     returnCode = DRETURN;
                 } else if (returnType == Void.TYPE) {
                     returnCode = RETURN;
+                } else if (returnType.isPrimitive()) {
+                    returnCode = IRETURN;
                 }
                 if (returnCode == RETURN) {
                     Label label1 = new Label();

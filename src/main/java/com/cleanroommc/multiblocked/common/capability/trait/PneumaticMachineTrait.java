@@ -44,6 +44,8 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
     public float criticalPressure;
     public int volume;
 
+    private int lastAir;
+
     public PneumaticMachineTrait() {
         super(PneumaticPressureCapability.CAP);
     }
@@ -103,6 +105,11 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
     @Override
     public void update() {
         airHandler.update();
+
+        if (lastAir != airHandler.getAir()) {
+            lastAir = airHandler.getAir();
+            markAsDirty();
+        }
     }
 
     @Override

@@ -293,7 +293,8 @@ multiblocked.gui.label.pattern_settings=结构模板设置
 multiblocked.gui.label.save_recipe_map=保存Recipe Map
 multiblocked.capability.lightningcraft_le=雷电工艺
 lightningcraft_le.any.name=任何 雷电工艺 LE 容器
-multiblocked.gui.tips.add=添加multiblocked.gui.content.more_option=more options
+multiblocked.gui.tips.add=添加
+multiblocked.gui.content.more_option=more options
 multiblocked.gui.content.back=back
 multiblocked.gui.content.slot_name=IO slot name
 multiblocked.gui.content.tips.per_tick_short=§a/tick§r

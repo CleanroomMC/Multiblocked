@@ -40,8 +40,8 @@ import java.util.function.Consumer;
 
 public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
     protected JsonBlockPattern pattern;
-    protected final WidgetGroup S3;
     protected final WidgetGroup S4;
+    protected final WidgetGroup S5;
     protected final SceneWidget sceneWidget;
     protected final Set<DummyComponentTileEntity> tiles = new HashSet<>();
     protected boolean isFormed;
@@ -56,34 +56,30 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         if (predicate instanceof PredicateComponent) {
             ((PredicateComponent) predicate).definition = definition;
         }
-        S1.addWidget(createBoolSwitch(x + 100, 90, "consumeCatalyst", "multiblocked.gui.widget.controller.consume", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
+        S1.addWidget(GuiUtils.createBoolSwitch(x + 140, 165, "consumeCatalyst", "multiblocked.gui.widget.controller.consume", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
 
         IItemHandlerModifiable handler;
-        PhantomSlotWidget phantomSlotWidget = new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, x + 205, 73);
-        LabelWidget labelWidget = new LabelWidget(x + 230, 78, "multiblocked.gui.label.catalyst");
+        PhantomSlotWidget phantomSlotWidget = new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, x + 250, 154);
         S1.addWidget(phantomSlotWidget);
-        S1.addWidget(labelWidget);
         phantomSlotWidget.setClearSlotOnRightClick(true)
-                .setChangeListener(() -> definition.catalyst = handler.getStackInSlot(0))
+                .setChangeListener(() -> definition.setCatalyst(handler.getStackInSlot(0)))
                 .setBackgroundTexture(new ColorBorderTexture(1, -1))
                 .setHoverTooltip("multiblocked.gui.widget.controller.catalyst")
-                .setVisible(definition.catalyst != null);
-        handler.setStackInSlot(0, definition.catalyst == null ? ItemStack.EMPTY : definition.catalyst);
-        labelWidget.setVisible(definition.catalyst != null);
+                .setVisible(definition.getCatalyst() != null);
+        handler.setStackInSlot(0, definition.getCatalyst() == null ? ItemStack.EMPTY : definition.getCatalyst());
 
-        S1.addWidget(createBoolSwitch(x + 100, 75, "needCatalyst", "multiblocked.gui.widget.controller.need_catalyst", definition.catalyst != null, r -> {
-            definition.catalyst = !r ? null : ItemStack.EMPTY;
+        S1.addWidget(GuiUtils.createBoolSwitch(x + 140, 150, "needCatalyst", "multiblocked.gui.widget.controller.need_catalyst", definition.getCatalyst() != null, r -> {
+            definition.setCatalyst(!r ? null : ItemStack.EMPTY);
             phantomSlotWidget.setVisible(r);
-            labelWidget.setVisible(r);
         }));
 
-        tabContainer.addTab(new TabButton(88, 26, 20, 20)
-                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S3"))
-                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S3"))
+        tabContainer.addTab((TabButton) new TabButton(111, 26, 20, 20)
+                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S4"))
+                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S4"))
                         .setHoverTooltip("multiblocked.gui.widget.controller.s3"),
-                S3 = new WidgetGroup(0, 0, getSize().width, getSize().height));
-        S3.addWidget(new ImageWidget(50, 66, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
-        S3.addWidget(sceneWidget = new SceneWidget(50, 66, 138, 138, null)
+                S4 = new WidgetGroup(0, 0, getSize().width, getSize().height));
+        S4.addWidget(new ImageWidget(50, 66, 138, 138, new GuiTextureGroup(new ColorBorderTexture(3, -1), new ColorRectTexture(0xaf444444))));
+        S4.addWidget(sceneWidget = new SceneWidget(50, 66, 138, 138, null)
                 .useCacheBuffer()
                 .setRenderFacing(false)
                 .setRenderSelect(false));
@@ -92,21 +88,21 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                 .setPressed(isFormed)
                 .setTexture(PAGE.getSubTexture(222 / 256.0, 0, 16 / 256.0, 16 / 256.0), PAGE.getSubTexture(222 / 256.0, 16 / 256.0, 16 / 256.0, 16 / 256.0))
                 .setHoverTooltip("multiblocked.structure_page.switch"));
-        S3.addWidget(new TextBoxWidget(200, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
-        S3.addWidget(new ButtonWidget(200, 66, 100, 20,
+        S4.addWidget(new TextBoxWidget(200, 0, 175, Collections.singletonList("")).setFontColor(-1).setShadow(true));
+        S4.addWidget(new ButtonWidget(200, 66, 100, 20,
                 new GuiTextureGroup(ResourceBorderTexture.BAR, new TextTexture("multiblocked.gui.label.pattern_settings", -1).setDropShadow(true)), cd -> {
             new JsonBlockPatternWidget(this, this.pattern.copy(), this::savePattern);
         }).setHoverBorderTexture(1, -1));
         updateScene(this.pattern);
 
-        tabContainer.addTab(new TabButton(111, 26, 20, 20)
-                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S4"))
-                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S4"))
+        tabContainer.addTab((TabButton) new TabButton(111 + 23, 26, 20, 20)
+                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0.5, 1, 0.5), new TextTexture("S5"))
+                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/switch_common.png").getSubTexture(0, 0, 1, 0.5), new TextTexture("S5"))
                         .setHoverTooltip("multiblocked.gui.widget.controller.s4"),
-                S4 = new WidgetGroup(0, 0, getSize().width, getSize().height));
-        S4.addWidget(new LabelWidget(80, 55, "multiblocked.gui.label.recipe_map"));
-        S4.addWidget(new TextFieldWidget(80, 70, 100, 15, true, () -> this.recipeMap, s -> this.recipeMap = s));
-        S4.addWidget(new RecipeMapBuilderWidget(this, 188, 50, 150, 170).setOnRecipeMapSelected(recipeMap1 -> this.recipeMap = (recipeMap1 == null || recipeMap1.name == null) ? "error!!!" : recipeMap1.name));
+                S5 = new WidgetGroup(0, 0, getSize().width, getSize().height));
+        S5.addWidget(new LabelWidget(80, 55, "multiblocked.gui.label.recipe_map"));
+        S5.addWidget(new TextFieldWidget(80, 70, 100, 15, true, () -> this.recipeMap, s -> this.recipeMap = s));
+        S5.addWidget(new RecipeMapBuilderWidget(this, 188, 50, 150, 170).setOnRecipeMapSelected(recipeMap1 -> this.recipeMap = recipeMap1.name));
     }
 
     @Override
@@ -114,9 +110,6 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         JsonObject jsonObject = super.getJsonObj();
         jsonObject.add("basePattern", Multiblocked.GSON.toJsonTree(pattern));
         jsonObject.addProperty("recipeMap", this.recipeMap == null ? RecipeMap.EMPTY.name : this.recipeMap);
-        if (definition.catalyst == null) {
-            jsonObject.add("catalyst", null);
-        }
         return jsonObject;
     }
 
@@ -127,6 +120,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         }
         sceneWidget.needCompileCache();
     }
+
 
     @SideOnly(Side.CLIENT)
     Thread thread;
@@ -186,7 +180,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
                         if (definition != null) {
                             tileEntity.setDefinition(definition);
                             if (disableFormed) {
-                                definition.formedRenderer = new BlockStateRenderer(Blocks.AIR.getDefaultState());
+                                definition.getIdleStatus().setRenderer(new BlockStateRenderer(Blocks.AIR.getDefaultState()));
                             }
                         }
                         tileEntity.isFormed = isFormed;

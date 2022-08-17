@@ -406,6 +406,16 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
         return this;
     }
 
+    public void setSelected(Widget widget) {
+        if (widget instanceof ISelected) {
+            if (selectedWidget != null && selectedWidget != widget) {
+                ((ISelected) selectedWidget).onUnSelected();
+            }
+            selectedWidget = widget;
+            ((ISelected) selectedWidget).onSelected();
+        }
+    }
+
     public interface IDraggable extends ISelected {
         default boolean allowDrag(int mouseX, int mouseY, int button) {
             return allowSelected(mouseX, mouseY, button);

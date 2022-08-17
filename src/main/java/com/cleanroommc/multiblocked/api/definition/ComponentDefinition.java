@@ -1,37 +1,29 @@
 package com.cleanroommc.multiblocked.api.definition;
 
-import com.cleanroommc.multiblocked.api.crafttweaker.functions.*;
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
-import com.cleanroommc.multiblocked.util.RayTraceUtils;
-import com.google.gson.JsonObject;
-import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.item.IItemStack;
-import crafttweaker.api.minecraft.CraftTweakerMC;
-import crafttweaker.api.util.IAxisAlignedBB;
-import crafttweaker.mc1120.item.MCItemStack;
-import crafttweaker.mc1120.util.MCAxisAlignedBB;
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.block.CustomProperties;
+import com.cleanroommc.multiblocked.api.crafttweaker.functions.*;
+import com.cleanroommc.multiblocked.api.json.IRendererTypeAdapterFactory;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
-import net.minecraft.block.Block;
+import com.cleanroommc.multiblocked.client.renderer.IRenderer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mojang.realmsclient.util.JsonUtils;
+import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.item.IItemStack;
+import crafttweaker.mc1120.item.MCItemStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
-import stanhebben.zenscript.annotations.ZenSetter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Definition of a component.
@@ -40,57 +32,50 @@ import java.util.stream.Collectors;
 @ZenRegister
 public class ComponentDefinition {
     public final ResourceLocation location;
-    public transient Class<? extends ComponentTileEntity<?>> clazz;
-    public transient final EnumMap<EnumFacing, List<AxisAlignedBB>> baseAABB;
-    public transient final EnumMap<EnumFacing, List<AxisAlignedBB>> formedAABB;
+    public Class<? extends ComponentTileEntity<?>> clazz;
     public JsonObject traits;
+
+    // ******* status properties ******* //
+    public final Map<String, StatusProperties> status;
+
+    // ******* block item properties ******* //
+    public CustomProperties properties;
+
     @ZenProperty
-    public boolean allowRotate;
+    public IDynamicRenderer dynamicRenderer;
     @ZenProperty
-    public boolean showInJei;
+    public IDrops onDrops;
     @ZenProperty
-    public IRenderer baseRenderer;
+    public ILeftClick onLeftClick;
     @ZenProperty
-    public IRenderer formedRenderer;
+    public IRightClick onRightClick;
     @ZenProperty
-    public IRenderer workingRenderer;
+    public INeighborChanged onNeighborChanged;
     @ZenProperty
-    public boolean isOpaqueCube;
+    public IGetOutputRedstoneSignal getOutputRedstoneSignal;
     @ZenProperty
-    public transient IDynamicRenderer dynamicRenderer;
+    public IUpdateTick updateTick;
     @ZenProperty
-    public transient IDrops onDrops;
+    public IStatusChanged statusChanged;
     @ZenProperty
-    public transient ILeftClick onLeftClick;
+    public IShouldCheckPattern shouldCheckPattern;
     @ZenProperty
-    public transient IRightClick onRightClick;
+    public IReceiveCustomData receiveCustomData;
     @ZenProperty
-    public transient INeighborChanged onNeighborChanged;
+    public IWriteInitialData writeInitialData;
     @ZenProperty
-    public transient IGetOutputRedstoneSignal getOutputRedstoneSignal;
-    @ZenProperty
-    public transient IUpdateTick updateTick;
-    @ZenProperty
-    public transient IStatusChanged statusChanged;
-    @ZenProperty
-    public transient IShouldCheckPattern shouldCheckPattern;
-    @ZenProperty
-    public transient IReceiveCustomData receiveCustomData;
-    @ZenProperty
-    public transient IWriteInitialData writeInitialData;
-    @ZenProperty
-    public transient IReadInitialData readInitialData;
+    public IReadInitialData readInitialData;
 
     public ComponentDefinition(ResourceLocation location, Class<? extends ComponentTileEntity<?>> clazz) {
         this.location = location;
         this.clazz = clazz;
-        this.baseRenderer = null;
-        this.isOpaqueCube = true;
-        this.allowRotate = true;
-        this.showInJei = true;
-        baseAABB = new EnumMap<>(EnumFacing.class);
-        formedAABB = new EnumMap<>(EnumFacing.class);
+        this.status = new LinkedHashMap<>();
+        this.status.put(StatusProperties.UNFORMED, new StatusProperties(StatusProperties.UNFORMED, null, true));
+        this.status.put(StatusProperties.IDLE, new StatusProperties(StatusProperties.IDLE, getBaseStatus(), true));
+        this.status.put(StatusProperties.WORKING, new StatusProperties(StatusProperties.WORKING, getIdleStatus(), true));
+        this.status.put(StatusProperties.SUSPEND, new StatusProperties(StatusProperties.SUSPEND, getWorkingStatus(), true));
         traits = new JsonObject();
+        this.properties = new CustomProperties();
     }
 
     public ComponentTileEntity<?> createNewTileEntity(World world){
@@ -105,8 +90,28 @@ public class ComponentDefinition {
         return null;
     }
 
+    public StatusProperties getStatus(String status) {
+        return this.status.containsKey(status) ? this.status.get(status) : this.status.getOrDefault(StatusProperties.UNFORMED, StatusProperties.EMPTY);
+    }
+
+    public StatusProperties getBaseStatus() {
+        return getStatus(StatusProperties.UNFORMED);
+    }
+
+    public StatusProperties getIdleStatus() {
+        return getStatus(StatusProperties.IDLE);
+    }
+
+    public StatusProperties getWorkingStatus() {
+        return getStatus(StatusProperties.WORKING);
+    }
+
+    public StatusProperties getSuspendStatus() {
+        return getStatus(StatusProperties.SUSPEND);
+    }
+
     public IRenderer getRenderer() {
-        return baseRenderer;
+        return getBaseStatus().getRenderer();
     }
 
     @Override
@@ -126,45 +131,6 @@ public class ComponentDefinition {
         return new MCItemStack(getStackForm());
     }
 
-    public void setAABB(boolean isFormed, AxisAlignedBB... aaBBs) {
-        if (isFormed) this.formedAABB.clear(); else this.baseAABB.clear();
-        EnumMap<EnumFacing, List<AxisAlignedBB>> aabb = isFormed ? this.formedAABB : this.baseAABB;
-        Arrays.stream(aaBBs).forEach(aaBB->{
-            for (EnumFacing facing : EnumFacing.values()) {
-                aabb.computeIfAbsent(facing, f->new ArrayList<>()).add(RayTraceUtils.rotateAABB(aaBB, facing));
-            }
-        });
-    }
-
-    public List<AxisAlignedBB> getAABB(boolean isFormed, EnumFacing facing) {
-        return isFormed ? this.formedAABB.getOrDefault(facing, Collections.singletonList(Block.FULL_BLOCK_AABB)) :
-                this.baseAABB.getOrDefault(facing, Collections.singletonList(Block.FULL_BLOCK_AABB));
-    }
-
-    @Optional.Method(modid = Multiblocked.MODID_CT)
-    @ZenGetter("baseAABB")
-    public List<IAxisAlignedBB> getBaseAABB() {
-        return getAABB(false, EnumFacing.NORTH).stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
-    }
-
-    @Optional.Method(modid = Multiblocked.MODID_CT)
-    @ZenSetter("baseAABB")
-    public void setBaseAABB(IAxisAlignedBB[] baseAABB) {
-        setAABB(false, Arrays.stream(baseAABB).map(CraftTweakerMC::getAxisAlignedBB).toArray(AxisAlignedBB[]::new));
-    }
-
-    @Optional.Method(modid = Multiblocked.MODID_CT)
-    @ZenGetter("formedAABB")
-    public List<IAxisAlignedBB> getFormedAABB() {
-        return getAABB(true, EnumFacing.NORTH).stream().map(MCAxisAlignedBB::new).collect(Collectors.toList());
-    }
-
-    @Optional.Method(modid = Multiblocked.MODID_CT)
-    @ZenSetter("formedAABB")
-    public void setFormedAABB(IAxisAlignedBB[] formedAABB) {
-        setAABB(true, Arrays.stream(formedAABB).map(CraftTweakerMC::getAxisAlignedBB).toArray(AxisAlignedBB[]::new));
-    }
-
     public boolean needUpdateTick() {
         return updateTick != null;
     }
@@ -175,5 +141,93 @@ public class ComponentDefinition {
             this.clazz = (Class<? extends ComponentTileEntity<?>>) clazz;
         }
     }
-    
+
+    // ******* serialize ******* //
+
+    public final static int VERSION = 1;
+
+    public void fromJson(JsonObject json) {
+        int version = JsonUtils.getIntOr("version", json, 0);
+
+        if (version > VERSION) {
+            throw new IllegalArgumentException(String.format("using outdated version of mbd. script is {%d}, mbd supports {%d}", version, VERSION));
+        }
+
+        if (json.has("traits")) {
+            traits = json.get("traits").getAsJsonObject();
+        }
+        if (json.has("properties")) {
+            properties = Multiblocked.GSON.fromJson(json.get("properties"), CustomProperties.class);
+        }
+
+        if (version > 0) {
+            JsonObject statusJson = json.get("status").getAsJsonObject();
+            getBaseStatus().fromJson(statusJson.get(StatusProperties.UNFORMED).getAsJsonObject());
+            getIdleStatus().fromJson(statusJson.get(StatusProperties.IDLE).getAsJsonObject());
+            getWorkingStatus().fromJson(statusJson.get(StatusProperties.WORKING).getAsJsonObject());
+            getSuspendStatus().fromJson(statusJson.get(StatusProperties.SUSPEND).getAsJsonObject());
+            for (Map.Entry<String, JsonElement> entry : statusJson.entrySet()) {
+                parseStatus(entry.getKey(), statusJson);
+            }
+        } else { // legacy
+            properties.rotationState = JsonUtils.getBooleanOr("allowRotate", json, true) ? CustomProperties.RotationState.ALL : CustomProperties.RotationState.NONE;
+            properties.showInJei = JsonUtils.getBooleanOr("showInJei", json, properties.showInJei);
+
+            if (json.has("baseRenderer")) {
+                JsonElement renderer = json.get("baseRenderer");
+                if (IRendererTypeAdapterFactory.INSTANCE.isPostRenderer(renderer)) {
+                    getBaseStatus().setRenderer(() -> Multiblocked.GSON.fromJson(renderer, IRenderer.class));
+                } else {
+                    getBaseStatus().setRenderer(Multiblocked.GSON.fromJson(renderer, IRenderer.class));
+                }
+            }
+
+            if (json.has("formedRenderer")) {
+                JsonElement renderer = json.get("formedRenderer");
+                if (IRendererTypeAdapterFactory.INSTANCE.isPostRenderer(renderer)) {
+                    getIdleStatus().setRenderer(() -> Multiblocked.GSON.fromJson(renderer, IRenderer.class));
+                } else {
+                    getIdleStatus().setRenderer(Multiblocked.GSON.fromJson(renderer, IRenderer.class));
+                }
+            }
+
+            if (json.has("workingRenderer")) {
+                JsonElement renderer = json.get("workingRenderer");
+                if (IRendererTypeAdapterFactory.INSTANCE.isPostRenderer(renderer)) {
+                    getWorkingStatus().setRenderer(() -> Multiblocked.GSON.fromJson(renderer, IRenderer.class));
+                } else {
+                    getWorkingStatus().setRenderer(Multiblocked.GSON.fromJson(renderer, IRenderer.class));
+                }
+            }
+        }
+    }
+
+    private StatusProperties parseStatus(String name, JsonObject json) {
+        if (status.containsKey(name)) {
+            return status.get(name);
+        } else {
+            StatusProperties parent = null;
+            JsonObject statusJson = json.get(name).getAsJsonObject();
+            if (statusJson.has("parent")) {
+                String parentName = statusJson.get("parent").getAsString();
+                parent = json.has(parentName) ? parseStatus(parentName, json) : null;
+            }
+            StatusProperties result = new StatusProperties(name, parent);
+            result.fromJson(statusJson);
+            status.put(name, result);
+            return result;
+        }
+    }
+
+    public JsonObject toJson(JsonObject json) {
+        json.addProperty("version", VERSION);
+        json.addProperty("location", location.toString());
+        json.add("traits", traits);
+        json.add("properties", Multiblocked.GSON.toJsonTree(properties));
+        JsonObject statusJson = new JsonObject();
+        status.forEach((name, status) -> statusJson.add(name, status.toJson(new JsonObject())));
+        json.add("status", statusJson);
+        return json;
+    }
+
 }

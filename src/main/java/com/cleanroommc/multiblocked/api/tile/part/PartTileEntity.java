@@ -3,6 +3,7 @@ package com.cleanroommc.multiblocked.api.tile.part;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.crafttweaker.interfaces.ICTPart;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.definition.StatusProperties;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
@@ -46,23 +47,17 @@ public abstract class PartTileEntity<T extends PartDefinition> extends Component
     }
 
     @Override
-    public IRenderer updateCurrentRenderer() {
-        if (definition.dynamicRenderer != null) {
-            try {
-                return definition.dynamicRenderer.apply(this);
-            } catch (Exception exception) {
-                definition.dynamicRenderer = null;
-                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicRenderer", exception);
-            }
-        }
-        if (definition.workingRenderer != null) {
-            for (ControllerTileEntity controller : getControllers()) {
-                if (controller.isFormed() && controller.getStatus().equals("working")) {
-                    return definition.workingRenderer;
+    public String getStatus() {
+        boolean isIdle = false;
+        for (ControllerTileEntity controller : getControllers()) {
+            if (controller.getStatus().equals(StatusProperties.IDLE)) {
+                isIdle = true;
+                if (controller.getStatus().equals(StatusProperties.WORKING)) {
+                    return StatusProperties.WORKING;
                 }
             }
         }
-        return super.updateCurrentRenderer();
+        return isIdle ? StatusProperties.IDLE : StatusProperties.UNFORMED;
     }
 
     public boolean canShared() {

@@ -121,7 +121,7 @@ public class CycleBlockStateRenderer extends BlockStateRenderer {
                 BufferBuilder buffer = Tessellator.getInstance().getBuffer();
                 buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
                 if (state.getBlock() instanceof BlockComponent) {
-                    IRenderer renderer = ((BlockComponent) state.getBlock()).definition.baseRenderer;
+                    IRenderer renderer = ((BlockComponent) state.getBlock()).definition.getRenderer();
                     if (renderer != null) {
                         renderer.renderBlock(state, te.getPos(), dummyWorld, buffer);
                     }

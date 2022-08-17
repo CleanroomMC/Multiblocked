@@ -197,6 +197,9 @@ public class DrawerHelper {
 
     @SideOnly(Side.CLIENT)
     public static void drawSolidRect(int x, int y, int width, int height, int color) {
+        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
         Gui.drawRect(x, y, x + width, y + height, color);
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
         GlStateManager.enableBlend();

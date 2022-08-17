@@ -162,11 +162,11 @@ public class RecipePage extends PageWidget{
     private void readRecipe(PacketBuffer buffer) {
         if (buffer.readBoolean()) {
             duration = buffer.readVarInt();
-            recipe = controller.getDefinition().recipeMap.recipes.get(buffer.readString(Short.MAX_VALUE));
+            recipe = controller.getDefinition().getRecipeMap().recipes.get(buffer.readString(Short.MAX_VALUE));
             if (recipeWidget != null) {
                 removeWidget(recipeWidget);
             }
-            this.addWidget(recipeWidget = new RecipeWidget(recipe, controller.getDefinition().recipeMap.progressTexture, null));
+            this.addWidget(recipeWidget = new RecipeWidget(recipe, controller.getDefinition().getRecipeMap().progressTexture, null));
             recipeWidget.inputs.addSelfPosition(5, 0);
             recipeWidget.outputs.addSelfPosition(-5, 0);
             recipeWidget.setSelfPosition(new Position(0, 167));

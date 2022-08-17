@@ -312,3 +312,29 @@ multiblocked.gui.condition.block.count=Minimum Count
 multiblocked.recipe.condition.block=Block
 
 multiblocked.gui.predicate.slot=match the IO slot
+
+multiblocked.gui.widget.component.dynamic_shape=Dynamic Shape
+multiblocked.gui.widget.component.collision=Collision
+multiblocked.gui.widget.component.destroy_time=Destroy Time
+multiblocked.gui.widget.component.explosion_resistance=Explosion Resistance
+multiblocked.gui.widget.component.speed_factor=Speed Factor
+multiblocked.gui.widget.component.jump_factor=Jump Factor
+multiblocked.gui.widget.component.friction=Friction
+multiblocked.gui.widget.component.harvest=Harvest
+multiblocked.gui.widget.component.stack_size=Stack Size
+multiblocked.gui.widget.component.tab_group=Tab Group
+multiblocked.gui.widget.component.status=Status
+multiblocked.gui.widget.component.rotate_state=Rotation Rule
+multiblocked.gui.widget.component.status.create=create a status
+multiblocked.gui.widget.component.status.parent=select a parent
+multiblocked.gui.widget.component.status.name=status name
+multiblocked.gui.widget.component.status.renderer=use a specific renderer or inherit from parent
+multiblocked.gui.widget.component.status.light_emissive=emit light (0-15) or inherit from parent
+multiblocked.gui.widget.component.status.shape=specify a shape or inherit from parent
+multiblocked.gui.widget.component.status.sound=use a specific sound or inherit from parent
+multiblocked.gui.tips.play=Play
+multiblocked.gui.widget.sound.loop=should loop
+multiblocked.gui.widget.sound.delay=delay time >= 0
+multiblocked.gui.widget.sound.volume=volume 0-1
+multiblocked.gui.widget.sound.pitch=pitch >= 0
+multiblocked.gui.shape.add=add a box

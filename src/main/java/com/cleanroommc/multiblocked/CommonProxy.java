@@ -78,7 +78,7 @@ public class CommonProxy {
     public void postInit() {
         Multiblocked.LOGGER.info("post init");
         for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
-            capability.getAnyBlock().definition.baseRenderer = new CycleBlockStateRenderer(capability.getCandidates());
+            capability.getAnyBlock().definition.getBaseStatus().setRenderer(new CycleBlockStateRenderer(capability.getCandidates()));
         }
     }
 
@@ -127,15 +127,6 @@ public class CommonProxy {
 
     @SuppressWarnings("unchecked")
     private static void componentPost(ComponentDefinition definition, JsonObject config) {
-        if (definition.baseRenderer instanceof BlockStateRenderer) {
-            definition.baseRenderer = Multiblocked.GSON.fromJson(config.get("baseRenderer"), IRenderer.class);
-        }
-        if (definition.formedRenderer instanceof BlockStateRenderer) {
-            definition.formedRenderer = Multiblocked.GSON.fromJson(config.get("formedRenderer"), IRenderer.class);
-        }
-        if (definition.workingRenderer instanceof BlockStateRenderer) {
-            definition.workingRenderer = Multiblocked.GSON.fromJson(config.get("workingRenderer"), IRenderer.class);
-        }
         List<CapabilityTrait> useInterfaceTraits = new ArrayList<>();
         for (Map.Entry<String, JsonElement> entry : definition.traits.entrySet()) {
             MultiblockCapability<?> capability = MbdCapabilities.get(entry.getKey());
@@ -154,8 +145,6 @@ public class CommonProxy {
     }
 
     public static void controllerPost(ControllerDefinition definition, JsonObject config) {
-        definition.basePattern = Multiblocked.GSON.fromJson(config.get("basePattern"), JsonBlockPattern.class).build();
-        definition.recipeMap = RecipeMap.RECIPE_MAP_REGISTRY.getOrDefault(config.get("recipeMap").getAsString(), RecipeMap.EMPTY);
         componentPost(definition, config);
     }
 

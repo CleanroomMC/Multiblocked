@@ -131,7 +131,7 @@ public class RecipeLogic {
             lastRecipe = null;
             setupRecipe(recipe);
         } else {
-            List<Recipe> matches = this.definition.recipeMap.searchRecipe(this.controller, this);
+            List<Recipe> matches = this.definition.getRecipeMap().searchRecipe(this.controller, this);
             lastRecipe = null;
             for (Recipe match : matches) {
                 if (match.checkConditions(this)) {
@@ -244,7 +244,7 @@ public class RecipeLogic {
     }
 
     public void readFromNBT(NBTTagCompound compound) {
-        lastRecipe = compound.hasKey("recipe") ? definition.recipeMap.recipes.get(compound.getString("recipe")) : null;
+        lastRecipe = compound.hasKey("recipe") ? definition.getRecipeMap().recipes.get(compound.getString("recipe")) : null;
         if (lastRecipe != null) {
             status = compound.hasKey("status") ? Status.values()[compound.getInteger("status")] : Status.WORKING;
             duration = compound.hasKey("duration") ? compound.getInteger("duration") : lastRecipe.duration;

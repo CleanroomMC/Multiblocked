@@ -82,7 +82,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicPattern", exception);
             }
         }
-        return definition.basePattern;
+        return definition.getBasePattern();
     }
 
     @Override
@@ -106,7 +106,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public boolean isValidFrontFacing(EnumFacing facing) {
-        return definition.allowRotate && facing.getAxis() != EnumFacing.Axis.Y;
+        return super.isValidFrontFacing(facing) && facing.getAxis() != EnumFacing.Axis.Y;
     }
 
     public boolean isFormed() {
@@ -133,22 +133,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "updateFormed", exception);
             }
         }
-    }
-
-    @Override
-    public IRenderer updateCurrentRenderer() {
-        if (definition.dynamicRenderer != null) {
-            try {
-                return definition.dynamicRenderer.apply(this);
-            } catch (Exception exception) {
-                definition.dynamicRenderer = null;
-                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicRenderer", exception);
-            }
-        }
-        if (definition.workingRenderer != null && isFormed() && (status.equals("working") || status.equals("suspend"))) {
-            return definition.workingRenderer;
-        }
-        return super.updateCurrentRenderer();
     }
 
     public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
@@ -410,15 +394,15 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         }
 
         if (!world.isRemote) {
-            if (!isFormed() && definition.catalyst != null) {
+            if (!isFormed() && definition.getCatalyst() != null) {
                 if (state == null) state = new MultiblockState(world, pos);
                 ItemStack held = player.getHeldItem(hand);
-                if (definition.catalyst.isEmpty() || held.isItemEqual(definition.catalyst)) {
+                if (definition.getCatalyst().isEmpty() || held.isItemEqual(definition.getCatalyst())) {
                     if (shouldCheckPattern() && checkPattern()) { // formed
                         player.swingArm(hand);
                         ITextComponent formedMsg = new TextComponentTranslation(getUnlocalizedName()).appendSibling(new TextComponentTranslation("multiblocked.multiblock.formed"));
                         player.sendStatusMessage(formedMsg, true);
-                        if (!player.isCreative() && !definition.catalyst.isEmpty()) {
+                        if (!player.isCreative() && !definition.getCatalyst().isEmpty()) {
                             held.shrink(1);
                         }
                         MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
@@ -462,7 +446,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public void asyncThreadLogic(long periodID) {
-        if (!isFormed() && getDefinition().catalyst == null && (getOffset() + periodID) % 4 == 0) {
+        if (!isFormed() && getDefinition().getCatalyst() == null && (getOffset() + periodID) % 4 == 0) {
             if (getPattern().checkPatternAt(new MultiblockState(world, pos), false)) {
                 FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
                     if (state == null) state = new MultiblockState(world, pos);

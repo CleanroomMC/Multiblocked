@@ -22,6 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -35,8 +36,8 @@ public class MbdComponents {
 
     static {
         ComponentDefinition definition = new ComponentDefinition(new ResourceLocation(Multiblocked.MODID, "dummy_component"), DummyComponentTileEntity.class);
-        definition.isOpaqueCube = false;
-        definition.showInJei = false;
+        definition.properties.isOpaque = false;
+        definition.properties.showInJei = false;
         registerComponent(definition);
         DummyComponentBlock = COMPONENT_BLOCKS_REGISTRY.get(definition.location);
         DummyComponentItem = COMPONENT_ITEMS_REGISTRY.get(definition.location);
@@ -73,16 +74,21 @@ public class MbdComponents {
 
     public static List<Runnable> handlers = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
     public static <T extends ComponentDefinition> void registerComponentFromFile(Gson gson, File location, Class<T> clazz, BiConsumer<T, JsonObject> postHandler) {
         for (File file : Optional.ofNullable(location.listFiles((f, n) -> n.endsWith(".json"))).orElse(new File[0])) {
             try {
                 JsonObject config = (JsonObject) FileUtility.loadJson(file);
-                T definition = gson.fromJson(config, clazz);
-                if (definition != null) {
-                    registerComponent(definition);
-                    if (postHandler != null) {
-                        handlers.add(()->postHandler.accept(definition, config));
-                    }
+                Constructor<?> constructor = Arrays.stream(clazz.getDeclaredConstructors())
+                        .filter(c -> {
+                            if (c.getParameterCount() != 1) return false;
+                            Class<?>[] classes = c.getParameterTypes();
+                            return ResourceLocation.class.isAssignableFrom(classes[0]);
+                        }).findFirst().orElseThrow(() -> new IllegalArgumentException("cant find the constructor with the parameters(resourcelocation)"));
+                T definition = (T) constructor.newInstance(new ResourceLocation(config.get("location").getAsString()));
+                registerComponent(definition);
+                if (postHandler != null) {
+                    handlers.add(()->postHandler.accept(definition, config));
                 }
             } catch (Exception e) {
                 Multiblocked.LOGGER.error("error while loading the definition file {}", file.toString());

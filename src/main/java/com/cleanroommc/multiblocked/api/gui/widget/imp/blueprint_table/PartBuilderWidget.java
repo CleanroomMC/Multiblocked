@@ -86,7 +86,7 @@ public class PartBuilderWidget extends WidgetGroup {
 
     private void setNewRenderer(IRenderer newRenderer) {
         PartDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-        definition.baseRenderer = newRenderer;
+        definition.getBaseStatus().setRenderer(newRenderer);
         tileEntity.setDefinition(definition);
     }
 
@@ -107,7 +107,7 @@ public class PartBuilderWidget extends WidgetGroup {
                         JsonElement jsonElement = FileUtility.loadJson(file);
                         if (jsonElement != null) {
                             try {
-                                setNewRenderer(Multiblocked.GSON.fromJson(jsonElement, PartDefinition.class).baseRenderer);
+                                setNewRenderer(Multiblocked.GSON.fromJson(jsonElement, PartDefinition.class).getRenderer());
                             } catch (Exception ignored) {}
                         }
                     })

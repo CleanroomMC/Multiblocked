@@ -52,7 +52,7 @@ public class ComponentRenderer implements ICustomItemRenderer {
             return renderer.renderBlock(state, pos, blockAccess, buffer);
         } else {
             if (state.getBlock() instanceof BlockComponent) { // random capability
-                IRenderer renderer =  ((BlockComponent) state.getBlock()).definition.baseRenderer;
+                IRenderer renderer =  ((BlockComponent) state.getBlock()).definition.getRenderer();
                 if (renderer == null || renderer.isRaw()) return false;
                 return renderer.renderBlock(state, pos, blockAccess, buffer);
             }

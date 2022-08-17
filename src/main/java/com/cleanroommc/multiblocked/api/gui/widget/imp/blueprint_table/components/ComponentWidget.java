@@ -292,7 +292,7 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
                                 status.lightEmissive = null;
                             } else {
                                 status.setLightEmissive(status.lightEmissive == null ? 0 : status.getLightEmissive());
-                                widgetGroup.addWidget(GuiUtils.createIntField(30, 0, "", "", status.getLightEmissive(), 0, 15, status::setLightEmissive));
+                                widgetGroup.addWidget(GuiUtils.createIntField(30, 0, "", "light", status.getLightEmissive(), 0, 15, status::setLightEmissive));
                             }
                         }));
                         panel.addWidget(createStatusBoolSwitch(4, 80, "shape", "multiblocked.gui.widget.component.status.shape", status.shape != null, widgetGroup -> {

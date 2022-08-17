@@ -86,6 +86,7 @@ public class MbdComponents {
                             return ResourceLocation.class.isAssignableFrom(classes[0]);
                         }).findFirst().orElseThrow(() -> new IllegalArgumentException("cant find the constructor with the parameters(resourcelocation)"));
                 T definition = (T) constructor.newInstance(new ResourceLocation(config.get("location").getAsString()));
+                definition.fromJson(config);
                 registerComponent(definition);
                 if (postHandler != null) {
                     handlers.add(()->postHandler.accept(definition, config));

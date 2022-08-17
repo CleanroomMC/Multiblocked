@@ -89,6 +89,7 @@ public class ManaCapabilityTrait extends ProgressCapabilityTrait implements ISpa
     @Override
     public void recieveMana(int i) {
         mana = Math.max(0, Math.min(this.getCurrentMana() + i, capacity));
+        markAsDirty();
     }
 
     @Override

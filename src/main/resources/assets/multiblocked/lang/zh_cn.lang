@@ -34,6 +34,8 @@ multiblocked.capability.ta_impetus=TA 元动能量
 ta_impetus.any.name=任何神秘进阶元动容器
 multiblocked.capability.pneumatic_pressure=PnC 压力
 pneumatic_pressure.any.name=任何气动工艺压力容器
+multiblocked.capability.starlight_as=AS 星能
+starlight_as.any.name=任何具有AS星能容器特征的mbd方块
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 
@@ -227,6 +229,13 @@ multiblocked.gui.trait.pressure.volume=体积: %s mL
 multiblocked.gui.trait.pressure.tips.0=危险压强
 multiblocked.gui.trait.pressure.tips.1=致命压强
 multiblocked.gui.trait.pressure.tips.2=体积
+
+multiblocked.gui.trait.starlight.starlight=星能: %d
+multiblocked.gui.trait.starlight.current=星能: %d / %d
+multiblocked.gui.trait.starlight.constellation=共鸣星座: %s
+multiblocked.gui.trait.starlight.no_constellation=无共鸣星座
+multiblocked.gui.trait.starlight.tips.0=容量 (星能)
+multiblocked.gui.trait.starlight.tips.1=如果为 true, 该部件会像星辉工作台一样被动收集星能
 
 multiblocked.gui.trait.item.ore_dict=矿辞
 multiblocked.gui.trait.item.add=添加一个新的物品匹配器

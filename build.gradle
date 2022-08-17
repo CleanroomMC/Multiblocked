@@ -62,6 +62,9 @@ repositories {
         url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
     maven {
+        url 'https://maven.hellfiredev.net/'
+    }
+    maven {
         url 'https://modmaven.dev/'
     }
 }
@@ -74,7 +77,6 @@ dependencies {
     compile 'CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.673'
     compile 'mezz.jei:jei_1.12.2:4.15.0.293'
 
-    deobfCompile "curse.maven:astral-sorcery-241721:3044416"
     deobfCompile 'curse.maven:baubles-227083:2518667'
     deobfCompile "curse.maven:botania-225643:3330934"
     deobfCompile 'curse.maven:codechicken-lib-1-8-242818:2779848'
@@ -97,6 +99,7 @@ dependencies {
     deobfCompile 'curse.maven:embers-rekindled-300777:3695248'
     deobfCompile 'curse.maven:thaumic-augmentation-319441:3536155'
     deobfCompile 'me.desht.pneumaticcraft:pneumaticcraft-repressurized:1.12.2-0.11.9-384'
+    deobfCompile 'hellfirepvp.astralsorcery:astralsorcery:1.12.2-1.10.23-v161'
 }
 
 sourceSets {

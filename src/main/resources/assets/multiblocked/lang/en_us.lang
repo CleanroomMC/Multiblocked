@@ -27,15 +27,17 @@ exu2_gp.any.name=Any multiblock block with GP Trait
 multiblocked.capability.lightningcraft_le=LightningCraft LE
 lightningcraft_le.any.name=Any LightningCraft LE Containers
 multiblocked.capability.projecte_emc=ProjectE EMC
-projecte_emc.any.name=Any multiblock block with EMC Trait
+projecte_emc.any.name=Any multiblocked block with EMC Trait
 multiblocked.capability.bg_lp=Blood Magic LP
-bg_lp.any.name=Any multiblock block with LP Trait
+bg_lp.any.name=Any multiblocked block with LP Trait
 multiblocked.capability.ember=Embers Ember
 ember.any.name=Any Embers Ember Containers
 multiblocked.capability.ta_impetus=TA Impetus Energy
 ta_impetus.any.name=Any Thaumic Augmentation Impetus Container
 multiblocked.capability.pneumatic_pressure=PnC Pressure
 pneumatic_pressure.any.name=Any Pneumatic Pressure Container
+multiblocked.capability.starlight_as=AS Starlight
+starlight_as.any.name=Any multiblocked block with AS Starlight Trait
 
 multiblocked.gui.content.more_option=more options
 multiblocked.gui.content.back=back
@@ -233,6 +235,13 @@ multiblocked.gui.trait.pressure.volume=Volume: %s mL
 multiblocked.gui.trait.pressure.tips.0=Danger Pressure
 multiblocked.gui.trait.pressure.tips.1=Critical Pressure
 multiblocked.gui.trait.pressure.tips.2=Volume
+
+multiblocked.gui.trait.starlight.starlight=Starlight: %d
+multiblocked.gui.trait.starlight.current=星能: %d / %d
+multiblocked.gui.trait.starlight.constellation=Focusing constellation: %s
+multiblocked.gui.trait.starlight.no_constellation=No Focusing constellation
+multiblocked.gui.trait.starlight.tips.0=Capacity (Starlight)
+multiblocked.gui.trait.starlight.tips.1=If true, the part block will receive starlight passively like Luminous Crafting Table
 
 multiblocked.gui.trait.aspect.amount=Amount:
 multiblocked.gui.trait.gas.amount=Gas Amount:

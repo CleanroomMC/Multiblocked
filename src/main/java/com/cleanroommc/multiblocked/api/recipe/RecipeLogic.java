@@ -53,7 +53,7 @@ public class RecipeLogic {
                 checkAsyncRecipeSearching(this::handleRecipeWorking);
             } else {
                 handleRecipeWorking();
-                if (progress == duration) {
+                if (progress >= duration) {
                     onRecipeFinish();
                 }
             }

@@ -55,6 +55,7 @@ public class Multiblocked {
     public static final String MODID_EMBERS = "embers";
     public static final String MODID_TA = "thaumicaugmentation";
     public static final String MODID_PNC = "pneumaticcraft";
+    public static final String MODID_AS = "astralsorcery";
     public static final String NAME = "Multiblocked";
     public static final String VERSION = "0.6.5b";
     public static final Logger LOGGER = LogManager.getLogger(NAME);

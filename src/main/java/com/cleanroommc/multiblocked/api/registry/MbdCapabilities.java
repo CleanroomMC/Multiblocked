@@ -71,6 +71,9 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_PNC)) {
             registerCapability(PneumaticPressureCapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_AS)) {
+            registerCapability(StarlightAstralCapability.CAP);
+        }
     }
 
     public static MultiblockCapability<?> get(String s) {

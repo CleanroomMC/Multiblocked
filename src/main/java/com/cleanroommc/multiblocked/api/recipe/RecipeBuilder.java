@@ -6,11 +6,13 @@ import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.*;
 import com.cleanroommc.multiblocked.common.recipe.conditions.*;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
+import com.cleanroommc.multiblocked.common.recipe.content.Starlight;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import lach_01298.qmd.particle.ParticleStack;
 import mekanism.api.gas.GasStack;
 import net.minecraft.item.ItemStack;
@@ -609,6 +611,32 @@ public class RecipeBuilder {
     @ZenMethod
     public RecipeBuilder inputPressure(float pressure) {
         return inputPressure(1, pressure);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_AS)
+    @ZenMethod
+    public RecipeBuilder inputStarlight(float chance, int starlight, @stanhebben.zenscript.annotations.Optional String constellation) {
+        keyBuilder.append(StarlightAstralCapability.CAP.name).append(starlight).append(constellation);
+        return input(StarlightAstralCapability.CAP, chance, new Starlight(starlight, ConstellationRegistry.getConstellationByName(constellation)));
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_AS)
+    @ZenMethod
+    public RecipeBuilder outputStarlight(float chance, int starlight, @stanhebben.zenscript.annotations.Optional String constellation) {
+        keyBuilder.append(StarlightAstralCapability.CAP.name).append(starlight).append(constellation);
+        return output(StarlightAstralCapability.CAP, chance, new Starlight(starlight, ConstellationRegistry.getConstellationByName(constellation)));
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_AS)
+    @ZenMethod
+    public RecipeBuilder inputStarlight(int starlight, @stanhebben.zenscript.annotations.Optional String constellation) {
+        return inputStarlight(1, starlight, constellation);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_AS)
+    @ZenMethod
+    public RecipeBuilder outputStarlight(int starlight, @stanhebben.zenscript.annotations.Optional String constellation) {
+        return outputStarlight(1, starlight, constellation);
     }
 
     // conditions

@@ -92,7 +92,7 @@ public class StarlightAstralCapability extends MultiblockCapability<Starlight> {
         JsonObject jsonObject = json.getAsJsonObject();
         int starlight = JsonUtils.getInt(jsonObject, "starlight");
         JsonElement constellationJson = jsonObject.get("constellation");
-        IConstellation constellation = constellationJson.isJsonNull() ? null : ConstellationRegistry.getConstellationByName(constellationJson.getAsString());
+        IConstellation constellation = constellationJson == null || constellationJson.isJsonNull() ? null : ConstellationRegistry.getConstellationByName(constellationJson.getAsString());
         return new Starlight(starlight, constellation);
     }
 

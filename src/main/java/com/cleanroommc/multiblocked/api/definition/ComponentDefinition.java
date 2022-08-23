@@ -39,6 +39,7 @@ public class ComponentDefinition {
     public final Map<String, StatusProperties> status;
 
     // ******* block item properties ******* //
+    @ZenProperty
     public CustomProperties properties;
 
     @ZenProperty
@@ -172,6 +173,7 @@ public class ComponentDefinition {
         } else { // legacy
             properties.rotationState = JsonUtils.getBooleanOr("allowRotate", json, true) ? CustomProperties.RotationState.ALL : CustomProperties.RotationState.NONE;
             properties.showInJei = JsonUtils.getBooleanOr("showInJei", json, properties.showInJei);
+            properties.isOpaque = JsonUtils.getBooleanOr("isOpaqueCube", json, properties.isOpaque);
 
             if (json.has("baseRenderer")) {
                 JsonElement renderer = json.get("baseRenderer");

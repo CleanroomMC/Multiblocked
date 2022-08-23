@@ -129,13 +129,11 @@ public class ControllerDefinition extends ComponentDefinition {
         return super.needUpdateTick() || catalyst == null;
     }
 
-    @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenGetter("basePattern")
     public BlockPattern getBasePattern() {
         return basePattern == null ? null : basePattern.get();
     }
 
-    @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenGetter("recipeMap")
     public RecipeMap getRecipeMap() {
         return recipeMap == null ? null : recipeMap.get();
@@ -145,7 +143,6 @@ public class ControllerDefinition extends ComponentDefinition {
         return catalyst == null ? null : catalyst.get();
     }
 
-    @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenSetter("basePattern")
     public void setBasePattern(BlockPattern basePattern) {
         this.basePattern = () -> basePattern;
@@ -155,7 +152,6 @@ public class ControllerDefinition extends ComponentDefinition {
         this.basePattern = basePattern;
     }
 
-    @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenSetter("recipeMap")
     public void setRecipeMap(RecipeMap recipeMap) {
         this.recipeMap = () -> recipeMap;

@@ -1,6 +1,9 @@
 package com.cleanroommc.multiblocked.api.block;
 
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.util.EnumFacing;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenProperty;
 
 import java.util.function.Predicate;
 
@@ -9,15 +12,26 @@ import java.util.function.Predicate;
  * Date: 2022/04/27
  * Description:
  */
+@ZenClass("mods.multiblocked.definition.CustomProperties")
+@ZenRegister
 public class CustomProperties {
+    @ZenProperty
     public RotationState rotationState;
+    @ZenProperty
     public boolean showInJei;
+    @ZenProperty
     public boolean isOpaque;
+    @ZenProperty
     public boolean hasCollision;
+    @ZenProperty
     public float destroyTime;
+    @ZenProperty
     public float explosionResistance;
+    @ZenProperty
     public int harvestLevel;
+    @ZenProperty
     public int stackSize;
+    @ZenProperty
     public String tabGroup;
 
     public CustomProperties() {
@@ -32,10 +46,16 @@ public class CustomProperties {
         this.showInJei = true;
     }
 
+    @ZenClass("mods.multiblocked.definition.RotationState")
+    @ZenRegister
     public enum RotationState implements Predicate<EnumFacing> {
+        @ZenProperty
         ALL(dir -> true),
+        @ZenProperty
         NONE(dir -> false),
+        @ZenProperty
         Y_AXIS(dir -> dir.getAxis() == EnumFacing.Axis.Y),
+        @ZenProperty
         NON_Y_AXIS(dir -> dir.getAxis() != EnumFacing.Axis.Y);
 
         final Predicate<EnumFacing> predicate;

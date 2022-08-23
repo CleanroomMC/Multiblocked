@@ -220,6 +220,22 @@ public class RecipeBuilder {
         return output(MbdCapabilities.FLUID, chance, (Object[]) outputs);
     }
 
+    public RecipeBuilder inputEntities(float chance, EntityIngredient... inputs) {
+        return input(EntityMultiblockCapability.CAP, chance, (Object) inputs);
+    }
+
+    public RecipeBuilder outputEntities(float chance, EntityIngredient... outputs) {
+        return output(EntityMultiblockCapability.CAP, chance, (Object) outputs);
+    }
+
+    public RecipeBuilder inputEntities(EntityIngredient... inputs) {
+        return inputEntities(1, inputs);
+    }
+
+    public RecipeBuilder outputEntities(EntityIngredient... outputs) {
+        return outputEntities(1, outputs);
+    }
+
     @Optional.Method(modid = Multiblocked.MODID_BOT)
     @ZenMethod
     public RecipeBuilder inputMana(int mana) {

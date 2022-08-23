@@ -64,7 +64,7 @@ public class Widget {
     }
 
     public Widget setHoverTooltip(String tooltipText) {
-        this.tooltipText = tooltipText;
+        this.tooltipText = (tooltipText == null || tooltipText.isEmpty()) ? null : tooltipText;
         return this;
     }
 

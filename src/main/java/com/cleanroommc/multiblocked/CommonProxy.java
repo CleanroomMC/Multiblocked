@@ -10,24 +10,25 @@ import com.cleanroommc.multiblocked.api.gui.factory.TileEntityUIFactory;
 import com.cleanroommc.multiblocked.api.gui.factory.UIFactory;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.JsonBlockPatternWidget;
 import com.cleanroommc.multiblocked.api.item.ItemMultiblockBuilder.BuilderRecipeLogic;
-import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.registry.*;
 import com.cleanroommc.multiblocked.api.tile.BlueprintTableTileEntity;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileTesterEntity;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileTesterEntity;
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
-import com.cleanroommc.multiblocked.client.renderer.impl.BlockStateRenderer;
 import com.cleanroommc.multiblocked.client.renderer.impl.CycleBlockStateRenderer;
 import com.cleanroommc.multiblocked.core.asm.DynamicTileEntityGenerator;
 import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import crafttweaker.CraftTweakerAPI;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -93,17 +94,38 @@ public class CommonProxy {
         PartTileTesterEntity.registerTestPart();
         // register JsonBlockPatternBlock
         JsonBlockPatternWidget.registerBlock();
+        // register builtin components
+        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_energy_input"), PartDefinition.class, CommonProxy::partPost);
+        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_energy_output"), PartDefinition.class, CommonProxy::partPost);
+        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_item_input"), PartDefinition.class, CommonProxy::partPost);
+        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_item_output"), PartDefinition.class, CommonProxy::partPost);
+        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_fluid_input"), PartDefinition.class, CommonProxy::partPost);
+        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_fluid_output"), PartDefinition.class, CommonProxy::partPost);
+        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_entity"), PartDefinition.class, CommonProxy::partPost);
         // register JsonFiles
         MbdComponents.registerComponentFromFile(
-                Multiblocked.GSON, 
                 new File(Multiblocked.location, "definition/controller"),
                 ControllerDefinition.class,
                 CommonProxy::controllerPost);
         MbdComponents.registerComponentFromFile(
-                Multiblocked.GSON,
                 new File(Multiblocked.location, "definition/part"),
                 PartDefinition.class,
                 CommonProxy::partPost);
+    }
+
+    @SubscribeEvent
+    public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
+        File file = new File(Multiblocked.location, "assets/multiblocked/sounds.json");
+        if (file.exists() && file.isFile()) {
+            JsonElement sounds = FileUtility.loadJson(file);
+            if (sounds instanceof JsonObject) {
+                IForgeRegistry<SoundEvent> registry = event.getRegistry();
+                for (Map.Entry<String, JsonElement> sound : sounds.getAsJsonObject().entrySet()) {
+                    SoundEvent soundEvent = new SoundEvent(new ResourceLocation(Multiblocked.MODID, sound.getKey()));
+                    registry.register(soundEvent.setRegistryName(new ResourceLocation(Multiblocked.MODID, sound.getKey())));
+                }
+            }
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -146,6 +168,12 @@ public class CommonProxy {
 
     public static void controllerPost(ControllerDefinition definition, JsonObject config) {
         componentPost(definition, config);
+        if (definition.noNeedController) {
+            ItemStack catalyst = definition.getCatalyst();
+            if (catalyst != null && !catalyst.isEmpty()) {
+                MbdComponents.registerNoNeedController(catalyst, definition);
+            }
+        }
     }
 
     public static void partPost(PartDefinition definition, JsonObject config) {

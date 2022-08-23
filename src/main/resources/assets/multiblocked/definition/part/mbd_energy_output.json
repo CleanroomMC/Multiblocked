@@ -1,0 +1,56 @@
+{
+  "canShared": true,
+  "location": "multiblocked:energy_output",
+  "traits": {
+    "gtce_energy": {
+      "cIO": 1,
+      "gIO": 2,
+      "x": 9,
+      "y": 81,
+      "width": 160,
+      "height": 9,
+      "texture": "multiblocked:textures/gui/energy_bar.png",
+      "capacity": 10000
+    },
+    "exu2_gp": {
+      "x": 30,
+      "y": 74,
+      "width": 60,
+      "height": 18,
+      "textType": 3
+    },
+    "forge_energy": {
+      "cIO": 1,
+      "gIO": 2,
+      "x": 28,
+      "y": 106,
+      "width": 120,
+      "height": 9,
+      "texture": "multiblocked:textures/gui/energy_bar.png",
+      "capacity": 100000,
+      "maxReceive": 5000,
+      "maxExtract": 5000
+    }
+  },
+  "allowRotate": true,
+  "showInJei": true,
+  "baseRenderer": {
+    "baseTexture": "multiblocked:blocks/casing/base",
+    "frontTexture": "multiblocked:blocks/overlay/overlay_energy_out",
+    "formedAsController": true,
+    "type": "gregtech"
+  },
+  "properties": {
+    "isOpaque": true,
+    "destroyTime": 5.0,
+    "explosionResistance": 6.0,
+    "harvestLevel": 1,
+    "lightEmissive": 0,
+    "speedFactor": 1.0,
+    "jumpFactor": 1.0,
+    "friction": 0.6,
+    "hasCollision": true,
+    "tabGroup": "multiblocked.all",
+    "stackSize": 64
+  }
+}

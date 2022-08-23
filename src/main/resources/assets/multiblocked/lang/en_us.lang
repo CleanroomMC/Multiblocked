@@ -1,4 +1,4 @@
-multiblocked.multiblock.formed=Multiblock Formed!
+multiblocked.multiblock.formed= formed!
 
 multiblocked.capability.tc6_aspect=Thaumcraft Aspect
 tc6_aspect.any.name=Any Thaumcraft Aspect Holders
@@ -38,6 +38,14 @@ multiblocked.capability.pneumatic_pressure=PnC Pressure
 pneumatic_pressure.any.name=Any Pneumatic Pressure Container
 multiblocked.capability.starlight_as=AS Starlight
 starlight_as.any.name=Any multiblocked block with AS Starlight Trait
+
+tile.multiblocked.energy_output.name=Energy Output Hatch
+tile.multiblocked.energy_input.name=Energy Input Hatch
+tile.multiblocked.fluid_input.name=Fluid Input Hatch
+tile.multiblocked.fluid_output.name=Fluid Output Hatch
+tile.multiblocked.item_input.name=Item Input Bus
+tile.multiblocked.item_output.name=Item Output Bus
+tile.multiblocked.entity.name=Entity Hatch
 
 multiblocked.gui.content.more_option=more options
 multiblocked.gui.content.back=back
@@ -127,7 +135,7 @@ multiblocked.gui.tips.add=Add
 
 multiblocked.gui.tips.select_image=Select an Image
 multiblocked.gui.trait.add_slot=Add a Slot
-multiblocked.gui.trait.remove_slot=Remove Selected Slot
+multiblocked.gui.trait.remove_slot=Remove
 multiblocked.gui.trait.capability_io=Capability IO (e.g., Pipe Interaction)
 multiblocked.gui.trait.gui_io=Gui IO (e.g. Gui Interaction)
 multiblocked.gui.trait.auto_io=Auto IO
@@ -206,7 +214,7 @@ multiblocked.gui.content.per_tick=§aConsumed/Produced Per Tick§r
 multiblocked.gui.content.tips.per_tick_short=§a/tick§r
 multiblocked.gui.content.chance_0=§cNot Consumed§r
 multiblocked.gui.content.chance_0_short=§cNC§r
-multiblocked.gui.content.chance_1=§eChance: %s
+multiblocked.gui.content.chance_1=§eChance: %s§r
 
 multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
 multiblocked.gui.trait.energy.tips=Capability (EU)
@@ -347,3 +355,12 @@ multiblocked.gui.widget.sound.delay=delay time >= 0
 multiblocked.gui.widget.sound.volume=volume 0-1
 multiblocked.gui.widget.sound.pitch=pitch >= 0
 multiblocked.gui.shape.add=add a box
+
+multiblocked.gui.tips.item_selector=Item Name
+multiblocked.gui.tips.item_tag=Item Tag
+multiblocked.gui.tips.fluid_selector=Fluid Name
+multiblocked.gui.tips.fluid_tag=Fluid Tag
+
+multiblocked.gui.label.entity_type=Entity Type
+multiblocked.gui.label.entity_tag=Entity Tag
+multiblocked.gui.widget.controller.no_controller=Allow to create a multiblock without controller, you can set the controller's replacement block in the Pattern Settings. §4Note that you must right-click on the block in the controller block position with the catalyst to trigger the structure to form§r

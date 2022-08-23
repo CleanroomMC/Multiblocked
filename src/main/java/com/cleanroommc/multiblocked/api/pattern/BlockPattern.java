@@ -95,7 +95,7 @@ public class BlockPattern {
         return false;
     }
 
-    private boolean checkPatternAt(MultiblockState worldState, BlockPos centerPos, EnumFacing facing, boolean savePredicate, Set<MultiblockCapability<?>> inputCapabilities, Set<MultiblockCapability<?>> outputCapabilities) {
+    public boolean checkPatternAt(MultiblockState worldState, BlockPos centerPos, EnumFacing facing, boolean savePredicate, Set<MultiblockCapability<?>> inputCapabilities, Set<MultiblockCapability<?>> outputCapabilities) {
         boolean findFirstAisle = false;
         int minZ = -centerOffset[4];
         worldState.clean();

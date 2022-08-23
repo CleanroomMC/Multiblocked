@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.gui.texture.*;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
+import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.RecipeMapBuilderWidget;
@@ -58,11 +59,22 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         }
         S1.addWidget(GuiUtils.createBoolSwitch(x + 140, 165, "consumeCatalyst", "multiblocked.gui.widget.controller.consume", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
 
+        Widget consumeCatalystWidget;
+        S1.addWidget(consumeCatalystWidget = GuiUtils.createBoolSwitch(x + 140, 165, "consumeCatalyst", "multiblocked.gui.widget.controller.consume", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
+        consumeCatalystWidget.setVisible(definition.getCatalyst() != null);
+
+        Widget noNeedControllerWidget;
+        S1.addWidget(noNeedControllerWidget = GuiUtils.createBoolSwitch(x + 140, 180, "noNeedController", "multiblocked.gui.widget.controller.no_controller", definition.noNeedController, r -> definition.noNeedController = r));
+        noNeedControllerWidget.setVisible(definition.getCatalyst() != null && !definition.getCatalyst().isEmpty());
+
         IItemHandlerModifiable handler;
         PhantomSlotWidget phantomSlotWidget = new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, x + 250, 154);
         S1.addWidget(phantomSlotWidget);
         phantomSlotWidget.setClearSlotOnRightClick(true)
-                .setChangeListener(() -> definition.setCatalyst(handler.getStackInSlot(0)))
+                .setChangeListener(() -> {
+                    definition.setCatalyst(handler.getStackInSlot(0));
+                    noNeedControllerWidget.setVisible(!handler.getStackInSlot(0).isEmpty());
+                })
                 .setBackgroundTexture(new ColorBorderTexture(1, -1))
                 .setHoverTooltip("multiblocked.gui.widget.controller.catalyst")
                 .setVisible(definition.getCatalyst() != null);
@@ -71,6 +83,8 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         S1.addWidget(GuiUtils.createBoolSwitch(x + 140, 150, "needCatalyst", "multiblocked.gui.widget.controller.need_catalyst", definition.getCatalyst() != null, r -> {
             definition.setCatalyst(!r ? null : ItemStack.EMPTY);
             phantomSlotWidget.setVisible(r);
+            consumeCatalystWidget.setVisible(r);
+            noNeedControllerWidget.setVisible(r && !handler.getStackInSlot(0).isEmpty());
         }));
 
         tabContainer.addTab((TabButton) new TabButton(111, 26, 20, 20)

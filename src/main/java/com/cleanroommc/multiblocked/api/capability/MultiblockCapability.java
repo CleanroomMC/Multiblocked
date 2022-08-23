@@ -74,7 +74,9 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     /**
      * deep copy with a new amount of this content by the given modifier.
      */
-    public abstract T copyInnerByModifier(T content, ContentModifier modifier);
+    public T copyInnerByModifier(T content, ContentModifier modifier) {
+        return copyInner(content);
+    }
     
     /**
      * create a proxy of this block.

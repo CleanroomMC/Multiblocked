@@ -34,6 +34,10 @@ public class TextFieldWidget extends Widget {
     private boolean enableBackground;
     private boolean allowEnter;
 
+    public TextFieldWidget(int xPosition, int yPosition, int width, int height, Supplier<String> textSupplier, Consumer<String> textResponder) {
+        this(xPosition, yPosition, width, height, true, textSupplier, textResponder);
+    }
+
     public TextFieldWidget(int xPosition, int yPosition, int width, int height, boolean enableBackground, Supplier<String> textSupplier, Consumer<String> textResponder) {
         super(new Position(xPosition, yPosition), new Size(width, height));
         if (Multiblocked.isClient()) {

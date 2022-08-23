@@ -56,6 +56,7 @@ public class ControllerDefinition extends ComponentDefinition {
     public ICalcRecipeDuration calcRecipeDuration;
     @ZenProperty
     public boolean consumeCatalyst;
+    public boolean noNeedController;
     @ZenProperty
     public List<MultiblockShapeInfo> designs;
 
@@ -188,8 +189,9 @@ public class ControllerDefinition extends ComponentDefinition {
             setRecipeMap(RecipeMap.EMPTY);
         }
         if (json.has("catalyst")) {
-            catalyst = Suppliers.memoize(()-> Multiblocked.GSON.fromJson("catalyst", ItemStack.class));
+            catalyst = Suppliers.memoize(()-> Multiblocked.GSON.fromJson(json.get("catalyst"), ItemStack.class));
             consumeCatalyst = JsonUtils.getBooleanOr("consumeCatalyst", json, consumeCatalyst);
+            noNeedController = JsonUtils.getBooleanOr("noNeedController", json, noNeedController);
         }
     }
 
@@ -202,6 +204,7 @@ public class ControllerDefinition extends ComponentDefinition {
         if (getCatalyst() != null) {
             json.add("catalyst", Multiblocked.GSON.toJsonTree(getCatalyst()));
             json.addProperty("consumeCatalyst", consumeCatalyst);
+            json.addProperty("noNeedController", noNeedController);
         }
         return json;
     }

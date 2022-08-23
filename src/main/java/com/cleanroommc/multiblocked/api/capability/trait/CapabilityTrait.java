@@ -5,6 +5,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,7 +31,7 @@ public abstract class CapabilityTrait implements IInnerCapabilityProvider {
     }
 
     public JsonElement deserialize(){
-        return null;
+        return new JsonObject();
     }
 
     public void setComponent(ComponentTileEntity<?> component) {

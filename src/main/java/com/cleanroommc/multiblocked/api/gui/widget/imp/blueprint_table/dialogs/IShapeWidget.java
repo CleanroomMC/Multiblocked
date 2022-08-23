@@ -13,6 +13,7 @@ import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.renderer.scene.WorldSceneRenderer;
 import com.cleanroommc.multiblocked.client.util.RenderBufferUtils;
 import com.cleanroommc.multiblocked.client.util.TrackedDummyWorld;
+import com.google.common.util.concurrent.AtomicDouble;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -105,46 +106,53 @@ public class IShapeWidget extends DialogWidget {
             final int finalI = i;
 
             int x = 0;
+            AxisAlignedBB aabb = aabbs.get(finalI);
+            AtomicDouble minX = new AtomicDouble(aabb.minX);
+            AtomicDouble minY = new AtomicDouble(aabb.minY);
+            AtomicDouble minZ = new AtomicDouble(aabb.minZ);
+            AtomicDouble maxX = new AtomicDouble(aabb.maxX);
+            AtomicDouble maxY = new AtomicDouble(aabb.maxY);
+            AtomicDouble maxZ = new AtomicDouble(aabb.maxZ);
             group.addWidget(new LabelWidget(x, 3, "minX"));
             group.addWidget(new TextFieldWidget(x + 25, 3, 25, 10, true, null, s->{
-                AxisAlignedBB aabb = aabbs.get(finalI);
-                aabbs.set(finalI, new AxisAlignedBB(Float.parseFloat(s), aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ));
-            }).setNumbersOnly(0f, 2f).setCurrentString(aabbs.get(finalI).minX + ""));
+                minX.set(Float.parseFloat(s));
+                aabbs.set(finalI, new AxisAlignedBB(minX.get(), minY.get(), minZ.get(), maxX.get(), maxY.get(), maxZ.get()));
+            }).setNumbersOnly(0f, 2f).setCurrentString(minX.get() + ""));
             x += 55;
 
             group.addWidget(new LabelWidget(x, 3, "minY"));
             group.addWidget(new TextFieldWidget(x + 25, 3, 25, 10, true, null, s->{
-                AxisAlignedBB aabb = aabbs.get(finalI);
-                aabbs.set(finalI, new AxisAlignedBB(aabb.minX, Float.parseFloat(s), aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ));
-            }).setNumbersOnly(0f, 2f).setCurrentString(aabbs.get(finalI).minY + ""));
+                minY.set(Float.parseFloat(s));
+                aabbs.set(finalI, new AxisAlignedBB(minX.get(), minY.get(), minZ.get(), maxX.get(), maxY.get(), maxZ.get()));
+            }).setNumbersOnly(0f, 2f).setCurrentString(minY.get() + ""));
             x += 55;
 
             group.addWidget(new LabelWidget(x, 3, "minZ"));
             group.addWidget(new TextFieldWidget(x + 25, 3, 25, 10, true, null, s->{
-                AxisAlignedBB aabb = aabbs.get(finalI);
-                aabbs.set(finalI, new AxisAlignedBB(aabb.minX, aabb.minY, Float.parseFloat(s), aabb.maxX, aabb.maxY, aabb.maxZ));
-            }).setNumbersOnly(0f, 2f).setCurrentString(aabbs.get(finalI).minZ + ""));
+                minZ.set(Float.parseFloat(s));
+                aabbs.set(finalI, new AxisAlignedBB(minX.get(), minY.get(), minZ.get(), maxX.get(), maxY.get(), maxZ.get()));
+            }).setNumbersOnly(0f, 2f).setCurrentString(minZ.get() + ""));
             x = 0;
 
             group.addWidget(new LabelWidget(x, 20, "maxX"));
             group.addWidget(new TextFieldWidget(x + 25, 20, 25, 10, true, null, s->{
-                AxisAlignedBB aabb = aabbs.get(finalI);
-                aabbs.set(finalI, new AxisAlignedBB(aabb.minX, aabb.minY, aabb.minZ, Float.parseFloat(s), aabb.maxY, aabb.maxZ));
-            }).setNumbersOnly(0f, 2f).setCurrentString(aabbs.get(finalI).maxX + ""));
+                maxX.set(Float.parseFloat(s));
+                aabbs.set(finalI, new AxisAlignedBB(minX.get(), minY.get(), minZ.get(), maxX.get(), maxY.get(), maxZ.get()));
+            }).setNumbersOnly(0f, 2f).setCurrentString(maxX.get() + ""));
             x += 55;
 
             group.addWidget(new LabelWidget(x, 20, "maxY"));
             group.addWidget(new TextFieldWidget(x + 25, 20, 25, 10, true, null, s->{
-                AxisAlignedBB aabb = aabbs.get(finalI);
-                aabbs.set(finalI, new AxisAlignedBB(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, Float.parseFloat(s), aabb.maxZ));
-            }).setNumbersOnly(0f, 2f).setCurrentString(aabbs.get(finalI).maxY + ""));
+                maxY.set(Float.parseFloat(s));
+                aabbs.set(finalI, new AxisAlignedBB(minX.get(), minY.get(), minZ.get(), maxX.get(), maxY.get(), maxZ.get()));
+            }).setNumbersOnly(0f, 2f).setCurrentString(maxY.get() + ""));
             x += 55;
 
             group.addWidget(new LabelWidget(x, 20, "maxZ"));
             group.addWidget(new TextFieldWidget(x + 25, 20, 25, 10, true, null, s->{
-                AxisAlignedBB aabb = aabbs.get(finalI);
-                aabbs.set(finalI, new AxisAlignedBB(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, Float.parseFloat(s)));
-            }).setNumbersOnly(0f, 2f).setCurrentString(aabbs.get(finalI).maxZ + ""));
+                maxZ.set(Float.parseFloat(s));
+                aabbs.set(finalI, new AxisAlignedBB(minX.get(), minY.get(), minZ.get(), maxX.get(), maxY.get(), maxZ.get()));
+            }).setNumbersOnly(0f, 2f).setCurrentString(maxZ.get() + ""));
             container.addWidget(group);
             x += 55;
 

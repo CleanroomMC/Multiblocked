@@ -22,6 +22,7 @@ import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.gson.JsonElement;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.item.IItemStack;
@@ -196,7 +197,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public void setStatus(String status) {
-        if (!isRemote()) {
+        if (!isRemote() || world instanceof DummyWorld) {
             if (!this.status.equals(status)) {
                 if (definition.statusChanged != null) {
                     try {

@@ -1,4 +1,4 @@
-multiblocked.multiblock.formed=多方块结构形成！
+multiblocked.multiblock.formed=结构形成！
 
 multiblocked.capability.tc6_aspect=神秘要素
 tc6_aspect.any.name=任意神秘要素容器
@@ -6,20 +6,20 @@ multiblocked.capability.forge_energy=FE 能量
 forge_energy.any.name=任意 FE 容器
 multiblocked.capability.fluid=流体
 fluid.any.name=任意流体储罐
-multiblocked.capability.mek_gas=Mekanism 气体
-mek_gas.any.name=任意 Mekanism 气体储罐
-multiblocked.capability.mek_heat=Mekanism 热量
-mek_heat.any.name=任意 Mekanism 加热器
+multiblocked.capability.mek_gas=通用机械气体
+mek_gas.any.name=任意通用机械气体储罐
+multiblocked.capability.mek_heat=通用机械热量
+mek_heat.any.name=任意通用机械热量
 multiblocked.capability.item=物品
 item.any.name=任意物品容器
-multiblocked.capability.bot_mana=植物魔法 Mana
+multiblocked.capability.bot_mana=植物魔法魔力
 bot_mana.any.name=任意植物魔法 Mana 容器
 multiblocked.capability.qmd_particle=QMD 粒子
 qmd_particle.any.name=任意 QMD 粒子容器
 multiblocked.capability.gtce_energy=GTCE 能量
 gtce_energy.any.name=任意 GTCE 能量容器
-multiblocked.capability.prodigy_hotair=奇才妙械 热空气
-prodigy_hotair.any.name=任意 奇才妙械 热空气容器
+multiblocked.capability.prodigy_hotair=奇才妙械热空气
+prodigy_hotair.any.name=任意奇才妙械热空气容器
 multiblocked.capability.natures_aura=自然灵气
 natures_aura.any.name=任意具有TE的方块都能用作IO
 multiblocked.capability.exu2_gp=更多实用设备2 GP
@@ -28,14 +28,28 @@ multiblocked.capability.projecte_emc=等价交换 EMC
 projecte_emc.any.name=任何具有EMC容器特征的mbd方块
 multiblocked.capability.bg_lp=血魔法 LP
 bg_lp.any.name=任何具有LP容器特征的mbd方块
-multiblocked.capability.ember=余烬 灰烬能量
-ember.any.name=任意余烬 灰烬能量 容器
+multiblocked.capability.ember=余烬灰烬能量
+ember.any.name=任意余烬灰烬能量容器
 multiblocked.capability.ta_impetus=TA 元动能量
 ta_impetus.any.name=任何神秘进阶元动容器
 multiblocked.capability.pneumatic_pressure=PnC 压力
 pneumatic_pressure.any.name=任何气动工艺压力容器
 multiblocked.capability.starlight_as=AS 星能
+multiblocked.capability.lightningcraft_le=雷电工艺
+lightningcraft_le.any.name=任何 雷电工艺 LE 容器
 starlight_as.any.name=任何具有AS星能容器特征的mbd方块
+
+tile.multiblocked.energy_output.name=能源输出仓
+tile.multiblocked.energy_input.name=能源输入仓
+tile.multiblocked.fluid_input.name=流体输入仓
+tile.multiblocked.fluid_output.name=流体输出仓
+tile.multiblocked.item_input.name=物品输入仓
+tile.multiblocked.item_output.name=物品输出仓
+tile.multiblocked.entity.name=实体仓
+
+multiblocked.gui.content.more_option=更多设置
+multiblocked.gui.content.back=上一步
+multiblocked.gui.content.slot_name=IO槽名称
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 
@@ -58,7 +72,7 @@ multiblocked.structure_page.switch=§6已形成§r/§c未形成§r
 tile.multiblocked.blueprint_table.name=蓝图工作台核心
 tile.multiblocked.blueprint_table_part.name=蓝图工作台
 tile.multiblocked.controller_tester.name=测试控制器方块
-tile.multiblocked.part_tester.name=测试控制器方块
+tile.multiblocked.part_tester.name=测试部件方块
 multiblocked.blueprint_table.description=多方块创建器与定制工具
 multiblocked.controller_tester.description=你可以用这个方块来测试你的脚本且而不需要重启游戏。它是不安全的，只能在单人游戏中使用。
 
@@ -291,11 +305,7 @@ multiblocked.gui.label.type=类型:
 multiblocked.gui.label.save_pattern=保存结构模板
 multiblocked.gui.label.pattern_settings=结构模板设置
 multiblocked.gui.label.save_recipe_map=保存Recipe Map
-multiblocked.capability.lightningcraft_le=雷电工艺
-lightningcraft_le.any.name=任何 雷电工艺 LE 容器
-multiblocked.gui.tips.add=添加multiblocked.gui.content.more_option=more options
-multiblocked.gui.content.back=back
-multiblocked.gui.content.slot_name=IO slot name
+multiblocked.gui.tips.add=添加
 multiblocked.gui.content.tips.per_tick_short=§a/tick§r
 multiblocked.gui.content.chance_0_short=§cNC§r
 multiblocked.gui.condition.reverse=reverse (executed if condition failed),
@@ -316,3 +326,12 @@ multiblocked.recipe.condition.pos_y.tooltip=%d <
 multiblocked.gui.condition.block.count=Minimum Count
 multiblocked.recipe.condition.block=Block
 multiblocked.gui.predicate.slot=match the IO slot
+
+multiblocked.gui.tips.item_selector=Item Name
+multiblocked.gui.tips.item_tag=Item Tag
+multiblocked.gui.tips.fluid_selector=Fluid Name
+multiblocked.gui.tips.fluid_tag=Fluid Tag
+
+multiblocked.gui.label.entity_type=Entity Type
+multiblocked.gui.label.entity_tag=Entity Tag
+multiblocked.gui.widget.controller.no_controller=Allow to create a multiblock without controller, you can set the controller's replacement block in the Pattern Settings. §4Note that you must right-click on the block in the controller block position with the catalyst to trigger the structure to form§r

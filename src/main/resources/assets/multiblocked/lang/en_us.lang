@@ -319,7 +319,7 @@ multiblocked.gui.condition.pos_y.min=Min Position Y,
 multiblocked.gui.condition.pos_y.max=Max Position Y,
 
 multiblocked.recipe.condition.thunder=Thunder,
-multiblocked.recipe.condition.thunder.tooltip=Rain Level=%d,
+multiblocked.recipe.condition.thunder.tooltip=Thunder Level=%d,
 multiblocked.recipe.condition.rain=Rain,
 multiblocked.recipe.condition.rain.tooltip=Rain Level=%d,
 multiblocked.recipe.condition.dimension=Dimension,

@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp;
 
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
 import com.cleanroommc.multiblocked.Multiblocked;
@@ -11,11 +12,19 @@ import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -33,6 +42,10 @@ public class TextFieldWidget extends Widget {
     private IGuiTexture background;
     private boolean enableBackground;
     private boolean allowEnter;
+    protected int textColor = -1;
+    protected float wheelDur;
+    protected NumberFormat numberInstance;
+    protected ITextComponent hover;
 
     public TextFieldWidget(int xPosition, int yPosition, int width, int height, Supplier<String> textSupplier, Consumer<String> textResponder) {
         this(xPosition, yPosition, width, height, true, textSupplier, textResponder);
@@ -167,11 +180,6 @@ public class TextFieldWidget extends Widget {
     }
 
     @Override
-    public Widget mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
-        return isFocus() ? this : super.mouseWheelMove(mouseX, mouseY, wheelDelta);
-    }
-
-    @Override
     public Widget mouseDragged(int mouseX, int mouseY, int button, long timeDragged) {
         return isFocus() ? this : super.mouseDragged(mouseX, mouseY, button, timeDragged);
     }
@@ -212,11 +220,16 @@ public class TextFieldWidget extends Widget {
         String lastText = currentString;
         String newText = textValidator.apply(newTextString);
         if (!newText.equals(lastText)) {
+            this.textField.setTextColor(textColor);
             setCurrentString(newText);
             if (isClientSideWidget && textResponder != null) {
                 textResponder.accept(newText);
             }
             writeClientAction(1, buffer -> buffer.writeString(newText));
+        } else if (!newTextString.equals(newText)){
+            this.textField.setTextColor(0xffdf0000);
+        } else {
+            this.textField.setTextColor(textColor);
         }
     }
 
@@ -237,6 +250,7 @@ public class TextFieldWidget extends Widget {
     }
 
     public TextFieldWidget setTextColor(int textColor) {
+        this.textColor = textColor;
         if (Multiblocked.isClient()) {
             this.textField.setTextColor(textColor);
         }
@@ -267,7 +281,16 @@ public class TextFieldWidget extends Widget {
             } catch (NumberFormatException ignored) { }
             return this.currentString;
         });
-        return this;
+        if (minValue == Long.MIN_VALUE && maxValue == Long.MAX_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.3");
+        } else if (minValue == Long.MIN_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.2", maxValue);
+        } else if (maxValue == Long.MAX_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.1", minValue);
+        } else {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.0", minValue, maxValue);
+        }
+        return setWheelDur(1);
     }
 
     public TextFieldWidget setNumbersOnly(int minValue, int maxValue) {
@@ -281,7 +304,16 @@ public class TextFieldWidget extends Widget {
             } catch (NumberFormatException ignored) { }
             return this.currentString;
         });
-        return this;
+        if (minValue == Integer.MIN_VALUE && maxValue == Integer.MAX_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.3");
+        } else if (minValue == Integer.MIN_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.2", maxValue);
+        } else if (maxValue == Integer.MAX_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.1", minValue);
+        } else {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.0", minValue, maxValue);
+        }
+        return setWheelDur(1);
     }
 
     public TextFieldWidget setNumbersOnly(float minValue, float maxValue) {
@@ -295,7 +327,65 @@ public class TextFieldWidget extends Widget {
             } catch (NumberFormatException ignored) { }
             return this.currentString;
         });
+        if (minValue == Float.MIN_VALUE && maxValue == Float.MAX_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.3");
+        } else if (minValue == Float.MIN_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.2", maxValue);
+        } else if (maxValue == Float.MAX_VALUE) {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.1", minValue);
+        } else {
+            hover = new TextComponentTranslation("multiblocked.gui.text_field.number.0", minValue, maxValue);
+        }
+        return setWheelDur(0.1f);
+    }
+
+    public TextFieldWidget setWheelDur(float wheelDur) {
+        this.wheelDur = wheelDur;
+        this.numberInstance = NumberFormat.getNumberInstance();
+        numberInstance.setMaximumFractionDigits(4);
         return this;
+    }
+
+    public TextFieldWidget setWheelDur(int digits, float wheelDur) {
+        this.wheelDur = wheelDur;
+        this.numberInstance = NumberFormat.getNumberInstance();
+        numberInstance.setMaximumFractionDigits(digits);
+        return this;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
+        if (gui != null && isMouseOverElement(mouseX, mouseY)) {
+            GlStateManager.enableDepth();
+            List<String> tips = new ArrayList<>();
+            if (tooltipText != null) {
+                tips.addAll(Arrays.asList(I18n.format(tooltipText).split("\n")));
+            }
+            if (hover != null) {
+                tips.add(hover.getFormattedText());
+            }
+            if (wheelDur > 0 && numberInstance != null && isFocus()) {
+                tips.add(I18n.format("multiblocked.gui.text_field.number.wheel", numberInstance.format(wheelDur)));
+            }
+            if (!tips.isEmpty()) {
+                DrawerHelper.drawHoveringText(ItemStack.EMPTY, tips, 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());
+            }
+        }
+    }
+
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public Widget mouseWheelMove(int mouseX, int mouseY, int wheelDelta) {
+        if (wheelDur > 0 && numberInstance != null && isMouseOverElement(mouseX, mouseY) && isFocus()) {
+            try {
+                onTextChanged(numberInstance.format(Float.parseFloat(getCurrentString()) + (wheelDelta > 0 ? 1 : -1) * wheelDur));
+            } catch (Exception ignored) {
+            }
+            return this;
+        }
+        return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
     }
 
     private static GuiPageButtonList.GuiResponder createTextFieldResponder(Consumer<String> onChanged) {

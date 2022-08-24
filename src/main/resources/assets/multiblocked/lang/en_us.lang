@@ -311,7 +311,7 @@ multiblocked.gui.label.save_pattern=Save Pattern
 multiblocked.gui.label.save_recipe_map=Save Recipe Map
 multiblocked.gui.label.pattern_settings=Pattern Settings
 
-multiblocked.gui.condition.reverse=reverse (executed if condition failed),
+multiblocked.gui.condition.reverse=below reverse (executed if condition failed),
 multiblocked.gui.condition.reverse.label=isReverse,
 multiblocked.gui.condition.rain.level=Rain Level,
 multiblocked.gui.condition.thunder.level=Thunder Level,
@@ -366,3 +366,13 @@ multiblocked.gui.tips.fluid_tag=Fluid Tag
 multiblocked.gui.label.entity_type=Entity Type
 multiblocked.gui.label.entity_tag=Entity Tag
 multiblocked.gui.widget.controller.no_controller=Allow to create a multiblock without controller, you can set the controller's replacement block in the Pattern Settings. §4Note that you must right-click on the block in the controller block position with the catalyst to trigger the structure to form§r
+
+multiblocked.gui.text_field.number.0=from %d to %d
+multiblocked.gui.text_field.number.1=bigger than %d
+multiblocked.gui.text_field.number.2=smaller than %d
+multiblocked.gui.text_field.number.3=any number
+multiblocked.gui.text_field.number.wheel=§ascroll wheel adjusts number§r (%s)
+multiblocked.gui.text_field.resourcelocation=allow [0-9][a-z][_-]
+
+multiblocked.gui.catalyst.0=catalyst (consume)
+multiblocked.gui.catalyst.1=catalyst

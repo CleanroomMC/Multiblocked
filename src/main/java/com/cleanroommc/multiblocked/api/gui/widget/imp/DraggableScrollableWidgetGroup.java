@@ -190,7 +190,7 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
         return y;
     }
 
-    protected void setScrollXOffset(int scrollXOffset) {
+    public void setScrollXOffset(int scrollXOffset) {
         if (scrollXOffset == this.scrollXOffset) return;
         int offset = scrollXOffset - this.scrollXOffset;
         this.scrollXOffset = scrollXOffset;
@@ -200,7 +200,7 @@ public class DraggableScrollableWidgetGroup extends WidgetGroup {
         }
     }
 
-    protected void setScrollYOffset(int scrollYOffset) {
+    public void setScrollYOffset(int scrollYOffset) {
         if (scrollYOffset == this.scrollYOffset) return;
         if (scrollYOffset < 0) scrollYOffset = 0;
         int offset = scrollYOffset - this.scrollYOffset;

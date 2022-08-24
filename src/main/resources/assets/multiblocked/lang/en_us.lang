@@ -247,7 +247,7 @@ multiblocked.gui.trait.pressure.tips.1=Critical Pressure
 multiblocked.gui.trait.pressure.tips.2=Volume
 
 multiblocked.gui.trait.starlight.starlight=Starlight: %d
-multiblocked.gui.trait.starlight.current=星能: %d / %d
+multiblocked.gui.trait.starlight.current=Starlight: %d / %d
 multiblocked.gui.trait.starlight.constellation=Focusing constellation: %s
 multiblocked.gui.trait.starlight.no_constellation=No Focusing constellation
 multiblocked.gui.trait.starlight.tips.0=Capacity (Starlight)

@@ -61,10 +61,8 @@ public class StarlightWidget extends ContentWidget<Starlight> {
         dialog.addWidget(new LabelWidget(x, y + 23, "Constellation: "));
         dialog.addWidget(new TextFieldWidget(125 - 60, y + 20, 60, 15, true, null, number -> {
             IConstellation constellation = ConstellationRegistry.getConstellationByName(number);
-            if (constellation != null) {
-                content = new Starlight(content.getValue(), constellation);
-                onContentUpdate();
-            }
+            content = new Starlight(content.getValue(), constellation);
+            onContentUpdate();
         }).setCurrentString(content.getConstellation() == null ? "null" : content.getConstellation().getUnlocalizedName()));
     }
 

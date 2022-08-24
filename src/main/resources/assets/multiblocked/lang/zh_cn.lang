@@ -325,7 +325,7 @@ multiblocked.recipe.condition.pos_y=坐标 Y,
 multiblocked.recipe.condition.pos_y.tooltip=%d <= Y <= %d
 multiblocked.gui.condition.block.count=最小数量
 multiblocked.recipe.condition.block=方块
-multiblocked.gui.predicate.slot=匹配IO槽位
+multiblocked.gui.predicate.slot=匹配 IO 槽位
 
 multiblocked.gui.tips.item_selector=物品名称
 multiblocked.gui.tips.item_tag=物品标签

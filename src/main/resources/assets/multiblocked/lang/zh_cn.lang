@@ -9,7 +9,7 @@ fluid.any.name=任意流体储罐
 multiblocked.capability.mek_gas=通用机械气体
 mek_gas.any.name=任意通用机械气体储罐
 multiblocked.capability.mek_heat=通用机械热量
-mek_heat.any.name=任意通用机械热量
+mek_heat.any.name=任意通用机械加热器
 multiblocked.capability.item=物品
 item.any.name=任意物品容器
 multiblocked.capability.bot_mana=植物魔法魔力
@@ -53,7 +53,7 @@ multiblocked.gui.content.slot_name=IO槽名称
 
 multiblocked.content.miss=输入输出：%s 能量：缺失 %s
 
-multiblocked.pattern.error=错误的组件 （%s)在（%s）
+multiblocked.pattern.error=错误的组件（%s)在（%s）
 multiblocked.pattern.error.share=这个模块可以被多个结构共享
 multiblocked.pattern.error.chunk=区块被卸载
 multiblocked.pattern.error.capability=找不到具体容器类型（输入输出）：%s （%s）

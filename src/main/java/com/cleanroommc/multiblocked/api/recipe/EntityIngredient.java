@@ -24,6 +24,14 @@ public class EntityIngredient {
     public EntityEntry type = ForgeRegistries.ENTITIES.getValue(new ResourceLocation("pig"));
     public NBTTagCompound tag;
 
+    public EntityIngredient() {
+    }
+
+    public EntityIngredient(EntityEntry type, NBTTagCompound tag) {
+        this.type = type;
+        this.tag = tag;
+    }
+
     public boolean match(Entity entity) {
         if (net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(entity.getClass()) != type) return false;
         if (tag != null) {

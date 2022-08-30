@@ -3,15 +3,11 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
-import com.cleanroommc.multiblocked.util.Position;
-import com.cleanroommc.multiblocked.util.Size;
-import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import com.cleanroommc.multiblocked.util.Position;
+import com.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.ArrayList;
@@ -129,12 +125,7 @@ public class SelectorWidget extends WidgetGroup {
 
     @Override
     public void drawInForeground(int mouseX, int mouseY, float particleTicks) {
-        for (Widget widget : widgets) {
-            if (widget.isVisible()) {
-                widget.drawInForeground(mouseX, mouseY, particleTicks);
-                GlStateManager.color(1, 1, 1, 1);
-            }
-        }
+        super.drawInForeground(mouseX, mouseY, particleTicks);
         if(isShow) {
             GlStateManager.disableDepth();
             GlStateManager.translate(0, 0, 200);

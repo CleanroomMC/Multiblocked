@@ -17,7 +17,9 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.ResourceTextureWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget.FillDirection;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
+import com.cleanroommc.multiblocked.util.JsonUtil;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
 import com.google.gson.JsonElement;
@@ -34,6 +36,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
     protected int width;
     protected int height;
     protected String texture;
+    protected FillDirection fillDirection;
 
     public ProgressCapabilityTrait(MultiblockCapability<?> capability) {
         super(capability);
@@ -49,6 +52,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
         width = JsonUtils.getInt(jsonObject, "width", 60);
         height = JsonUtils.getInt(jsonObject, "height", 18);
         texture = JsonUtils.getString(jsonObject, "texture", "multiblocked:textures/gui/energy_bar.png");
+        fillDirection = JsonUtil.getEnumOr(jsonObject, "fillDirection", FillDirection.class, FillDirection.LEFT_TO_RIGHT);
     }
 
     @Override
@@ -57,6 +61,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
         jsonObject.addProperty("width", width);
         jsonObject.addProperty("height", height);
         jsonObject.addProperty("texture", texture);
+        jsonObject.addProperty("fillDirection", fillDirection.ordinal());
         return jsonObject;
     }
 
@@ -71,7 +76,8 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
                 this::getProgress,
                 x, y, width, height,
                 new ResourceTexture(texture))
-                .setDynamicHoverTips(this::dynamicHoverTips));
+                .setDynamicHoverTips(this::dynamicHoverTips)
+                .setFillDirection(fillDirection));
     }
 
     protected void refreshSlots(DraggableScrollableWidgetGroup dragGroup) {
@@ -101,7 +107,7 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
     protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot) {
         ImageWidget imageWidget = (ImageWidget) slot.widgets.get(0);
         ButtonWidget setting = (ButtonWidget) slot.widgets.get(1);
-        ButtonWidget imageSelector = (ButtonWidget) new ButtonWidget(5, 65, width, height, new GuiTextureGroup(new ColorBorderTexture(1, -1), new ResourceTexture(texture).getSubTexture(0, 0, 1, 0.5)), null)
+        ButtonWidget imageSelector = (ButtonWidget) new ButtonWidget(5, 85, width, height, new GuiTextureGroup(new ColorBorderTexture(1, -1), new ResourceTexture(texture).getSubTexture(0, 0, 1, 0.5)), null)
                 .setHoverTooltip("multiblocked.gui.tips.select_image");
         dialog.addWidget(new TextFieldWidget(5, 25, 50, 15, true, null, s -> {
             width = Integer.parseInt(s);
@@ -131,6 +137,12 @@ public abstract class ProgressCapabilityTrait extends SingleCapabilityTrait {
                 .setHoverTooltip("multiblocked.gui.trait.capability_io"));
 
         dialog.addWidget(imageSelector);
+        dialog.addWidget(new SelectorWidget(5, 65, 60, 15, Arrays.stream(FillDirection.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
+                .setValue(fillDirection.name())
+                .setOnChanged(io -> fillDirection = FillDirection.valueOf(io))
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setHoverTooltip("multiblocked.gui.trait.fill_direction"));
         imageSelector.setOnPressCallback(cd -> new ResourceTextureWidget((WidgetGroup) dialog.parent.getGui().guiWidgets.get(0), texture1 -> {
             if (texture1 != null) {
                 texture = texture1.imageLocation.toString();

@@ -2,11 +2,11 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.recipe;
 
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
-import com.cleanroommc.multiblocked.api.gui.widget.Widget;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
@@ -18,6 +18,7 @@ public class ProgressWidget extends Widget {
     private IGuiTexture emptyBarArea;
     private IGuiTexture filledBarArea;
     private Function<Double, String> dynamicHoverTips;
+    private FillDirection fillDirection = FillDirection.LEFT_TO_RIGHT;
 
     private double lastProgressValue;
 
@@ -45,6 +46,11 @@ public class ProgressWidget extends Widget {
         return this;
     }
 
+    public ProgressWidget setFillDirection(FillDirection fillDirection) {
+        this.fillDirection = fillDirection;
+        return this;
+    }
+
     @Override
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
         Position pos = getPosition();
@@ -59,8 +65,13 @@ public class ProgressWidget extends Widget {
                     setHoverTooltip(dynamicHoverTips.apply(lastProgressValue));
                 }
             }
-            filledBarArea.drawSubArea(pos.x, pos.y, (int) (size.width * (lastProgressValue < 0 ? 0 : lastProgressValue)), size.height,
-                    0.0, 0.0, ((int) (size.width * (lastProgressValue < 0 ? 0 : lastProgressValue))) / (size.width * 1.0), 1.0);
+            double progress = MathHelper.clamp(0.0, lastProgressValue, 1.0);
+            double drawnU = fillDirection.getDrawnU(progress);
+            double drawnV = fillDirection.getDrawnV(progress);
+            double drawnWidth = fillDirection.getDrawnWidth(progress);
+            double drawnHeight = fillDirection.getDrawnHeight(progress);
+            filledBarArea.drawSubArea(pos.x + drawnU * size.width, pos.y + drawnV * size.height, ((int) (size.width * drawnWidth)), ((int) (size.height * drawnHeight)),
+                    drawnU, drawnV, drawnWidth, drawnHeight);
         }
     }
 
@@ -80,6 +91,61 @@ public class ProgressWidget extends Widget {
             if (dynamicHoverTips != null) {
                 setHoverTooltip(dynamicHoverTips.apply(lastProgressValue));
             }
+        }
+    }
+
+    public enum FillDirection {
+        LEFT_TO_RIGHT {
+            @Override
+            public double getDrawnHeight(double progress) {
+                return 1.0;
+            }
+        },
+        RIGHT_TO_LEFT {
+            @Override
+            public double getDrawnU(double progress) {
+                return 1.0 - progress;
+            }
+
+            @Override
+            public double getDrawnHeight(double progress) {
+                return 1.0;
+            }
+        },
+        UP_TO_DOWN {
+            @Override
+            public double getDrawnWidth(double progress) {
+                return 1.0;
+            }
+        },
+        DOWN_TO_UP {
+            @Override
+            public double getDrawnV(double progress) {
+                return 1.0 - progress;
+            }
+
+            @Override
+            public double getDrawnWidth(double progress) {
+                return 1.0;
+            }
+        };
+
+        public static final FillDirection[] VALUES = FillDirection.values();
+
+        public double getDrawnU(double progress) {
+            return 0.0;
+        }
+
+        public double getDrawnV(double progress) {
+            return 0.0;
+        }
+
+        public double getDrawnWidth(double progress) {
+            return progress;
+        }
+
+        public double getDrawnHeight(double progress) {
+            return progress;
         }
     }
 

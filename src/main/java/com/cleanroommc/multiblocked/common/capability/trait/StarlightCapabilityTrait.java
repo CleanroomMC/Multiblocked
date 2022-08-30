@@ -114,7 +114,8 @@ public class StarlightCapabilityTrait extends ProgressCapabilityTrait implements
                 }
                 super.readUpdateInfo(id, buffer);
             }
-        }.setDynamicHoverTips(this::dynamicHoverTips));
+        }.setDynamicHoverTips(this::dynamicHoverTips)
+                .setFillDirection(fillDirection));
     }
 
     @Override

@@ -128,6 +128,7 @@ multiblocked.gui.trait.passive_io=被动输入输出
 multiblocked.gui.trait.auto=自动输入输出 | 容器无法同时使用输入输出 | 仅限正面
 multiblocked.gui.trait.set_width=设置宽度
 multiblocked.gui.trait.set_height=设置高度
+multiblocked.gui.trait.fill_direction=进度条填充方向
 
 
 multiblocked.gui.blueprint_table.builder_template=建筑模板

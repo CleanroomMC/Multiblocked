@@ -23,7 +23,6 @@ import com.cleanroommc.multiblocked.util.Size;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.Tuple;
 
 import java.util.ArrayList;
 import java.util.Collection;

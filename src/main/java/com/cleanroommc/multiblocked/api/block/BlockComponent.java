@@ -1,7 +1,9 @@
 package com.cleanroommc.multiblocked.api.block;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.client.model.IModelSupplier;
 import com.cleanroommc.multiblocked.client.model.SimpleStateMapper;
 import com.cleanroommc.multiblocked.client.particle.MCParticleHandler;
@@ -9,9 +11,6 @@ import com.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.util.RayTraceUtils;
 import com.cleanroommc.multiblocked.util.Vector3;
-import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
-import moze_intel.projecte.gameObjs.CreativeTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -30,12 +29,7 @@ import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -64,7 +58,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         setResistance(10.0F);
         if (definition != null) {
             for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-                if (tab.getTabLabel().equals(definition.properties.tabGroup)) {
+                if (tab.tabLabel.equals(definition.properties.tabGroup)) {
                     setCreativeTab(tab);
                     break;
                 }

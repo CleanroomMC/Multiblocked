@@ -1,16 +1,13 @@
 package com.cleanroommc.multiblocked.common.capability;
 
-import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.EntityIngredient;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.trait.EntityCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.EntityContentWidget;
@@ -27,7 +24,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -86,13 +82,6 @@ public class EntityMultiblockCapability extends MultiblockCapability<EntityIngre
     @Override
     public CapabilityTrait createTrait() {
         return new EntityCapabilityTrait();
-    }
-
-    @Override
-    public BlockInfo[] getCandidates() {
-        return new BlockInfo[]{
-                BlockInfo.fromBlockState(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(new ResourceLocation(Multiblocked.MODID, "entity")).getDefaultState()),
-        };
     }
 
     @Override

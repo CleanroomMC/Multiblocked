@@ -5,10 +5,8 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.common.capability.trait.StarlightCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.StarlightWidget;
 import com.cleanroommc.multiblocked.common.recipe.content.Starlight;
@@ -60,16 +58,6 @@ public class StarlightAstralCapability extends MultiblockCapability<Starlight> {
     @Override
     public CapabilityProxy<? extends Starlight> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new StarlightAstralProxy(tileEntity);
-    }
-
-    @Override
-    public BlockInfo[] getCandidates() {
-        return MbdComponents.DEFINITION_REGISTRY
-                .values()
-                .stream()
-                .filter(definition -> definition.traits.has(CAP.name))
-                .map(definition -> BlockInfo.fromBlockState(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).getDefaultState()))
-                .toArray(BlockInfo[]::new);
     }
 
     @Override

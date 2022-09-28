@@ -3,19 +3,18 @@ package com.cleanroommc.multiblocked.api.registry;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.block.ItemComponent;
+import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import com.cleanroommc.multiblocked.api.definition.PartDefinition;
+import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.tile.DummyComponentTileEntity;
 import com.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
 import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -26,14 +25,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 public class MbdComponents {
     public static final Set<Class <? extends TileEntity>> CLASS_SET = new HashSet<>();
@@ -159,6 +156,13 @@ public class MbdComponents {
         } catch (Exception e) {
             Multiblocked.LOGGER.error("error while loading the definition resource {}", location.toString());
         }
+    }
+
+    public static BlockInfo[] getBlockInfoWithCapability(MultiblockCapability<?> capability) {
+        return DEFINITION_REGISTRY.values().stream()
+                .filter(it -> it.traits.has(capability.name))
+                .map(definition -> BlockInfo.fromBlockState(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).getDefaultState()))
+                .toArray(BlockInfo[]::new);
     }
 
 }

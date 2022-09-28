@@ -12,6 +12,10 @@ public final class MbdConfig {
     @Config.RequiresMcRestart
     public static String location = "multiblocked";
 
+    @Config.Comment({"If true, built-in parts (Item Input Bus, Item Output Bus, etc.) are enabled.", "Default: true"})
+    @Config.RequiresMcRestart
+    public static boolean enableBuiltInComponents = true;
+
     public static class NaturesAura {
         @Config.Comment({"set the radius of aura value consumption.", "Default: 20"})
         public int radius = 20;

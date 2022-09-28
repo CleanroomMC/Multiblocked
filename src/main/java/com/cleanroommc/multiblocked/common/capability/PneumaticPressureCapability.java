@@ -70,7 +70,13 @@ public class PneumaticPressureCapability extends MultiblockCapability<Float> {
 
     @Override
     public BlockInfo[] getCandidates() {
-        return new BlockInfo[] {new BlockInfo(Blockss.PRESSURE_CHAMBER_WALL)};
+        return new BlockInfo[] {
+                new BlockInfo(Blockss.AIR_COMPRESSOR),
+                new BlockInfo(Blockss.LIQUID_COMPRESSOR),
+                new BlockInfo(Blockss.ADVANCED_AIR_COMPRESSOR),
+                new BlockInfo(Blockss.ADVANCED_LIQUID_COMPRESSOR),
+                new BlockInfo(Blockss.CREATIVE_COMPRESSOR)
+        };
     }
 
     @Override

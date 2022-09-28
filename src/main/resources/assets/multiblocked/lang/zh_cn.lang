@@ -6,6 +6,8 @@ multiblocked.capability.forge_energy=FE 能量
 forge_energy.any.name=任意 FE 容器
 multiblocked.capability.fluid=流体
 fluid.any.name=任意流体储罐
+multiblocked.capability.entity=实体
+entity.any.name=任意实体容器
 multiblocked.capability.mek_gas=通用机械气体
 mek_gas.any.name=任意通用机械气体储罐
 multiblocked.capability.mek_heat=通用机械热量
@@ -337,8 +339,6 @@ multiblocked.gui.label.entity_type=实体类型
 multiblocked.gui.label.entity_tag=实体标签
 multiblocked.gui.widget.controller.no_controller=允许创建一个没有控制器的多方块结构, 你可以在结构模板设置中设置控制器的替代方块. §4注意:你必须手持催化剂右击控制器位置的方块来使多方块结构成型§r
 
-multiblocked.capability.entity=实体
-entity.any.name=任意实体容器
 multiblocked.gui.widget.component.dynamic_shape=动态结构
 multiblocked.gui.widget.component.collision=粒子
 multiblocked.gui.widget.component.destroy_time=挖掘时间
@@ -364,3 +364,12 @@ multiblocked.gui.widget.sound.delay=延迟时间 >= 0
 multiblocked.gui.widget.sound.volume=音量 0-1
 multiblocked.gui.widget.sound.pitch=音高 >= 0
 multiblocked.gui.shape.add=添加碰撞箱
+multiblocked.gui.text_field.number.0=从 %d 到 %d
+multiblocked.gui.text_field.number.1=大于 %d
+multiblocked.gui.text_field.number.2=小于 %d
+multiblocked.gui.text_field.number.3=任何数值
+multiblocked.gui.text_field.number.wheel=§a滑动滚轮以调整数值§r (%s)
+multiblocked.gui.text_field.resourcelocation=允许 [0-9][a-z][_-]
+
+multiblocked.gui.catalyst.0=催化剂（消耗）
+multiblocked.gui.catalyst.1=催化剂

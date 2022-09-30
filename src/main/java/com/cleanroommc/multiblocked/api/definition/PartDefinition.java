@@ -2,10 +2,10 @@ package com.cleanroommc.multiblocked.api.definition;
 
 import com.cleanroommc.multiblocked.api.crafttweaker.functions.IPartAddedToMulti;
 import com.google.gson.JsonObject;
-import com.mojang.realmsclient.util.JsonUtils;
 import crafttweaker.annotations.ZenRegister;
 import com.cleanroommc.multiblocked.api.crafttweaker.functions.IPartRemovedFromMulti;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
@@ -40,7 +40,7 @@ public class PartDefinition extends ComponentDefinition {
     @Override
     public void fromJson(JsonObject json) {
         super.fromJson(json);
-        canShared = JsonUtils.getBooleanOr("canShared", json, canShared);
+        canShared = JsonUtils.getBoolean(json, "canShared", canShared);
     }
 
     @Override

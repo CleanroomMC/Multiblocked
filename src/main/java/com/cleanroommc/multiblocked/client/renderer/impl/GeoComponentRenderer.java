@@ -39,15 +39,15 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.file.AnimationFile;
-import software.bernie.geckolib3.geo.render.built.GeoBone;
-import software.bernie.geckolib3.geo.render.built.GeoCube;
-import software.bernie.geckolib3.geo.render.built.GeoModel;
+import software.bernie.geckolib3.geo.render.built.*;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 import software.bernie.geckolib3.resource.GeckoLibCache;
 
 import javax.annotation.Nonnull;
+import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4f;
 import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -274,6 +274,43 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
             Tessellator.getInstance().draw();
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastBrightnessX, lastBrightnessY);
             builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+        }
+    }
+
+    @Override
+    public void renderCube(BufferBuilder builder, GeoCube cube, float red, float green, float blue, float alpha) {
+        // copy-pasted from the super IGeoRenderer#renderCube method
+        MATRIX_STACK.moveToPivot(cube);
+        MATRIX_STACK.rotate(cube);
+        MATRIX_STACK.moveBackFromPivot(cube);
+
+        for (GeoQuad quad : cube.quads) {
+            // need to check the quad for null, in case of a missing or omitted uv being defined for the model
+            if (quad == null) continue;
+            Vector3f normal = new Vector3f(quad.normal.getX(), quad.normal.getY(), quad.normal.getZ());
+            MATRIX_STACK.getNormalMatrix().transform(normal);
+
+            /* Fix shading dark shading for flat cubes + compatibility wish Optifine shaders */
+            if ((cube.size.y == 0 || cube.size.z == 0) && normal.getX() < 0) {
+                normal.x *= -1;
+            }
+            if ((cube.size.x == 0 || cube.size.z == 0) && normal.getY() < 0) {
+                normal.y *= -1;
+            }
+            if ((cube.size.x == 0 || cube.size.y == 0) && normal.getZ() < 0) {
+                normal.z *= -1;
+            }
+
+            for (GeoVertex vertex : quad.vertices) {
+                Vector4f vector4f = new Vector4f(vertex.position.getX(), vertex.position.getY(), vertex.position.getZ(), 1.0F);
+                MATRIX_STACK.getModelMatrix().transform(vector4f);
+
+                builder.pos(vector4f.getX(), vector4f.getY(), vector4f.getZ())
+                        .tex(vertex.textureU, vertex.textureV)
+                        .color(red, green, blue, alpha)
+                        .normal(normal.getX(), normal.getY(), normal.getZ())
+                        .endVertex();
+            }
         }
     }
 

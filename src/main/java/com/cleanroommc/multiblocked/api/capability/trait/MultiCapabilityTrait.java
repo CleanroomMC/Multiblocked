@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.capability.trait;
 
+import com.cleanroommc.multiblocked.api.block.CustomProperties;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
@@ -78,7 +79,7 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
     }
 
     public EnumFacing[] getIOFacing() {
-        if (component.getDefinition().allowRotate) {
+        if (component.getDefinition().properties.rotationState != CustomProperties.RotationState.NONE) {
             return new EnumFacing[]{component.getFrontFacing()};
         }
         return EnumFacing.VALUES;

@@ -18,6 +18,9 @@ public class ItemComponent extends ItemBlock {
         super(block);
         setHasSubtypes(true);
         setRegistryName(block.getRegistryName());
+        if (block.definition != null) {
+            setMaxStackSize(block.definition.properties.stackSize);
+        }
     }
 
     public ComponentDefinition getDefinition() {

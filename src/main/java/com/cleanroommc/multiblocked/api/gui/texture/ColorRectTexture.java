@@ -1,9 +1,8 @@
 package com.cleanroommc.multiblocked.api.gui.texture;
 
-import net.minecraft.client.renderer.BufferBuilder;
+import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.Color;
 
@@ -28,37 +27,6 @@ public class ColorRectTexture implements IGuiTexture{
 
     @Override
     public void draw(int mouseX, int mouseY, double x, double y, int width, int height) {
-        double j;
-        double right = x + width;
-        double bottom = y + height;
-        if (x < right) {
-            j = x;
-            x = right;
-            right = j;
-        }
-
-        if (y < bottom) {
-            j = y;
-            y = bottom;
-            bottom = j;
-        }
-        float f3 = (float)(color >> 24 & 255) / 255.0F;
-        float f = (float)(color >> 16 & 255) / 255.0F;
-        float f1 = (float)(color >> 8 & 255) / 255.0F;
-        float f2 = (float)(color & 255) / 255.0F;
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.color(f, f1, f2, f3);
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-        bufferbuilder.pos(x, bottom, 0.0D).endVertex();
-        bufferbuilder.pos(right, bottom, 0.0D).endVertex();
-        bufferbuilder.pos(right, y, 0.0D).endVertex();
-        bufferbuilder.pos(x, y, 0.0D).endVertex();
-        tessellator.draw();
-        GlStateManager.enableTexture2D();
-        GlStateManager.color(1, 1, 1, 1);
+        DrawerHelper.drawSolidRect((int) x, (int) y, width, height, color);
     }
 }

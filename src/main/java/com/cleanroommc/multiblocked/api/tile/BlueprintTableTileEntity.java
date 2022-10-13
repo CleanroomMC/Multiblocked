@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.tile;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.block.CustomProperties;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.api.gui.modular.ModularUI;
@@ -48,23 +49,23 @@ public class BlueprintTableTileEntity extends ControllerTileEntity{
     public final static PartDefinition partDefinition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "blueprint_table_part"));
 
     public static void registerBlueprintTable() {
-        tableDefinition.recipeMap.inputCapabilities.add(MbdCapabilities.ITEM);
-        tableDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller"));
-        tableDefinition.formedRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed"));
-        tableDefinition.isOpaqueCube = false;
+        tableDefinition.getRecipeMap().inputCapabilities.add(MbdCapabilities.ITEM);
+        tableDefinition.getBaseStatus().setRenderer(new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_controller")));
+        tableDefinition.getIdleStatus().setRenderer(new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table_formed")));
+        tableDefinition.properties.isOpaque = false;
 
-        partDefinition.baseRenderer = new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table"));
-        partDefinition.allowRotate = false;
-        partDefinition.isOpaqueCube = false;
+        partDefinition.getBaseStatus().setRenderer(new IModelRenderer(new ResourceLocation(Multiblocked.MODID,"block/blueprint_table")));
+        partDefinition.properties.rotationState = CustomProperties.RotationState.NONE;
+        partDefinition.properties.isOpaque = false;
 
-        tableDefinition.basePattern = FactoryBlockPattern.start()
+        tableDefinition.setBasePattern(FactoryBlockPattern.start()
                 .aisle("PPP", "C  ")
                 .aisle("PTP", "   ")
                 .where(' ', Predicates.any())
                 .where('T', Predicates.component(tableDefinition))
                 .where('P', Predicates.component(partDefinition).disableRenderFormed())
                 .where('C', Predicates.anyCapability(MbdCapabilities.ITEM).disableRenderFormed())
-                .build();
+                .build());
         MbdComponents.registerComponent(tableDefinition);
         MbdComponents.registerComponent(partDefinition);
     }

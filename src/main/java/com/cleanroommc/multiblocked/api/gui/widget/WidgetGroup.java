@@ -3,6 +3,7 @@ package com.cleanroommc.multiblocked.api.gui.widget;
 import com.cleanroommc.multiblocked.api.gui.ingredient.IGhostIngredientTarget;
 import com.cleanroommc.multiblocked.api.gui.ingredient.IIngredientSlot;
 import com.cleanroommc.multiblocked.api.gui.modular.WidgetUIAccess;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
 import com.cleanroommc.multiblocked.util.Position;
 import com.cleanroommc.multiblocked.util.Size;
@@ -23,21 +24,28 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
     private transient final WidgetGroupUIAccess groupUIAccess = new WidgetGroupUIAccess();
     private transient final boolean isDynamicSized;
     private transient boolean initialized = false;
-    protected transient List<Widget> waitToRemoved;
+    protected final transient List<Widget> waitToRemoved;
+    protected final transient List<Widget> waitToAdded;
 
     public WidgetGroup(int x, int y, int width, int height) {
         super(x, y, width, height);
         this.isDynamicSized = false;
+        waitToRemoved = new ArrayList<>();
+        waitToAdded = new ArrayList<>();
     }
 
     public WidgetGroup(Position position) {
         super(position, Size.ZERO);
         this.isDynamicSized = true;
+        waitToRemoved = new ArrayList<>();
+        waitToAdded = new ArrayList<>();
     }
 
     public WidgetGroup(Position position, Size size) {
         super(position, size);
         this.isDynamicSized = false;
+        waitToRemoved = new ArrayList<>();
+        waitToAdded = new ArrayList<>();
     }
 
     @Override
@@ -174,10 +182,19 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
     }
 
     public void waitToRemoved(Widget widget) {
-        if (waitToRemoved == null) {
-            waitToRemoved = new ArrayList<>();
+        synchronized (waitToRemoved) {
+            waitToRemoved.add(widget);
         }
-        waitToRemoved.add(widget);
+    }
+
+    public void waitToAdded(Widget widget) {
+        synchronized (waitToAdded) {
+            waitToAdded.add(widget);
+        }
+    }
+
+    public int getAllWidgetSize() {
+        return widgets.size() - waitToRemoved.size() + waitToAdded.size();
     }
 
     public void removeWidget(Widget widget) {
@@ -261,10 +278,7 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
                 widget.detectAndSendChanges();
             }
         }
-        if (waitToRemoved != null) {
-            waitToRemoved.forEach(this::removeWidget);
-            waitToRemoved = null;
-        }
+        handleSyncWidget();
     }
 
     @Override
@@ -274,9 +288,21 @@ public class WidgetGroup extends Widget implements IGhostIngredientTarget, IIngr
                 widget.updateScreen();
             }
         }
-        if (waitToRemoved != null) {
-            waitToRemoved.forEach(this::removeWidget);
-            waitToRemoved = null;
+        handleSyncWidget();
+    }
+
+    private void handleSyncWidget() {
+        if (!waitToRemoved.isEmpty()) {
+            synchronized (waitToRemoved) {
+                waitToRemoved.forEach(this::removeWidget);
+                waitToRemoved.clear();
+            }
+        }
+        if (!waitToAdded.isEmpty()) {
+            synchronized (waitToAdded) {
+                waitToAdded.forEach(this::addWidget);
+                waitToAdded.clear();
+            }
         }
     }
 

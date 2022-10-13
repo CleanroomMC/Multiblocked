@@ -42,7 +42,7 @@ public class Widget {
     private boolean isActive;
     private boolean isFocus;
     protected boolean isClientSideWidget;
-    private String tooltipText;
+    protected String tooltipText;
 
     public Widget(Position selfPosition, Size size) {
         Preconditions.checkNotNull(selfPosition, "selfPosition");
@@ -64,7 +64,7 @@ public class Widget {
     }
 
     public Widget setHoverTooltip(String tooltipText) {
-        this.tooltipText = tooltipText;
+        this.tooltipText = (tooltipText == null || tooltipText.isEmpty()) ? null : tooltipText;
         return this;
     }
 
@@ -189,7 +189,7 @@ public class Widget {
      */
     @SideOnly(Side.CLIENT)
     public void drawInForeground(int mouseX, int mouseY, float partialTicks) {
-        if (tooltipText != null && gui != null && isMouseOverElement(mouseX, mouseY)) {
+        if (tooltipText != null && !tooltipText.isEmpty() && gui != null && isMouseOverElement(mouseX, mouseY)) {
             GlStateManager.enableDepth();
             List<String> hoverList = Arrays.asList(I18n.format(tooltipText).split("\n"));
             DrawerHelper.drawHoveringText(ItemStack.EMPTY, hoverList, 300, mouseX, mouseY, gui.getScreenWidth(), gui.getScreenHeight());

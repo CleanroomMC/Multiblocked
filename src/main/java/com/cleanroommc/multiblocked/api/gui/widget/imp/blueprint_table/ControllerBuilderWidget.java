@@ -78,7 +78,7 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                     World world = table.getWorld();
                     ResourceLocation location = new ResourceLocation("mod_id:component_id");
                     ControllerDefinition controllerDefinition = new ControllerDefinition(location);
-                    controllerDefinition.baseRenderer = new BlockStateRenderer(world.getBlockState(pos));
+                    controllerDefinition.getBaseStatus().setRenderer(new BlockStateRenderer(world.getBlockState(pos)));
                     new ControllerWidget(this, controllerDefinition, new JsonBlockPattern(world, location, pos, facing,
                             poses[0].getX(), poses[0].getY(), poses[0].getZ(),
                             poses[1].getX(), poses[1].getY(), poses[1].getZ()),
@@ -142,7 +142,8 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                             try {
                                 String recipeMap = jsonElement.getAsJsonObject().get("recipeMap").getAsString();
                                 JsonBlockPattern pattern = Multiblocked.GSON.fromJson(jsonElement.getAsJsonObject().get("basePattern"), JsonBlockPattern.class);
-                                ControllerDefinition definition = Multiblocked.GSON.fromJson(jsonElement, ControllerDefinition.class);
+                                ControllerDefinition definition = new ControllerDefinition(new ResourceLocation(jsonElement.getAsJsonObject().get("location").getAsString()));
+                                definition.fromJson(jsonElement.getAsJsonObject());
                                 new ControllerWidget(this, definition, pattern, recipeMap, jsonObject -> {
                                     if (jsonObject != null) {
                                         FileUtility.saveJson(file, jsonObject);
@@ -152,7 +153,8 @@ public class ControllerBuilderWidget extends TemplateBuilderWidget {
                         }
                     }).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.settings"))
                     .addWidget(new ImageWidget(32, 0, 100, 20, new TextTexture(file.getName().replace(".json", "")).setWidth(100).setType(TextTexture.TextType.ROLL)))
-                    .addWidget(new ImageWidget(4, 2, 18, 18, new ItemStackTexture(Items.PAPER)));
+                    .addWidget(new ImageWidget(4, 2, 18, 18, new ItemStackTexture(
+                            Items.PAPER)));
             files.add(widgetGroup);
             containers.addWidget(widgetGroup);
         }

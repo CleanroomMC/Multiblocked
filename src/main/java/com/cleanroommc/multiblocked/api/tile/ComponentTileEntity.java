@@ -22,6 +22,7 @@ import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
+import com.cleanroommc.multiblocked.util.world.DummyWorld;
 import com.google.gson.JsonElement;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.item.IItemStack;
@@ -48,6 +49,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -195,7 +197,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public void setStatus(String status) {
-        if (!isRemote()) {
+        if (!isRemote() || world instanceof DummyWorld) {
             if (!this.status.equals(status)) {
                 if (definition.statusChanged != null) {
                     try {
@@ -205,14 +207,18 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
                         Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "statusChanged", exception);
                     }
                 }
+                boolean shouldUpdateLight = getDefinition().getStatus(status).getLightEmissive() != getDefinition().getStatus(this.status).getLightEmissive();
                 this.status = status;
+                if (shouldUpdateLight) {
+                    getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
+                }
                 writeCustomData(1, buffer->buffer.writeString(this.status));
             }
         }
     }
 
     public List<AxisAlignedBB> getCollisionBoundingBox() {
-        return definition.getAABB(isFormed(), frontFacing);
+        return definition.getStatus(getStatus()).getShape(frontFacing);
     }
 
     public EnumFacing getFrontFacing() {
@@ -248,10 +254,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicRenderer", exception);
             }
         }
-        if (isFormed()) {
-            return definition.formedRenderer == null ? definition.baseRenderer : definition.formedRenderer;
-        }
-        return definition.baseRenderer;
+        return getDefinition().getStatus(getStatus()).getRenderer();
     }
 
     public IRenderer getRenderer() {
@@ -269,7 +272,7 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     }
 
     public boolean isValidFrontFacing(EnumFacing facing) {
-        return definition.allowRotate;
+        return getDefinition().properties.rotationState.test(facing);
     }
 
     public boolean canConnectRedstone(EnumFacing facing) {
@@ -528,7 +531,13 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
     public void receiveInitialSyncData(PacketBuffer buf) {
         setDefinition(MbdComponents.DEFINITION_REGISTRY.get(new ResourceLocation(buf.readString(Short.MAX_VALUE))));
         this.frontFacing = EnumFacing.VALUES[buf.readByte()];
-        status = buf.readString(Short.MAX_VALUE);
+        String status = buf.readString(Short.MAX_VALUE);
+        if (!this.status.equals(status)) {
+            this.status = status;
+            if (getDefinition().getStatus(status).getSound().loop) {
+                getDefinition().getStatus(status).getSound().playSound(this);
+            }
+        }
         if (buf.readBoolean()) { // ct
             try {
                 NBTTagCompound nbt = buf.readCompoundTag();
@@ -551,7 +560,15 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
             this.frontFacing = EnumFacing.VALUES[buf.readByte()];
             scheduleChunkForRenderUpdate();
         } else if (dataId == 1) {
-            status = buf.readString(Short.MAX_VALUE);
+            String status = buf.readString(Short.MAX_VALUE);
+            if (!this.status.equals(status)) {
+                boolean shouldUpdateLight = getDefinition().getStatus(status).getLightEmissive() != getDefinition().getStatus(this.status).getLightEmissive();
+                this.status = status;
+                getDefinition().getStatus(status).getSound().playSound(this);
+                if (shouldUpdateLight) {
+                    getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
+                }
+            }
             scheduleChunkForRenderUpdate();
         } else if (dataId == 2) {
             int id = buf.readVarInt();

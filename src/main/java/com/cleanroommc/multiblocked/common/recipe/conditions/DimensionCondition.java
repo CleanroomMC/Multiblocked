@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.common.recipe.conditions;
 
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.SearchComponentWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.SelectorWidget;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeCondition;
@@ -17,8 +18,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -78,12 +81,38 @@ public class DimensionCondition extends RecipeCondition {
     public void openConfigurator(WidgetGroup group) {
         super.openConfigurator(group);
         Set<String> types = Arrays.stream(DimensionType.values()).map(DimensionType::getName).collect(Collectors.toSet());
-        group.addWidget(new SelectorWidget(0,20, 80, 15, types.stream().map(String::toString).collect(Collectors.toList()), -1)
+        SelectorWidget selectorWidget = new SelectorWidget(0, 20, 80, 15, new ArrayList<>(types), -1);
+        SearchComponentWidget<String> searchComponentWidget = new SearchComponentWidget<>(0, 40, 80, 15, new SearchComponentWidget.IWidgetSearch<String>() {
+            @Override
+            public void search(String word, Consumer<String> find) {
+                for (String type : types) {
+                    if (type.toLowerCase().contains(word.toLowerCase())) {
+                        find.accept(type);
+                    }
+                }
+            }
+
+            @Override
+            public String resultDisplay(String value) {
+                return value;
+            }
+
+            @Override
+            public void selectResult(String value) {
+                if (value != null) {
+                    dimension = value;
+                    selectorWidget.setValue(value);
+                }
+            }
+        });
+        group.addWidget(selectorWidget
                 .setButtonBackground(new ColorRectTexture(0x7f2e2e2e))
                 .setOnChanged(dim -> {
                     if (dim != null && !dim.isEmpty()) {
                         dimension = dim;
+                        searchComponentWidget.setCurrentString(dim);
                     }
-                }).setValue(types.contains(dimension) ? dimension : ""));
+                }).setIsUp(true).setValue(types.contains(dimension) ? dimension : ""));
+        group.addWidget(searchComponentWidget.setCapacity(2).setCurrentString(types.contains(dimension) ? dimension : ""));
     }
 }

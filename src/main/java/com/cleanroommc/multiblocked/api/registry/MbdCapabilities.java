@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.registry;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.block.CustomProperties;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
@@ -28,6 +29,7 @@ public class MbdCapabilities {
         registerCapability(FE = FEMultiblockCapability.CAP);
         registerCapability(ITEM = ItemMultiblockCapability.CAP);
         registerCapability(FLUID = FluidMultiblockCapability.CAP);
+        registerCapability(EntityMultiblockCapability.CAP);
         if (Loader.isModLoaded(Multiblocked.MODID_BOT)) {
             registerCapability(ManaBotaniaCapability.CAP);
         }
@@ -83,9 +85,9 @@ public class MbdCapabilities {
     public static void registerAnyCapabilityBlocks() {
         for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
             ComponentDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, capability.name + ".any"));
-            definition.isOpaqueCube = false;
-            definition.allowRotate = false;
-            definition.showInJei = false;
+            definition.properties.isOpaque = false;
+            definition.properties.rotationState = CustomProperties.RotationState.NONE;
+            definition.properties.showInJei = false;
             MbdComponents.registerComponent(definition);
             MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).setCreativeTab(null);
         }

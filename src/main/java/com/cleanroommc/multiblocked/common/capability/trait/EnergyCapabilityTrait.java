@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
+import com.cleanroommc.multiblocked.api.block.CustomProperties;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.trait.ProgressCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
@@ -256,7 +257,7 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
 
         @Override
         public boolean outputsEnergy(EnumFacing side) {
-            return component.getFrontFacing() == side || !component.getDefinition().allowRotate;
+            return component.getFrontFacing() == side || component.getDefinition().properties.rotationState == CustomProperties.RotationState.NONE;
         }
 
         @Override

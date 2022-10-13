@@ -12,6 +12,7 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import net.minecraft.util.JsonUtils;
 
 public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
     public static final IRendererTypeAdapterFactory INSTANCE = new IRendererTypeAdapterFactory();
@@ -23,6 +24,18 @@ public class IRendererTypeAdapterFactory implements TypeAdapterFactory {
             return (TypeAdapter<T>) new IRendererTypeAdapter(gson);
         }
         return null;
+    }
+
+    public boolean isPostRenderer(JsonElement jsonElement) {
+        if (jsonElement.isJsonObject()) {
+            if (jsonElement.getAsJsonObject().has("postRenderer")) {
+                return JsonUtils.getBoolean(jsonElement.getAsJsonObject(), "postRenderer", false);
+            }
+            final String type = JsonUtils.getString(jsonElement.getAsJsonObject(), "type", "");
+            // legacy
+            return type.equals("blockstate");
+        }
+        return false;
     }
 
     private static final class IRendererTypeAdapter extends TypeAdapter<IRenderer> {

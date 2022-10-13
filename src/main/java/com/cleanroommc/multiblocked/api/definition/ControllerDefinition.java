@@ -3,14 +3,18 @@ package com.cleanroommc.multiblocked.api.definition;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.crafttweaker.functions.*;
 import com.cleanroommc.multiblocked.api.pattern.BlockPattern;
+import com.cleanroommc.multiblocked.api.pattern.JsonBlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockShapeInfo;
 import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
+import com.google.common.base.Suppliers;
+import com.google.gson.JsonObject;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.item.MCItemStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -22,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Supplier;
 
 /**
  * Definition of a controller, which define its structure, logic, recipe chain and so on.
@@ -29,31 +34,31 @@ import java.util.Stack;
 @ZenClass("mods.multiblocked.definition.ControllerDefinition")
 @ZenRegister
 public class ControllerDefinition extends ComponentDefinition {
+    protected Supplier<BlockPattern> basePattern;
+    protected Supplier<RecipeMap> recipeMap;
+    protected Supplier<ItemStack> catalyst; // if null, checking pattern per second
+
     @ZenProperty
-    public transient BlockPattern basePattern;
+    public IDynamicPattern dynamicPattern;
     @ZenProperty
-    public transient RecipeMap recipeMap;
+    public IStructureFormed structureFormed;
     @ZenProperty
-    public transient IDynamicPattern dynamicPattern;
+    public IStructureInvalid structureInvalid;
     @ZenProperty
-    public transient IStructureFormed structureFormed;
+    public IUpdateFormed updateFormed;
     @ZenProperty
-    public transient IStructureInvalid structureInvalid;
+    public ISetupRecipe setupRecipe;
     @ZenProperty
-    public transient IUpdateFormed updateFormed;
+    public IRecipeFinish recipeFinish;
     @ZenProperty
-    public transient ISetupRecipe setupRecipe;
+    public IApplyContentModifier applyContentModifier;
     @ZenProperty
-    public transient IRecipeFinish recipeFinish;
-    @ZenProperty
-    public transient IApplyContentModifier applyContentModifier;
-    @ZenProperty
-    public transient ICalcRecipeDuration calcRecipeDuration;
-    public ItemStack catalyst; // if null, checking pattern per second
+    public ICalcRecipeDuration calcRecipeDuration;
     @ZenProperty
     public boolean consumeCatalyst;
+    public boolean noNeedController;
     @ZenProperty
-    public transient List<MultiblockShapeInfo> designs;
+    public List<MultiblockShapeInfo> designs;
 
     // used for Gson
     public ControllerDefinition() {
@@ -66,14 +71,14 @@ public class ControllerDefinition extends ComponentDefinition {
 
     public ControllerDefinition(ResourceLocation location, Class<? extends ControllerTileEntity> clazz) {
         super(location, clazz);
-        this.recipeMap = RecipeMap.EMPTY;
+        this.recipeMap = ()->RecipeMap.EMPTY;
     }
 
     public List<MultiblockShapeInfo> getDesigns() {
         if (designs != null) return designs;
         // auto gen
-        if (basePattern != null) {
-            return autoGenDFS(basePattern, new ArrayList<>(), new Stack<>());
+        if (getBasePattern() != null) {
+            return autoGenDFS(getBasePattern(), new ArrayList<>(), new Stack<>());
         } else if (dynamicPattern != null) {
             try {
                 return autoGenDFS(dynamicPattern.apply((ControllerTileEntity) createNewTileEntity(null)), new ArrayList<>(), new Stack<>());
@@ -105,14 +110,14 @@ public class ControllerDefinition extends ComponentDefinition {
 
     @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenGetter("catalyst")
-    public IItemStack getCatalyst() {
-        return catalyst == null ? null : new MCItemStack(catalyst);
+    public IItemStack getCatalystCT() {
+        return catalyst == null ? null : new MCItemStack(catalyst.get());
     }
 
     @Optional.Method(modid = Multiblocked.MODID_CT)
     @ZenSetter("catalyst")
-    public void setCatalyst(IItemStack catalyst) {
-        this.catalyst = catalyst == null ? null : CraftTweakerMC.getItemStack(catalyst);
+    public void setCatalystCT(IItemStack catalyst) {
+        setCatalyst(catalyst == null ? null : CraftTweakerMC.getItemStack(catalyst));
     }
 
     public String getDescription() {
@@ -122,5 +127,81 @@ public class ControllerDefinition extends ComponentDefinition {
     @Override
     public boolean needUpdateTick() {
         return super.needUpdateTick() || catalyst == null;
+    }
+
+    @ZenGetter("basePattern")
+    public BlockPattern getBasePattern() {
+        return basePattern == null ? null : basePattern.get();
+    }
+
+    @ZenGetter("recipeMap")
+    public RecipeMap getRecipeMap() {
+        return recipeMap == null ? null : recipeMap.get();
+    }
+
+    public ItemStack getCatalyst() {
+        return catalyst == null ? null : catalyst.get();
+    }
+
+    @ZenSetter("basePattern")
+    public void setBasePattern(BlockPattern basePattern) {
+        this.basePattern = () -> basePattern;
+    }
+
+    public void setBasePattern(Supplier<BlockPattern> basePattern) {
+        this.basePattern = basePattern;
+    }
+
+    @ZenSetter("recipeMap")
+    public void setRecipeMap(RecipeMap recipeMap) {
+        this.recipeMap = () -> recipeMap;
+    }
+
+    public void setRecipeMap(Supplier<RecipeMap> recipeMap) {
+        this.recipeMap = recipeMap;
+    }
+
+    public void setDesigns(List<MultiblockShapeInfo> designs) {
+        this.designs = designs;
+    }
+
+    public void setCatalyst(Supplier<ItemStack> catalyst) {
+        this.catalyst = catalyst;
+    }
+
+    public void setCatalyst(ItemStack catalyst) {
+        this.catalyst = () -> catalyst;
+    }
+
+    @Override
+    public void fromJson(JsonObject json) {
+        super.fromJson(json);
+        if (json.has("basePattern")) {
+            basePattern = Suppliers.memoize(()-> Multiblocked.GSON.fromJson(json.get("basePattern"), JsonBlockPattern.class).build());
+        }
+        if (json.has("recipeMap")) {
+            recipeMap = Suppliers.memoize(()-> RecipeMap.RECIPE_MAP_REGISTRY.getOrDefault(json.get("recipeMap").getAsString(), RecipeMap.EMPTY));
+        } else {
+            setRecipeMap(RecipeMap.EMPTY);
+        }
+        if (json.has("catalyst")) {
+            catalyst = Suppliers.memoize(()-> Multiblocked.GSON.fromJson(json.get("catalyst"), ItemStack.class));
+            consumeCatalyst = JsonUtils.getBoolean(json, "consumeCatalyst", consumeCatalyst);
+            noNeedController = JsonUtils.getBoolean(json, "noNeedController", noNeedController);
+        }
+    }
+
+    @Override
+    public JsonObject toJson(JsonObject json) {
+        json = super.toJson(json);
+        if (getRecipeMap() != null) {
+            json.addProperty("recipeMap", getRecipeMap().name);
+        }
+        if (getCatalyst() != null) {
+            json.add("catalyst", Multiblocked.GSON.toJsonTree(getCatalyst()));
+            json.addProperty("consumeCatalyst", consumeCatalyst);
+            json.addProperty("noNeedController", noNeedController);
+        }
+        return json;
     }
 }

@@ -74,7 +74,9 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     /**
      * deep copy with a new amount of this content by the given modifier.
      */
-    public abstract T copyInnerByModifier(T content, ContentModifier modifier);
+    public T copyInnerByModifier(T content, ContentModifier modifier) {
+        return copyInner(content);
+    }
     
     /**
      * create a proxy of this block.
@@ -110,7 +112,7 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
         return null;
     }
 
-    public <C> Set<C> getCapability(Capability<C> capability, @Nonnull TileEntity tileEntity) {
+    public final <C> Set<C> getCapability(Capability<C> capability, @Nonnull TileEntity tileEntity) {
         Set<C> found = new LinkedHashSet<>();
         for (EnumFacing facing : EnumFacing.VALUES) {
             C cap = tileEntity.getCapability(capability, facing);
@@ -122,7 +124,12 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     /**
      * Get candidate blocks for display in JEI as well as automated builds
      */
-    public abstract BlockInfo[] getCandidates();
+    public BlockInfo[] getCandidates() {
+        if (hasTrait()) {
+            return MbdComponents.getBlockInfoWithCapability(this);
+        }
+        throw new RuntimeException("Multiblocked Capability " + name + " doesn't give proper candidates.");
+    }
 
     @Override
     public int hashCode() {

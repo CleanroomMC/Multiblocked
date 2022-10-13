@@ -20,8 +20,9 @@ import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
 import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
-import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.client.renderer.MultiblockPreviewRenderer;
+import com.cleanroommc.multiblocked.network.MultiblockedNetworking;
+import com.cleanroommc.multiblocked.network.s2c.SPacketRemoveDisabledRendering;
 import com.cleanroommc.multiblocked.persistence.IAsyncThreadUpdate;
 import com.cleanroommc.multiblocked.persistence.MultiblockWorldSavedData;
 import com.google.common.collect.ImmutableList;
@@ -33,12 +34,14 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -48,6 +51,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Optional;
@@ -72,6 +76,8 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
     protected LongOpenHashSet parts;
     protected RecipeLogic recipeLogic;
     protected AxisAlignedBB renderBox;
+    protected IBlockState oldState;
+    protected NBTTagCompound oldNbt;
 
     public BlockPattern getPattern() {
         if (definition.dynamicPattern != null) {
@@ -82,7 +88,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicPattern", exception);
             }
         }
-        return definition.basePattern;
+        return definition.getBasePattern();
     }
 
     @Override
@@ -106,7 +112,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public boolean isValidFrontFacing(EnumFacing facing) {
-        return definition.allowRotate && facing.getAxis() != EnumFacing.Axis.Y;
+        return super.isValidFrontFacing(facing) && facing.getAxis() != EnumFacing.Axis.Y;
     }
 
     public boolean isFormed() {
@@ -133,22 +139,6 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "updateFormed", exception);
             }
         }
-    }
-
-    @Override
-    public IRenderer updateCurrentRenderer() {
-        if (definition.dynamicRenderer != null) {
-            try {
-                return definition.dynamicRenderer.apply(this);
-            } catch (Exception exception) {
-                definition.dynamicRenderer = null;
-                Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "dynamicRenderer", exception);
-            }
-        }
-        if (definition.workingRenderer != null && isFormed() && (status.equals("working") || status.equals("suspend"))) {
-            return definition.workingRenderer;
-        }
-        return super.updateCurrentRenderer();
     }
 
     public Table<IO, MultiblockCapability<?>, Long2ObjectOpenHashMap<CapabilityProxy<?>>> getCapabilities() {
@@ -261,6 +251,20 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         }
     }
 
+    public boolean hasOldBlock() {
+        return getDefinition().noNeedController && oldState != null && this.world != null;
+    }
+
+    public void resetOldBlock(World world, BlockPos pos) {
+        world.setBlockState(pos, oldState);
+        if (oldNbt != null) {
+            TileEntity blockEntity = TileEntity.create(world, oldNbt);
+            if (blockEntity != null) {
+                this.world.setTileEntity(pos, blockEntity);
+            }
+        }
+    }
+
     @Override
     public void receiveCustomData(int dataId, PacketBuffer buf) {
         if (dataId == -1) {
@@ -360,6 +364,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                 new Tuple<>(IO.VALUES[tag.getInteger("io")], EnumFacing.VALUES[tag.getInteger("facing")]));
             }
         }
+        if (getDefinition().noNeedController && compound.hasKey("oldState")) {
+            this.oldState = NBTUtil.readBlockState(compound.getCompoundTag("oldState"));
+            if (compound.hasKey("oldNbt")) {
+                this.oldNbt = compound.getCompoundTag("oldNbt");
+            }
+        }
         state = MultiblockWorldSavedData.getOrCreate(world).mapping.get(pos);
     }
 
@@ -390,6 +400,12 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             }
             compound.setTag("capabilities", tagList);
         }
+        if (getDefinition().noNeedController && oldState != null) {
+            compound.setTag("oldState", NBTUtil.writeBlockState(new NBTTagCompound(), oldState));
+            if (oldNbt != null) {
+                compound.setTag("oldNbt", oldNbt);
+            }
+        }
         return compound;
     }
 
@@ -410,22 +426,11 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         }
 
         if (!world.isRemote) {
-            if (!isFormed() && definition.catalyst != null) {
+            if (!isFormed() && definition.getCatalyst() != null) {
                 if (state == null) state = new MultiblockState(world, pos);
                 ItemStack held = player.getHeldItem(hand);
-                if (definition.catalyst.isEmpty() || held.isItemEqual(definition.catalyst)) {
-                    if (shouldCheckPattern() && checkPattern()) { // formed
-                        player.swingArm(hand);
-                        ITextComponent formedMsg = new TextComponentTranslation(getUnlocalizedName()).appendSibling(new TextComponentTranslation("multiblocked.multiblock.formed"));
-                        player.sendStatusMessage(formedMsg, true);
-                        if (!player.isCreative() && !definition.catalyst.isEmpty()) {
-                            held.shrink(1);
-                        }
-                        MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
-                        if (!needAlwaysUpdate()) {
-                            MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
-                        }
-                        onStructureFormed();
+                if (definition.getCatalyst().isEmpty() || (ItemStack.areItemsEqual(held, definition.getCatalyst()) && ItemStack.areItemStackTagsEqual(held, definition.getCatalyst()))) {
+                    if (checkCatalystPattern(player, hand, held)) { // formed
                         return true;
                     }
                 }
@@ -437,6 +442,24 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             }
         }
         return true;
+    }
+
+    public boolean checkCatalystPattern(EntityPlayer player, EnumHand hand, ItemStack held) {
+        if (checkPattern()) { // formed
+            player.swingArm(hand);
+            ITextComponent formedMsg = new TextComponentTranslation(getUnlocalizedName()).appendSibling(new TextComponentTranslation("multiblocked.multiblock.formed"));
+            player.sendStatusMessage(formedMsg, true);
+            if (!player.isCreative() && !definition.getCatalyst().isEmpty()) {
+                held.shrink(1);
+            }
+            MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
+            if (!needAlwaysUpdate()) {
+                MultiblockWorldSavedData.getOrCreate(world).addLoading(this);
+            }
+            onStructureFormed();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -462,7 +485,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     @Override
     public void asyncThreadLogic(long periodID) {
-        if (!isFormed() && getDefinition().catalyst == null && (getOffset() + periodID) % 4 == 0) {
+        if (!isFormed() && getDefinition().getCatalyst() == null && (getOffset() + periodID) % 4 == 0) {
             if (getPattern().checkPatternAt(new MultiblockState(world, pos), false)) {
                 FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(() -> {
                     if (state == null) state = new MultiblockState(world, pos);
@@ -489,5 +512,13 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
         } catch (Exception e) {
             Multiblocked.LOGGER.error("something run while checking proxy changes");
         }
+    }
+
+    public void saveOldBlock(IBlockState oldState, NBTTagCompound oldNbt) {
+        this.oldState = oldState;
+        if (oldNbt != null) {
+            this.oldNbt = oldNbt;
+        }
+        markAsDirty();
     }
 }

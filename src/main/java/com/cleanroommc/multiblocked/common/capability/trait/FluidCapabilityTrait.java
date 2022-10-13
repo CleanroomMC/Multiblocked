@@ -1,13 +1,10 @@
 package com.cleanroommc.multiblocked.common.capability.trait;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.trait.MultiCapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.TankWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.FluidMultiblockCapability;
 import com.google.gson.JsonArray;
@@ -23,7 +20,6 @@ import net.minecraft.util.JsonUtils;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -40,10 +36,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FluidCapabilityTrait extends MultiCapabilityTrait {
     private FluidTankList handler;
     private int[] tankCapability;
+    private FluidStack[][] validFluids;
 
     public FluidCapabilityTrait() {
         super(FluidMultiblockCapability.CAP);
@@ -58,13 +56,50 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         int size = jsonArray.size();
         tankCapability = new int[size];
+        validFluids =  new FluidStack[size][];
         int i = 0;
         for (JsonElement element : jsonArray) {
             JsonObject jsonObject = element.getAsJsonObject();
             tankCapability[i] = JsonUtils.getInt(jsonObject, "tC", 1000);
+            if (jsonObject.has("valid")) {
+                validFluids[i] = new FluidStack[0];
+                for (JsonElement fluid : jsonObject.get("valid").getAsJsonArray()) {
+                    validFluids[i] = ArrayUtils.add(validFluids[i], Multiblocked.GSON.fromJson(fluid.getAsString(), FluidStack.class));
+                }
+            }
             i++;
         }
-        handler = new FluidTankList(capabilityIO, Arrays.stream(tankCapability).mapToObj(FluidTank::new).toArray(FluidTank[]::new));
+        FluidTank[] fluidTanks = new FluidTank[tankCapability.length];
+
+        for (int j = 0; j < tankCapability.length; j++) {
+            final FluidStack[] fluids = validFluids[j];
+            fluidTanks[j] = new FluidTank(tankCapability[j]) {
+                @Override
+                public boolean canFillFluidType(FluidStack fluid) {
+                    if (fluids != null) {
+                        for (FluidStack fluidStack : fluids) {
+                            if (fluidStack.isFluidEqual(fluid)) return super.canFillFluidType(fluid);
+                        }
+                        return false;
+                    }
+                    return super.canFillFluidType(fluid);
+                }
+
+                @Override
+                public boolean canDrainFluidType(@Nullable FluidStack fluid) {
+                    if (fluids != null) {
+                        for (FluidStack fluidStack : fluids) {
+                            if (fluidStack.isFluidEqual(fluid)) return super.canDrainFluidType(fluid);
+                        }
+                        return false;
+                    }
+                    return super.canDrainFluidType(fluid);
+                }
+            };
+
+
+        }
+        handler = new FluidTankList(capabilityIO, fluidTanks);
     }
 
     @Override
@@ -73,6 +108,13 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         for (int i = 0; i < capabilityIO.length; i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
             jsonObject.addProperty("tC", tankCapability[i]);
+            if (validFluids[i] != null) {
+                JsonArray fluids = new JsonArray();
+                for (FluidStack fluid : validFluids[i]) {
+                    fluids.add(Multiblocked.GSON.toJson(fluid));
+                }
+                jsonObject.add("valid", fluids);
+            }
         }
         return jsonArray;
     }
@@ -132,24 +174,40 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
     }
 
     @Override
-    protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot, int index) {
+    protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot, final int index) {
         super.initSettingDialog(dialog, slot, index);
         dialog.addWidget(new LabelWidget(5, 60, "multiblocked.gui.label.tank_capability"));
         dialog.addWidget(new TextFieldWidget(5, 70, 100, 15, true, null, s -> tankCapability[index] = Integer.parseInt(s))
                 .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(tankCapability[index] + ""));
+        WidgetGroup widget = new WidgetGroup(5, 103, 200, 200);
+        dialog.addWidget(widget);
+        dialog.addWidget(GuiUtils.createBoolSwitch(5, 90, "Fluid Filter", "", validFluids[index] != null, result->{
+            if (result) {
+                validFluids[index] = new FluidStack[0];
+                widget.addWidget(GuiUtils.createFluidStackSelector(dialog, 0,0, "Valid Fluids", Arrays.stream(validFluids[index]).collect(Collectors.toList()), list -> validFluids[index] = list.toArray(new FluidStack[0])));
+            } else {
+                widget.clearAllWidgets();
+                validFluids[index] = null;
+            }
+        }));
+        if (validFluids[index] != null) {
+            widget.addWidget(GuiUtils.createFluidStackSelector(dialog, 0,0, "Valid Fluids", Arrays.stream(validFluids[index]).collect(Collectors.toList()), list -> validFluids[index] = list.toArray(new FluidStack[0])));
+        }
     }
 
     @Override
     protected void addSlot() {
         super.addSlot();
         tankCapability = ArrayUtils.add(tankCapability, 1000);
+        validFluids = ArrayUtils.add(validFluids, null);
     }
 
     @Override
     protected void removeSlot(int index) {
         super.removeSlot(index);
         tankCapability = ArrayUtils.remove(tankCapability, index);
+        validFluids = ArrayUtils.remove(validFluids, index);
     }
 
     @Override

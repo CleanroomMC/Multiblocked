@@ -2,10 +2,7 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ControllerDefinition;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.*;
 import com.cleanroommc.multiblocked.api.gui.util.ClickData;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
@@ -105,7 +102,14 @@ public class PatternWidget extends WidgetGroup {
 
         addWidget(leftButton = new ButtonWidget(9, 151, 18, 18, LEFT_BUTTON, (x) -> reset(index - 1)).setHoverTexture(LEFT_BUTTON_HOVER));
 
-        addWidget(rightButton = new ButtonWidget(149, 151, 18, 18, RIGHT_BUTTON, (x) -> reset(index + 1)).setHoverTexture(RIGHT_BUTTON_HOVER));
+        addWidget(rightButton = new ButtonWidget(150, 53, 18, 18, RIGHT_BUTTON, (x) -> reset(index + 1)).setHoverTexture(RIGHT_BUTTON_HOVER));
+        if (controllerDefinition.getCatalyst() != null && !controllerDefinition.getCatalyst().isEmpty()) {
+            ItemStackHandler itemStackHandler;
+            addWidget(new SlotWidget(itemStackHandler = new ItemStackHandler(), 0, 149, 151 - 20, false, false)
+                    .setBackgroundTexture(ResourceBorderTexture.BUTTON_COMMON)
+                    .setOnAddedTooltips((slot, list)-> list.add(controllerDefinition.consumeCatalyst ? "multiblocked.gui.catalyst.0" : "multiblocked.gui.catalyst.1")));
+            itemStackHandler.setStackInSlot(0, controllerDefinition.getCatalyst());
+        }
     }
 
     public static PatternWidget getPatternWidget(ControllerDefinition controllerDefinition) {

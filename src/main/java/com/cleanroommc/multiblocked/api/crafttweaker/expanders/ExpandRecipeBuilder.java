@@ -1,11 +1,14 @@
 package com.cleanroommc.multiblocked.api.crafttweaker.expanders;
 
 import com.cleanroommc.multiblocked.Multiblocked;
+import com.cleanroommc.multiblocked.api.recipe.EntityIngredient;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.api.recipe.RecipeBuilder;
 import com.cleanroommc.multiblocked.common.recipe.content.AspectStack;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.data.IData;
+import crafttweaker.api.entity.IEntityDefinition;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.liquid.ILiquidStack;
@@ -17,8 +20,10 @@ import mekanism.api.gas.GasStack;
 import mekanism.common.integration.crafttweaker.gas.IGasStack;
 import mekanism.common.integration.crafttweaker.helpers.GasHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -66,6 +71,29 @@ public class ExpandRecipeBuilder {
     @ZenMethod
     public static RecipeBuilder outputFluids(RecipeBuilder builder, float chance, ILiquidStack... outputs) {
         return builder.outputFluids(chance, Arrays.stream(outputs).map(CraftTweakerMC::getLiquidStack).toArray(FluidStack[]::new));
+    }
+
+
+    @ZenMethod
+    public static RecipeBuilder inputEntity(RecipeBuilder builder, float chance, IEntityDefinition entity, @stanhebben.zenscript.annotations.Optional IData data) {
+        NBTTagCompound nbt = (NBTTagCompound) CraftTweakerMC.getNBT(data);
+        return builder.inputEntities(chance, new EntityIngredient(((EntityEntry) entity.getInternal()), nbt));
+    }
+
+    @ZenMethod
+    public static RecipeBuilder inputEntity(RecipeBuilder builder, IEntityDefinition entity, @stanhebben.zenscript.annotations.Optional IData data) {
+        return inputEntity(builder, 1, entity, data);
+    }
+
+    @ZenMethod
+    public static RecipeBuilder outputEntity(RecipeBuilder builder, float chance, IEntityDefinition entity, @stanhebben.zenscript.annotations.Optional IData data) {
+        NBTTagCompound nbt = (NBTTagCompound) CraftTweakerMC.getNBT(data);
+        return builder.outputEntities(chance, new EntityIngredient(((EntityEntry) entity.getInternal()), nbt));
+    }
+
+    @ZenMethod
+    public static RecipeBuilder outputEntity(RecipeBuilder builder, IEntityDefinition entity, @stanhebben.zenscript.annotations.Optional IData data) {
+        return outputEntity(builder, 1, entity, data);
     }
 
     @ZenMethod

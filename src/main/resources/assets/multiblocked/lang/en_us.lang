@@ -1,4 +1,4 @@
-multiblocked.multiblock.formed=Multiblock Formed!
+multiblocked.multiblock.formed= formed!
 
 multiblocked.capability.tc6_aspect=Thaumcraft Aspect
 tc6_aspect.any.name=Any Thaumcraft Aspect Holders
@@ -6,6 +6,8 @@ multiblocked.capability.forge_energy=Forge Energy
 forge_energy.any.name=Any Forge Energy Containers
 multiblocked.capability.fluid=Fluid
 fluid.any.name=Any Fluid Tanks
+multiblocked.capability.entity=Entity
+entity.any.name=Any Entity Containers
 multiblocked.capability.mek_gas=Mekanism Gas
 mek_gas.any.name=Any Mekanism Gas Tanks
 multiblocked.capability.mek_heat=Mekanism Heat
@@ -38,6 +40,14 @@ multiblocked.capability.pneumatic_pressure=PnC Pressure
 pneumatic_pressure.any.name=Any Pneumatic Pressure Container
 multiblocked.capability.starlight_as=AS Starlight
 starlight_as.any.name=Any multiblocked block with AS Starlight Trait
+
+tile.multiblocked.energy_output.name=Energy Output Hatch
+tile.multiblocked.energy_input.name=Energy Input Hatch
+tile.multiblocked.fluid_input.name=Fluid Input Hatch
+tile.multiblocked.fluid_output.name=Fluid Output Hatch
+tile.multiblocked.item_input.name=Item Input Bus
+tile.multiblocked.item_output.name=Item Output Bus
+tile.multiblocked.entity.name=Entity Hatch
 
 multiblocked.gui.content.more_option=more options
 multiblocked.gui.content.back=back
@@ -127,7 +137,7 @@ multiblocked.gui.tips.add=Add
 
 multiblocked.gui.tips.select_image=Select an Image
 multiblocked.gui.trait.add_slot=Add a Slot
-multiblocked.gui.trait.remove_slot=Remove Selected Slot
+multiblocked.gui.trait.remove_slot=Remove
 multiblocked.gui.trait.capability_io=Capability IO (e.g., Pipe Interaction)
 multiblocked.gui.trait.gui_io=Gui IO (e.g. Gui Interaction)
 multiblocked.gui.trait.auto_io=Auto IO
@@ -135,6 +145,7 @@ multiblocked.gui.trait.passive_io=Passive IO
 multiblocked.gui.trait.auto=Auto Input/Output | Capability IO cannot be BOTH | Only Front Facing
 multiblocked.gui.trait.set_width=Set Width
 multiblocked.gui.trait.set_height=Set Height
+multiblocked.gui.trait.fill_direction=Progress Bar Fill Direction
 
 
 multiblocked.gui.blueprint_table.builder_template=Builder Template
@@ -206,7 +217,7 @@ multiblocked.gui.content.per_tick=§aConsumed/Produced Per Tick§r
 multiblocked.gui.content.tips.per_tick_short=§a/tick§r
 multiblocked.gui.content.chance_0=§cNot Consumed§r
 multiblocked.gui.content.chance_0_short=§cNC§r
-multiblocked.gui.content.chance_1=§eChance: %s
+multiblocked.gui.content.chance_1=§eChance: %s§r
 
 multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
 multiblocked.gui.trait.energy.tips=Capability (EU)
@@ -301,7 +312,7 @@ multiblocked.gui.label.save_pattern=Save Pattern
 multiblocked.gui.label.save_recipe_map=Save Recipe Map
 multiblocked.gui.label.pattern_settings=Pattern Settings
 
-multiblocked.gui.condition.reverse=reverse (executed if condition failed),
+multiblocked.gui.condition.reverse=below reverse (executed if condition failed),
 multiblocked.gui.condition.reverse.label=isReverse,
 multiblocked.gui.condition.rain.level=Rain Level,
 multiblocked.gui.condition.thunder.level=Thunder Level,
@@ -309,7 +320,7 @@ multiblocked.gui.condition.pos_y.min=Min Position Y,
 multiblocked.gui.condition.pos_y.max=Max Position Y,
 
 multiblocked.recipe.condition.thunder=Thunder,
-multiblocked.recipe.condition.thunder.tooltip=Rain Level=%d,
+multiblocked.recipe.condition.thunder.tooltip=Thunder Level=%d,
 multiblocked.recipe.condition.rain=Rain,
 multiblocked.recipe.condition.rain.tooltip=Rain Level=%d,
 multiblocked.recipe.condition.dimension=Dimension,
@@ -321,3 +332,48 @@ multiblocked.gui.condition.block.count=Minimum Count
 multiblocked.recipe.condition.block=Block
 
 multiblocked.gui.predicate.slot=match the IO slot
+
+multiblocked.gui.widget.component.dynamic_shape=Dynamic Shape
+multiblocked.gui.widget.component.collision=Collision
+multiblocked.gui.widget.component.destroy_time=Destroy Time
+multiblocked.gui.widget.component.explosion_resistance=Explosion Resistance
+multiblocked.gui.widget.component.speed_factor=Speed Factor
+multiblocked.gui.widget.component.jump_factor=Jump Factor
+multiblocked.gui.widget.component.friction=Friction
+multiblocked.gui.widget.component.harvest=Harvest
+multiblocked.gui.widget.component.stack_size=Stack Size
+multiblocked.gui.widget.component.tab_group=Tab Group
+multiblocked.gui.widget.component.status=Status
+multiblocked.gui.widget.component.rotate_state=Rotation Rule
+multiblocked.gui.widget.component.status.create=create a status
+multiblocked.gui.widget.component.status.parent=select a parent
+multiblocked.gui.widget.component.status.name=status name
+multiblocked.gui.widget.component.status.renderer=use a specific renderer or inherit from parent
+multiblocked.gui.widget.component.status.light_emissive=emit light (0-15) or inherit from parent
+multiblocked.gui.widget.component.status.shape=specify a shape or inherit from parent
+multiblocked.gui.widget.component.status.sound=use a specific sound or inherit from parent
+multiblocked.gui.tips.play=Play
+multiblocked.gui.widget.sound.loop=should loop
+multiblocked.gui.widget.sound.delay=delay time >= 0
+multiblocked.gui.widget.sound.volume=volume 0-1
+multiblocked.gui.widget.sound.pitch=pitch >= 0
+multiblocked.gui.shape.add=add a box
+
+multiblocked.gui.tips.item_selector=Item Name
+multiblocked.gui.tips.item_tag=Item Tag
+multiblocked.gui.tips.fluid_selector=Fluid Name
+multiblocked.gui.tips.fluid_tag=Fluid Tag
+
+multiblocked.gui.label.entity_type=Entity Type
+multiblocked.gui.label.entity_tag=Entity Tag
+multiblocked.gui.widget.controller.no_controller=Allow to create a multiblock without controller, you can set the controller's replacement block in the Pattern Settings. §4Note that you must right-click on the block in the controller block position with the catalyst to trigger the structure to form§r
+
+multiblocked.gui.text_field.number.0=from %d to %d
+multiblocked.gui.text_field.number.1=bigger than %d
+multiblocked.gui.text_field.number.2=smaller than %d
+multiblocked.gui.text_field.number.3=any number
+multiblocked.gui.text_field.number.wheel=§ascroll wheel adjusts number§r (%s)
+multiblocked.gui.text_field.resourcelocation=allow [0-9][a-z][_-]
+
+multiblocked.gui.catalyst.0=catalyst (consume)
+multiblocked.gui.catalyst.1=catalyst

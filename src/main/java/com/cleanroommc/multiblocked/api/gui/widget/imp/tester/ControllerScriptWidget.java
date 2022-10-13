@@ -72,13 +72,14 @@ public class ControllerScriptWidget extends PageWidget {
                 try {
                     String recipeMap = jsonElement.getAsJsonObject().get("recipeMap").getAsString();
                     JsonBlockPattern pattern = Multiblocked.GSON.fromJson(jsonElement.getAsJsonObject().get("basePattern"), JsonBlockPattern.class);
-                    ControllerDefinition definition = Multiblocked.GSON.fromJson(jsonElement, ControllerDefinition.class);
+                    ControllerDefinition definition = new ControllerDefinition(new ResourceLocation(jsonElement.getAsJsonObject().get("location").getAsString()));
+                    definition.fromJson(jsonElement.getAsJsonObject());
                     pattern.predicates.put("controller", new PredicateComponent(definition));
-                    definition.basePattern = pattern.build();
+                    definition.setBasePattern(pattern.build());
                     for (File file : Optional.ofNullable(new File(Multiblocked.location, "recipe_map").listFiles((f, n) -> n.endsWith(".json"))).orElse(new File[0])) {
                         JsonObject config = (JsonObject) FileUtility.loadJson(file);
                         if (config != null && config.get("name").getAsString().equals(recipeMap)) {
-                            definition.recipeMap = Multiblocked.GSON.fromJson(config, RecipeMap.class);
+                            definition.setRecipeMap(Multiblocked.GSON.fromJson(config, RecipeMap.class));
                             break;
                         }
                     }

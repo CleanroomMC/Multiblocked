@@ -86,7 +86,7 @@ public class PartBuilderWidget extends WidgetGroup {
 
     private void setNewRenderer(IRenderer newRenderer) {
         PartDefinition definition = new PartDefinition(new ResourceLocation(Multiblocked.MODID, "i_renderer"));
-        definition.baseRenderer = newRenderer;
+        definition.getBaseStatus().setRenderer(newRenderer);
         tileEntity.setDefinition(definition);
     }
 
@@ -107,7 +107,9 @@ public class PartBuilderWidget extends WidgetGroup {
                         JsonElement jsonElement = FileUtility.loadJson(file);
                         if (jsonElement != null) {
                             try {
-                                setNewRenderer(Multiblocked.GSON.fromJson(jsonElement, PartDefinition.class).baseRenderer);
+                                PartDefinition definition = new PartDefinition(new ResourceLocation(jsonElement.getAsJsonObject().get("location").getAsString()));
+                                definition.fromJson(jsonElement.getAsJsonObject());
+                                setNewRenderer(definition.getRenderer());
                             } catch (Exception ignored) {}
                         }
                     })
@@ -117,7 +119,8 @@ public class PartBuilderWidget extends WidgetGroup {
                         JsonElement jsonElement = FileUtility.loadJson(file);
                         if (jsonElement != null) {
                             try {
-                                PartDefinition definition = Multiblocked.GSON.fromJson(jsonElement, PartDefinition.class);
+                                PartDefinition definition = new PartDefinition(new ResourceLocation(jsonElement.getAsJsonObject().get("location").getAsString()));
+                                definition.fromJson(jsonElement.getAsJsonObject());
                                 new PartWidget(this, definition, jsonObject -> {
                                     if (jsonObject != null) {
                                         FileUtility.saveJson(file, jsonObject);

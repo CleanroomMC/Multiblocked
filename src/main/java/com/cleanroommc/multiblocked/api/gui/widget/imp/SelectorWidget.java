@@ -3,15 +3,11 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
-import com.cleanroommc.multiblocked.util.Position;
-import com.cleanroommc.multiblocked.util.Size;
-import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import com.cleanroommc.multiblocked.util.Position;
+import com.cleanroommc.multiblocked.util.Size;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.ArrayList;
@@ -27,6 +23,7 @@ public class SelectorWidget extends WidgetGroup {
     private Consumer<String> onChanged;
     public final TextTexture textTexture;
     public final DraggableScrollableWidgetGroup popUp;
+    public int capacity = 5;
 
     public SelectorWidget(int x, int y, int width, int height, List<String> candidates, int fontColor) {
         super(new Position(x, y), new Size(width, height));
@@ -35,16 +32,16 @@ public class SelectorWidget extends WidgetGroup {
         this.selects = new ArrayList<>();
         this.addWidget(button);
         this.addWidget(new ImageWidget(0,0,width, height, textTexture = new TextTexture("", fontColor).setWidth(width).setType(TextTexture.TextType.ROLL)));
-        this.addWidget(popUp = new DraggableScrollableWidgetGroup(0, height, width, Math.min(5, candidates.size()) * 15));
+        this.addWidget(popUp = new DraggableScrollableWidgetGroup(0, height, width, Math.min(capacity, candidates.size()) * 15));
         popUp.setBackground(new ColorRectTexture(0xAA000000));
-        if (candidates.size() > 5) {
+        if (candidates.size() > capacity) {
             popUp.setYScrollBarWidth(4).setYBarStyle(null, new ColorRectTexture(-1));
         }
         popUp.setVisible(false);
         popUp.setActive(false);
         currentString = "";
         y = 0;
-        width = candidates.size() > 5 ? width -4 : width;
+        width = candidates.size() > capacity ? width -4 : width;
         for (String candidate : candidates) {
             SelectableWidgetGroup select = new SelectableWidgetGroup(0, y, width, 15);
             select.addWidget(new ImageWidget(0, 0, width, 15, new TextTexture(candidate, fontColor).setWidth(width).setType(TextTexture.TextType.ROLL)));
@@ -66,7 +63,18 @@ public class SelectorWidget extends WidgetGroup {
     }
 
     public SelectorWidget setIsUp(boolean isUp) {
-        popUp.setSelfPosition(isUp ? new Position(0, - Math.min(candidates.size(), 5) * 15): new Position(0, getSize().height));
+        popUp.setSelfPosition(isUp ? new Position(0, - Math.min(candidates.size(), capacity) * 15): new Position(0, getSize().height));
+        return this;
+    }
+
+    public SelectorWidget setCapacity(int capacity) {
+        this.capacity = capacity;
+        popUp.setSize(new Size(getSize().width, Math.min(capacity, candidates.size()) * 15));
+        if (candidates.size() > capacity) {
+            popUp.setYScrollBarWidth(4).setYBarStyle(null, new ColorRectTexture(-1));
+        } else {
+            popUp.setYScrollBarWidth(0).setYBarStyle(null, null);
+        }
         return this;
     }
 
@@ -117,12 +125,7 @@ public class SelectorWidget extends WidgetGroup {
 
     @Override
     public void drawInForeground(int mouseX, int mouseY, float particleTicks) {
-        for (Widget widget : widgets) {
-            if (widget.isVisible()) {
-                widget.drawInForeground(mouseX, mouseY, particleTicks);
-                GlStateManager.color(1, 1, 1, 1);
-            }
-        }
+        super.drawInForeground(mouseX, mouseY, particleTicks);
         if(isShow) {
             GlStateManager.disableDepth();
             GlStateManager.translate(0, 0, 200);

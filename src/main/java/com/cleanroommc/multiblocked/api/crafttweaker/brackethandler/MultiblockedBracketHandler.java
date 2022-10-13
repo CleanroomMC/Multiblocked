@@ -14,9 +14,9 @@ import java.util.List;
  * @author youyihj
  */
 public abstract class MultiblockedBracketHandler implements IBracketHandler {
-    private final IJavaMethod method;
-    private final String key;
-    private final Class<?> returnedClass;
+    protected final IJavaMethod method;
+    protected final String key;
+    protected final Class<?> returnedClass;
 
     protected MultiblockedBracketHandler(IJavaMethod method, String key, Class<?> returnedClass) {
         this.method = method;

@@ -7,10 +7,8 @@ import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
-import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.trait.LPPlayerCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
@@ -54,16 +52,6 @@ public class LPBloodMagicCapability extends MultiblockCapability<Integer> {
     @Override
     public CapabilityProxy<? extends Integer> createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         return new LPBloodMagicCapabilityProxy(tileEntity);
-    }
-
-    @Override
-    public BlockInfo[] getCandidates() {
-        return MbdComponents.DEFINITION_REGISTRY
-                .values()
-                .stream()
-                .filter(definition -> definition.traits.has(CAP.name))
-                .map(definition -> BlockInfo.fromBlockState(MbdComponents.COMPONENT_BLOCKS_REGISTRY.get(definition.location).getDefaultState()))
-                .toArray(BlockInfo[]::new);
     }
 
     @Override

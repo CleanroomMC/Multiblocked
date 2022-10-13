@@ -1,7 +1,9 @@
 package com.cleanroommc.multiblocked.api.block;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
+import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.client.model.IModelSupplier;
 import com.cleanroommc.multiblocked.client.model.SimpleStateMapper;
 import com.cleanroommc.multiblocked.client.particle.MCParticleHandler;
@@ -9,8 +11,6 @@ import com.cleanroommc.multiblocked.client.renderer.ComponentRenderer;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.cleanroommc.multiblocked.util.RayTraceUtils;
 import com.cleanroommc.multiblocked.util.Vector3;
-import com.cleanroommc.multiblocked.Multiblocked;
-import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -29,12 +29,7 @@ import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -47,6 +42,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,20 +53,33 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     public BlockComponent(ComponentDefinition definition) {
         super(Material.IRON);
+        setHardness(1.5f);
+        setSoundType(SoundType.METAL);
+        setResistance(10.0F);
         if (definition != null) {
-            setCreativeTab(Multiblocked.CREATIVE_TAB);
+            for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
+                if (tab.tabLabel.equals(definition.properties.tabGroup)) {
+                    setCreativeTab(tab);
+                    break;
+                }
+            }
             setRegistryName(definition.location);
             setTranslationKey(definition.location.getNamespace() + "." + definition.location.getPath());
+            setHardness(definition.properties.destroyTime);
+            setHarvestLevel("pickaxe", definition.properties.harvestLevel);
+            setResistance(definition.properties.explosionResistance);
         }
-        setSoundType(SoundType.METAL);
-        setHardness(1.5F);
-        setResistance(10.0F);
         this.definition = definition;
     }
 
     @Override
+    public boolean isCollidable() {
+        return definition.properties.hasCollision;
+    }
+
+    @Override
     public boolean causesSuffocation(@Nonnull IBlockState state) {
-        return definition.isOpaqueCube;
+        return definition.properties.isOpaque;
     }
 
     @Override
@@ -212,12 +221,12 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
 
     @Override
     public boolean isOpaqueCube(@Nonnull IBlockState state) {
-        return definition == null || definition.isOpaqueCube;
+        return definition == null || definition.properties.isOpaque;
     }
 
     @Override
     public boolean isFullCube(@Nonnull IBlockState state) {
-        return definition.isOpaqueCube;
+        return definition.properties.isOpaque;
     }
 
     @Override
@@ -322,4 +331,15 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         return definition.createNewTileEntity(worldIn);
     }
 
+    @Override
+    @ParametersAreNonnullByDefault
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileEntity tileEntity = world.getTileEntity(pos);
+        if (tileEntity instanceof ComponentTileEntity) {
+            ComponentTileEntity<?> component = (ComponentTileEntity<?>) tileEntity;
+            return component.getDefinition().getStatus(component.getStatus()).getLightEmissive();
+        } else {
+            return super.getLightValue(state, world, pos);
+        }
+    }
 }

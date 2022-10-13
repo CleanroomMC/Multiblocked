@@ -25,9 +25,7 @@ import stanhebben.zenscript.annotations.ZenConstructor;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 @ZenClass("mods.multiblocked.recipe.RecipeBuilder")
@@ -48,7 +46,7 @@ public class RecipeBuilder {
     protected boolean perTick;
     protected String fixedName;
     protected String slotName;
-    public final Map<String, RecipeCondition> conditions = new HashMap<>();
+    public final List<RecipeCondition> conditions = new ArrayList<>();
 
     @ZenConstructor
     public RecipeBuilder(RecipeMap recipeMap) {
@@ -75,6 +73,7 @@ public class RecipeBuilder {
             copy.tickOutputBuilder.put(k, builder.addAll(v.build()));
         });
         data.forEach(copy.data::put);
+        copy.conditions.addAll(conditions);
         copy.duration = this.duration;
         copy.keyBuilder = new StringBuilder(keyBuilder.toString());
         copy.fixedName = null;
@@ -142,7 +141,7 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder addCondition(RecipeCondition condition) {
-        conditions.put(condition.getType(), condition);
+        conditions.add(condition);
         return this;
     }
 
@@ -218,6 +217,22 @@ public class RecipeBuilder {
             keyBuilder.append(output.getUnlocalizedName());
         }
         return output(MbdCapabilities.FLUID, chance, (Object[]) outputs);
+    }
+
+    public RecipeBuilder inputEntities(float chance, EntityIngredient... inputs) {
+        return input(EntityMultiblockCapability.CAP, chance, (Object) inputs);
+    }
+
+    public RecipeBuilder outputEntities(float chance, EntityIngredient... outputs) {
+        return output(EntityMultiblockCapability.CAP, chance, (Object) outputs);
+    }
+
+    public RecipeBuilder inputEntities(EntityIngredient... inputs) {
+        return inputEntities(1, inputs);
+    }
+
+    public RecipeBuilder outputEntities(EntityIngredient... outputs) {
+        return outputEntities(1, outputs);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_BOT)
@@ -706,7 +721,7 @@ public class RecipeBuilder {
         for (Map.Entry<MultiblockCapability<?>, ImmutableList.Builder<Content>> entry : this.tickOutputBuilder.entrySet()) {
             tickOutputBuilder.put(entry.getKey(), entry.getValue().build());
         }
-        return new Recipe(fixedName == null ? keyBuilder.toString() : fixedName, inputBuilder.build(), outputBuilder.build(), tickInputBuilder.build(), tickOutputBuilder.build(), ImmutableList.copyOf(conditions.values()), data.isEmpty() ? Recipe.EMPTY : ImmutableMap.copyOf(data), text, duration);
+        return new Recipe(fixedName == null ? keyBuilder.toString() : fixedName, inputBuilder.build(), outputBuilder.build(), tickInputBuilder.build(), tickOutputBuilder.build(), ImmutableList.copyOf(conditions), data.isEmpty() ? Recipe.EMPTY : ImmutableMap.copyOf(data), text, duration);
     }
 
     @ZenMethod

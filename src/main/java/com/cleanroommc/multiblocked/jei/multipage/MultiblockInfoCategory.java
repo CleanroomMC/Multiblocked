@@ -39,11 +39,11 @@ public class MultiblockInfoCategory implements IRecipeCategory<MultiblockInfoWra
     public static void registerRecipes(IModRegistry registry) {
         registry.addRecipes(REGISTER.stream().map(MultiblockInfoWrapper::new).collect(Collectors.toList()), UID);
         for (ControllerDefinition definition : REGISTER) {
-            if (definition.recipeMap != null) {
-                if (definition.recipeMap.categoryTexture == null) {
-                    definition.recipeMap.categoryTexture = new ItemStackTexture(definition.getStackForm());
+            if (definition.getRecipeMap() != null) {
+                if (definition.getRecipeMap().categoryTexture == null) {
+                    definition.getRecipeMap().categoryTexture = new ItemStackTexture(definition.getStackForm());
                 }
-                registry.addRecipeCatalyst(definition.getStackForm(), Multiblocked.MODID + ":" + definition.recipeMap.name);
+                registry.addRecipeCatalyst(definition.getStackForm(), Multiblocked.MODID + ":" + definition.getRecipeMap().name);
             }
         }
     }

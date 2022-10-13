@@ -149,15 +149,29 @@ public class MultiblockState {
             }
             if (lastController != null) {
                 lastController.onStructureInvalid();
+                if (lastController.hasOldBlock()) {
+                    lastController.resetOldBlock(world, controllerPos);
+                }
             }
             MultiblockWorldSavedData mbds = MultiblockWorldSavedData.getOrCreate(world);
             mbds.removeMapping(this);
             mbds.removeLoading(controllerPos);
+
         } else if (error != UNLOAD_ERROR) {
             ControllerTileEntity controller = getController();
+            boolean hasRenderMask = getMatchContext().containsKey("renderMask");
             if (controller != null && !controller.checkPattern()) {
                 controller.onStructureInvalid();
+                if (controller.hasOldBlock()) {
+                    if (hasRenderMask) {
+                        MultiblockedNetworking.sendToWorld(new SPacketRemoveDisabledRendering(controllerPos), world);
+                    }
+                    MultiblockWorldSavedData.getOrCreate(world).removeLoading(controllerPos);
+                    controller.resetOldBlock(world, controllerPos);
+                }
                 MultiblockWorldSavedData.getOrCreate(world).removeMapping(this);
+            } else if (controller != null){
+                controller.onStructureFormed();
             }
         }
     }

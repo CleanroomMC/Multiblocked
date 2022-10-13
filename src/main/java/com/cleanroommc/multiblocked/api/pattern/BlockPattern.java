@@ -1,6 +1,7 @@
 package com.cleanroommc.multiblocked.api.pattern;
 
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
+import com.cleanroommc.multiblocked.api.block.CustomProperties;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.pattern.error.PatternError;
@@ -83,9 +84,9 @@ public class BlockPattern {
         }
         BlockPos centerPos = controller.getPos();
         EnumFacing frontFacing = controller.getFrontFacing();
-        Set<MultiblockCapability<?>> inputCapabilities = controller.getDefinition().recipeMap.inputCapabilities;
-        Set<MultiblockCapability<?>> outputCapabilities = controller.getDefinition().recipeMap.outputCapabilities;
-        EnumFacing[] facings = controller.getDefinition().allowRotate ? new EnumFacing[]{frontFacing} : new EnumFacing[]{EnumFacing.SOUTH, EnumFacing.NORTH, EnumFacing.EAST, EnumFacing.WEST};
+        Set<MultiblockCapability<?>> inputCapabilities = controller.getDefinition().getRecipeMap().inputCapabilities;
+        Set<MultiblockCapability<?>> outputCapabilities = controller.getDefinition().getRecipeMap().outputCapabilities;
+        EnumFacing[] facings = controller.getDefinition().properties.rotationState != CustomProperties.RotationState.NONE ? new EnumFacing[]{frontFacing} : new EnumFacing[]{EnumFacing.SOUTH, EnumFacing.NORTH, EnumFacing.EAST, EnumFacing.WEST};
         for (EnumFacing facing : facings) {
             if (checkPatternAt(worldState, centerPos, facing, savePredicate, inputCapabilities, outputCapabilities)) {
                 return true;
@@ -94,7 +95,7 @@ public class BlockPattern {
         return false;
     }
 
-    private boolean checkPatternAt(MultiblockState worldState, BlockPos centerPos, EnumFacing facing, boolean savePredicate, Set<MultiblockCapability<?>> inputCapabilities, Set<MultiblockCapability<?>> outputCapabilities) {
+    public boolean checkPatternAt(MultiblockState worldState, BlockPos centerPos, EnumFacing facing, boolean savePredicate, Set<MultiblockCapability<?>> inputCapabilities, Set<MultiblockCapability<?>> outputCapabilities) {
         boolean findFirstAisle = false;
         int minZ = -centerOffset[4];
         worldState.clean();
@@ -265,8 +266,8 @@ public class BlockPattern {
                                     if (info.getBlockState().getBlock() != Blocks.AIR) {
                                         IBlockState blockState = info.getBlockState();
                                         if (blockState.getBlock() instanceof BlockComponent && ((BlockComponent) blockState.getBlock()).definition != null) {
-                                            if (((BlockComponent) blockState.getBlock()).definition.baseRenderer instanceof CycleBlockStateRenderer) {
-                                                CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((BlockComponent) blockState.getBlock()).definition.baseRenderer;
+                                            if (((BlockComponent) blockState.getBlock()).definition.getRenderer() instanceof CycleBlockStateRenderer) {
+                                                CycleBlockStateRenderer renderer = (CycleBlockStateRenderer) ((BlockComponent) blockState.getBlock()).definition.getRenderer();
                                                 for (BlockInfo blockInfo : renderer.blockInfos) {
                                                     candidates.add(blockInfo.getItemStackForm());
                                                 }

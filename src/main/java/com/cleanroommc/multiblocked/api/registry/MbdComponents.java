@@ -124,14 +124,14 @@ public class MbdComponents {
                 break;
             }
         }
-        NO_NEED_CONTROLLER_MB.put(key, ArrayUtils.add(NO_NEED_CONTROLLER_MB.get(catalyst), definition));
+        NO_NEED_CONTROLLER_MB.put(key, ArrayUtils.add(NO_NEED_CONTROLLER_MB.get(key), definition));
     }
 
     public static ControllerDefinition[] checkNoNeedController(ItemStack catalyst) {
         if (catalyst == null) return new ControllerDefinition[0];
         if (CATALYST_SET.contains(catalyst.getItem())) {
             for (ItemStack itemStack : NO_NEED_CONTROLLER_MB.keySet()) {
-                if (ItemStack.areItemStackTagsEqual(itemStack, catalyst) && ItemStack.areItemStackTagsEqual(itemStack, catalyst)) {
+                if (ItemStack.areItemsEqual(itemStack, catalyst) && ItemStack.areItemStackTagsEqual(itemStack, catalyst)) {
                     return NO_NEED_CONTROLLER_MB.get(itemStack);
                 }
             }

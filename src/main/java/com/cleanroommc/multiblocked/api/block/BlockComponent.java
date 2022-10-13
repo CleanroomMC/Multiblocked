@@ -64,7 +64,7 @@ public class BlockComponent extends Block implements IModelSupplier, ITileEntity
         setResistance(10.0F);
         if (definition != null) {
             for (CreativeTabs tab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-                if (tab.getTabLabel().equals(definition.properties.tabGroup)) {
+                if (tab.tabLabel.equals(definition.properties.tabGroup)) {
                     setCreativeTab(tab);
                     break;
                 }

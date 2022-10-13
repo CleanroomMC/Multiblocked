@@ -347,18 +347,23 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
     public static class ComponentFactory implements IAnimatable {
         public final ComponentTileEntity<?> component;
         public final GeoComponentRenderer renderer;
-        public final AnimationFile animationFile;
+        public AnimationFile animationFile;
         public String currentStatus;
 
         public ComponentFactory(ComponentTileEntity<?> component, GeoComponentRenderer renderer) {
             this.component = component;
             this.renderer = renderer;
-            animationFile = GeckoLibCache.getInstance().getAnimations().get(renderer.getAnimationFileLocation(this));
         }
 
         private final AnimationFactory factory = new AnimationFactory(this);
 
         private PlayState predicate(AnimationEvent<ComponentFactory> event) {
+            if (animationFile == null) {
+                animationFile = GeckoLibCache.getInstance().getAnimations().get(renderer.getAnimationFileLocation(this));
+            }
+            if (animationFile == null) {
+                return PlayState.STOP;
+            }
             AnimationController<ComponentFactory> controller = event.getController();
             String lastStatus = currentStatus;
             currentStatus = component == null ? "unformed" : component.getStatus();

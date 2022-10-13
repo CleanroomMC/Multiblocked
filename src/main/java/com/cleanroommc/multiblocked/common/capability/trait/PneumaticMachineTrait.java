@@ -145,7 +145,7 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
             volume = Integer.parseInt(s);
             updateSettings();
         })
-                .setNumbersOnly(0, Integer.MAX_VALUE)
+                .setNumbersOnly(1, Integer.MAX_VALUE)
                 .setCurrentString(volume + "")
                 .setHoverTooltip("multiblocked.gui.trait.pressure.tips.2"));
     }
@@ -159,7 +159,9 @@ public class PneumaticMachineTrait extends SingleCapabilityTrait implements IPne
         int air = airHandler.getAir();
         airHandler = PneumaticCraftAPIHandler.getInstance().getAirHandlerSupplier().createAirHandler(dangerPressure, criticalPressure, volume);
         airHandler.addAir(air);
-        airHandler.validate(component);
+        if (component != null) {
+            airHandler.validate(component);
+        }
     }
 
     public class PressureWidget extends Widget {

@@ -95,13 +95,15 @@ public class CommonProxy {
         // register JsonBlockPatternBlock
         JsonBlockPatternWidget.registerBlock();
         // register builtin components
-        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_energy_input"), PartDefinition.class, CommonProxy::partPost);
-        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_energy_output"), PartDefinition.class, CommonProxy::partPost);
-        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_item_input"), PartDefinition.class, CommonProxy::partPost);
-        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_item_output"), PartDefinition.class, CommonProxy::partPost);
-        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_fluid_input"), PartDefinition.class, CommonProxy::partPost);
-        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_fluid_output"), PartDefinition.class, CommonProxy::partPost);
-        MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_entity"), PartDefinition.class, CommonProxy::partPost);
+        if (MbdConfig.enableBuiltInComponents) {
+            MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_energy_input"), PartDefinition.class, CommonProxy::partPost);
+            MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_energy_output"), PartDefinition.class, CommonProxy::partPost);
+            MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_item_input"), PartDefinition.class, CommonProxy::partPost);
+            MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_item_output"), PartDefinition.class, CommonProxy::partPost);
+            MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_fluid_input"), PartDefinition.class, CommonProxy::partPost);
+            MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_fluid_output"), PartDefinition.class, CommonProxy::partPost);
+            MbdComponents.registerComponentFromResource(Multiblocked.class, new ResourceLocation(Multiblocked.MODID, "part/mbd_entity"), PartDefinition.class, CommonProxy::partPost);
+        }
         // register JsonFiles
         MbdComponents.registerComponentFromFile(
                 new File(Multiblocked.location, "definition/controller"),

@@ -9,11 +9,11 @@ import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.client.renderer.IRenderer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.realmsclient.util.JsonUtils;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.mc1120.item.MCItemStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
@@ -148,7 +148,7 @@ public class ComponentDefinition {
     public final static int VERSION = 1;
 
     public void fromJson(JsonObject json) {
-        int version = JsonUtils.getIntOr("version", json, 0);
+        int version = JsonUtils.getInt(json, "version", 0);
 
         if (version > VERSION) {
             throw new IllegalArgumentException(String.format("using outdated version of mbd. script is {%d}, mbd supports {%d}", version, VERSION));
@@ -171,9 +171,9 @@ public class ComponentDefinition {
                 parseStatus(entry.getKey(), statusJson);
             }
         } else { // legacy
-            properties.rotationState = JsonUtils.getBooleanOr("allowRotate", json, true) ? CustomProperties.RotationState.ALL : CustomProperties.RotationState.NONE;
-            properties.showInJei = JsonUtils.getBooleanOr("showInJei", json, properties.showInJei);
-            properties.isOpaque = JsonUtils.getBooleanOr("isOpaqueCube", json, properties.isOpaque);
+            properties.rotationState = JsonUtils.getBoolean(json, "allowRotate", true) ? CustomProperties.RotationState.ALL : CustomProperties.RotationState.NONE;
+            properties.showInJei = JsonUtils.getBoolean(json, "showInJei", properties.showInJei);
+            properties.isOpaque = JsonUtils.getBoolean(json, "isOpaqueCube", properties.isOpaque);
 
             if (json.has("baseRenderer")) {
                 JsonElement renderer = json.get("baseRenderer");

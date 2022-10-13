@@ -9,12 +9,12 @@ import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
 import com.cleanroommc.multiblocked.api.tile.ControllerTileEntity;
 import com.google.common.base.Suppliers;
 import com.google.gson.JsonObject;
-import com.mojang.realmsclient.util.JsonUtils;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.item.MCItemStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -186,8 +186,8 @@ public class ControllerDefinition extends ComponentDefinition {
         }
         if (json.has("catalyst")) {
             catalyst = Suppliers.memoize(()-> Multiblocked.GSON.fromJson(json.get("catalyst"), ItemStack.class));
-            consumeCatalyst = JsonUtils.getBooleanOr("consumeCatalyst", json, consumeCatalyst);
-            noNeedController = JsonUtils.getBooleanOr("noNeedController", json, noNeedController);
+            consumeCatalyst = JsonUtils.getBoolean(json, "consumeCatalyst", consumeCatalyst);
+            noNeedController = JsonUtils.getBoolean(json, "noNeedController", noNeedController);
         }
     }
 

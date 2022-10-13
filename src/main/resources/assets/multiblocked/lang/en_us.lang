@@ -145,6 +145,7 @@ multiblocked.gui.trait.passive_io=Passive IO
 multiblocked.gui.trait.auto=Auto Input/Output | Capability IO cannot be BOTH | Only Front Facing
 multiblocked.gui.trait.set_width=Set Width
 multiblocked.gui.trait.set_height=Set Height
+multiblocked.gui.trait.fill_direction=Progress Bar Fill Direction
 
 
 multiblocked.gui.blueprint_table.builder_template=Builder Template
@@ -319,7 +320,7 @@ multiblocked.gui.condition.pos_y.min=Min Position Y,
 multiblocked.gui.condition.pos_y.max=Max Position Y,
 
 multiblocked.recipe.condition.thunder=Thunder,
-multiblocked.recipe.condition.thunder.tooltip=Rain Level=%d,
+multiblocked.recipe.condition.thunder.tooltip=Thunder Level=%d,
 multiblocked.recipe.condition.rain=Rain,
 multiblocked.recipe.condition.rain.tooltip=Rain Level=%d,
 multiblocked.recipe.condition.dimension=Dimension,

@@ -8,6 +8,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -43,6 +46,13 @@ public class BlockSelectorWidget extends WidgetGroup {
                 .setChangeListener(() -> {
                     ItemStack stack = handler.getStackInSlot(0);
                     if (stack.isEmpty() || !(stack.getItem() instanceof ItemBlock)) {
+                        IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack);
+                        if (handler != null && handler.getTankProperties().length > 0 && handler.getTankProperties()[0].getContents() != null) {
+                            Fluid fluid = handler.getTankProperties()[0].getContents().getFluid();
+                            setBlock(fluid.getBlock().getDefaultState());
+                            onUpdate();
+                            return;
+                        }
                         if (block != null) {
                             block = null;
                             meta = 0;

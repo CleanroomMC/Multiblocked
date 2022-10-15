@@ -92,7 +92,7 @@ public class GuiUtils {
         ItemStackSelectorWidget bsw = new ItemStackSelectorWidget(parent, 0, container.widgets.size() * 21 + 1, 140);
         container.addWidget(bsw);
         bsw.addWidget(new ButtonWidget(143, 1, 18, 18, cd -> {
-            int index = (bsw.getSelfPosition().y - 1) / 21;
+            int index = container.widgets.indexOf(bsw);
             itemList.remove(index);
             onUpdated.accept(itemList);
             for (int i = index + 1; i < container.widgets.size(); i++) {
@@ -104,7 +104,7 @@ public class GuiUtils {
             bsw.setItemStack(itemStack);
         }
         bsw.setOnItemStackUpdate(stack->{
-            int index = (bsw.getSelfPosition().y - 1) / 21;
+            int index = container.widgets.indexOf(bsw);
             itemList.set(index, stack);
             onUpdated.accept(itemList);
         });
@@ -130,7 +130,7 @@ public class GuiUtils {
         FluidStackSelectorWidget bsw = new FluidStackSelectorWidget(parent, 0, container.widgets.size() * 21 + 1, 140);
         container.addWidget(bsw);
         bsw.addWidget(new ButtonWidget(143, 1, 18, 18, cd -> {
-            int index = (bsw.getSelfPosition().y - 1) / 21;
+            int index = container.widgets.indexOf(bsw);
             fluidList.remove(index);
             onUpdated.accept(fluidList);
             for (int i = index + 1; i < container.widgets.size(); i++) {
@@ -142,7 +142,7 @@ public class GuiUtils {
             bsw.setFluidStack(fluidStack);
         }
         bsw.setOnFluidStackUpdate(stack->{
-            int index = (bsw.getSelfPosition().y - 1) / 21;
+            int index = container.widgets.indexOf(bsw);
             fluidList.set(index, stack);
             onUpdated.accept(fluidList);
         });

@@ -19,6 +19,7 @@ import thecodex6824.thaumicaugmentation.api.impetus.CapabilityImpetusStorage;
 import thecodex6824.thaumicaugmentation.api.impetus.IImpetusStorage;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -96,8 +97,8 @@ public class ImpetusThaumicAugmentationCapability extends MultiblockCapability<L
         }
 
         @Override
-        protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, boolean simulate) {
-            IImpetusStorage capability = getCapability();
+        protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, @Nullable String slotName, boolean simulate) {
+            IImpetusStorage capability = getCapability(slotName);
             if (capability == null) return left;
             long sum = left.stream().reduce(0L, Long::sum);
             if (io == IO.IN) {
@@ -114,7 +115,7 @@ public class ImpetusThaumicAugmentationCapability extends MultiblockCapability<L
 
         @Override
         protected boolean hasInnerChanged() {
-            IImpetusStorage capability = getCapability();
+            IImpetusStorage capability = getCapability(null);
             if (capability == null) return false;
             if (capability.getEnergyStored() == stored && capability.canExtract() == canExtract && capability.canReceive() == canReceive) {
                 return false;

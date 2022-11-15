@@ -176,9 +176,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                     if (!capabilities.contains(io, capability)) {
                                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                                     }
-                                    CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity);
-                                    proxy.facing = facing;
-                                    proxy.slots = slotsMap == null ? null : slotsMap.get(tileEntity.getPos().toLong());
+                                    CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity, facing, slotsMap);
                                     capabilities.get(io, capability).put(entry.getKey().longValue(), proxy);
                                 }
                             }
@@ -190,8 +188,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
                                     if (!capabilities.contains(io, capability)) {
                                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                                     }
-                                    CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity);
-                                    proxy.slots = slotsMap == null ? null : slotsMap.get(tileEntity.getPos().toLong());
+                                    CapabilityProxy<?> proxy = capability.createProxy(io, tileEntity, EnumFacing.UP, slotsMap);
                                     capabilities.get(io, capability).put(entry.getKey().longValue(), proxy);
                                 }
                             }

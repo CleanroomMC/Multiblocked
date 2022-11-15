@@ -347,9 +347,7 @@ public class IOPageWidget extends PageWidget {
                     if (!capabilities.contains(io, capability)) {
                         capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                     }
-                    CapabilityProxy<?> proxy = capability.createProxy(io, entity);
-                    proxy.facing = buffer.readEnumValue(EnumFacing.class);
-                    proxy.slots = slotsMap == null ? null : slotsMap.get(entity.getPos().toLong());
+                    CapabilityProxy<?> proxy = capability.createProxy(io, entity, buffer.readEnumValue(EnumFacing.class), slotsMap);
                     capabilities.get(io, capability).put(pos.toLong(), proxy);
                 }
             }
@@ -364,9 +362,7 @@ public class IOPageWidget extends PageWidget {
                 if (!capabilities.contains(io, capability)) {
                     capabilities.put(io, capability, new Long2ObjectOpenHashMap<>());
                 }
-                CapabilityProxy<?> proxy = capability.createProxy(io, entity);
-                proxy.facing = buffer.readEnumValue(EnumFacing.class);
-                proxy.slots = slotsMap == null ? null : slotsMap.get(entity.getPos().toLong());
+                CapabilityProxy<?> proxy = capability.createProxy(io, entity, buffer.readEnumValue(EnumFacing.class), slotsMap);
                 capabilities.get(io, capability).put(pos.toLong(), proxy);
             }
             controller.markAsDirty();

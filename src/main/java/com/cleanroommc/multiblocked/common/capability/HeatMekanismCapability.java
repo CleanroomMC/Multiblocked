@@ -16,6 +16,7 @@ import mekanism.common.capabilities.Capabilities;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -81,8 +82,8 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
         }
 
         @Override
-        protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, boolean simulate) {
-            IHeatTransfer capability = getCapability();
+        protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, @Nullable String slotName, boolean simulate) {
+            IHeatTransfer capability = getCapability(slotName);
             if (capability == null || capability.getTemp() <= 0) return left;
             double sum = left.stream().reduce(0d, Double::sum);
             if (io == IO.IN) {
@@ -101,7 +102,7 @@ public class HeatMekanismCapability extends MultiblockCapability<Double> {
 
         @Override
         protected boolean hasInnerChanged() {
-            IHeatTransfer capability = getCapability();
+            IHeatTransfer capability = getCapability(null);
             if (capability == null || capability.getTemp() <= 0) return false;
             if (lastTemp == capability.getTemp()) return false;
             lastTemp = capability.getTemp();

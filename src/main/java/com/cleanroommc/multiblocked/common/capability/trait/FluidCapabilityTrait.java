@@ -3,10 +3,15 @@ package com.cleanroommc.multiblocked.common.capability.trait;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.trait.MultiCapabilityTrait;
+import com.cleanroommc.multiblocked.api.gui.texture.*;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.blueprint_table.dialogs.ResourceTextureWidget;
 import com.cleanroommc.multiblocked.api.tile.ComponentTileEntity;
 import com.cleanroommc.multiblocked.common.capability.FluidMultiblockCapability;
+import com.cleanroommc.multiblocked.util.JsonUtil;
+import com.cleanroommc.multiblocked.util.Position;
+import com.cleanroommc.multiblocked.util.Size;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -39,9 +44,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FluidCapabilityTrait extends MultiCapabilityTrait {
+    private static final String EMPTY_TEX = "multiblocked:textures/void.png";
     private FluidTankList handler;
     private int[] tankCapability;
     private FluidStack[][] validFluids;
+    protected int[] width;
+    protected int[] height;
+    protected String[] texture;
+    protected ProgressTexture.FillDirection[] fillDirection;
 
     public FluidCapabilityTrait() {
         super(FluidMultiblockCapability.CAP);
@@ -56,11 +66,19 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         int size = jsonArray.size();
         tankCapability = new int[size];
+        width = new int[size];
+        height = new int[size];
+        texture = new String[size];
+        fillDirection = new ProgressTexture.FillDirection[size];
         validFluids =  new FluidStack[size][];
         int i = 0;
         for (JsonElement element : jsonArray) {
             JsonObject jsonObject = element.getAsJsonObject();
             tankCapability[i] = JsonUtils.getInt(jsonObject, "tC", 1000);
+            width[i] = JsonUtils.getInt(jsonObject, "w", 18);
+            height[i] = JsonUtils.getInt(jsonObject, "h", 18);
+            texture[i] = JsonUtils.getString(jsonObject, "tex", EMPTY_TEX);
+            fillDirection[i] = JsonUtil.getEnumOr(jsonObject, "fillDir", ProgressTexture.FillDirection.class, ProgressTexture.FillDirection.ALWAYS_FULL);
             if (jsonObject.has("valid")) {
                 validFluids[i] = new FluidStack[0];
                 for (JsonElement fluid : jsonObject.get("valid").getAsJsonArray()) {
@@ -99,7 +117,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
 
 
         }
-        handler = new FluidTankList(capabilityIO, fluidTanks);
+        handler = new FluidTankList(capabilityIO, Arrays.asList(fluidTanks), this.slotName, null);
     }
 
     @Override
@@ -108,6 +126,10 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         for (int i = 0; i < capabilityIO.length; i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
             jsonObject.addProperty("tC", tankCapability[i]);
+            jsonObject.addProperty("w", width[i]);
+            jsonObject.addProperty("h", height[i]);
+            if (!texture[i].equals(EMPTY_TEX)) jsonObject.addProperty("tex", texture[i]);
+            jsonObject.addProperty("fillDir", fillDirection[i].name());
             if (validFluids[i] != null) {
                 JsonArray fluids = new JsonArray();
                 for (FluidStack fluid : validFluids[i]) {
@@ -174,6 +196,38 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
     }
 
     @Override
+    protected void refreshSlots(DraggableScrollableWidgetGroup dragGroup) {
+        dragGroup.widgets.forEach(dragGroup::waitToRemoved);
+        for (int i = 0; i < guiIO.length; i++) {
+            int finalI = i;
+            ButtonWidget setting = (ButtonWidget) new ButtonWidget(width[finalI] - 8, 0, 8, 8, new ResourceTexture("multiblocked:textures/gui/option.png"), null).setHoverBorderTexture(1, -1).setHoverTooltip("multiblocked.gui.tips.settings");
+            ImageWidget imageWidget = new ImageWidget(0, 0,  width[finalI], height[finalI], new GuiTextureGroup(createAutoProgressTexture(finalI), new ColorBorderTexture(1, getColorByIO(capabilityIO[finalI]))));
+            setting.setVisible(false);
+            DraggableWidgetGroup slot = new DraggableWidgetGroup(x[finalI], y[finalI], width[finalI], height[finalI]);
+            slot.setOnSelected(w -> setting.setVisible(true));
+            slot.setOnUnSelected(w -> setting.setVisible(false));
+            slot.addWidget(imageWidget);
+            slot.addWidget(setting);
+            slot.setOnEndDrag(b -> {
+                x[finalI] = b.getSelfPosition().x;
+                y[finalI] = b.getSelfPosition().y;
+            });
+            dragGroup.addWidget(slot);
+
+            setting.setOnPressCallback(cd2 -> {
+                DialogWidget dialog = new DialogWidget(dragGroup, true);
+                dialog.addWidget(new ImageWidget(0, 0, 176, 256, new ColorRectTexture(0xaf000000)));
+                dialog.addWidget(new ButtonWidget(5, 5, 85, 20, new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON, new TextTexture("multiblocked.gui.trait.remove_slot")), cd3 -> {
+                    removeSlot(finalI);
+                    refreshSlots(dragGroup);
+                    dialog.close();
+                }).setHoverBorderTexture(1, -1));
+                initSettingDialog(dialog, slot, finalI);
+            });
+        }
+    }
+
+    @Override
     protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot, final int index) {
         super.initSettingDialog(dialog, slot, index);
         dialog.addWidget(new LabelWidget(5, 60, "multiblocked.gui.label.tank_capability"));
@@ -194,6 +248,62 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         if (validFluids[index] != null) {
             widget.addWidget(GuiUtils.createFluidStackSelector(dialog, 0,0, "Valid Fluids", Arrays.stream(validFluids[index]).collect(Collectors.toList()), list -> validFluids[index] = list.toArray(new FluidStack[0])));
         }
+
+
+        // progress bar
+        WidgetGroup group = new WidgetGroup(0, 180, 50, 50);
+        dialog.addWidget(group);
+        ImageWidget imageWidget = (ImageWidget) slot.widgets.get(0);
+        ButtonWidget setting = (ButtonWidget) slot.widgets.get(1);
+        ButtonWidget imageSelector = (ButtonWidget) new ButtonWidget(60, 45, width[index] , height[index] , new GuiTextureGroup(new ColorBorderTexture(1, -1), createAutoProgressTexture(index)), null)
+                .setHoverTooltip("multiblocked.gui.tips.select_image");
+        group.addWidget(new TextFieldWidget(5, 25, 50, 15, null, s -> {
+            width[index] = Integer.parseInt(s);
+            Size size = new Size(width[index], height[index]);
+            slot.setSize(size);
+            imageWidget.setSize(size);
+            imageSelector.setSize(size);
+            setting.setSelfPosition(new Position(width[index] - 8, 0));
+        }).setCurrentString(width[index] + "").setNumbersOnly(1, 180).setHoverTooltip("multiblocked.gui.trait.set_width"));
+        group.addWidget(new TextFieldWidget(5, 45, 50, 15, null, s -> {
+            height[index]  = Integer.parseInt(s);
+            Size size = new Size(width[index], height[index]);
+            slot.setSize(size);
+            imageWidget.setSize(size);
+            imageSelector.setSize(size);
+            setting.setSelfPosition(new Position(width[index] - 8, 0));
+        }).setCurrentString(height[index] + "").setNumbersOnly(1, 180).setHoverTooltip("multiblocked.gui.trait.set_height"));
+
+        group.addWidget(imageSelector);
+        group.addWidget(new SelectorWidget(60, 25, 90, 15, Arrays.stream(ProgressTexture.FillDirection.values()).map(Enum::name).collect(Collectors.toList()), -1)
+                .setIsUp(true)
+                .setValue(fillDirection[index].name())
+                .setOnChanged(io -> {
+                    fillDirection[index] = ProgressTexture.FillDirection.valueOf(io);
+                    ResourceTexture autoProgressTexture = createAutoProgressTexture(index);
+                    imageSelector.setButtonTexture(new GuiTextureGroup(new ColorBorderTexture(1, -1), autoProgressTexture));
+                    imageWidget.setImage(new GuiTextureGroup(autoProgressTexture, new ColorBorderTexture(1, getColorByIO(capabilityIO[index]))));
+                })
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setHoverTooltip("multiblocked.gui.trait.fill_direction"));
+        imageSelector.setOnPressCallback(cd -> new ResourceTextureWidget((WidgetGroup) dialog.parent.getGui().guiWidgets.get(0), texture1 -> {
+            if (texture1 != null) {
+                texture[index] = texture1.imageLocation.toString();
+                ResourceTexture autoProgressTexture = createAutoProgressTexture(index);
+                imageSelector.setButtonTexture(new GuiTextureGroup(new ColorBorderTexture(1, -1), autoProgressTexture));
+                imageWidget.setImage(new GuiTextureGroup(autoProgressTexture, new ColorBorderTexture(1, getColorByIO(capabilityIO[index]))));
+            }
+        }));
+    }
+
+    @Override
+    protected void updateImageWidget(ImageWidget imageWidget, int index) {
+        imageWidget.setImage(new GuiTextureGroup(createAutoProgressTexture(index), new ColorBorderTexture(1, getColorByIO(capabilityIO[index]))));
+    }
+
+    private ResourceTexture createAutoProgressTexture(int index) {
+        return new ResourceTexture(this.texture[index]);
     }
 
     @Override
@@ -201,6 +311,10 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         super.addSlot();
         tankCapability = ArrayUtils.add(tankCapability, 1000);
         validFluids = ArrayUtils.add(validFluids, null);
+        width = ArrayUtils.add(width, 18);
+        height = ArrayUtils.add(height, 18);
+        texture = ArrayUtils.add(texture, EMPTY_TEX);
+        fillDirection = ArrayUtils.add(fillDirection, ProgressTexture.FillDirection.ALWAYS_FULL);
     }
 
     @Override
@@ -208,6 +322,10 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         super.removeSlot(index);
         tankCapability = ArrayUtils.remove(tankCapability, index);
         validFluids = ArrayUtils.remove(validFluids, index);
+        width = ArrayUtils.remove(width, index);
+        height = ArrayUtils.remove(height, index);
+        texture = ArrayUtils.remove(texture, index);
+        fillDirection = ArrayUtils.remove(fillDirection, index);
     }
 
     @Override
@@ -227,7 +345,7 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         super.createUI(component, group, player);
         if (handler != null) {
             for (int i = 0; i < guiIO.length; i++) {
-                group.addWidget(new TankWidget(new ProxyFluidHandler(handler.getTankAt(i), guiIO[i]), x[i], y[i], true, true));
+                group.addWidget(new TankWidget(new ProxyFluidHandler(handler.getTankAt(i), guiIO[i]), x[i], y[i], width[i], height[i], true, true).setOverlay(new ResourceTexture(texture[i])).setFillDirection(fillDirection[i]).setShowTips(fillDirection[i] == ProgressTexture.FillDirection.ALWAYS_FULL));
             }
         }
     }
@@ -240,8 +358,8 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
 
     @Nullable
     @Override
-    public <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(handler.inner()) : null;
+    public <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing, @Nullable String slotName) {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(new FluidTankList(getRealMbdIO(), handler.fluidTanks, this.slotName, slotName)) : null;
     }
 
     private class ProxyFluidHandler implements IFluidTank, IFluidHandler {
@@ -308,22 +426,14 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
         public IO[] cIOs;
         protected final List<FluidTank> fluidTanks;
         private IFluidTankProperties[] fluidTankProperties;
-        private boolean inner;
+        public String[] slotNames;
+        public String slotName;
 
-        public FluidTankList(IO[] cIOs, FluidTank... fluidTanks) {
-            this.fluidTanks = Arrays.asList(fluidTanks);
-            this.cIOs = cIOs;
-        }
-
-        private FluidTankList(IO[] cIOs, final List<FluidTank> fluidTanks, IFluidTankProperties[] fluidTankProperties, boolean inner) {
+        private FluidTankList(IO[] cIOs, final List<FluidTank> fluidTanks, String[] slotNames, @Nullable String slotName) {
             this.cIOs = cIOs;
             this.fluidTanks = fluidTanks;
-            this.fluidTankProperties = fluidTankProperties;
-            this.inner = inner;
-        }
-
-        public FluidTankList inner(){
-            return new FluidTankList(cIOs, fluidTanks, fluidTankProperties, true);
+            this.slotNames = slotNames;
+            this.slotName = slotName;
         }
 
         public List<FluidTank> getFluidTanks() {
@@ -371,7 +481,10 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             int totalFilled = 0;
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];
-                if ((inner ? io == IO.IN : io == IO.OUT)) {
+                if (io == IO.OUT) {
+                    continue;
+                }
+                if (slotName != null && !slotNames[i].equals(slotName)) {
                     continue;
                 }
                 FluidTank handler = fluidTanks.get(i);
@@ -385,7 +498,10 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             }
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];
-                if ((inner ? io == IO.IN : io == IO.OUT)) {
+                if (io == IO.OUT) {
+                    continue;
+                }
+                if (slotName != null && !slotNames[i].equals(slotName)) {
                     continue;
                 }
                 FluidTank handler = fluidTanks.get(i);
@@ -411,7 +527,10 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             FluidStack totalDrained = null;
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];
-                if ((inner ? io == IO.OUT : io == IO.IN)) {
+                if (io == IO.IN) {
+                    continue;
+                }
+                if (slotName != null && !slotNames[i].equals(slotName)) {
                     continue;
                 }
                 FluidTank handler = fluidTanks.get(i);
@@ -442,7 +561,10 @@ public class FluidCapabilityTrait extends MultiCapabilityTrait {
             FluidStack totalDrained = null;
             for (int i = 0; i < fluidTanks.size(); i++) {
                 IO io = cIOs[i];
-                if ((inner ? io == IO.OUT : io == IO.IN)) {
+                if (io == IO.IN) {
+                    continue;
+                }
+                if (slotName != null && !slotNames[i].equals(slotName)) {
                     continue;
                 }
                 FluidTank handler = fluidTanks.get(i);

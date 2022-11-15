@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
@@ -92,8 +93,8 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
         }
 
         @Override
-        protected List<GasStack> handleRecipeInner(IO io, Recipe recipe, List<GasStack> left, boolean simulate) {
-            IGasHandler capability = getCapability();
+        protected List<GasStack> handleRecipeInner(IO io, Recipe recipe, List<GasStack> left, @Nullable String slotName, boolean simulate) {
+            IGasHandler capability = getCapability(slotName);
             if (capability == null) return left;
             Iterator<GasStack> iterator = left.iterator();
             if (io == IO.IN) {
@@ -134,7 +135,7 @@ public class GasMekanismCapability extends MultiblockCapability<GasStack> {
 
         @Override
         protected boolean hasInnerChanged() {
-            IGasHandler capability = getCapability();
+            IGasHandler capability = getCapability(null);
             if (capability == null) return false;
             GasTankInfo[] tanks = capability.getTankInfo();
             boolean same = true;

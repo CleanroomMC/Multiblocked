@@ -28,6 +28,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -134,8 +135,8 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
         }
 
         @Override
-        protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, boolean simulate) {
-            IEnergyContainer capability = getCapability();
+        protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, @Nullable String slotName, boolean simulate) {
+            IEnergyContainer capability = getCapability(slotName);
             if (capability == null) return left;
             long sum = left.stream().reduce(0L, Long::sum);
             if (io == IO.IN) {
@@ -157,7 +158,7 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
 
         @Override
         protected boolean hasInnerChanged() {
-            IEnergyContainer capability = getCapability();
+            IEnergyContainer capability = getCapability(null);
             if (capability == null) return false;
             if (capability.getEnergyStored() == stored) {
                 return false;

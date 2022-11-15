@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.JsonUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -108,7 +109,7 @@ public class StarlightAstralCapability extends MultiblockCapability<Starlight> {
         }
 
         @Override
-        protected List<Starlight> handleRecipeInner(IO io, Recipe recipe, List<Starlight> left, boolean simulate) {
+        protected List<Starlight> handleRecipeInner(IO io, Recipe recipe, List<Starlight> left, @Nullable String slotName, boolean simulate) {
             ILinkableStarlightReceiver tileEntity = (ILinkableStarlightReceiver) getTileEntity();
             int sum = left.stream()
                     .filter(this::matchConstellation)

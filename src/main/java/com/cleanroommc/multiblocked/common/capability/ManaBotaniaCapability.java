@@ -17,6 +17,7 @@ import vazkii.botania.api.mana.IManaReceiver;
 import vazkii.botania.common.block.ModBlocks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -100,7 +101,7 @@ public class ManaBotaniaCapability extends MultiblockCapability<Integer> {
         }
 
         @Override
-        protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, boolean simulate) {
+        protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, @Nullable String slotName, boolean simulate) {
             IManaReceiver capability = getCapability();
             if (capability == null) return left;
             int sum = left.stream().reduce(0, Integer::sum);

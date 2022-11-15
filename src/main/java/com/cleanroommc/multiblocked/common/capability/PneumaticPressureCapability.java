@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -126,7 +127,7 @@ public class PneumaticPressureCapability extends MultiblockCapability<Float> {
         }
 
         @Override
-        protected List<Float> handleRecipeInner(IO io, Recipe recipe, List<Float> left, boolean simulate) {
+        protected List<Float> handleRecipeInner(IO io, Recipe recipe, List<Float> left, @Nullable String slotName, boolean simulate) {
             IAirHandler handler = getAirHandler();
             float sum = left.stream().reduce(0.0f, Float::sum);
             int consumeAir = (int) (sum * 50);

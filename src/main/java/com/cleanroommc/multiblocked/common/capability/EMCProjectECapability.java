@@ -16,6 +16,7 @@ import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -97,7 +98,7 @@ public class EMCProjectECapability extends MultiblockCapability<Long> {
         }
 
         @Override
-        protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, boolean simulate) {
+        protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, @Nullable String slotName, boolean simulate) {
             EMCPlayerCapabilityTrait trait = getTrait();
             if (trait == null) return left;
             long sum = left.stream().reduce(0L, Long::sum);

@@ -20,6 +20,7 @@ import lykrast.prodigytech.common.init.ModBlocks;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -89,8 +90,8 @@ public class HotAirProdigyCapability extends MultiblockCapability<Integer> {
         }
 
         @Override
-        protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, boolean simulate) {
-            IHotAir capability = getCapability();
+        protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, @Nullable String slotName, boolean simulate) {
+            IHotAir capability = getCapability(slotName);
             if (capability == null || capability.getOutAirTemperature() < left.get(0)) return left;
             return null;
         }
@@ -99,7 +100,7 @@ public class HotAirProdigyCapability extends MultiblockCapability<Integer> {
 
         @Override
         protected boolean hasInnerChanged() {
-            IHotAir capability = getCapability();
+            IHotAir capability = getCapability(null);
             if (capability == null || capability.getOutAirTemperature() <= 0) return false;
             if (lastTemp == capability.getOutAirTemperature()) return false;
             lastTemp = capability.getOutAirTemperature();

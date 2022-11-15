@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.api.gui.widget.imp;
 
 import com.cleanroommc.multiblocked.api.gui.ingredient.IIngredientSlot;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ProgressTexture;
 import com.cleanroommc.multiblocked.api.gui.util.DrawerHelper;
 import com.cleanroommc.multiblocked.api.gui.util.TextFormattingUtil;
 import com.cleanroommc.multiblocked.api.gui.widget.Widget;
@@ -41,14 +42,24 @@ public class TankWidget extends Widget implements IIngredientSlot {
 
     protected FluidStack lastFluidInTank;
     protected int lastTankCapacity;
+    protected ProgressTexture.FillDirection fillDirection = ProgressTexture.FillDirection.ALWAYS_FULL;
 
     public TankWidget(IFluidTank fluidTank, int x, int y, boolean allowClickContainerFilling, boolean allowClickContainerEmptying) {
-        super(new Position(x, y), new Size(18, 18));
+        this(fluidTank, x, y, 18, 18, allowClickContainerFilling, allowClickContainerEmptying);
+    }
+
+    public TankWidget(IFluidTank fluidTank, int x, int y, int width, int height, boolean allowClickContainerFilling, boolean allowClickContainerEmptying) {
+        super(new Position(x, y), new Size(width, height));
         this.fluidTank = fluidTank;
         this.showTips = true;
         this.allowClickFilling = allowClickContainerFilling;
         this.allowClickEmptying = allowClickContainerEmptying;
         this.drawHoverTips = true;
+    }
+
+    public TankWidget setFillDirection(ProgressTexture.FillDirection fillDirection) {
+        this.fillDirection = fillDirection;
+        return this;
     }
 
     public TankWidget setDrawHoverTips(boolean drawHoverTips) {
@@ -103,14 +114,18 @@ public class TankWidget extends Widget implements IIngredientSlot {
 
         if (lastFluidInTank != null) {
             GlStateManager.disableBlend();
-            FluidStack stackToDraw = lastFluidInTank;
-            int drawAmount = lastFluidInTank.amount;
-            if (showTips && lastFluidInTank.amount == 0) {
-                stackToDraw = lastFluidInTank.copy();
-                stackToDraw.amount = 1;
-                drawAmount = 1;
+            if (lastFluidInTank.amount > 0) {
+                double progress = lastFluidInTank.amount * 1.0 / Math.max(lastFluidInTank.amount, lastTankCapacity);
+                float drawnU = (float) fillDirection.getDrawnU(progress);
+                float drawnV = (float) fillDirection.getDrawnV(progress);
+                float drawnWidth = (float) fillDirection.getDrawnWidth(progress);
+                float drawnHeight = (float) fillDirection.getDrawnHeight(progress);
+                int width = size.width - 2;
+                int height = size.height - 2;
+                int x = pos.x + 1;
+                int y = pos.y + 1;
+                DrawerHelper.drawFluidForGui(lastFluidInTank, lastFluidInTank.amount, (int) (x + drawnU * width), (int) (y + drawnV * height), ((int) (width * drawnWidth)), ((int) (height * drawnHeight)));
             }
-            DrawerHelper.drawFluidForGui(stackToDraw, drawAmount, pos.x + 1, pos.y + 1, size.width - 2, size.height - 2);
 
             if (showTips) {
                 GlStateManager.pushMatrix();

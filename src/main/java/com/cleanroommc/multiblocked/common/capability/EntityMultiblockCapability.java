@@ -28,6 +28,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
@@ -101,7 +102,7 @@ public class EntityMultiblockCapability extends MultiblockCapability<EntityIngre
         }
 
         @Override
-        protected List<EntityIngredient> handleRecipeInner(IO io, Recipe recipe, List<EntityIngredient> left, boolean simulate) {
+        protected List<EntityIngredient> handleRecipeInner(IO io, Recipe recipe, List<EntityIngredient> left, @Nullable String slotName, boolean simulate) {
             TileEntity tileEntity =getTileEntity();
             if (tileEntity instanceof ComponentTileEntity) {
                 ComponentTileEntity<?> component = (ComponentTileEntity<?>) tileEntity;

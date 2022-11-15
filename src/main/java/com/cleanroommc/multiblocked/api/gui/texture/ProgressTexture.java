@@ -86,6 +86,18 @@ public class ProgressTexture implements IGuiTexture {
             public double getDrawnWidth(double progress) {
                 return 1.0;
             }
+        },
+
+        ALWAYS_FULL {
+            @Override
+            public double getDrawnHeight(double progress) {
+                return 1.0;
+            }
+
+            @Override
+            public double getDrawnWidth(double progress) {
+                return 1.0;
+            }
         };
 
         public static final FillDirection[] VALUES = FillDirection.values();

@@ -15,6 +15,7 @@ import com.google.gson.*;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -84,7 +85,7 @@ public class GPExtraUtilities2Capability extends MultiblockCapability<Float> {
         }
 
         @Override
-        protected List<Float> handleRecipeInner(IO io, Recipe recipe, List<Float> left, boolean simulate) {
+        protected List<Float> handleRecipeInner(IO io, Recipe recipe, List<Float> left, @Nullable String slotName, boolean simulate) {
             TileEntity te = getTileEntity();
             if (te instanceof ComponentTileEntity && ((ComponentTileEntity<?>) te).hasTrait(GPExtraUtilities2Capability.CAP)) {
                 CapabilityTrait trait = ((ComponentTileEntity<?>) te).getTrait(GPExtraUtilities2Capability.CAP);

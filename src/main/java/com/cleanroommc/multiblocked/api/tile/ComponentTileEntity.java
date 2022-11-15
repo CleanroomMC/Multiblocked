@@ -432,14 +432,23 @@ public abstract class ComponentTileEntity<T extends ComponentDefinition> extends
 
     @Nullable
     @Override
-    public <K> K getInnerCapability(@Nonnull Capability<K> capability, @Nullable EnumFacing facing) {
+    public <K> K getInnerCapability(@Nonnull Capability<K> capability, @Nullable EnumFacing facing, @Nullable String slotNam) {
         for (CapabilityTrait trait : traits.values()) {
-            K result = trait.getInnerCapability(capability, facing);
+            K result = trait.getInnerCapability(capability, facing, slotNam);
             if (result != null) {
                 return result;
             }
         }
         return null;
+    }
+
+    @Override
+    public Set<String> getSlotNames() {
+        Set<String> result = new HashSet<>();
+        for (CapabilityTrait trait : traits.values()) {
+            result.addAll(trait.getSlotNames());
+        }
+        return result;
     }
 
     //************* gui *************//

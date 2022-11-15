@@ -1,5 +1,6 @@
 multiblocked.multiblock.formed= formed!
 
+multiblocked.capability.recipe_progress=Recipe Progress
 multiblocked.capability.tc6_aspect=Thaumcraft Aspect
 tc6_aspect.any.name=Any Thaumcraft Aspect Holders
 multiblocked.capability.forge_energy=Forge Energy

@@ -81,7 +81,7 @@ dependencies {
     deobfCompile "curse.maven:botania-225643:3330934"
     deobfCompile 'curse.maven:codechicken-lib-1-8-242818:2779848'
     deobfCompile 'curse.maven:extra-utilities-225561:2678374'
-    deobfCompile 'curse.maven:gregtech-ce-unofficial-557242:3745499'
+    deobfCompile 'curse.maven:gregtech-ce-unofficial-557242:4068926'
     deobfCompile "curse.maven:lightningcraft-237422:2872478"
     deobfCompile 'curse.maven:mcmultipart-239431:2615930'
     deobfCompile 'curse.maven:mekanism-268560:2835175'

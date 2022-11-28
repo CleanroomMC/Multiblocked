@@ -46,6 +46,11 @@ public class DimensionCondition extends RecipeCondition {
     }
 
     @Override
+    public boolean isOr() {
+        return true;
+    }
+
+    @Override
     public ITextComponent getTooltips() {
         return new TextComponentTranslation("multiblocked.recipe.condition.dimension.tooltip", dimension);
     }

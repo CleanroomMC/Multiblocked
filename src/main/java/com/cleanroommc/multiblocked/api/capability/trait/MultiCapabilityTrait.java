@@ -132,6 +132,12 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
 
     protected void initSettingDialog(DialogWidget dialog, DraggableWidgetGroup slot, final int index) {
         ImageWidget imageWidget = (ImageWidget) slot.widgets.get(0);
+        dialog.addWidget(new SelectorWidget(100, 50, 65, 15, Arrays.asList("multiblocked.gui.trait.auto_io", "multiblocked.gui.trait.passive_io"), -1)
+                .setValue(autoIO[index] ? "multiblocked.gui.trait.auto_io" : "multiblocked.gui.trait.passive_io")
+                .setOnChanged(auto -> autoIO[index] = auto.equals("multiblocked.gui.trait.auto_io"))
+                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
+                .setBackground(new ColorRectTexture(0xffaaaaaa))
+                .setHoverTooltip("multiblocked.gui.trait.auto"));
         dialog.addWidget(new SelectorWidget(5, 30, 40, 15, Arrays.stream(IO.VALUES).map(Enum::name).collect(Collectors.toList()), -1)
                 .setValue(capabilityIO[index].name())
                 .setOnChanged(io-> {
@@ -156,12 +162,6 @@ public abstract class MultiCapabilityTrait extends CapabilityTrait {
                 .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
                 .setBackground(new ColorRectTexture(0xffaaaaaa))
                 .setHoverTooltip("multiblocked.gui.trait.mbd_io"));
-        dialog.addWidget(new SelectorWidget(100, 50, 65, 15, Arrays.asList("multiblocked.gui.trait.auto_io", "multiblocked.gui.trait.passive_io"), -1)
-                .setValue(autoIO[index] ? "multiblocked.gui.trait.auto_io" : "multiblocked.gui.trait.passive_io")
-                .setOnChanged(auto -> autoIO[index] = auto.equals("multiblocked.gui.trait.auto_io"))
-                .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)
-                .setBackground(new ColorRectTexture(0xffaaaaaa))
-                .setHoverTooltip("multiblocked.gui.trait.auto"));
         dialog.addWidget(new TextFieldWidget(100, 10, 65, 15, true, null, s -> slotName[index] = s)
                 .setCurrentString(slotName[index] + "")
                 .setHoverTooltip("multiblocked.gui.trait.slot_name"));

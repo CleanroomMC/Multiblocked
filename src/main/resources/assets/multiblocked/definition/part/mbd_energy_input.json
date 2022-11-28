@@ -5,6 +5,7 @@
     "gtce_energy": {
       "cIO": 0,
       "gIO": 2,
+      "mIO": 0,
       "x": 8,
       "y": 80,
       "width": 160,

@@ -281,6 +281,20 @@ public class Recipe {
     }
 
     public boolean checkConditions(@Nonnull RecipeLogic recipeLogic) {
-        return conditions.isEmpty() || conditions.stream().allMatch(c -> c.test(this, recipeLogic) ^ c.isReverse());
+        if (conditions.isEmpty()) return true;
+        Map<String, List<RecipeCondition>> or = new HashMap<>();
+        for (RecipeCondition condition : conditions) {
+            if (condition.isOr()) {
+                or.computeIfAbsent(condition.getType(), type -> new ArrayList<>()).add(condition);
+            } else if (condition.test(this, recipeLogic) == condition.isReverse()) {
+                return false;
+            }
+        }
+        for (List<RecipeCondition> conditions : or.values()) {
+            if (conditions.stream().allMatch(condition -> condition.test(this, recipeLogic) == condition.isReverse())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

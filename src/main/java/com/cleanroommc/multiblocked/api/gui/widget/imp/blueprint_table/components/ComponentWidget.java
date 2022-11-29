@@ -133,64 +133,62 @@ public class ComponentWidget<T extends ComponentDefinition> extends DialogWidget
                         .setHoverTooltip("multiblocked.gui.widget.component.s2"),
                 S3 = new WidgetGroup(0, 0, getSize().width, getSize().height));
         int y = 55;
-        for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
-            if (capability.hasTrait()) {
-                WidgetGroup widgetGroup = new WidgetGroup(47, y, 100, 15);
-                Runnable configurator = () -> {
-                    DialogWidget dialog = new DialogWidget(group, true);
-                    CapabilityTrait trait = capability.createTrait();
-                    trait.serialize(definition.traits.get(capability.name));
+        for (MultiblockCapability<?> capability : MbdCapabilities.getTraitCaps()) {
+            WidgetGroup widgetGroup = new WidgetGroup(47, y, 100, 15);
+            Runnable configurator = () -> {
+                DialogWidget dialog = new DialogWidget(group, true);
+                CapabilityTrait trait = capability.createTrait();
+                trait.serialize(definition.traits.get(capability.name));
 
-                    // set background
-                    int xOffset = (384 - 176) / 2;
-                    dialog.addWidget(new ImageWidget(0, 0, 384, 256, new ColorRectTexture(0xaf000000)));
-                    ImageWidget imageWidget;
-                    dialog.addWidget(imageWidget = new ImageWidget(xOffset, 0, 176, 256, null));
-                    imageWidget.setImage(new ResourceTexture(JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png")));
-                    dialog.addWidget(new ButtonWidget(xOffset - 20,10, 20, 20, new ResourceTexture("multiblocked:textures/gui/option.png"), cd2 -> {
-                        new ResourceTextureWidget(dialog, texture -> {
-                            if (texture != null) {
-                                imageWidget.setImage(texture);
-                            }
-                        });
-                    }).setHoverTooltip("multiblocked.gui.widget.component.set_bg"));
-
-                    // open trait settings
-                    trait.openConfigurator(dialog);
-
-                    // save when closed
-                    dialog.setOnClosed(() -> {
-                        String background = ((ResourceTexture)imageWidget.getImage()).imageLocation.toString();
-                        if (!background.equals("multiblocked:textures/gui/custom_gui.png")) {
-                            definition.traits.addProperty("background", background);
+                // set background
+                int xOffset = (384 - 176) / 2;
+                dialog.addWidget(new ImageWidget(0, 0, 384, 256, new ColorRectTexture(0xaf000000)));
+                ImageWidget imageWidget;
+                dialog.addWidget(imageWidget = new ImageWidget(xOffset, 0, 176, 256, null));
+                imageWidget.setImage(new ResourceTexture(JsonUtils.getString(definition.traits, "background", "multiblocked:textures/gui/custom_gui.png")));
+                dialog.addWidget(new ButtonWidget(xOffset - 20,10, 20, 20, new ResourceTexture("multiblocked:textures/gui/option.png"), cd2 -> {
+                    new ResourceTextureWidget(dialog, texture -> {
+                        if (texture != null) {
+                            imageWidget.setImage(texture);
                         }
-                        definition.traits.add(capability.name, trait.deserialize());
                     });
-                };
-                ButtonWidget buttonWidget = new ButtonWidget(20, 0, 15, 15, new ResourceTexture("multiblocked:textures/gui/option.png"), cd -> {
-                    if (definition.traits.has(capability.name)) {
-                        configurator.run();
+                }).setHoverTooltip("multiblocked.gui.widget.component.set_bg"));
+
+                // open trait settings
+                trait.openConfigurator(dialog);
+
+                // save when closed
+                dialog.setOnClosed(() -> {
+                    String background = ((ResourceTexture)imageWidget.getImage()).imageLocation.toString();
+                    if (!background.equals("multiblocked:textures/gui/custom_gui.png")) {
+                        definition.traits.addProperty("background", background);
                     }
+                    definition.traits.add(capability.name, trait.deserialize());
                 });
-                buttonWidget.setVisible(definition.traits.has(capability.name));
-                widgetGroup.addWidget(buttonWidget);
-                widgetGroup.addWidget(new SwitchWidget(0, 0, 15, 15, (cd, r)-> {
-                    if (r) {
-                        configurator.run();
-                    } else {
-                        definition.traits.remove(capability.name);
-                    }
-                    buttonWidget.setVisible(r);
-                })
-                        .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
-                        .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
-                        .setHoverTexture(new ColorBorderTexture(1, 0xff545757))
-                        .setPressed(definition.traits.has(capability.name))
-                        .setHoverTooltip(capability.getUnlocalizedName()));
-                widgetGroup.addWidget(new LabelWidget(40, 3, capability.getUnlocalizedName()));
-                S3.addWidget(widgetGroup);
-                y += 15;
-            }
+            };
+            ButtonWidget buttonWidget = new ButtonWidget(20, 0, 15, 15, new ResourceTexture("multiblocked:textures/gui/option.png"), cd -> {
+                if (definition.traits.has(capability.name)) {
+                    configurator.run();
+                }
+            });
+            buttonWidget.setVisible(definition.traits.has(capability.name));
+            widgetGroup.addWidget(buttonWidget);
+            widgetGroup.addWidget(new SwitchWidget(0, 0, 15, 15, (cd, r)-> {
+                if (r) {
+                    configurator.run();
+                } else {
+                    definition.traits.remove(capability.name);
+                }
+                buttonWidget.setVisible(r);
+            })
+                    .setBaseTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0,1,0.5))
+                    .setPressedTexture(new ResourceTexture("multiblocked:textures/gui/boolean.png").getSubTexture(0,0.5,1,0.5))
+                    .setHoverTexture(new ColorBorderTexture(1, 0xff545757))
+                    .setPressed(definition.traits.has(capability.name))
+                    .setHoverTooltip(capability.getUnlocalizedName()));
+            widgetGroup.addWidget(new LabelWidget(40, 3, capability.getUnlocalizedName()));
+            S3.addWidget(widgetGroup);
+            y += 15;
         }
 
         tabContainer.addTab(new TabButton(235, 26, 20, 20)

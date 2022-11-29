@@ -83,13 +83,13 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        return capability == GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER ? GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER.cast(new ProxyEnergyStorage(handler, capabilityIO, false)) : null;
+        return capability == GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER ? GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER.cast(new ProxyEnergyStorage(handler, capabilityIO)) : null;
     }
 
     @Nullable
     @Override
     public <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        return capability == GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER ? GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER.cast(new ProxyEnergyStorage(handler, capabilityIO, true)) : null;
+        return capability == GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER ? GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER.cast(new ProxyEnergyStorage(handler, guiIO)) : null;
     }
 
     @Override
@@ -105,17 +105,15 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
     private static class ProxyEnergyStorage implements IEnergyContainer {
         public EnergyContainerHandler proxy;
         public IO io;
-        public boolean inner;
 
-        public ProxyEnergyStorage(EnergyContainerHandler proxy, IO io, boolean inner) {
+        public ProxyEnergyStorage(EnergyContainerHandler proxy, IO io) {
             this.proxy = proxy;
             this.io = io;
-            this.inner = inner;
         }
 
         @Override
         public long acceptEnergyFromNetwork(EnumFacing enumFacing, long l, long l1) {
-            if (io == IO.BOTH || (inner ? io == IO.OUT : io == IO.IN)) {
+            if (io == IO.BOTH || io == IO.IN) {
                 return proxy.acceptEnergyFromNetwork(enumFacing, l, l1);
             }
             return 0;
@@ -123,7 +121,7 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
 
         @Override
         public boolean inputsEnergy(EnumFacing enumFacing) {
-            if (io == IO.BOTH || (inner ? io == IO.OUT : io == IO.IN)) {
+            if (io == IO.BOTH || io == IO.IN) {
                 return proxy.inputsEnergy(enumFacing);
             }
             return false;
@@ -131,7 +129,7 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
 
         @Override
         public boolean outputsEnergy(EnumFacing side) {
-            if (io == IO.BOTH || (inner ? io == IO.IN : io == IO.OUT)) {
+            if (io == IO.BOTH || io == IO.OUT) {
                 return proxy.outputsEnergy(side);
             }
             return false;
@@ -140,11 +138,11 @@ public class EnergyCapabilityTrait extends ProgressCapabilityTrait {
         @Override
         public long changeEnergy(long l) {
             if (l > 0) {
-                if (io == IO.BOTH || (inner ? io == IO.OUT : io == IO.IN)) {
+                if (io == IO.BOTH || io == IO.IN) {
                     return proxy.changeEnergy(l);
                 }
             } else {
-                if (io == IO.BOTH || (inner ? io == IO.IN : io == IO.OUT)) {
+                if (io == IO.BOTH || io == IO.OUT) {
                     return proxy.changeEnergy(l);
                 }
             }

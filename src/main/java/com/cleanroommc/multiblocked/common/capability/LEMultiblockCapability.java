@@ -15,6 +15,7 @@ import sblectric.lightningcraft.init.LCBlocks;
 import sblectric.lightningcraft.tiles.TileEntityLightningCell;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -80,7 +81,7 @@ public class LEMultiblockCapability extends MultiblockCapability<Double> {
         }
 
         @Override
-        protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, boolean simulate) {
+        protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, @Nullable String slotName, boolean simulate) {
             TileEntityLightningCell tile = (TileEntityLightningCell) getTileEntity();
             if (tile == null) return left;
             double sum = left.stream().reduce(0d, Double::sum);

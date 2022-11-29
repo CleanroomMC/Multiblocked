@@ -21,6 +21,7 @@ import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.blocks.BlocksTC;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
@@ -95,7 +96,7 @@ public class AspectThaumcraftCapability extends MultiblockCapability<AspectStack
         }
 
         @Override
-        protected List<AspectStack> handleRecipeInner(IO io, Recipe recipe, List<AspectStack> left, boolean simulate) {
+        protected List<AspectStack> handleRecipeInner(IO io, Recipe recipe, List<AspectStack> left, @Nullable String slotName, boolean simulate) {
             IAspectContainer capability = getCapability();
             if (capability == null || capability.getAspects() == null) return left;
             Iterator<AspectStack> iterator = left.iterator();

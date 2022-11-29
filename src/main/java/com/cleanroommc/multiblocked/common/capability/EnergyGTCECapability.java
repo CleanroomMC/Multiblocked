@@ -18,9 +18,9 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
+import gregtech.api.util.GTUtility;
 import gregtech.common.metatileentities.MetaTileEntities;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityEnergyHatch;
-import gregtech.integration.jei.utils.JEIHelpers;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -28,6 +28,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
     public ContentWidget<? super Long> createContentWidget() {
         if (isCEu()) {
             return new TieredNumberContentWidget()
-                    .setTierFunction(EU -> String.format(" (%s)", GTValues.VNF[JEIHelpers.getMinTierForVoltage(EU)] + TextFormatting.RESET))
+                    .setTierFunction(EU -> String.format(" (%s)", GTValues.VNF[GTUtility.getTierByVoltage(EU)] + TextFormatting.RESET))
                     .setContentTexture(new TextTexture("EU", color))
                     .setUnit("EU");
         } else {
@@ -134,8 +135,8 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
         }
 
         @Override
-        protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, boolean simulate) {
-            IEnergyContainer capability = getCapability();
+        protected List<Long> handleRecipeInner(IO io, Recipe recipe, List<Long> left, @Nullable String slotName, boolean simulate) {
+            IEnergyContainer capability = getCapability(slotName);
             if (capability == null) return left;
             long sum = left.stream().reduce(0L, Long::sum);
             if (io == IO.IN) {
@@ -157,7 +158,7 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
 
         @Override
         protected boolean hasInnerChanged() {
-            IEnergyContainer capability = getCapability();
+            IEnergyContainer capability = getCapability(null);
             if (capability == null) return false;
             if (capability.getEnergyStored() == stored) {
                 return false;

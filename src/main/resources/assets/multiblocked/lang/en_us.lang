@@ -1,5 +1,6 @@
 multiblocked.multiblock.formed= formed!
 
+multiblocked.capability.recipe_progress=Recipe Progress
 multiblocked.capability.tc6_aspect=Thaumcraft Aspect
 tc6_aspect.any.name=Any Thaumcraft Aspect Holders
 multiblocked.capability.forge_energy=Forge Energy
@@ -146,6 +147,8 @@ multiblocked.gui.trait.auto=Auto Input/Output | Capability IO cannot be BOTH | O
 multiblocked.gui.trait.set_width=Set Width
 multiblocked.gui.trait.set_height=Set Height
 multiblocked.gui.trait.fill_direction=Progress Bar Fill Direction
+multiblocked.gui.trait.mbd_io=MBD IO (e.g., IO for mbd recipe handling)
+multiblocked.gui.trait.slot_name=Slot Name: used to specify an IO slot
 
 
 multiblocked.gui.blueprint_table.builder_template=Builder Template

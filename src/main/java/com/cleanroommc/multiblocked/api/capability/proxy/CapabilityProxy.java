@@ -8,6 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,11 +36,11 @@ public abstract class CapabilityProxy<K> {
         return tileEntity;
     }
 
-    public <C> C getCapability(Capability<C> capability) {
+    public <C> C getCapability(Capability<C> capability, @Nullable String slotName) {
         TileEntity tileEntity = getTileEntity();
         return tileEntity == null ?
                 null : tileEntity instanceof IInnerCapabilityProvider ?
-                ((IInnerCapabilityProvider) tileEntity).getInnerCapability(capability, facing) : tileEntity.getCapability(capability, facing);
+                ((IInnerCapabilityProvider) tileEntity).getInnerCapability(capability, facing, slotName) : tileEntity.getCapability(capability, facing);
     }
 
     public long getLatestPeriodID() {
@@ -56,15 +57,16 @@ public abstract class CapabilityProxy<K> {
     /**
      * matching or handling the given recipe.
      *
-     * @param io the IO type of this recipe. always be one of the {@link IO#IN} or {@link IO#OUT}
-     * @param recipe recipe.
-     * @param left left contents for to be handled.
+     * @param io       the IO type of this recipe. always be one of the {@link IO#IN} or {@link IO#OUT}
+     * @param recipe   recipe.
+     * @param left     left contents for to be handled.
+     * @param slotName specific slot name.
      * @param simulate simulate.
      * @return left contents for continue handling by other proxies.
      * <br>
-     *      null - nothing left. handling successful/finish. you should always return null as a handling-done mark.
+     * null - nothing left. handling successful/finish. you should always return null as a handling-done mark.
      */
-    protected abstract List<K> handleRecipeInner(IO io, Recipe recipe, List<K> left, boolean simulate);
+    protected abstract List<K> handleRecipeInner(IO io, Recipe recipe, List<K> left, @Nullable String slotName, boolean simulate);
 
     /**
      * Check whether scheduling recipe checking. Check to see if any changes have occurred.
@@ -80,12 +82,12 @@ public abstract class CapabilityProxy<K> {
         return (K) capability.copyInner((K)content);
     }
 
-    public final List<K> searchingRecipe(IO io, Recipe recipe, List<?> left) {
-        return handleRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), true);
+    public final List<K> searchingRecipe(IO io, Recipe recipe, List<?> left, @Nullable String slotName) {
+        return handleRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), slotName, true);
     }
 
-    public final List<K> handleRecipe(IO io, Recipe recipe, List<?> left) {
-        return handleRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), false);
+    public final List<K> handleRecipe(IO io, Recipe recipe, List<?> left, @Nullable String slotName) {
+        return handleRecipeInner(io, recipe, left.stream().map(this::copyContent).collect(Collectors.toList()), slotName, false);
     }
 
     public final void updateChangedState(long periodID) {

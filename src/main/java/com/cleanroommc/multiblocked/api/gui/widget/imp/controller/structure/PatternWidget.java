@@ -38,6 +38,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SideOnly(Side.CLIENT)
 public class PatternWidget extends WidgetGroup {
@@ -63,6 +64,7 @@ public class PatternWidget extends WidgetGroup {
     public final List<ItemStack> allItemStackInputs;
     private final List<SimplePredicate> predicates;
     private int index;
+    public int layer;
     private SlotWidget[] slotWidgets;
     private SlotWidget[] candidates;
 
@@ -71,7 +73,7 @@ public class PatternWidget extends WidgetGroup {
         setClientSideWidget();
         allItemStackInputs = new ArrayList<>();
         predicates = new ArrayList<>();
-
+        layer = -1;
         addWidget(new ImageWidget(7, 7, 162, 16,
                 new TextTexture(controllerDefinition.location.getPath() + ".name", -1)
                         .setType(TextTexture.TextType.ROLL)
@@ -79,7 +81,7 @@ public class PatternWidget extends WidgetGroup {
                         .setDropShadow(true))
                 .setHoverTooltip(controllerDefinition.getDescription()));
 
-        addWidget(sceneWidget = new SceneWidget(6, 30, 164, 143, world)
+        addWidget(sceneWidget = new SceneWidget(6, 30, 164, 140, world)
                 .useCacheBuffer()
                 .setOnSelected(this::onPosSelected)
                 .setRenderFacing(false)
@@ -103,12 +105,44 @@ public class PatternWidget extends WidgetGroup {
         addWidget(leftButton = new ButtonWidget(9, 151, 18, 18, LEFT_BUTTON, (x) -> reset(index - 1)).setHoverTexture(LEFT_BUTTON_HOVER));
 
         addWidget(rightButton = new ButtonWidget(150, 53, 18, 18, RIGHT_BUTTON, (x) -> reset(index + 1)).setHoverTexture(RIGHT_BUTTON_HOVER));
+
+        addWidget(new ButtonWidget(10, 80, 10, 10, new ResourceTexture("multiblocked:textures/gui/up.png"), cd -> updateLayer(1)).setHoverTooltip("multiblocked.gui.dialogs.pattern.next_aisle"));
+        addWidget(new ImageWidget(10, 90, 10, 10, new TextTexture("").setSupplier(() -> layer == -1 ? "all" : layer + "")));
+        addWidget(new ButtonWidget(10, 100, 10, 10, new ResourceTexture("multiblocked:textures/gui/down.png"), cd -> updateLayer(-1)).setHoverTooltip("multiblocked.gui.dialogs.pattern.last_aisle"));
+
         if (controllerDefinition.getCatalyst() != null && !controllerDefinition.getCatalyst().isEmpty()) {
             ItemStackHandler itemStackHandler;
             addWidget(new SlotWidget(itemStackHandler = new ItemStackHandler(), 0, 149, 151 - 20, false, false)
                     .setBackgroundTexture(ResourceBorderTexture.BUTTON_COMMON)
                     .setOnAddedTooltips((slot, list)-> list.add(controllerDefinition.consumeCatalyst ? "multiblocked.gui.catalyst.0" : "multiblocked.gui.catalyst.1")));
             itemStackHandler.setStackInSlot(0, controllerDefinition.getCatalyst());
+        }
+    }
+
+    private void updateLayer(int add) {
+        MBPattern pattern = patterns[index];
+        if (layer + add >= -1 && layer + add <= pattern.maxY - pattern.minY) {
+            if (pattern.controllerBase.isFormed()) {
+                onFormedSwitch(null, false);
+                switchWidget.setPressed(pattern.controllerBase.isFormed());
+            }
+            layer += add;
+        }
+        setupScene(pattern);
+    }
+
+    private void setupScene(MBPattern pattern) {
+        Stream<BlockPos> stream = pattern.blockMap.keySet().stream().filter(pos -> layer == -1 || layer + pattern.minY == pos.getY());
+        if (pattern.controllerBase.isFormed()) {
+            LongSet set = pattern.controllerBase.state.getMatchContext().getOrDefault("renderMask", LongSets.EMPTY_SET);
+            Set<BlockPos> modelDisabled = set.stream().map(BlockPos::fromLong).collect(Collectors.toSet());
+            if (!modelDisabled.isEmpty()) {
+                sceneWidget.setRenderedCore(stream.filter(pos->!modelDisabled.contains(pos)).collect(Collectors.toList()), null);
+            } else {
+                sceneWidget.setRenderedCore(stream.collect(Collectors.toList()), null);
+            }
+        } else {
+            sceneWidget.setRenderedCore(stream.collect(Collectors.toList()), null);
         }
     }
 
@@ -121,18 +155,9 @@ public class PatternWidget extends WidgetGroup {
     private void reset(int index) {
         if (index >= patterns.length || index < 0) return;
         this.index = index;
+        this.layer = -1;
         MBPattern pattern = patterns[index];
-        if (pattern.controllerBase.isFormed()) {
-            LongSet set = pattern.controllerBase.state.getMatchContext().getOrDefault("renderMask", LongSets.EMPTY_SET);
-            Set<BlockPos> modelDisabled = set.stream().map(BlockPos::fromLong).collect(Collectors.toSet());
-            if (!modelDisabled.isEmpty()) {
-                sceneWidget.setRenderedCore(pattern.blockMap.keySet().stream().filter(pos->!modelDisabled.contains(pos)).collect(Collectors.toList()), null);
-            } else {
-                sceneWidget.setRenderedCore(pattern.blockMap.keySet(), null);
-            }
-        } else {
-            sceneWidget.setRenderedCore(pattern.blockMap.keySet(), null);
-        }
+        setupScene(pattern);
         if (slotWidgets != null) {
             for (SlotWidget slotWidget : slotWidgets) {
                 removeWidget(slotWidget);
@@ -154,6 +179,7 @@ public class PatternWidget extends WidgetGroup {
         MBPattern pattern = patterns[index];
         ControllerTileEntity controllerBase = pattern.controllerBase;
         if (isPressed) {
+            this.layer = -1;
             loadControllerFormed(pattern.blockMap.keySet(), controllerBase);
         } else {
             sceneWidget.setRenderedCore(pattern.blockMap.keySet(), null);
@@ -163,6 +189,7 @@ public class PatternWidget extends WidgetGroup {
     }
 
     private void onPosSelected(BlockPos pos, EnumFacing facing) {
+        if (index >= patterns.length || index < 0) return;
         TraceabilityPredicate predicate = patterns[index].predicateMap.get(pos);
         if (predicate != null) {
             predicates.clear();
@@ -351,12 +378,20 @@ public class PatternWidget extends WidgetGroup {
         final Map<BlockPos, BlockInfo> blockMap;
         @Nonnull
         final ControllerTileEntity controllerBase;
+        final int maxY, minY;
 
         public MBPattern(@Nonnull Map<BlockPos, BlockInfo> blockMap, @Nonnull ItemStack[] parts, @Nonnull Map<BlockPos, TraceabilityPredicate> predicateMap, @Nonnull ControllerTileEntity controllerBase) {
             this.parts = NonNullList.from(ItemStack.EMPTY, parts);
             this.blockMap = blockMap;
             this.predicateMap = predicateMap;
             this.controllerBase = controllerBase;
+            int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+            for (BlockPos pos : blockMap.keySet()) {
+                min = Math.min(min, pos.getY());
+                max = Math.max(max, pos.getY());
+            }
+            minY = min;
+            maxY = max;
         }
     }
 }

@@ -21,6 +21,7 @@ import teamroots.embers.api.capabilities.EmbersCapabilities;
 import teamroots.embers.api.power.IEmberCapability;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -93,8 +94,8 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
         }
 
         @Override
-        protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, boolean simulate) {
-            IEmberCapability capability = getCapability();
+        protected List<Double> handleRecipeInner(IO io, Recipe recipe, List<Double> left, @Nullable String slotName, boolean simulate) {
+            IEmberCapability capability = getCapability(slotName);
             if (capability == null) return left;
             double ember = capability.getEmber();
             double emberCapacity = capability.getEmberCapacity();
@@ -125,7 +126,7 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
 
         @Override
         protected boolean hasInnerChanged() {
-            IEmberCapability capability = getCapability();
+            IEmberCapability capability = getCapability(null);
             if (capability == null) return false;
             if (lastEmber == capability.getEmber()) return false;
             lastEmber = capability.getEmber();

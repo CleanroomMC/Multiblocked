@@ -20,6 +20,7 @@ import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Iterator;
@@ -106,7 +107,7 @@ public class ParticleQMDCapability extends MultiblockCapability<ParticleStack> {
         }
 
         @Override
-        protected List<ParticleStack> handleRecipeInner(IO io, Recipe recipe, List<ParticleStack> left, boolean simulate) {
+        protected List<ParticleStack> handleRecipeInner(IO io, Recipe recipe, List<ParticleStack> left, @Nullable String slotName, boolean simulate) {
             ITileParticleStorage capability = getCapability();
             if (capability == null) return left;
             Iterator<ParticleStack> iterator = left.iterator();

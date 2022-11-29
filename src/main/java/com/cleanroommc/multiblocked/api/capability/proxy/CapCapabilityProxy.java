@@ -4,6 +4,7 @@ import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -17,12 +18,12 @@ public abstract class CapCapabilityProxy<C, K> extends CapabilityProxy<K>{
         CAP = cap;
     }
 
-    public C getCapability() {
-        return super.getCapability(CAP);
+    public C getCapability(@Nullable String slotName) {
+        return super.getCapability(CAP, slotName);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof CapCapabilityProxy && Objects.equals(getCapability(), ((CapCapabilityProxy<?, ?>) obj).getCapability());
+        return obj instanceof CapCapabilityProxy && Objects.equals(getCapability(null), ((CapCapabilityProxy<?, ?>) obj).getCapability(null));
     }
 }

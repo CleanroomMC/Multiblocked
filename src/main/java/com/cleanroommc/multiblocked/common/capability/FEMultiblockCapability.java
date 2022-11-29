@@ -21,6 +21,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -113,8 +114,8 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
         }
 
         @Override
-        protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, boolean simulate) {
-            IEnergyStorage capability = getCapability();
+        protected List<Integer> handleRecipeInner(IO io, Recipe recipe, List<Integer> left, @Nullable String slotName, boolean simulate) {
+            IEnergyStorage capability = getCapability(slotName);
             if (capability == null) return left;
             int sum = left.stream().reduce(0, Integer::sum);
             if (io == IO.IN) {
@@ -131,7 +132,7 @@ public class FEMultiblockCapability extends MultiblockCapability<Integer> {
 
         @Override
         protected boolean hasInnerChanged() {
-            IEnergyStorage capability = getCapability();
+            IEnergyStorage capability = getCapability(null);
             if (capability == null) return false;
             if (stored == capability.getEnergyStored() && canExtract == capability.canExtract() && canReceive == capability.canReceive()) {
                 return false;

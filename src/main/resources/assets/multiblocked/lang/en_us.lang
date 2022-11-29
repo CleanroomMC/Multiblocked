@@ -214,7 +214,8 @@ multiblocked.gui.dialogs.recipe_map.remove_recipe=Remove Selected recipe
 multiblocked.gui.dialogs.recipe_map.progress=Set a Progress Bar Texture
 multiblocked.gui.dialogs.recipe_map.add_in=Add an Input Ingredient
 multiblocked.gui.dialogs.recipe_map.add_out=Add an Output Ingredient
-multiblocked.top.recipe_progress=Progress:
+multiblocked.top.recipe_progress=Progress: %s
+multiblocked.top.fuel_progress=Fuel: %s
 
 multiblocked.gui.content.per_tick=§aConsumed/Produced Per Tick§r
 multiblocked.gui.content.tips.per_tick_short=§a/tick§r
@@ -378,5 +379,13 @@ multiblocked.gui.text_field.number.3=any number
 multiblocked.gui.text_field.number.wheel=§ascroll wheel adjusts number§r (%s)
 multiblocked.gui.text_field.resourcelocation=allow [0-9][a-z][_-]
 
-multiblocked.gui.catalyst.0=catalyst (consume)
-multiblocked.gui.catalyst.1=catalyst
+multiblocked.gui.catalyst.0=catalyst (not consumed)
+multiblocked.gui.catalyst.1=catalyst (consumed)
+multiblocked.gui.catalyst.2=catalyst (consume durability)
+multiblocked.recipe.remaining_fuel=Remaining fuel time: %ds
+multiblocked.recipe.lack_fuel=§cLack of fuel§r
+multiblocked.gui.dialogs.recipe_map.fuel_recipe=Fuel
+multiblocked.gui.dialogs.recipe_map.add_fuel_tip=Add a New Fuel\n§aas long as you add a fuel, this recipe map will require fuel to work.§r
+multiblocked.gui.dialogs.recipe_map.fuel_tip=Setup a recipe to match this fuel, and its duration
+multiblocked.gui.dialogs.recipe_map.fuel_progress=Set a Fuel Bar Texture
+multiblocked.gui.dialogs.recipe_map.fuel_threshold=Threshold Tick\nif the burning time exceeds this value, the fuel is considered sufficient for progress bar

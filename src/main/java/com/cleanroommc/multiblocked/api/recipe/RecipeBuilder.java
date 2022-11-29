@@ -725,9 +725,16 @@ public class RecipeBuilder {
     }
 
     @ZenMethod
-    public Recipe buildAndRegister(){
-        Recipe recipe = build();
-        recipeMap.addRecipe(recipe);
-        return recipe;
+    public void buildAndRegister() {
+        buildAndRegister(false);
+    }
+
+    @ZenMethod
+    public void buildAndRegister(boolean isFuel) {
+        if (isFuel) {
+            recipeMap.addFuelRecipe(build());
+        } else {
+            recipeMap.addRecipe(build());
+        }
     }
 }

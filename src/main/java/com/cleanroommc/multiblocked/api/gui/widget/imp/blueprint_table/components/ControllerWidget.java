@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
     protected JsonBlockPattern pattern;
@@ -57,10 +58,9 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         if (predicate instanceof PredicateComponent) {
             ((PredicateComponent) predicate).definition = definition;
         }
-        S1.addWidget(GuiUtils.createBoolSwitch(x + 140, 165, "consumeCatalyst", "multiblocked.gui.widget.controller.consume", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
 
         Widget consumeCatalystWidget;
-        S1.addWidget(consumeCatalystWidget = GuiUtils.createBoolSwitch(x + 140, 165, "consumeCatalyst", "multiblocked.gui.widget.controller.consume", definition.consumeCatalyst, r -> definition.consumeCatalyst = r));
+        S1.addWidget(consumeCatalystWidget = GuiUtils.createSelector(x + 140, 165, "consumeCatalyst", "multiblocked.gui.widget.controller.consume", definition.consumeCatalyst.name(), Arrays.stream(ControllerDefinition.CatalystState.values()).map(Enum::name).collect(Collectors.toList()), r -> definition.consumeCatalyst = ControllerDefinition.CatalystState.valueOf(r)));
         consumeCatalystWidget.setVisible(definition.getCatalyst() != null);
 
         Widget noNeedControllerWidget;
@@ -68,7 +68,7 @@ public class ControllerWidget extends ComponentWidget<ControllerDefinition>{
         noNeedControllerWidget.setVisible(definition.getCatalyst() != null && !definition.getCatalyst().isEmpty());
 
         IItemHandlerModifiable handler;
-        PhantomSlotWidget phantomSlotWidget = new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, x + 250, 154);
+        PhantomSlotWidget phantomSlotWidget = new PhantomSlotWidget(handler = new ItemStackHandler(1), 0, x + 250, 145);
         S1.addWidget(phantomSlotWidget);
         phantomSlotWidget.setClearSlotOnRightClick(true)
                 .setChangeListener(() -> {

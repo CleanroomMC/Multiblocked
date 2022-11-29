@@ -17,6 +17,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.controller.structure.Stru
 import com.cleanroommc.multiblocked.api.gui.widget.imp.tab.TabContainer;
 import com.cleanroommc.multiblocked.api.pattern.BlockPattern;
 import com.cleanroommc.multiblocked.api.pattern.MultiblockState;
+import com.cleanroommc.multiblocked.api.pattern.error.PatternStringError;
 import com.cleanroommc.multiblocked.api.recipe.RecipeLogic;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.api.tile.part.PartTileEntity;
@@ -443,12 +444,13 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
 
     public boolean checkCatalystPattern(EntityPlayer player, EnumHand hand, ItemStack held) {
         if (checkPattern()) { // formed
+            if (!player.isCreative() && !getDefinition().consumeCatalyst.test(held)) {
+                state.setError(new PatternStringError("catalyst failed"));
+                return false;
+            }
             player.swingArm(hand);
             ITextComponent formedMsg = new TextComponentTranslation(getUnlocalizedName()).appendSibling(new TextComponentTranslation("multiblocked.multiblock.formed"));
             player.sendStatusMessage(formedMsg, true);
-            if (!player.isCreative() && !definition.getCatalyst().isEmpty()) {
-                held.shrink(1);
-            }
             MultiblockWorldSavedData.getOrCreate(world).addMapping(state);
             if (!needAlwaysUpdate()) {
                 MultiblockWorldSavedData.getOrCreate(world).addLoading(this);

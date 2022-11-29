@@ -32,6 +32,8 @@ public class RecipeLogic {
     @ZenProperty
     public int duration;
     @ZenProperty
+    public int fuelTime;
+    @ZenProperty
     public int timer;
     private Status status = Status.IDLE;
     private long lastPeriod;
@@ -46,8 +48,14 @@ public class RecipeLogic {
     }
 
     @ZenMethod
+    public boolean needFuel() {
+        return controller.getDefinition().getRecipeMap().isFuelRecipeMap();
+    }
+
+    @ZenMethod
     public void update() {
         timer++;
+        if (fuelTime > 0) fuelTime--;
         if (getStatus() != Status.IDLE && lastRecipe != null) {
             if (getStatus() == Status.SUSPEND && timer % 5 == 0) {
                 checkAsyncRecipeSearching(this::handleRecipeWorking);
@@ -77,7 +85,7 @@ public class RecipeLogic {
 
     @ZenMethod
     public void handleRecipeWorking() {
-        if (lastRecipe.checkConditions(this)) {
+        if (lastRecipe.checkConditions(this) && handleFuelRecipe()) {
             setStatus(Status.WORKING);
             progress++;
             handleTickRecipe(lastRecipe);
@@ -150,6 +158,19 @@ public class RecipeLogic {
     }
 
     @ZenMethod
+    public boolean handleFuelRecipe() {
+        if (!needFuel() || fuelTime > 0) return true;
+        for (Recipe recipe : controller.getDefinition().getRecipeMap().searchFuelRecipe(controller, this)) {
+            if (recipe.checkConditions(this) && recipe.handleRecipeIO(IO.IN, this.controller, this)) {
+                fuelTime += recipe.duration;
+                markDirty();
+            }
+            if (fuelTime > 0) return true;
+        }
+        return false;
+    }
+
+    @ZenMethod
     public void handleTickRecipe(Recipe recipe) {
         if (recipe.hasTick()) {
             if (recipe.matchTickRecipe(this.controller, this)) {
@@ -175,12 +196,14 @@ public class RecipeLogic {
                 Multiblocked.LOGGER.error("definition {} custom logic {} error", definition.location, "setupRecipe", exception);
             }
         }
-        if (recipe.handleRecipeIO(IO.IN, this.controller, this)) {
-            lastRecipe = recipe;
-            setStatus(Status.WORKING);
-            progress = 0;
-            duration = definition.calcRecipeDuration == null ? recipe.duration : definition.calcRecipeDuration.apply(this, recipe, recipe.duration);
-            markDirty();
+        if (handleFuelRecipe()) {
+            if (recipe.handleRecipeIO(IO.IN, this.controller, this)) {
+                lastRecipe = recipe;
+                setStatus(Status.WORKING);
+                progress = 0;
+                duration = definition.calcRecipeDuration == null ? recipe.duration : definition.calcRecipeDuration.apply(this, recipe, recipe.duration);
+                markDirty();
+            }
         }
     }
 
@@ -249,6 +272,7 @@ public class RecipeLogic {
             status = compound.hasKey("status") ? Status.values()[compound.getInteger("status")] : Status.WORKING;
             duration = compound.hasKey("duration") ? compound.getInteger("duration") : lastRecipe.duration;
             progress = compound.hasKey("progress") ? compound.getInteger("progress") : 0;
+            fuelTime = compound.hasKey("fuelTime") ? compound.getInteger("fuelTime") : 0;
         }
     }
 
@@ -258,6 +282,7 @@ public class RecipeLogic {
             compound.setInteger("status", status.ordinal());
             compound.setInteger("progress", progress);
             compound.setInteger("duration", duration);
+            compound.setInteger("fuelTime", fuelTime);
         }
         return compound;
     }

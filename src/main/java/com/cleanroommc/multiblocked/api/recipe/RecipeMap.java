@@ -36,6 +36,8 @@ public class RecipeMap {
     @ZenProperty
     public String name;
     @ZenProperty
+    public List<Recipe> fuelRecipes;
+    @ZenProperty
     public Set<MultiblockCapability<?>> inputCapabilities = new ObjectOpenHashSet<>();
     @ZenProperty
     public Set<MultiblockCapability<?>> outputCapabilities = new ObjectOpenHashSet<>();
@@ -43,6 +45,10 @@ public class RecipeMap {
     public RecipeBuilder recipeBuilder = new RecipeBuilder(this);
     @ZenProperty
     public ResourceTexture progressTexture = new ResourceTexture("multiblocked:textures/gui/progress_bar_arrow.png");
+    @ZenProperty
+    public ResourceTexture fuelTexture = new ResourceTexture("multiblocked:textures/gui/progress_bar_fuel.png");
+    @ZenProperty
+    public int fuelThreshold = 100;
     @ZenProperty
     public IGuiTexture categoryTexture;
     
@@ -62,6 +68,9 @@ public class RecipeMap {
         copy.inputCapabilities.addAll(inputCapabilities);
         copy.outputCapabilities.addAll(outputCapabilities);
         copy.progressTexture = progressTexture;
+        copy.fuelTexture = fuelTexture;
+        copy.fuelThreshold = fuelThreshold;
+        copy.fuelRecipes = fuelRecipes == null ? null : new ArrayList<>(fuelRecipes);
         copy.categoryTexture = categoryTexture;
         copy.recipes.putAll(recipes);
         return copy;
@@ -112,11 +121,37 @@ public class RecipeMap {
         outputCapabilities.addAll(recipe.tickOutputs.keySet());
     }
 
+    public void addFuelRecipe(Recipe recipe) {
+        if (fuelRecipes == null) {
+            fuelRecipes = new ArrayList<>();
+        }
+        fuelRecipes.add(recipe);
+        inputCapabilities.addAll(recipe.inputs.keySet());
+    }
+
     @ZenMethod
     public List<Recipe> searchRecipe(ICapabilityProxyHolder holder, RecipeLogic logic) {
         if (!holder.hasProxies()) return Collections.emptyList();
         List<Recipe> matches = new ArrayList<>();
         for (Recipe recipe : recipes.values()) {
+            if (recipe.matchRecipe(holder, logic) && recipe.matchTickRecipe(holder, logic)) {
+                matches.add(recipe);
+            }
+        }
+        return matches;
+    }
+
+    @ZenMethod
+    public boolean isFuelRecipeMap() {
+        return fuelRecipes != null && !fuelRecipes.isEmpty();
+    }
+
+
+    @ZenMethod
+    public List<Recipe> searchFuelRecipe(ICapabilityProxyHolder holder, RecipeLogic logic) {
+        if (!holder.hasProxies() || !isFuelRecipeMap()) return Collections.emptyList();
+        List<Recipe> matches = new ArrayList<>();
+        for (Recipe recipe : fuelRecipes) {
             if (recipe.matchRecipe(holder, logic) && recipe.matchTickRecipe(holder, logic)) {
                 matches.add(recipe);
             }

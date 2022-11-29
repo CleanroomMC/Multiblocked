@@ -1,57 +1,73 @@
 package com.cleanroommc.multiblocked.api.gui.widget.imp.recipe;
 
+import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.gui.texture.ColorRectTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.IGuiTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
+import com.cleanroommc.multiblocked.api.gui.texture.ProgressTexture;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.ImageWidget;
 import com.cleanroommc.multiblocked.api.recipe.Content;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.api.recipe.RecipeCondition;
+import com.cleanroommc.multiblocked.api.recipe.RecipeMap;
+import com.cleanroommc.multiblocked.jei.JeiPlugin;
 import com.cleanroommc.multiblocked.util.Size;
 import com.google.common.collect.ImmutableList;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.Loader;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.function.DoubleSupplier;
 
 public class RecipeWidget extends WidgetGroup {
+    public final RecipeMap recipeMap;
     public final Recipe recipe;
     public final DraggableScrollableWidgetGroup inputs;
     public final DraggableScrollableWidgetGroup outputs;
 
-    public RecipeWidget(Recipe recipe, ResourceTexture progress, IGuiTexture background) {
-        this(recipe, ProgressWidget.JEIProgress, progress, background);
-    }
-
-    public RecipeWidget(Recipe recipe, ResourceTexture progress) {
-        this(recipe, ProgressWidget.JEIProgress, progress, new ColorRectTexture(0x1f000000));
-    }
-
-    public RecipeWidget(Recipe recipe, DoubleSupplier doubleSupplier, ResourceTexture progress, IGuiTexture background) {
+    public RecipeWidget(RecipeMap recipeMap, @Nullable Recipe recipe, DoubleSupplier progress, DoubleSupplier fuel) {
         super(0, 0, 176, 84);
+        this.recipeMap = recipeMap;
         this.recipe = recipe;
         setClientSideWidget();
-        inputs = new DraggableScrollableWidgetGroup(5, 5, 64, 64).setBackground(background);
-        outputs = new DraggableScrollableWidgetGroup(176 - 64 - 5, 5, 64, 64).setBackground(background);
+
+        IGuiTexture overlay = new ColorRectTexture(0x1f000000);
+        inputs = new DraggableScrollableWidgetGroup(5, 5, 64, 64).setBackground(overlay);
+        outputs = new DraggableScrollableWidgetGroup(176 - 64 - 5, 5, 64, 64).setBackground(overlay);
         this.addWidget(inputs);
         this.addWidget(outputs);
-        String duration = I18n.format("multiblocked.recipe.duration", this.recipe.duration / 20.);
-        this.addWidget(new ProgressWidget(doubleSupplier, 78, 27, 20, 20, progress).setHoverTooltip(duration));
-        this.addWidget(new LabelWidget(5, 73, duration).setTextColor(0xff000000).setDrop(false));
+
+        this.addWidget(new ProgressWidget(progress, 78, 27, 20, 20, recipeMap.progressTexture).setFillDirection(ProgressTexture.FillDirection.LEFT_TO_RIGHT));
+        this.addWidget(new ButtonWidget(78, 27, 20, 20, IGuiTexture.EMPTY, cd -> {
+            if (Loader.isModLoaded(Multiblocked.MODID_JEI)) {
+                JeiPlugin.getJeiRuntime().getRecipesGui().showCategories(Collections.singletonList(new ResourceLocation(Multiblocked.MODID, recipeMap.name).toString()));
+            }
+        }).setHoverTexture(overlay));
+        if (recipeMap.isFuelRecipeMap()) {
+            this.addWidget(new ProgressWidget(fuel, 78, 47, 20, 20, recipeMap.fuelTexture).setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP));
+            this.addWidget(new ButtonWidget(78, 47, 20, 20, IGuiTexture.EMPTY, cd -> {
+                if (Loader.isModLoaded(Multiblocked.MODID_JEI)) {
+                    JeiPlugin.getJeiRuntime().getRecipesGui().showCategories(Collections.singletonList(new ResourceLocation(Multiblocked.MODID, recipeMap.name + ".fuel").toString()));
+                }
+            }).setHoverTexture(overlay));
+        }
+
+        if (recipe == null) return;
+        this.addWidget(new LabelWidget(5, 73, I18n.format("multiblocked.recipe.duration", recipe.duration / 20.)).setTextColor(0xff000000).setDrop(false));
         if (recipe.text != null) {
             this.addWidget(new LabelWidget(80, 73, recipe.text.getFormattedText()).setTextColor(0xff000000).setDrop(false));
         }
+
         int index = 0;
         for (Map.Entry<MultiblockCapability<?>, ImmutableList<Content>> entry : recipe.inputs.entrySet()) {
             MultiblockCapability<?> capability = entry.getKey();

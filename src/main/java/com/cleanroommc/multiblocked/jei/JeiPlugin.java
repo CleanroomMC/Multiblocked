@@ -1,8 +1,12 @@
 package com.cleanroommc.multiblocked.jei;
 
+import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.FuelWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ProgressWidget;
 import com.cleanroommc.multiblocked.jei.ingredient.AspectListIngredient;
 import com.cleanroommc.multiblocked.jei.multipage.MultiblockInfoCategory;
+import com.cleanroommc.multiblocked.jei.recipeppage.FuelWrapper;
 import com.cleanroommc.multiblocked.jei.recipeppage.RecipeMapCategory;
+import com.cleanroommc.multiblocked.jei.recipeppage.RecipeMapFuelCategory;
 import com.cleanroommc.multiblocked.jei.recipeppage.RecipeWrapper;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
@@ -27,6 +31,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
@@ -93,6 +98,7 @@ public class JeiPlugin implements IModPlugin {
         for (RecipeMap recipeMap : RecipeMap.RECIPE_MAP_REGISTRY.values()) {
             if (recipeMap == RecipeMap.EMPTY) continue;
             registry.addRecipeCategories(new RecipeMapCategory(jeiHelpers, recipeMap));
+            registry.addRecipeCategories(new RecipeMapFuelCategory(jeiHelpers, recipeMap));
         }
     }
 
@@ -106,10 +112,22 @@ public class JeiPlugin implements IModPlugin {
         registry.getRecipeTransferRegistry().addRecipeTransferHandler(modularUIGuiHandler, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
         for (RecipeMap recipeMap : RecipeMap.RECIPE_MAP_REGISTRY.values()) {
             registry.addRecipes(recipeMap.recipes.values().stream()
-                            .map(recipe -> new RecipeWidget(recipe, recipeMap.progressTexture))
+                            .map(recipe -> new RecipeWidget(
+                                    recipeMap,
+                                    recipe,
+                                    ProgressWidget.JEIProgress,
+                                    ProgressWidget.JEIProgress))
                             .map(RecipeWrapper::new)
                             .collect(Collectors.toList()),
                     Multiblocked.MODID + ":" + recipeMap.name);
+            if (recipeMap.isFuelRecipeMap()) {
+                registry.addRecipes(recipeMap.recipes.values()
+                                .stream()
+                                .map(recipe -> new FuelWidget(recipeMap, recipe))
+                                .map(FuelWrapper::new)
+                                .collect(Collectors.toList()),
+                        Multiblocked.MODID + ":" + recipeMap.name + ".fuel");
+            }
         }
         MultiblockInfoCategory.registerRecipes(registry);
         itemRegistry = registry.getIngredientRegistry();

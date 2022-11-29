@@ -2,10 +2,13 @@ package com.cleanroommc.multiblocked.api.registry;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.block.CustomProperties;
+import com.cleanroommc.multiblocked.api.capability.GuiOnlyCapability;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
 import com.cleanroommc.multiblocked.api.definition.ComponentDefinition;
 import com.cleanroommc.multiblocked.api.definition.PartDefinition;
 import com.cleanroommc.multiblocked.common.capability.*;
+import com.cleanroommc.multiblocked.common.capability.trait.FuelProgressTrait;
+import com.cleanroommc.multiblocked.common.capability.trait.RecipeProgressTrait;
 import com.google.common.collect.Maps;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
@@ -36,7 +39,8 @@ public class MbdCapabilities {
     }
 
     public static void registerCapabilities() {
-        registerTraitOnlyCapability(RecipeProgressCapability.CAP);
+        registerTraitOnlyCapability(new GuiOnlyCapability("recipe_progress", RecipeProgressTrait::new));
+        registerTraitOnlyCapability(new GuiOnlyCapability("fuel_progress", FuelProgressTrait::new));
         registerCapability(FE = FEMultiblockCapability.CAP);
         registerCapability(ITEM = ItemMultiblockCapability.CAP);
         registerCapability(FLUID = FluidMultiblockCapability.CAP);

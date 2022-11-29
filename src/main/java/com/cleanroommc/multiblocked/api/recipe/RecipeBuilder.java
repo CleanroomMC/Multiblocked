@@ -220,11 +220,11 @@ public class RecipeBuilder {
     }
 
     public RecipeBuilder inputEntities(float chance, EntityIngredient... inputs) {
-        return input(EntityMultiblockCapability.CAP, chance, (Object) inputs);
+        return input(EntityMultiblockCapability.CAP, chance, (Object[]) inputs);
     }
 
     public RecipeBuilder outputEntities(float chance, EntityIngredient... outputs) {
-        return output(EntityMultiblockCapability.CAP, chance, (Object) outputs);
+        return output(EntityMultiblockCapability.CAP, chance, (Object[]) outputs);
     }
 
     public RecipeBuilder inputEntities(EntityIngredient... inputs) {

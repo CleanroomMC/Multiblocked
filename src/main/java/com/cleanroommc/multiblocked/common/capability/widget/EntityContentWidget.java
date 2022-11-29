@@ -8,7 +8,6 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.EntityIngredient;
 import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
@@ -45,7 +44,7 @@ public class EntityContentWidget extends ContentWidget<EntityIngredient> {
                 itemStack = ItemStack.EMPTY;
             } else {
                 itemStack = new ItemStack(Items.SPAWN_EGG);
-                ItemMonsterPlacer.applyEntityIdToItemStack(new ItemStack(Items.SPAWN_EGG), egg.spawnedID);
+                ItemMonsterPlacer.applyEntityIdToItemStack(itemStack, egg.spawnedID);
             }
             itemHandler.setStackInSlot(0, itemStack);
         }
@@ -70,7 +69,8 @@ public class EntityContentWidget extends ContentWidget<EntityIngredient> {
 
     @Override
     public Object getJEIIngredient(EntityIngredient content) {
-        return itemHandler.getStackInSlot(0);
+        ItemStack item = itemHandler.getStackInSlot(0);
+        return item.isEmpty() ? null : item;
     }
 
     @Override

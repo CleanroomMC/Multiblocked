@@ -1,6 +1,7 @@
 multiblocked.multiblock.formed= formed!
 
 multiblocked.capability.recipe_progress=Recipe Progress
+multiblocked.capability.fuel_progress=Fuel Progress
 multiblocked.capability.tc6_aspect=Thaumcraft Aspect
 tc6_aspect.any.name=Any Thaumcraft Aspect Holders
 multiblocked.capability.forge_energy=Forge Energy
@@ -15,6 +16,8 @@ multiblocked.capability.mek_heat=Mekanism Heat
 mek_heat.any.name=Any Mekanism Heaters
 multiblocked.capability.item=Item
 item.any.name=Any Item Containers
+multiblocked.capability.item_durability=Item Durability
+item_durability.any=Any Item Containers
 multiblocked.capability.bot_mana=Botania Mana
 bot_mana.any.name=Any Botania Mana Containers
 multiblocked.capability.qmd_particle=QMD Particle
@@ -389,3 +392,4 @@ multiblocked.gui.dialogs.recipe_map.add_fuel_tip=Add a New Fuel\n§aas long as y
 multiblocked.gui.dialogs.recipe_map.fuel_tip=Setup a recipe to match this fuel, and its duration
 multiblocked.gui.dialogs.recipe_map.fuel_progress=Set a Fuel Bar Texture
 multiblocked.gui.dialogs.recipe_map.fuel_threshold=Threshold Tick\nif the burning time exceeds this value, the fuel is considered sufficient for progress bar
+multiblocked.gui.content.durability=§3Durability§r

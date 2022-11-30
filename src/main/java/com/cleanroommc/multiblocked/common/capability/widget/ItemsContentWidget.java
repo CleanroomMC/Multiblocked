@@ -5,13 +5,7 @@ import com.cleanroommc.multiblocked.api.gui.texture.ResourceBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.WidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.ButtonWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableScrollableWidgetGroup;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.LabelWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.PhantomSlotWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SlotWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.SwitchWidget;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
 import com.cleanroommc.multiblocked.api.recipe.ItemsIngredient;
 import com.cleanroommc.multiblocked.util.CycleItemStackHandler;
@@ -31,6 +25,15 @@ import java.util.stream.Collectors;
 
 public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
     protected CycleItemStackHandler itemHandler;
+    protected boolean isDurability;
+
+    public ItemsContentWidget(boolean isDurability) {
+        this.isDurability = isDurability;
+    }
+
+    public ItemsContentWidget() {
+        this(false);
+    }
 
     @Override
     protected void onContentUpdate() {
@@ -46,11 +49,17 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
             addWidget(new SlotWidget(itemHandler, 0, 1, 1, false, false).setDrawOverlay(false).setOnAddedTooltips((s, l)-> {
                 if (chance < 1) {
                     l.add(chance == 0 ? LocalizationUtils.format("multiblocked.gui.content.chance_0") : LocalizationUtils.format("multiblocked.gui.content.chance_1", String.format("%.1f", chance * 100) + "%"));
-                    if (perTick) {
-                        l.add(LocalizationUtils.format("multiblocked.gui.content.per_tick"));
-                    }
+                }
+                if (perTick) {
+                    l.add(LocalizationUtils.format("multiblocked.gui.content.per_tick"));
+                }
+                if (isDurability) {
+                    l.add(LocalizationUtils.format("multiblocked.gui.content.durability"));
                 }
             }));
+        }
+        if (isDurability) {
+            addWidget(new ImageWidget(1, 5, 18, 9, new TextTexture("D", 0xFFff5555)));
         }
     }
 

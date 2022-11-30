@@ -427,7 +427,7 @@ public class ControllerTileEntity extends ComponentTileEntity<ControllerDefiniti
             if (!isFormed() && definition.getCatalyst() != null) {
                 if (state == null) state = new MultiblockState(world, pos);
                 ItemStack held = player.getHeldItem(hand);
-                if (definition.getCatalyst().isEmpty() || (ItemStack.areItemsEqual(held, definition.getCatalyst()) && ItemStack.areItemStackTagsEqual(held, definition.getCatalyst()))) {
+                if (definition.getCatalyst().isEmpty() || ItemStack.areItemsEqualIgnoreDurability(held, definition.getCatalyst())) {
                     if (checkCatalystPattern(player, hand, held)) { // formed
                         return true;
                     }

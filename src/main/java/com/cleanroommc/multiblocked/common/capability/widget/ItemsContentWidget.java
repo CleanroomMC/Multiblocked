@@ -81,7 +81,7 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
         super.openConfigurator(dialog);
         int x = 5;
         int y = 25;
-        dialog.addWidget(new LabelWidget(5, y + 3, "multiblocked.gui.label.amount"));
+        dialog.addWidget(new LabelWidget(5, y + 3, isDurability ? "multiblocked.gui.label.durability" : "multiblocked.gui.label.amount"));
         dialog.addWidget(new TextFieldWidget(125 - 60, y, 60, 15, true, null, number -> {
             content = content.isOre() ? new ItemsIngredient(Integer.parseInt(number), content.getOreDict()) : new ItemsIngredient(Integer.parseInt(number), content.matchingStacks);
             onContentUpdate();

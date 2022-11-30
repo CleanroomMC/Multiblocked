@@ -1,0 +1,52 @@
+name: 1.12 Auto Build Release Publish
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'gradle.properties'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+          
+    - uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+
+    - name: Validate Gradle wrapper
+      uses: gradle/wrapper-validation-action@v1
+      
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Run the Gradle package task
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: build
+
+    - name: Get file name
+      id: var
+      run: |
+        MESSAGE=$(ls build/libs/* | grep sources.jar -v)
+        echo file_path=$MESSAGE >> $GITHUB_OUTPUT
+
+    - name: Upload to CurseForge
+      uses: itsmeow/curseforge-upload@v3
+      with:
+        token: ${{ secrets.CURSEFORGE_TOKEN }}
+        project_id: 604054
+        game_endpoint: minecraft
+        file_path: ${{ steps.var.outputs.file_path }}
+        changelog: See recent commits [here](https://github.com/CleanroomMC/Multiblocked/commits/${{ github.sha }}). This is only marked as a beta release so CurseForge shows it on the front page.
+        changelog_type: markdown
+        # 1.12.2, Java 8
+        game_versions: "Minecraft 1.12:1.12.2,Java 8,Forge"
+        release_type: beta
+        relations: mixin-booter:requiredDependency,geckolib:optionalDependency,jei:optionalDependency

@@ -34,6 +34,8 @@ public class RecipeLogic {
     @ZenProperty
     public int fuelTime;
     @ZenProperty
+    public int fuelMaxTime;
+    @ZenProperty
     public int timer;
     private Status status = Status.IDLE;
     private long lastPeriod;
@@ -55,7 +57,6 @@ public class RecipeLogic {
     @ZenMethod
     public void update() {
         timer++;
-        if (fuelTime > 0) fuelTime--;
         if (getStatus() != Status.IDLE && lastRecipe != null) {
             if (getStatus() == Status.SUSPEND && timer % 5 == 0) {
                 checkAsyncRecipeSearching(this::handleRecipeWorking);
@@ -76,11 +77,12 @@ public class RecipeLogic {
                     }
                     if (lastRecipe != null && getStatus() == Status.WORKING) {
                         lastFailedMatches = null;
-                        return;
+                        break;
                     }
                 }
             }
         }
+        if (fuelTime > 0) fuelTime--;
     }
 
     @ZenMethod
@@ -162,7 +164,8 @@ public class RecipeLogic {
         if (!needFuel() || fuelTime > 0) return true;
         for (Recipe recipe : controller.getDefinition().getRecipeMap().searchFuelRecipe(controller, this)) {
             if (recipe.checkConditions(this) && recipe.handleRecipeIO(IO.IN, this.controller, this)) {
-                fuelTime += recipe.duration;
+                fuelMaxTime = recipe.duration;
+                fuelTime = fuelMaxTime;
                 markDirty();
             }
             if (fuelTime > 0) return true;
@@ -273,6 +276,7 @@ public class RecipeLogic {
             duration = compound.hasKey("duration") ? compound.getInteger("duration") : lastRecipe.duration;
             progress = compound.hasKey("progress") ? compound.getInteger("progress") : 0;
             fuelTime = compound.hasKey("fuelTime") ? compound.getInteger("fuelTime") : 0;
+            fuelMaxTime = compound.hasKey("fuelMaxTime") ? compound.getInteger("fuelMaxTime") : fuelTime;
         }
     }
 
@@ -283,6 +287,7 @@ public class RecipeLogic {
             compound.setInteger("progress", progress);
             compound.setInteger("duration", duration);
             compound.setInteger("fuelTime", fuelTime);
+            compound.setInteger("fuelMaxTime", fuelMaxTime);
         }
         return compound;
     }

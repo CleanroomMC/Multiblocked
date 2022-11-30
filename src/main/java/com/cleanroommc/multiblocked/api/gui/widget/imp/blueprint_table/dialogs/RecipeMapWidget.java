@@ -319,8 +319,6 @@ public class RecipeMapWidget extends DialogWidget {
                 inputs.clear();
             } else {
                 group.addWidget(new ImageWidget(5, -3, 180, 20, new TextTexture("multiblocked.gui.dialogs.recipe_map.fuel_tip").setWidth(180).setType(TextTexture.TextType.LEFT)));
-                group.addWidget(new TextFieldWidget(5, 30,  40, 10, null, s -> recipeMap.fuelThreshold = Integer.parseInt(s)).setNumbersOnly(1, Integer.MAX_VALUE).setCurrentString(recipeMap.fuelThreshold + "")
-                        .setHoverTooltip("multiblocked.gui.dialogs.recipe_map.fuel_threshold"));
             }
             outputs.clear();
             DraggableScrollableWidgetGroup inputs = new DraggableScrollableWidgetGroup(isFuel ? ((176 - 64) / 2) : 5, 20, 64, 64).setBackground(new ColorRectTexture(0x3f000000));

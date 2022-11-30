@@ -33,7 +33,7 @@ public class RecipePage extends PageWidget{
     private RecipeWidget recipeWidget;
     private RecipeLogic.Status status;
     private int progress;
-    private int duration, fuelTime;
+    private int duration, fuelTime, fuelMaxTime = 1;
     
     public RecipePage(ControllerTileEntity controller, TabContainer tabContainer) {
         super(resourceTexture, tabContainer);
@@ -107,7 +107,7 @@ public class RecipePage extends PageWidget{
     }
 
     private double getFuelProgress() {
-        return Math.min(fuelTime, controller.getDefinition().getRecipeMap().fuelThreshold) * 1d / controller.getDefinition().getRecipeMap().fuelThreshold;
+        return Math.min(fuelTime, fuelMaxTime) * 1d / Math.max(1, fuelMaxTime);
     }
 
     @Override
@@ -135,10 +135,11 @@ public class RecipePage extends PageWidget{
                 duration = recipeLogic.duration;
                 writeUpdateInfo(-1, this::writeRecipe);
             }
-            if (status != recipeLogic.getStatus() || progress != recipeLogic.progress || fuelTime != recipeLogic.fuelTime) {
+            if (status != recipeLogic.getStatus() || progress != recipeLogic.progress || fuelTime != recipeLogic.fuelTime || fuelMaxTime != recipeLogic.fuelMaxTime) {
                 status = recipeLogic.getStatus();
                 progress = recipeLogic.progress;
                 fuelTime = recipeLogic.fuelTime;
+                fuelMaxTime = recipeLogic.fuelMaxTime;
                 writeUpdateInfo(-2, this::writeStatus);
             }
         } else if (recipe != null) {
@@ -151,12 +152,14 @@ public class RecipePage extends PageWidget{
         buffer.writeEnumValue(status);
         buffer.writeVarInt(progress);
         buffer.writeVarInt(fuelTime);
+        buffer.writeVarInt(fuelMaxTime);
     }
 
     private void readStatus(PacketBuffer buffer) {
         status = buffer.readEnumValue(RecipeLogic.Status.class);
         progress = buffer.readVarInt();
         fuelTime = buffer.readVarInt();
+        fuelMaxTime = buffer.readVarInt();
     }
 
     private void writeRecipe(PacketBuffer buffer) {
@@ -203,6 +206,7 @@ public class RecipePage extends PageWidget{
             recipeWidget.setSelfPosition(new Position(0, 167));
             status = RecipeLogic.Status.IDLE;
             fuelTime = 0;
+            fuelMaxTime = 1;
             progress = 0;
         }
     }

@@ -73,34 +73,34 @@ dependencies {
 
     compile 'zone.rong:mixinbooter:4.2'
 
-    compile 'curse.maven:ae2-extended-life-570458:4105092'
+    compileOnly 'curse.maven:ae2-extended-life-570458:4105092'
     compile 'software.bernie.geckolib:forge-1.12.2-geckolib:3.0.21'
     compile 'CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.673'
     compile 'mezz.jei:jei_1.12.2:4.15.0.293'
+    compile 'curse.maven:the-one-probe-245211:2667280'
 
-    deobfCompile 'curse.maven:baubles-227083:2518667'
-    deobfCompile "curse.maven:botania-225643:3330934"
-    deobfCompile 'curse.maven:codechicken-lib-1-8-242818:2779848'
-    deobfCompile 'curse.maven:extra-utilities-225561:2678374'
-    deobfCompile 'curse.maven:gregtech-ce-unofficial-557242:4068926'
-    deobfCompile "curse.maven:lightningcraft-237422:2872478"
-    deobfCompile 'curse.maven:mcmultipart-239431:2615930'
-    deobfCompile 'curse.maven:mekanism-268560:2835175'
-    deobfCompile 'curse.maven:nuclearcraft-overhauled-336895:3386487' // Not very latest, requires Forge 2860
-    deobfCompile 'curse.maven:qmd-362056:3662442'
-    deobfCompile 'curse.maven:thaumcraft-223628:2629023'
-    deobfCompile 'curse.maven:thaumic-jei-285492:2705304'
-    deobfCompile 'curse.maven:the-one-probe-245211:2667280'
-    deobfCompile 'curse.maven:prodigy-tech-297414:2769520'
-    deobfCompile 'curse.maven:patchouli-306770:3162874'
-    deobfCompile 'curse.maven:natures-aura-306626:2882138'
-    deobfCompile 'curse.maven:project-e-226410:2702991'
-    deobfCompile 'curse.maven:blood-magic-224791:2822288'
-    deobfCompile 'curse.maven:guide-api-228832:2645992'
-    deobfCompile 'curse.maven:embers-rekindled-300777:3695248'
-    deobfCompile 'curse.maven:thaumic-augmentation-319441:3536155'
-    deobfCompile 'me.desht.pneumaticcraft:pneumaticcraft-repressurized:1.12.2-0.11.9-384'
-    deobfCompile 'hellfirepvp.astralsorcery:astralsorcery:1.12.2-1.10.23-v161'
+    compileOnly 'curse.maven:baubles-227083:2518667'
+    compileOnly "curse.maven:botania-225643:3330934"
+    compileOnly 'curse.maven:codechicken-lib-1-8-242818:2779848'
+    compileOnly 'curse.maven:extra-utilities-225561:2678374'
+    compileOnly 'curse.maven:gregtech-ce-unofficial-557242:4068926'
+    compileOnly "curse.maven:lightningcraft-237422:2872478"
+    compileOnly 'curse.maven:mcmultipart-239431:2615930'
+    compileOnly 'curse.maven:mekanism-268560:2835175'
+    compileOnly 'curse.maven:nuclearcraft-overhauled-336895:3386487' // Not very latest, requires Forge 2860
+    compileOnly 'curse.maven:qmd-362056:3662442'
+    compileOnly 'curse.maven:thaumcraft-223628:2629023'
+    compileOnly 'curse.maven:thaumic-jei-285492:2705304'
+    compileOnly 'curse.maven:prodigy-tech-297414:2769520'
+    compileOnly 'curse.maven:patchouli-306770:3162874'
+    compileOnly 'curse.maven:natures-aura-306626:2882138'
+    compileOnly 'curse.maven:project-e-226410:2702991'
+    compileOnly 'curse.maven:blood-magic-224791:2822288'
+    compileOnly 'curse.maven:guide-api-228832:2645992'
+    compileOnly 'curse.maven:embers-rekindled-300777:3695248'
+    compileOnly 'curse.maven:thaumic-augmentation-319441:3536155'
+    compileOnly 'me.desht.pneumaticcraft:pneumaticcraft-repressurized:1.12.2-0.11.9-384'
+    compileOnly 'hellfirepvp.astralsorcery:astralsorcery:1.12.2-1.10.23-v161'
 }
 
 sourceSets {

@@ -48,10 +48,28 @@ public class ProgressWidget extends Widget {
     }
 
     @Override
+    public void initWidget() {
+        super.initWidget();
+        this.lastProgressValue = progressSupplier.getAsDouble();
+    }
+
+    @Override
+    public void writeInitialData(PacketBuffer buffer) {
+        super.writeInitialData(buffer);
+        buffer.writeDouble(lastProgressValue);
+    }
+
+    @Override
+    public void readInitialData(PacketBuffer buffer) {
+        super.readInitialData(buffer);
+        lastProgressValue = buffer.readDouble();
+    }
+
+    @Override
     public void drawInBackground(int mouseX, int mouseY, float partialTicks) {
         Position pos = getPosition();
         Size size = getSize();
-        if (progressSupplier == JEIProgress) {
+        if (progressSupplier == JEIProgress || isClientSideWidget) {
             lastProgressValue = progressSupplier.getAsDouble();
             if (dynamicHoverTips != null) {
                 setHoverTooltip(dynamicHoverTips.apply(lastProgressValue));

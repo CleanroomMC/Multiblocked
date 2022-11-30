@@ -121,7 +121,7 @@ public class JeiPlugin implements IModPlugin {
                             .collect(Collectors.toList()),
                     Multiblocked.MODID + ":" + recipeMap.name);
             if (recipeMap.isFuelRecipeMap()) {
-                registry.addRecipes(recipeMap.recipes.values()
+                registry.addRecipes(recipeMap.fuelRecipes
                                 .stream()
                                 .map(recipe -> new FuelWidget(recipeMap, recipe))
                                 .map(FuelWrapper::new)

@@ -2,6 +2,7 @@ package com.cleanroommc.multiblocked.api.recipe;
 
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
+import com.cleanroommc.multiblocked.api.crafttweaker.functions.IPredicateFunction;
 import com.cleanroommc.multiblocked.api.registry.MbdCapabilities;
 import com.cleanroommc.multiblocked.common.capability.*;
 import com.cleanroommc.multiblocked.common.recipe.conditions.*;
@@ -701,6 +702,27 @@ public class RecipeBuilder {
     @ZenMethod
     public RecipeBuilder posY(int min, int max) {
         return posY(min, max, false);
+    }
+
+    @ZenMethod
+    public RecipeBuilder predicate(IPredicateFunction predicate, String tooltip, boolean reverse) {
+        this.conditions.add(new PredicateCondition(tooltip, predicate).setReverse(reverse));
+        return this;
+    }
+
+    @ZenMethod
+    public RecipeBuilder predicate(IPredicateFunction predicate, boolean reverse) {
+        return predicate(predicate, PredicateCondition.DEFAULT_TOOLTIP, reverse);
+    }
+
+    @ZenMethod
+    public RecipeBuilder predicate(IPredicateFunction predicate, String tooltip) {
+        return predicate(predicate, tooltip, false);
+    }
+
+    @ZenMethod
+    public RecipeBuilder predicate(IPredicateFunction predicate) {
+        return predicate(predicate, PredicateCondition.DEFAULT_TOOLTIP, false);
     }
 
     @ZenMethod

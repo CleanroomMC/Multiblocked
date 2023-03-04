@@ -338,6 +338,8 @@ multiblocked.recipe.condition.pos_y=Position Y,
 multiblocked.recipe.condition.pos_y.tooltip=%d <= Y <= %d
 multiblocked.gui.condition.block.count=Minimum Count
 multiblocked.recipe.condition.block=Block
+multiblocked.recipe.condition.predicate=Predicate(Use Crt to create)
+multiblocked.recipe.condition.predicate.tooltip.default=No Description
 
 multiblocked.gui.predicate.slot=match the IO slot
 

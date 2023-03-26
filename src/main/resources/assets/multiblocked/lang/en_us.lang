@@ -217,7 +217,7 @@ multiblocked.gui.dialogs.recipe_map.remove_recipe=Remove Selected recipe
 multiblocked.gui.dialogs.recipe_map.progress=Set a Progress Bar Texture
 multiblocked.gui.dialogs.recipe_map.add_in=Add an Input Ingredient
 multiblocked.gui.dialogs.recipe_map.add_out=Add an Output Ingredient
-multiblocked.top.recipe_progress=Progress: %s
+multiblocked.top.recipe_progress=Progress:
 multiblocked.top.fuel_progress=Fuel: %s
 
 multiblocked.gui.content.per_tick=§aConsumed/Produced Per Tick§r

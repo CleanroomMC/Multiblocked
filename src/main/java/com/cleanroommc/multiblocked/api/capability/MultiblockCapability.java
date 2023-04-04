@@ -26,7 +26,10 @@ import stanhebben.zenscript.annotations.ZenProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Used to detect whether a machine has a certain capability. And provide its capability in proxy {@link CapabilityProxy}.
@@ -137,6 +140,20 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
             if (cap != null) return Collections.singleton(cap);
         }
         return found;
+    }
+
+    /**
+     * For blocks that only support a capability on limited sides, find the first supporting side.
+     */
+    @Nonnull
+    public final <C> EnumFacing getFrontFacing(Capability<C> capability, @Nonnull TileEntity tileEntity) {
+        for (EnumFacing facing : EnumFacing.VALUES) {
+            C cap = tileEntity.getCapability(capability, facing);
+            if (cap != null) {
+                return facing;
+            }
+        }
+        return EnumFacing.UP;
     }
 
     /**

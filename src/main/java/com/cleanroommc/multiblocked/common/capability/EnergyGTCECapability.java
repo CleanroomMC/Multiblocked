@@ -70,7 +70,6 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
     public EnergyCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
         EnergyCapabilityProxy energyCapabilityProxy = new EnergyCapabilityProxy(tileEntity);
         energyCapabilityProxy.facing = getFrontFacing(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, tileEntity);
-        System.out.println("TTT : setting facing to " + energyCapabilityProxy.facing);
         return energyCapabilityProxy;
     }
 

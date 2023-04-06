@@ -12,7 +12,11 @@ import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.trait.EnergyCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.cleanroommc.multiblocked.common.capability.widget.TieredNumberContentWidget;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
 import gregtech.api.GTValues;
 import gregtech.api.GregTechAPI;
 import gregtech.api.capability.GregtechCapabilities;
@@ -64,7 +68,9 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
 
     @Override
     public EnergyCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return new EnergyCapabilityProxy(tileEntity);
+        EnergyCapabilityProxy energyCapabilityProxy = new EnergyCapabilityProxy(tileEntity);
+        energyCapabilityProxy.facing = getFrontFacing(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, tileEntity);
+        return energyCapabilityProxy;
     }
 
     @Override
@@ -132,6 +138,16 @@ public class EnergyGTCECapability extends MultiblockCapability<Long> {
 
         public EnergyCapabilityProxy(TileEntity tileEntity) {
             super(EnergyGTCECapability.CAP, tileEntity, GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER);
+        }
+
+        @Override
+        public IEnergyContainer getCapability(@Nullable String slotName) {
+            IEnergyContainer tempCapability = super.getCapability(slotName);
+            if (tempCapability == null) {
+                // GTCEu dynamos only accept on one facing, and this could have been rotated
+                facing = EnergyGTCECapability.CAP.getFrontFacing(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, getTileEntity());
+            }
+            return super.getCapability(slotName);
         }
 
         @Override

@@ -95,7 +95,7 @@ itemGroup.multiblocked=Multiblocked
 
 multiblocked.recipe.duration=Duration: %ds
 multiblocked.recipe.status.working=Status: §cWorking§r
-multiblocked.recipe.status.idle=sStatus: §aIdle§r
+multiblocked.recipe.status.idle=Status: §aIdle§r
 multiblocked.recipe.status.suspend=Status: §3Suspend§r
 multiblocked.recipe.remaining=Remaining time: %ds
 

@@ -136,8 +136,12 @@ public class Recipe {
                     contentSlot.computeIfAbsent(cont.slotName, s->new ArrayList<>()).add(capContent);
                 }
             }
-            if (content.isEmpty() && contentSlot.isEmpty()) continue;
-            if (content.isEmpty()) content = null;
+            if (content.isEmpty()) {
+                if (contentSlot.isEmpty()) {
+                    continue;
+                }
+                content = null;
+            }
             if (capabilityProxies.contains(io, cap)) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(io, cap).values()) { // search same io type
                     if (used.contains(proxy)) continue;
@@ -158,8 +162,13 @@ public class Recipe {
                     if (content == null && contentSlot.isEmpty()) break;
                 }
             }
-            if (content == null && contentSlot.isEmpty()) continue;
-            if (content.isEmpty()) content = null;
+            if (content == null) {
+                if (contentSlot.isEmpty()) {
+                    continue;
+                }
+            } else if (content.isEmpty()) {
+                content = null;
+            }
             if (capabilityProxies.contains(IO.BOTH, cap)) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, cap).values()) { // search both type
                     if (used.contains(proxy)) continue;
@@ -224,8 +233,12 @@ public class Recipe {
                     }
                 }
             }
-            if (content.isEmpty() && contentSlot.isEmpty()) continue;
-            if (content.isEmpty()) content = null;
+            if (content.isEmpty()) {
+                if (contentSlot.isEmpty()) {
+                    continue;
+                }
+                content = null;
+            }
             if (capabilityProxies.contains(io, cap)) {
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(io, cap).values()) { // search same io type
                     if (used.contains(proxy)) continue;
@@ -246,8 +259,13 @@ public class Recipe {
                     if (content == null && contentSlot.isEmpty()) break;
                 }
             }
-            if (content == null && contentSlot.isEmpty()) continue;
-            if (content.isEmpty()) content = null;
+            if (content == null) {
+                if (contentSlot.isEmpty()) {
+                    continue;
+                }
+            } else if (content.isEmpty()) {
+                content = null;
+            }
             if (capabilityProxies.contains(IO.BOTH, cap)){
                 for (CapabilityProxy<?> proxy : capabilityProxies.get(IO.BOTH, cap).values()) { // search both type
                     if (used.contains(proxy)) continue;

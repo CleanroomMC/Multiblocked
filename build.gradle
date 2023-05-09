@@ -83,7 +83,7 @@ dependencies {
     compileOnly "curse.maven:botania-225643:3330934"
     compileOnly 'curse.maven:codechicken-lib-1-8-242818:2779848'
     compileOnly 'curse.maven:extra-utilities-225561:2678374'
-    compileOnly 'curse.maven:gregtech-ce-unofficial-557242:4068926'
+    compileOnly 'curse.maven:gregtech-ce-unofficial-557242:4527757'
     compileOnly "curse.maven:lightningcraft-237422:2872478"
     compileOnly 'curse.maven:mcmultipart-239431:2615930'
     compileOnly 'curse.maven:mekanism-268560:2835175'

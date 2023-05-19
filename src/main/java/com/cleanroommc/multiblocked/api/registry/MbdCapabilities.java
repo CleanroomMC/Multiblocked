@@ -53,6 +53,7 @@ public class MbdCapabilities {
         }
         if (Loader.isModLoaded(Multiblocked.MODID_MEK)) {
             registerCapability(HeatMekanismCapability.CAP);
+            registerCapability(LaserMekanismCapability.CAP);
             registerCapability(GasMekanismCapability.CAP);
         }
         if (Loader.isModLoaded(Multiblocked.MODID_QMD)) {

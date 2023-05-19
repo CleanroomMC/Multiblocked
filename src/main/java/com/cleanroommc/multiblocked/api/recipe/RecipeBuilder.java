@@ -319,6 +319,32 @@ public class RecipeBuilder {
     }
 
     @Optional.Method(modid = Multiblocked.MODID_MEK)
+    @ZenMethod
+    public RecipeBuilder inputLaser(double laser) {
+        return inputLaser(1, laser);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
+    @ZenMethod
+    public RecipeBuilder outputLaser(double laser) {
+        return outputLaser(1, laser);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
+    @ZenMethod
+    public RecipeBuilder inputLaser(float chance, double laser) {
+        keyBuilder.append(LaserMekanismCapability.CAP.name).append(laser);
+        return input(LaserMekanismCapability.CAP, chance, laser);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
+    @ZenMethod
+    public RecipeBuilder outputLaser(float chance, double laser) {
+        keyBuilder.append(LaserMekanismCapability.CAP.name).append(laser);
+        return output(LaserMekanismCapability.CAP, chance, laser);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder inputGas(GasStack... inputs) {
         return inputGas(1, inputs);
     }

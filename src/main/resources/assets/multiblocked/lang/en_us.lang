@@ -12,6 +12,8 @@ multiblocked.capability.entity=Entity
 entity.any.name=Any Entity Containers
 multiblocked.capability.mek_gas=Mekanism Gas
 mek_gas.any.name=Any Mekanism Gas Tanks
+multiblocked.capability.mek_laser=Mekanism Laser
+mek_laser.any.name=Any Mekanism Laser Acceptor
 multiblocked.capability.mek_heat=Mekanism Heat
 mek_heat.any.name=Any Mekanism Heaters
 multiblocked.capability.item=Item
@@ -228,6 +230,8 @@ multiblocked.gui.content.chance_1=§eChance: %s§r
 
 multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
 multiblocked.gui.trait.energy.tips=Capability (EU)
+
+multiblocked.gui.trait.laser.tips.0=Capacity (Laser Energy)
 
 multiblocked.gui.trait.mana.tips.0=Capacity (Mana)
 multiblocked.gui.trait.mana.tips.1=Can receive mana from spark

@@ -40,7 +40,7 @@ public class DynamicTileEntityGenerator implements Opcodes {
     }
 
     public Class<?> generateClass() {
-        ClassWriter classWriter = new ClassWriter(0);
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         List<String> interfaceNames = Lists.newArrayList(DYNAMIC_COMPONENT_TILE_CLASS_NAME);
         StringBuilder signature = new StringBuilder("L").append(superClassName).append(";");
         String className = "com/cleanroommc/multiblocked/api/tile/part/dynamic/" + name;
@@ -133,19 +133,22 @@ public class DynamicTileEntityGenerator implements Opcodes {
                 methodVisitor.visitLineNumber(startLine, label0);
                 methodVisitor.visitVarInsn(ALOAD, 0);
                 methodVisitor.visitFieldInsn(GETFIELD, className, fieldName, fieldSignature);
-                for (int i = 0; i < parameterTypes.length; i++) {
-                    int loadCode = ALOAD;
-                    Class<?> parameterType = parameterTypes[i];
+                int varIndex = 1;
+                for (Class<?> parameterType : parameterTypes) {
                     if (parameterType == Long.TYPE) {
-                        loadCode = LLOAD;
+                        methodVisitor.visitVarInsn(LLOAD, varIndex);
+                        varIndex++;
                     } else if (parameterType == Float.TYPE) {
-                        loadCode = FLOAD;
+                        methodVisitor.visitVarInsn(FLOAD, varIndex);
                     } else if (parameterType == Double.TYPE) {
-                        loadCode = DLOAD;
+                        methodVisitor.visitVarInsn(DLOAD, varIndex);
+                        varIndex++;
                     } else if (parameterType.isPrimitive()) {
-                        loadCode = ILOAD;
+                        methodVisitor.visitVarInsn(FLOAD, varIndex);
+                    } else {
+                        methodVisitor.visitVarInsn(ALOAD, varIndex);
                     }
-                    methodVisitor.visitVarInsn(loadCode, i + 1);
+                    varIndex++;
                 }
                 methodVisitor.visitMethodInsn(INVOKEINTERFACE, Type.getInternalName(anInterface), method.getName(), Type.getMethodDescriptor(method), true);
                 int returnCode = ARETURN;
@@ -169,10 +172,16 @@ public class DynamicTileEntityGenerator implements Opcodes {
                 Label endLabel = new Label();
                 methodVisitor.visitLabel(endLabel);
                 methodVisitor.visitLocalVariable("this", "L" + className + ";", null, label0, endLabel, 0);
-                for (int i = 0; i < parameterTypes.length; i++) {
-                    methodVisitor.visitLocalVariable("param" + i, Type.getDescriptor(parameterTypes[i]), null, label0, endLabel, i + 1);
+                varIndex = 1;
+                for (int i = 0, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
+                    Class<?> parameterType = parameterTypes[i];
+                    methodVisitor.visitLocalVariable("param" + i, Type.getDescriptor(parameterType), null, label0, endLabel, varIndex);
+                    if (parameterType == Double.TYPE || parameterType == Long.TYPE) {
+                        varIndex++;
+                    }
+                    varIndex++;
                 }
-                methodVisitor.visitMaxs(parameterTypes.length + 1, parameterTypes.length + 1);
+                methodVisitor.visitMaxs(-1, -1);
                 methodVisitor.visitEnd();
                 startLine += 4;
             }

@@ -111,8 +111,11 @@ public class ItemsIngredient extends Ingredient {
             for (ItemStack matchingStack : this.matchingStacks) {
                 if (matchingStack.getItem() == input.getItem()) {
                     int metadata = matchingStack.getMetadata();
-                    return (metadata == OreDictionary.WILDCARD_VALUE || metadata == input.getMetadata()) &&
+                    boolean matched = (metadata == OreDictionary.WILDCARD_VALUE || metadata == input.getMetadata()) &&
                             (!matchingStack.hasTagCompound() || ItemStack.areItemStackShareTagsEqual(matchingStack, input));
+                    if (matched) {
+                        return true;
+                    }
                 }
             }
         } else {

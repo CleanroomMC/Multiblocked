@@ -231,8 +231,10 @@ multiblocked.gui.content.chance_1=§eChance: %s§r
 multiblocked.gui.trait.energy.progress=EU Stored: %d / %d
 multiblocked.gui.trait.energy.tips=Capability (EU)
 
+multiblocked.gui.trait.laser.progress=Laser Energy Stored: %d / %d
 multiblocked.gui.trait.laser.tips.0=Capacity (Laser Energy)
 
+multiblocked.gui.trait.mana.progress=Mana Stored: %d / %d
 multiblocked.gui.trait.mana.tips.0=Capacity (Mana)
 multiblocked.gui.trait.mana.tips.1=Can receive mana from spark
 

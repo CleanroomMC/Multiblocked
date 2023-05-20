@@ -6,15 +6,12 @@ import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.recipe.ContentWidget;
-import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.recipe.Recipe;
 import com.cleanroommc.multiblocked.common.capability.trait.LaserCapabilityTrait;
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
 import mekanism.api.lasers.ILaserReceptor;
-import mekanism.common.MekanismBlocks;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
@@ -31,7 +28,7 @@ public class LaserMekanismCapability extends MultiblockCapability<Double> {
     public static final LaserMekanismCapability CAP = new LaserMekanismCapability();
 
     public LaserMekanismCapability() {
-        super("mek_laser", new Color(0x805080).getRGB());
+        super("mek_laser", new Color(0xFF0000).getRGB());
     }
 
     @Override
@@ -63,15 +60,6 @@ public class LaserMekanismCapability extends MultiblockCapability<Double> {
     public ContentWidget<? super Double> createContentWidget() {
         return new NumberContentWidget().setContentTexture(new TextTexture("LZ", color)).setUnit("Mekanism Laser");
     }
-
-    @Override
-    public BlockInfo[] getCandidates() {
-        return new BlockInfo[] {
-                new BlockInfo(MekanismBlocks.MachineBlock2),
-                new BlockInfo(Blocks.BONE_BLOCK)
-        };
-    }
-
 
     @Override
     public Double deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -113,16 +101,10 @@ public class LaserMekanismCapability extends MultiblockCapability<Double> {
                 }
             } else if (io == IO.OUT) {
                 if (!simulate) {
-                    capability.receiveLaserEnergy(-sum, EnumFacing.DOWN);
+                    capability.receiveLaserEnergy(sum, EnumFacing.DOWN);
                 }
             }
             return null;
-        }
-
-        @Override
-        protected boolean hasInnerChanged() {
-            ILaserReceptor capability = getCapability();
-            return capability != null;
         }
     }
 }

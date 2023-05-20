@@ -6,6 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.common.capability.LaserMekanismCapability;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import mekanism.api.lasers.ILaserReceptor;
@@ -81,7 +82,7 @@ public class LaserCapabilityTrait extends ProgressCapabilityTrait implements ILa
 
     @Override
     protected String dynamicHoverTips(double progress) {
-        return String.format("Mana: %f/%f", progress * capacity, capacity);
+        return LocalizationUtils.format("multiblocked.gui.trait.laser.progress", progress * capacity, capacity);
     }
 
     @Override

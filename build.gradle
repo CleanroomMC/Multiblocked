@@ -86,7 +86,7 @@ dependencies {
     compileOnly 'curse.maven:gregtech-ce-unofficial-557242:4527757'
     compileOnly "curse.maven:lightningcraft-237422:2872478"
     compileOnly 'curse.maven:mcmultipart-239431:2615930'
-    compile 'curse.maven:mekanism-268560:2835175'
+    compileOnly 'curse.maven:mekanism-268560:2835175'
     compileOnly 'curse.maven:nuclearcraft-overhauled-336895:3386487' // Not very latest, requires Forge 2860
     compileOnly 'curse.maven:qmd-362056:3662442'
     compileOnly 'curse.maven:thaumcraft-223628:2629023'

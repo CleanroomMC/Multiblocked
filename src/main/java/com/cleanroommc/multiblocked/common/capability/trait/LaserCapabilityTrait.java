@@ -2,27 +2,20 @@ package com.cleanroommc.multiblocked.common.capability.trait;
 
 import com.cleanroommc.multiblocked.api.capability.trait.InterfaceUser;
 import com.cleanroommc.multiblocked.api.capability.trait.ProgressCapabilityTrait;
-import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
-import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
-import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DialogWidget;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.DraggableWidgetGroup;
+import com.cleanroommc.multiblocked.api.gui.widget.imp.TextFieldWidget;
 import com.cleanroommc.multiblocked.common.capability.LaserMekanismCapability;
-import com.cleanroommc.multiblocked.common.capability.ManaBotaniaCapability;
-import com.google.common.base.Predicates;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import mekanism.api.lasers.ILaserReceptor;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
+import mekanism.common.capabilities.Capabilities;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.JsonUtils;
-import net.minecraft.util.math.AxisAlignedBB;
-import vazkii.botania.api.mana.spark.ISparkAttachable;
-import vazkii.botania.api.mana.spark.ISparkEntity;
-import vazkii.botania.common.block.tile.mana.TilePool;
+import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * @author WaitingIdly
@@ -72,6 +65,18 @@ public class LaserCapabilityTrait extends ProgressCapabilityTrait implements ILa
                 .setNumbersOnly(1L, (long) Double.MAX_VALUE)
                 .setCurrentString(capacity + "")
                 .setHoverTooltip("multiblocked.gui.trait.laser.tips.0"));
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+        return capability == Capabilities.LASER_RECEPTOR_CAPABILITY ? Capabilities.LASER_RECEPTOR_CAPABILITY.cast(this) : null;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getInnerCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+        return capability == Capabilities.LASER_RECEPTOR_CAPABILITY ? Capabilities.LASER_RECEPTOR_CAPABILITY.cast(this) : null;
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.cleanroommc.multiblocked.common.capability;
 
 import com.cleanroommc.multiblocked.api.capability.IO;
 import com.cleanroommc.multiblocked.api.capability.MultiblockCapability;
-import com.cleanroommc.multiblocked.api.capability.proxy.CapCapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
 import com.cleanroommc.multiblocked.api.capability.trait.CapabilityTrait;
 import com.cleanroommc.multiblocked.api.gui.texture.TextTexture;
@@ -15,7 +14,6 @@ import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget
 import com.google.gson.*;
 import mekanism.api.lasers.ILaserReceptor;
 import mekanism.common.MekanismBlocks;
-import mekanism.common.capabilities.Capabilities;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

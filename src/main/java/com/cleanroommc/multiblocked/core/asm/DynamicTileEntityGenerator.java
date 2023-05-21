@@ -144,7 +144,7 @@ public class DynamicTileEntityGenerator implements Opcodes {
                         methodVisitor.visitVarInsn(DLOAD, varIndex);
                         varIndex++;
                     } else if (parameterType.isPrimitive()) {
-                        methodVisitor.visitVarInsn(FLOAD, varIndex);
+                        methodVisitor.visitVarInsn(ILOAD, varIndex);
                     } else {
                         methodVisitor.visitVarInsn(ALOAD, varIndex);
                     }

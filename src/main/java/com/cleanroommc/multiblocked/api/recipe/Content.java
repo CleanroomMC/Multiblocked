@@ -1,7 +1,6 @@
 package com.cleanroommc.multiblocked.api.recipe;
 
 import crafttweaker.annotations.ZenRegister;
-import net.minecraft.util.Tuple;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 

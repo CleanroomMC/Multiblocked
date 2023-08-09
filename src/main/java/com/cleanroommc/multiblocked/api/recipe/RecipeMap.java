@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -54,7 +55,7 @@ public class RecipeMap {
         register(EMPTY);
     }
 
-    public HashMap<String, Recipe> recipes = new HashMap<>();
+    public Map<String, Recipe> recipes = new TreeMap<>();
 
     @ZenConstructor
     public RecipeMap(String name) {

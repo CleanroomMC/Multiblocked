@@ -81,9 +81,10 @@ public class CommonProxy {
         for (MultiblockCapability<?> capability : MbdCapabilities.CAPABILITY_REGISTRY.values()) {
             capability.getAnyBlock().definition.getBaseStatus().setRenderer(new CycleBlockStateRenderer(capability.getCandidates()));
         }
+        RecipeMap.RECIPE_MAP_REGISTRY.values().forEach(RecipeMap::sort);
     }
 
-    public static void registerComponents(){
+    public static void registerComponents() {
         // register any capability block
         MbdCapabilities.registerAnyCapabilityBlocks();
         // register blueprint table

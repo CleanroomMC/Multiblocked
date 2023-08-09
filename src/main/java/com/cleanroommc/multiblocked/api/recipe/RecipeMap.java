@@ -10,6 +10,7 @@ import com.cleanroommc.multiblocked.util.FileUtility;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import crafttweaker.annotations.ZenRegister;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenConstructor;
@@ -20,11 +21,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,7 +56,7 @@ public class RecipeMap {
         register(EMPTY);
     }
 
-    public Map<String, Recipe> recipes = new TreeMap<>();
+    public Map<String, Recipe> recipes = new HashMap<>();
 
     @ZenConstructor
     public RecipeMap(String name) {
@@ -165,6 +166,14 @@ public class RecipeMap {
     @ZenMethod
     public List<Recipe> allRecipes() {
         return new ArrayList<>(recipes.values());
+    }
+
+    public void sort(){
+        this.recipes = recipes.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, Object2ObjectLinkedOpenHashMap::new));
     }
 
 }

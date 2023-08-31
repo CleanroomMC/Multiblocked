@@ -44,6 +44,8 @@ multiblocked.capability.pneumatic_pressure=PnC Pressure
 pneumatic_pressure.any.name=Any Pneumatic Pressure Container
 multiblocked.capability.starlight_as=AS Starlight
 starlight_as.any.name=Any multiblocked block with AS Starlight Trait
+multiblocked.capability.mm_mech_power=Mechanical Power
+mm_mech_power.any.name=Any Gearbox
 
 tile.multiblocked.energy_output.name=Energy Output Hatch
 tile.multiblocked.energy_input.name=Energy Input Hatch

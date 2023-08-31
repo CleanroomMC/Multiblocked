@@ -1,7 +1,9 @@
 buildscript {
     repositories {
+        mavenCentral()
+        jcenter()
         maven {
-            url = 'https://files.minecraftforge.net/maven'
+            url = 'https://maven.minecraftforge.net'
         }
         maven {
             url = 'https://maven.cleanroommc.com'
@@ -11,7 +13,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath("com.anatawa12.forge:ForgeGradle:2.3-1.0.+") {changing = true}
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
@@ -99,6 +101,7 @@ dependencies {
     compileOnly 'curse.maven:guide-api-228832:2645992'
     compileOnly 'curse.maven:embers-rekindled-300777:3695248'
     compileOnly 'curse.maven:thaumic-augmentation-319441:3536155'
+    compileOnly 'curse.maven:mystical-mechanics-300742:3006392'
     compileOnly 'me.desht.pneumaticcraft:pneumaticcraft-repressurized:1.12.2-0.11.9-384'
     compileOnly 'hellfirepvp.astralsorcery:astralsorcery:1.12.2-1.10.23-v161'
 }

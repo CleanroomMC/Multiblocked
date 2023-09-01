@@ -28,10 +28,10 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MechPowerCapability extends MultiblockCapability<Double> {
-    public static final MechPowerCapability CAP = new MechPowerCapability();
+public class MystMechPowerCapability extends MultiblockCapability<Double> {
+    public static final MystMechPowerCapability CAP = new MystMechPowerCapability();
 
-    private MechPowerCapability() {
+    private MystMechPowerCapability() {
         super("mm_mech_power", new Color(0xA2A2E9).getRGB());
     }
 
@@ -56,8 +56,8 @@ public class MechPowerCapability extends MultiblockCapability<Double> {
     }
 
     @Override
-    public MechPowerCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return new MechPowerCapabilityProxy(tileEntity);
+    public MystMechPowerCapabilityProxy createProxy(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
+        return new MystMechPowerCapabilityProxy(tileEntity);
     }
 
     @Override
@@ -83,9 +83,9 @@ public class MechPowerCapability extends MultiblockCapability<Double> {
         return new JsonPrimitive(aDouble);
     }
 
-    public static class MechPowerCapabilityProxy extends CapCapabilityProxy<IMechCapability, Double> {
-        public MechPowerCapabilityProxy(TileEntity tileEntity) {
-            super(MechPowerCapability.CAP, tileEntity, MysticalMechanicsAPI.MECH_CAPABILITY);
+    public static class MystMechPowerCapabilityProxy extends CapCapabilityProxy<IMechCapability, Double> {
+        public MystMechPowerCapabilityProxy(TileEntity tileEntity) {
+            super(MystMechPowerCapability.CAP, tileEntity, MysticalMechanicsAPI.MECH_CAPABILITY);
         }
 
         public EnumFacing getTargetFacingDirection() {

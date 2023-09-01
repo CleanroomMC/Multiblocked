@@ -92,7 +92,7 @@ public class MbdCapabilities {
             registerCapability(StarlightAstralCapability.CAP);
         }
         if (Loader.isModLoaded(Multiblocked.MODID_MM)) {
-            registerCapability(MechPowerCapability.CAP);
+            registerCapability(MystMechPowerCapability.CAP);
         }
     }
 

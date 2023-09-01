@@ -698,15 +698,15 @@ public class RecipeBuilder {
     //region MM Mechanical Power
     @Optional.Method(modid = Multiblocked.MODID_MM)
     @ZenMethod
-    public RecipeBuilder inputMechPower(float chance, double minimumPower) {
-        keyBuilder.append(MechPowerCapability.CAP.name).append(minimumPower);
-        return input(MechPowerCapability.CAP, 1, minimumPower);
+    public RecipeBuilder inputMystMechPower(float chance, double minimumPower) {
+        keyBuilder.append(MystMechPowerCapability.CAP.name).append(minimumPower);
+        return input(MystMechPowerCapability.CAP, 1, minimumPower);
     }
 
     @Optional.Method(modid = Multiblocked.MODID_MM)
     @ZenMethod
-    public RecipeBuilder inputMechPower(double minimumPower) {
-        return inputMechPower(1, minimumPower);
+    public RecipeBuilder inputMystMechPower(double minimumPower) {
+        return inputMystMechPower(1, minimumPower);
     }
     //endregion
 

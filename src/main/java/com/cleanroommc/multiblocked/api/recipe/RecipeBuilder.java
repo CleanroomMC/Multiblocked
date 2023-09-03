@@ -146,6 +146,7 @@ public class RecipeBuilder {
         return this;
     }
 
+    //region Forge Energy
     @ZenMethod
     public RecipeBuilder inputFE(int forgeEnergy) {
         return inputFE(1, forgeEnergy);
@@ -167,7 +168,9 @@ public class RecipeBuilder {
         keyBuilder.append(MbdCapabilities.FE.name).append(forgeEnergy);
         return output(MbdCapabilities.FE, chance, forgeEnergy);
     }
+    //endregion
 
+    //region Items
     public RecipeBuilder inputItems(ItemsIngredient... inputs) {
         return inputItems(1, inputs);
     }
@@ -193,7 +196,9 @@ public class RecipeBuilder {
         }
         return output(MbdCapabilities.ITEM, chance, Arrays.stream(outputs).map(ItemsIngredient::new).toArray());
     }
+    //endregion
 
+    //region Fluids
     public RecipeBuilder inputFluids(FluidStack... inputs) {
         return inputFluids(1, inputs);
     }
@@ -219,7 +224,9 @@ public class RecipeBuilder {
         }
         return output(MbdCapabilities.FLUID, chance, (Object[]) outputs);
     }
+    //endregion
 
+    //region Entities
     public RecipeBuilder inputEntities(float chance, EntityIngredient... inputs) {
         return input(EntityMultiblockCapability.CAP, chance, (Object[]) inputs);
     }
@@ -235,7 +242,9 @@ public class RecipeBuilder {
     public RecipeBuilder outputEntities(EntityIngredient... outputs) {
         return outputEntities(1, outputs);
     }
+    //endregion
 
+    //region Bot Mana
     @Optional.Method(modid = Multiblocked.MODID_BOT)
     @ZenMethod
     public RecipeBuilder inputMana(int mana) {
@@ -261,7 +270,9 @@ public class RecipeBuilder {
         keyBuilder.append(ManaBotaniaCapability.CAP.name).append(mana);
         return output(ManaBotaniaCapability.CAP, chance, mana);
     }
+    //endregion
 
+    //region TC6 Aspects
     @Optional.Method(modid = Multiblocked.MODID_TC6)
     public RecipeBuilder inputAspects(AspectStack... inputs) {
         return inputAspects(1, inputs);
@@ -291,7 +302,9 @@ public class RecipeBuilder {
         }
         return output(AspectThaumcraftCapability.CAP, chance, (Object[]) outputs);
     }
+    //endregion
 
+    //region Mek Heat
     @Optional.Method(modid = Multiblocked.MODID_MEK)
     @ZenMethod
     public RecipeBuilder inputHeat(double heat) {
@@ -317,7 +330,9 @@ public class RecipeBuilder {
         keyBuilder.append(HeatMekanismCapability.CAP.name).append(heat);
         return output(HeatMekanismCapability.CAP, chance, heat);
     }
+    //endregion
 
+    //region Mek Gas
     @Optional.Method(modid = Multiblocked.MODID_MEK)
     public RecipeBuilder inputGas(GasStack... inputs) {
         return inputGas(1, inputs);
@@ -347,7 +362,9 @@ public class RecipeBuilder {
         }
         return output(GasMekanismCapability.CAP, chance, (Object[]) outputs);
     }
+    //endregion
 
+    //region QMD Particles
     @Optional.Method(modid = Multiblocked.MODID_QMD)
     public RecipeBuilder inputParticles(ParticleStack... inputs) {
         return inputParticles(1, inputs);
@@ -381,7 +398,9 @@ public class RecipeBuilder {
         }
         return output(ParticleQMDCapability.CAP, chance, (Object[]) outputs);
     }
+    //endregion
 
+    //region GTCE EU
     @Optional.Method(modid = Multiblocked.MODID_GTCE)
     @ZenMethod
     public RecipeBuilder inputEU(int eu) {
@@ -407,7 +426,9 @@ public class RecipeBuilder {
         keyBuilder.append(EnergyGTCECapability.CAP.name).append(eu);
         return output(EnergyGTCECapability.CAP, chance, eu);
     }
+    //endregion
 
+    //region LC LE
     @Optional.Method(modid = Multiblocked.MODID_LC)
     @ZenMethod
     public RecipeBuilder inputLE(double le) {
@@ -433,7 +454,9 @@ public class RecipeBuilder {
         keyBuilder.append(LEMultiblockCapability.CAP.name).append(le);
         return output(LEMultiblockCapability.CAP, chance, le);
     }
+    //endregion
 
+    //region Prodigy Hot Air
     @Optional.Method(modid = Multiblocked.MODID_PRODIGY)
     @ZenMethod
     public RecipeBuilder inputHotAir(int hotAir) {
@@ -459,7 +482,9 @@ public class RecipeBuilder {
         keyBuilder.append(HotAirProdigyCapability.CAP.name).append(hotAir);
         return output(HotAirProdigyCapability.CAP, chance, hotAir);
     }
+    //endregion
 
+    //region NA Aura
     @Optional.Method(modid = Multiblocked.MODID_NA)
     @ZenMethod
     public RecipeBuilder inputAura(int aura) {
@@ -485,7 +510,9 @@ public class RecipeBuilder {
         keyBuilder.append(AuraMultiblockCapability.CAP.name).append(aura);
         return output(AuraMultiblockCapability.CAP, chance, aura);
     }
+    //endregion
 
+    //region EU2 Grid Power
     @Optional.Method(modid = Multiblocked.MODID_EU2)
     @ZenMethod
     public RecipeBuilder inputGP(float gp) {
@@ -511,7 +538,9 @@ public class RecipeBuilder {
         keyBuilder.append(GPExtraUtilities2Capability.CAP.name).append(gp);
         return output(GPExtraUtilities2Capability.CAP, chance, gp);
     }
+    //endregion
 
+    //region PE EMC
     @Optional.Method(modid = Multiblocked.MODID_PE)
     @ZenMethod
     public RecipeBuilder inputEMC(long emc) {
@@ -537,6 +566,9 @@ public class RecipeBuilder {
         keyBuilder.append(EMCProjectECapability.CAP.name).append(emc);
         return output(EMCProjectECapability.CAP, chance, emc);
     }
+    //endregion
+
+    //region BG Life Power
     @Optional.Method(modid = Multiblocked.MODID_BG)
     @ZenMethod
     public RecipeBuilder inputLP(int lp) {
@@ -562,7 +594,9 @@ public class RecipeBuilder {
         keyBuilder.append(LPBloodMagicCapability.CAP.name).append(lp);
         return output(LPBloodMagicCapability.CAP, chance, lp);
     }
+    //endregion
 
+    //region Embers Ember
     @Optional.Method(modid = Multiblocked.MODID_EMBERS)
     @ZenMethod
     public RecipeBuilder inputEmber(double ember) {
@@ -588,7 +622,9 @@ public class RecipeBuilder {
         keyBuilder.append(EmberEmbersCapability.CAP.name).append(ember);
         return output(EmberEmbersCapability.CAP, chance, ember);
     }
+    //endregion
 
+    //region TA Impetus
     @Optional.Method(modid = Multiblocked.MODID_TA)
     @ZenMethod
     public RecipeBuilder inputImpetus(int impetus) {
@@ -614,8 +650,9 @@ public class RecipeBuilder {
         keyBuilder.append(ImpetusThaumicAugmentationCapability.CAP.name).append(impetus);
         return output(ImpetusThaumicAugmentationCapability.CAP, chance, impetus);
     }
+    //endregion
 
-
+    //region PNC Pressure
     @Optional.Method(modid = Multiblocked.MODID_PNC)
     @ZenMethod
     public RecipeBuilder inputPressure(float chance, float pressure) {
@@ -628,7 +665,9 @@ public class RecipeBuilder {
     public RecipeBuilder inputPressure(float pressure) {
         return inputPressure(1, pressure);
     }
+    //endregion
 
+    //region AS Starlight
     @Optional.Method(modid = Multiblocked.MODID_AS)
     @ZenMethod
     public RecipeBuilder inputStarlight(float chance, int starlight, @stanhebben.zenscript.annotations.Optional String constellation) {
@@ -654,8 +693,24 @@ public class RecipeBuilder {
     public RecipeBuilder outputStarlight(int starlight, @stanhebben.zenscript.annotations.Optional String constellation) {
         return outputStarlight(1, starlight, constellation);
     }
+    //endregion
 
-    // conditions
+    //region MM Mechanical Power
+    @Optional.Method(modid = Multiblocked.MODID_MM)
+    @ZenMethod
+    public RecipeBuilder inputMystMechPower(float chance, double minimumPower) {
+        keyBuilder.append(MystMechPowerCapability.CAP.name).append(minimumPower);
+        return input(MystMechPowerCapability.CAP, 1, minimumPower);
+    }
+
+    @Optional.Method(modid = Multiblocked.MODID_MM)
+    @ZenMethod
+    public RecipeBuilder inputMystMechPower(double minimumPower) {
+        return inputMystMechPower(1, minimumPower);
+    }
+    //endregion
+
+    //region Conditions
     @ZenMethod
     public RecipeBuilder dimension(String dimension, boolean reverse) {
         return addCondition(new DimensionCondition(dimension).setReverse(reverse));
@@ -724,6 +779,7 @@ public class RecipeBuilder {
     public RecipeBuilder predicate(IPredicateFunction predicate) {
         return predicate(predicate, PredicateCondition.DEFAULT_TOOLTIP, false);
     }
+    //endregion
 
     @ZenMethod
     public Recipe build() {

@@ -91,6 +91,9 @@ public class MbdCapabilities {
         if (Loader.isModLoaded(Multiblocked.MODID_AS)) {
             registerCapability(StarlightAstralCapability.CAP);
         }
+        if (Loader.isModLoaded(Multiblocked.MODID_MM)) {
+            registerCapability(MystMechPowerCapability.CAP);
+        }
     }
 
     public static MultiblockCapability<?> get(String s) {

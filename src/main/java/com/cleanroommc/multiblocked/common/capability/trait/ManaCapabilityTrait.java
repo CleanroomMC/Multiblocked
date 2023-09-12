@@ -6,6 +6,7 @@ import com.cleanroommc.multiblocked.api.gui.texture.ColorBorderTexture;
 import com.cleanroommc.multiblocked.api.gui.texture.ResourceTexture;
 import com.cleanroommc.multiblocked.api.gui.widget.imp.*;
 import com.cleanroommc.multiblocked.common.capability.ManaBotaniaCapability;
+import com.cleanroommc.multiblocked.util.LocalizationUtils;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -104,7 +105,7 @@ public class ManaCapabilityTrait extends ProgressCapabilityTrait implements ISpa
 
     @Override
     protected String dynamicHoverTips(double progress) {
-        return String.format("Mana: %d/%d", ((int) (progress * capacity)), capacity);
+        return LocalizationUtils.format("multiblocked.gui.trait.mana.progress", ((int) (progress * capacity)), capacity);
     }
 
     @Override

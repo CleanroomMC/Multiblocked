@@ -12,6 +12,7 @@ import com.cleanroommc.multiblocked.common.capability.trait.LaserCapabilityTrait
 import com.cleanroommc.multiblocked.common.capability.widget.NumberContentWidget;
 import com.google.gson.*;
 import mekanism.api.lasers.ILaserReceptor;
+import mekanism.common.capabilities.Capabilities;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
@@ -38,7 +39,7 @@ public class LaserMekanismCapability extends MultiblockCapability<Double> {
 
     @Override
     public boolean isBlockHasCapability(@Nonnull IO io, @Nonnull TileEntity tileEntity) {
-        return tileEntity instanceof ILaserReceptor;
+        return !getCapability(Capabilities.LASER_RECEPTOR_CAPABILITY, tileEntity).isEmpty();
     }
 
     @Override

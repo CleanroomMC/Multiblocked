@@ -72,6 +72,9 @@ dependencies {
     api (mixin) {
         transitive = false
     }
+    annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
+    annotationProcessor 'com.google.guava:guava:32.1.2-jre'
+    annotationProcessor 'com.google.code.gson:gson:2.8.9'
     annotationProcessor (mixin) {
         transitive = false
     }
@@ -108,6 +111,10 @@ dependencies {
     compileOnly 'hellfirepvp.astralsorcery:astralsorcery:1.12.2-1.10.23-v161'
 }
 
+def at = file("${projectDir}/src/main/resources/multiblocked_at.cfg")
+tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(at)
+tasks.srgifyBinpatchedJar.accessTransformerFiles.from(at)
+
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property 'version', project.version
@@ -120,6 +127,7 @@ processResources {
                 'mcversion': project.minecraft.version
         )
     }
+    rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
 jar {
@@ -128,6 +136,7 @@ jar {
         attribute_map['FMLCorePlugin'] = project.coremod_plugin_class_name
         attribute_map['FMLCorePluginContainsFMLMod'] = true
         attribute_map['ForceLoadAsMod'] = project.gradle.startParameter.taskNames[0] == "build"
+        attribute_map['FMLAT'] = 'multiblocked_at.cfg'
         attributes(attribute_map)
     }
 }

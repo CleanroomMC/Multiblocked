@@ -28,14 +28,11 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Random;
 
-@Mod(modid = Multiblocked.MODID,
-        name = Multiblocked.NAME,
-        version = Multiblocked.VERSION,
-        acceptedMinecraftVersions = "1.12.2",
+@Mod(modid = Tags.ID, name = Multiblocked.NAME, version = Tags.VERSION, acceptedMinecraftVersions = "1.12.2",
         dependencies = "required:mixinbooter@[4.2,);after:jei@[4.15.0,);after:crafttweaker")
 public class Multiblocked {
 
-    public static final String MODID = "multiblocked";
+    public static final String MODID = Tags.ID;
     public static final String MODID_CT = "crafttweaker";
     public static final String MODID_JEI = "jei";
     public static final String MODID_BOT = "botania";
@@ -58,7 +55,7 @@ public class Multiblocked {
     public static final String MODID_AS = "astralsorcery";
     public static final String MODID_MM = "mysticalmechanics";
     public static final String NAME = "Multiblocked";
-    public static final String VERSION = "0.8.5";
+    public static final String VERSION = Tags.VERSION;
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final Random RNG = new Random();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
@@ -88,7 +85,6 @@ public class Multiblocked {
             return BlueprintTableTileEntity.tableDefinition.getStackForm();
         }
     };
-
 
     public static boolean isClient() {
         return FMLLaunchHandler.side().isClient();

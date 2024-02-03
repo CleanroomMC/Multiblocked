@@ -16,6 +16,9 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import teamroots.embers.Embers;
 import teamroots.embers.register.BlockRegister;
 import teamroots.embers.api.capabilities.EmbersCapabilities;
 import teamroots.embers.api.power.IEmberCapability;
@@ -63,12 +66,12 @@ public class EmberEmbersCapability extends MultiblockCapability<Double> {
     @Override
     public BlockInfo[] getCandidates() {
         return new BlockInfo[] {
-                BlockInfo.fromBlockState(BlockRegister.CHARGER.getDefaultState()),
-                BlockInfo.fromBlockState(BlockRegister.COPPER_CELL.getDefaultState()),
-                BlockInfo.fromBlockState(BlockRegister.EMBER_FUNNEL.getDefaultState()),
-                BlockInfo.fromBlockState(BlockRegister.EMBER_SIPHON.getDefaultState()),
-                BlockInfo.fromBlockState(BlockRegister.EMBER_INJECTOR.getDefaultState()),
-                BlockInfo.fromBlockState(BlockRegister.EMBER_ACTIVATOR.getDefaultState())
+                BlockInfo.fromBlockState(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Embers.MODID,"charger")).getDefaultState()),
+                BlockInfo.fromBlockState(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Embers.MODID,"copper_cell")).getDefaultState()),
+                BlockInfo.fromBlockState(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Embers.MODID,"ember_funnel")).getDefaultState()),
+                BlockInfo.fromBlockState(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Embers.MODID,"ember_siphon")).getDefaultState()),
+                BlockInfo.fromBlockState(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Embers.MODID,"ember_injector")).getDefaultState()),
+                BlockInfo.fromBlockState(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(Embers.MODID,"ember_activator")).getDefaultState())
         };
     }
 

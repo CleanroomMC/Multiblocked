@@ -104,7 +104,7 @@ dependencies {
     compileOnly 'curse.maven:project-e-226410:2702991'
     compileOnly 'curse.maven:blood-magic-224791:2822288'
     compileOnly 'curse.maven:guide-api-228832:2645992'
-    compileOnly 'curse.maven:embers-rekindled-300777:3695248'
+    compileOnly 'curse.maven:embers-extended-life-936489:5077562'
     compileOnly 'curse.maven:thaumic-augmentation-319441:3536155'
     compileOnly 'curse.maven:mystical-mechanics-300742:3006392'
     compileOnly 'me.desht.pneumaticcraft:pneumaticcraft-repressurized:1.12.2-0.11.9-384'

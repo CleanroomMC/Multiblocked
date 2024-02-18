@@ -23,6 +23,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -258,6 +259,7 @@ public class PatternWidget extends WidgetGroup {
 
     private MBPattern initializePattern(MultiblockShapeInfo shapeInfo, HashSet<ItemStackKey> blockDrops) {
         Map<BlockPos, BlockInfo> blockMap = new HashMap<>();
+        Map<IBlockState, PartInfo> partMap = new HashMap<>();
         ControllerTileEntity controllerBase = null;
         BlockPos multiPos = locateNextRegion(500);
 
@@ -275,22 +277,26 @@ public class PatternWidget extends WidgetGroup {
                     if (tileEntity instanceof ControllerTileEntity) {
                         controllerBase = (ControllerTileEntity) tileEntity;
                     }
-                    blockMap.put(multiPos.add(x, y, z), new BlockInfo(blockState, tileEntity));
+                    BlockInfo blockInfo = new BlockInfo(blockState, tileEntity);
+                    blockMap.put(multiPos.add(x, y, z), blockInfo);
+                    partMap.computeIfAbsent(blockState, k -> {
+                        ItemStack stack = new ItemStack(Item.getItemFromBlock(k.getBlock()), 1, k.getBlock().damageDropped(k));
+                        return new PartInfo(new ItemStackKey(stack), blockInfo);
+                    }).amount++;
                 }
             }
         }
 
         world.addBlocks(blockMap);
 
-        Map<ItemStackKey, PartInfo> parts = gatherBlockDrops(blockMap);
-        blockDrops.addAll(parts.keySet());
+        partMap.values().stream().map(PartInfo::getItemStackKey).forEach(blockDrops::add);
 
         Map<BlockPos, TraceabilityPredicate> predicateMap = new HashMap<>();
         if (controllerBase != null) {
             loadControllerFormed(predicateMap.keySet(), controllerBase);
             predicateMap = controllerBase.state.getMatchContext().get("predicates");
         }
-        return controllerBase == null ? null : new MBPattern(blockMap, parts.values().stream().sorted((one, two) -> {
+        return controllerBase == null ? null : new MBPattern(blockMap, partMap.values().stream().sorted((one, two) -> {
             if (one.isController) return -1;
             if (two.isController) return +1;
             if (one.isTile && !two.isTile) return -1;
@@ -356,6 +362,10 @@ public class PatternWidget extends WidgetGroup {
                 if (tileEntity instanceof ControllerTileEntity)
                     this.isController = true;
             }
+        }
+
+        ItemStackKey getItemStackKey() {
+            return this.itemStackKey;
         }
 
         ItemStack getItemStack() {

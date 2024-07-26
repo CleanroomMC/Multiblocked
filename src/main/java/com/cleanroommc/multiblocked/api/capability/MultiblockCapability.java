@@ -12,6 +12,7 @@ import com.cleanroommc.multiblocked.api.pattern.util.BlockInfo;
 import com.cleanroommc.multiblocked.api.recipe.ContentModifier;
 import com.cleanroommc.multiblocked.api.registry.MbdComponents;
 import com.cleanroommc.multiblocked.jei.IJeiIngredientAdapter;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializer;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Used to detect whether a machine has a certain capability. And provide its capability in proxy {@link CapabilityProxy}.
@@ -38,6 +40,16 @@ import java.util.Set;
 @ZenClass("mods.multiblocked.capability.Capability")
 @ZenRegister
 public abstract class MultiblockCapability<T> implements JsonSerializer<T>, JsonDeserializer<T> {
+    /**
+     * Tile Entity that only proxies other tile entity's capability should be denied
+     */
+    public static final Set<String> BAD_TILE_ENTITIES = Sets.newHashSet(
+            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomEnergyface",
+            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomItemface",
+            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomLiquiface",
+            "com.supermartijn642.entangled.EntangledBlockEntity"
+    );
+
     @ZenProperty
     public final String name;
     @ZenProperty
@@ -134,6 +146,9 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     }
 
     public final <C> Set<C> getCapability(Capability<C> capability, @Nonnull TileEntity tileEntity) {
+        if (BAD_TILE_ENTITIES.contains(tileEntity.getClass().getName())) {
+            return Collections.emptySet();
+        }
         Set<C> found = new LinkedHashSet<>();
         for (EnumFacing facing : EnumFacing.VALUES) {
             C cap = tileEntity.getCapability(capability, facing);

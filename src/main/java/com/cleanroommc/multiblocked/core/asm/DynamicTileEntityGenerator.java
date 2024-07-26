@@ -135,34 +135,13 @@ public class DynamicTileEntityGenerator implements Opcodes {
                 methodVisitor.visitFieldInsn(GETFIELD, className, fieldName, fieldSignature);
                 int varIndex = 1;
                 for (Class<?> parameterType : parameterTypes) {
-                    if (parameterType == Long.TYPE) {
-                        methodVisitor.visitVarInsn(LLOAD, varIndex);
-                        varIndex++;
-                    } else if (parameterType == Float.TYPE) {
-                        methodVisitor.visitVarInsn(FLOAD, varIndex);
-                    } else if (parameterType == Double.TYPE) {
-                        methodVisitor.visitVarInsn(DLOAD, varIndex);
-                        varIndex++;
-                    } else if (parameterType.isPrimitive()) {
-                        methodVisitor.visitVarInsn(ILOAD, varIndex);
-                    } else {
-                        methodVisitor.visitVarInsn(ALOAD, varIndex);
-                    }
-                    varIndex++;
+                    Type parameterAsmType = Type.getType(parameterType);
+                    methodVisitor.visitVarInsn(parameterAsmType.getOpcode(ILOAD), varIndex);
+                    varIndex += parameterAsmType.getSize();
                 }
                 methodVisitor.visitMethodInsn(INVOKEINTERFACE, Type.getInternalName(anInterface), method.getName(), Type.getMethodDescriptor(method), true);
-                int returnCode = ARETURN;
-                if (returnType == Long.TYPE) {
-                    returnCode = LRETURN;
-                } else if (returnType == Float.TYPE) {
-                    returnCode = FRETURN;
-                } else if (returnType == Double.TYPE) {
-                    returnCode = DRETURN;
-                } else if (returnType == Void.TYPE) {
-                    returnCode = RETURN;
-                } else if (returnType.isPrimitive()) {
-                    returnCode = IRETURN;
-                }
+                Type returnAsmType = Type.getType(returnType);
+                int returnCode = returnAsmType.getOpcode(IRETURN);
                 if (returnCode == RETURN) {
                     Label label1 = new Label();
                     startLine++;

@@ -47,7 +47,8 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
             "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomEnergyface",
             "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomItemface",
             "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomLiquiface",
-            "com.supermartijn642.entangled.EntangledBlockEntity"
+            "com.supermartijn642.entangled.EntangledBlockEntity",
+            "com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityController"
     );
 
     @ZenProperty

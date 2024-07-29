@@ -1,5 +1,6 @@
 package com.cleanroommc.multiblocked.api.capability;
 
+import com.cleanroommc.multiblocked.MbdConfig;
 import com.cleanroommc.multiblocked.Multiblocked;
 import com.cleanroommc.multiblocked.api.block.BlockComponent;
 import com.cleanroommc.multiblocked.api.capability.proxy.CapabilityProxy;
@@ -22,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
+import org.apache.commons.lang3.ArrayUtils;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 
@@ -40,17 +42,6 @@ import java.util.regex.Pattern;
 @ZenClass("mods.multiblocked.capability.Capability")
 @ZenRegister
 public abstract class MultiblockCapability<T> implements JsonSerializer<T>, JsonDeserializer<T> {
-    /**
-     * Tile Entity that only proxies other tile entity's capability should be denied
-     */
-    public static final Set<String> BAD_TILE_ENTITIES = Sets.newHashSet(
-            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomEnergyface",
-            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomItemface",
-            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomLiquiface",
-            "com.supermartijn642.entangled.EntangledBlockEntity",
-            "com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityController"
-    );
-
     @ZenProperty
     public final String name;
     @ZenProperty
@@ -147,7 +138,7 @@ public abstract class MultiblockCapability<T> implements JsonSerializer<T>, Json
     }
 
     public final <C> Set<C> getCapability(Capability<C> capability, @Nonnull TileEntity tileEntity) {
-        if (BAD_TILE_ENTITIES.contains(tileEntity.getClass().getName())) {
+        if (ArrayUtils.contains(MbdConfig.capabilityProxyBlacklist, tileEntity.getClass().getName())) {
             return Collections.emptySet();
         }
         Set<C> found = new LinkedHashSet<>();

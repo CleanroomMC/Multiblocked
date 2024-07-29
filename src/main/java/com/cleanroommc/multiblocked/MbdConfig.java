@@ -16,6 +16,15 @@ public final class MbdConfig {
     @Config.RequiresMcRestart
     public static boolean enableBuiltInComponents = true;
 
+    @Config.Comment("Blacklist of tile entity capability proxy")
+    public static String[] capabilityProxyBlacklist = new String[] {
+            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomEnergyface",
+            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomItemface",
+            "de.ellpeck.actuallyadditions.common.tile.TileEntityPhantomLiquiface",
+            "com.supermartijn642.entangled.EntangledBlockEntity",
+            "com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityController"
+    };
+
     public static class NaturesAura {
         @Config.Comment({"set the radius of aura value consumption.", "Default: 20"})
         public int radius = 20;

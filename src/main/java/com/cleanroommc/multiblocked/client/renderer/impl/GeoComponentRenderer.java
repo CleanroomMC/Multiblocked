@@ -198,9 +198,9 @@ public class GeoComponentRenderer extends AnimatedGeoModel<GeoComponentRenderer.
             int lx = light % 65536;
             int ly = light / 65536;
 
-            GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-            OpenGlHelper.setLightmapTextureCoords(GL11.GL_TEXTURE_2D, lx, ly);
-            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+            // GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+            // OpenGlHelper.setLightmapTextureCoords(GL11.GL_TEXTURE_2D, lx, ly);
+            // GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
 
             GlStateManager.pushMatrix();
             GlStateManager.translate(x, y, z);

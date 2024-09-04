@@ -94,8 +94,8 @@ dependencies {
     compileOnly "curse.maven:lightningcraft-237422:2872478"
     compileOnly 'curse.maven:mcmultipart-239431:2615930'
     compileOnly 'curse.maven:mekanism-268560:2835175'
-    compileOnly 'curse.maven:nuclearcraft-overhauled-336895:3386487' // Not very latest, requires Forge 2860
-    compileOnly 'curse.maven:qmd-362056:3662442'
+    compileOnly 'curse.maven:nuclearcraft-overhauled-336895:5446445'
+    compileOnly 'curse.maven:qmd-362056:5681949'
     compileOnly 'curse.maven:thaumcraft-223628:2629023'
     compileOnly 'curse.maven:thaumic-jei-285492:2705304'
     compileOnly 'curse.maven:prodigy-tech-297414:2769520'
@@ -109,6 +109,9 @@ dependencies {
     compileOnly 'curse.maven:mystical-mechanics-300742:3006392'
     compileOnly 'me.desht.pneumaticcraft:pneumaticcraft-repressurized:1.12.2-0.11.9-384'
     compileOnly 'hellfirepvp.astralsorcery:astralsorcery:1.12.2-1.10.23-v161'
+
+    runtimeOnly 'com.cleanroommc:strip-latest-forge-requirements:1.0'
+
 }
 
 def at = file("${projectDir}/src/main/resources/multiblocked_at.cfg")

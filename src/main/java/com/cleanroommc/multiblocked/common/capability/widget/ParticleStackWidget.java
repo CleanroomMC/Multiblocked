@@ -11,7 +11,6 @@ import com.cleanroommc.multiblocked.util.Size;
 import lach_01298.qmd.particle.Particle;
 import lach_01298.qmd.particle.ParticleStack;
 import lach_01298.qmd.util.Units;
-import nc.util.Lang;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -19,6 +18,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.opengl.GL11;
 
 public class ParticleStackWidget extends ContentWidget<ParticleStack> {
@@ -26,10 +26,10 @@ public class ParticleStackWidget extends ContentWidget<ParticleStack> {
     @Override
     protected void onContentUpdate() {
         if (Multiblocked.isClient() && content != null) {
-            String tips = Lang.localise(content.getParticle().getUnlocalizedName()) + '\n' +
-                            TextFormatting.YELLOW + Lang.localise("gui.qmd.particlestack.amount", Units.getSIFormat(content.getAmount(), "pu")) + '\n' +
-                            TextFormatting.DARK_GREEN + Lang.localise("gui.qmd.particlestack.mean_energy", Units.getParticleEnergy(content.getMeanEnergy())) + '\n' +
-                            TextFormatting.RED + Lang.localise("gui.qmd.particlestack.focus", Units.getSIFormat(content.getFocus(), ""));
+            String tips = I18n.translateToLocal(content.getParticle().getUnlocalizedName()) + '\n' +
+                            TextFormatting.YELLOW + I18n.translateToLocalFormatted("gui.qmd.particlestack.amount", Units.getSIFormat(content.getAmount(), "pu")) + '\n' +
+                            TextFormatting.DARK_GREEN + I18n.translateToLocalFormatted("gui.qmd.particlestack.mean_energy", Units.getParticleEnergy(content.getMeanEnergy())) + '\n' +
+                            TextFormatting.RED + I18n.translateToLocalFormatted("gui.qmd.particlestack.focus", Units.getSIFormat(content.getFocus(), ""));
             this.setHoverTooltip(tips);
         }
     }

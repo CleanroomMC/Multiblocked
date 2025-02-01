@@ -66,7 +66,9 @@ public class ItemsContentWidget extends ContentWidget<ItemsIngredient> {
     @Override
     public ItemsIngredient getJEIContent(Object content) {
         if (content instanceof ItemStack) {
-            return new ItemsIngredient(this.content.getAmount(), (ItemStack) content);
+            ItemStack stack = (ItemStack) content;
+            if (isDurability) stack.setItemDamage(OreDictionary.WILDCARD_VALUE);
+            return new ItemsIngredient(this.content.getAmount(), stack);
         }
         return null;
     }

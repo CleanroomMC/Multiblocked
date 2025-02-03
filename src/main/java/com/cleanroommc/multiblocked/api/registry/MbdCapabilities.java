@@ -45,6 +45,7 @@ public class MbdCapabilities {
         registerCapability(ITEM = ItemMultiblockCapability.CAP);
         registerCapability(FLUID = FluidMultiblockCapability.CAP);
         registerCapability(EntityMultiblockCapability.CAP);
+        registerCapability(ItemDurabilityMultiblockCapability.CAP);
         if (Loader.isModLoaded(Multiblocked.MODID_BOT)) {
             registerCapability(ManaBotaniaCapability.CAP);
         }

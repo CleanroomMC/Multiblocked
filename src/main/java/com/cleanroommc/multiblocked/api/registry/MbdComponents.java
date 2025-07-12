@@ -80,8 +80,6 @@ public class MbdComponents {
         }
     }
 
-    public static List<Runnable> handlers = new ArrayList<>();
-
     @SuppressWarnings("unchecked")
     public static <T extends ComponentDefinition> void registerComponentFromFile(File location, Class<T> clazz, BiConsumer<T, JsonObject> postHandler) {
         for (File file : Optional.ofNullable(location.listFiles((f, n) -> n.endsWith(".json"))).orElse(new File[0])) {
@@ -97,7 +95,7 @@ public class MbdComponents {
                 definition.fromJson(config);
                 registerComponent(definition);
                 if (postHandler != null) {
-                    handlers.add(()->postHandler.accept(definition, config));
+                    postHandler.accept(definition, config);
                 }
             } catch (Exception e) {
                 Multiblocked.LOGGER.error("error while loading the definition file {}", file.toString());
@@ -105,12 +103,6 @@ public class MbdComponents {
         }
 
     }
-
-    public static void executeInitHandler() {
-        handlers.forEach(Runnable::run);
-        handlers.clear();
-    }
-
 
     public static void registerNoNeedController(ItemStack catalyst, ControllerDefinition definition) {
         CATALYST_SET.add(catalyst.getItem());
@@ -151,7 +143,7 @@ public class MbdComponents {
             definition.fromJson(config);
             registerComponent(definition);
             if (postHandler != null) {
-                handlers.add(()->postHandler.accept(definition, config));
+                postHandler.accept(definition, config);
             }
         } catch (Exception e) {
             Multiblocked.LOGGER.error("error while loading the definition resource {}", location.toString());

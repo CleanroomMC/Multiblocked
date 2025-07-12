@@ -65,8 +65,6 @@ public class CommonProxy {
         Multiblocked.LOGGER.info("init");
         // register recipe map
         RecipeMap.registerRecipeFromFile(Multiblocked.GSON, new File(Multiblocked.location, "recipe_map"));
-        // execute init handler
-        MbdComponents.executeInitHandler();
         // register ui
         UIFactory.register(TileEntityUIFactory.INSTANCE);
         // loadCT
@@ -165,7 +163,6 @@ public class CommonProxy {
         if (!useInterfaceTraits.isEmpty()) {
             Class<?> teClazz = new DynamicTileEntityGenerator(definition.location.getPath(), useInterfaceTraits, definition.clazz).generateClass();
             definition.setTileEntityClass(teClazz);
-            GameRegistry.registerTileEntity(((Class<TileEntity>) teClazz), definition.location);
         }
     }
 
